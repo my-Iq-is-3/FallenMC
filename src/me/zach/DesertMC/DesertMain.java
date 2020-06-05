@@ -1,35 +1,33 @@
 package me.zach.DesertMC;
 
-import com.avaje.ebean.EbeanServer;
 import me.zach.DesertMC.CommandsPackage.ItemCommand;
-import me.zach.DesertMC.Utils.Config.ConfigUtils;
-import org.bukkit.*;
-import org.bukkit.command.*;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginLoader;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import me.zach.DesertMC.GUImanager.InvEvents;
 import me.zach.DesertMC.PlayerManager.Events;
-import org.bukkit.plugin.java.JavaPluginLoader;
+import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 public class DesertMain extends JavaPlugin implements Listener {
 	public static DesertMain getInstance;
+	public static ArrayList<UUID> ct1players = new ArrayList<UUID>();
 
 	public static ArrayList<Player> laststandcd = new ArrayList<>();
 	public static ArrayList<Player> mwcd = new ArrayList<>();
@@ -66,11 +64,6 @@ public class DesertMain extends JavaPlugin implements Listener {
 			checkForBiome();
 	}
 
-
-
-	public void forTest(){
-
-	}
 
 	private void registerEvents(Plugin p){
 		Bukkit.getPluginManager().registerEvents(new Events(), p);
