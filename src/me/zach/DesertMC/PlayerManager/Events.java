@@ -4,6 +4,7 @@ package me.zach.DesertMC.PlayerManager;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents.EventsForCorruptor;
 import me.zach.DesertMC.GameMechanics.ClassEvents.WizardEvents.EventsForWizard;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
@@ -102,7 +103,11 @@ public class Events implements Listener {
 	FileConfiguration economyConfig = Bukkit.getPluginManager().getPlugin("Econo").getConfig();
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent event) throws Exception {
+		if(DesertMain.ct1players.contains(event.getDamager().getUniqueId())){
+			event.setDamage(event.getDamage() * 1.1);
+		}
 		executeKill(event);
+		EventsForCorruptor.INSTANCE.t1Event(event);
 		EventsForWizard.INSTANCE.wizardt4(event);
 		EventsForWizard.INSTANCE.wizardt1(event);
 		EventsForWizard.INSTANCE.wizardt8(event);
