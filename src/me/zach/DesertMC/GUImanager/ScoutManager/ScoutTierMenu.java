@@ -150,11 +150,11 @@ public class ScoutTierMenu{
 				
 			case 7:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.GREEN + "- Grappling Hook");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.GREEN + "- Quick Enchantment");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.YELLOW + "- Grappling Hook");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.YELLOW + "- Quick Enchantment");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.RED + "- Grappling Hook");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.RED + "- Quick Enchantment");
 				break;
 			case 8:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
