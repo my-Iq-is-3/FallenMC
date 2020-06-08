@@ -8,6 +8,7 @@ import me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents.EventsForCorru
 import me.zach.DesertMC.GameMechanics.ClassEvents.WizardEvents.EventsForWizard;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.NBTUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -103,23 +104,29 @@ public class Events implements Listener {
 	FileConfiguration economyConfig = Bukkit.getPluginManager().getPlugin("Econo").getConfig();
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent event) throws Exception {
-		if(DesertMain.ct1players.contains(event.getDamager().getUniqueId())){
+
+
+	    if(event.isCancelled()) return;
+
+
+	    if(DesertMain.ct1players.contains(event.getDamager().getUniqueId())){
 			event.setDamage(event.getDamage() * 1.1);
 		}
+
 		executeKill(event);
 		EventsForCorruptor.INSTANCE.t1Event(event);
 		EventsForWizard.INSTANCE.wizardt4(event);
 		EventsForWizard.INSTANCE.wizardt1(event);
 		EventsForWizard.INSTANCE.wizardt8(event);
-        if(event.getDamager() instanceof Player){
-            Player killer = (Player) event.getDamager();
-            NBTItem nbti = new NBTItem(killer.getInventory().getItemInMainHand());
-            NBTCompound nbtic = nbti.getCompound("CustomAttributes");
 
-            if(nbtic.getString("ID").equals("MAGIC_WAND")){
+		if(event.getDamager() instanceof Player){
+            Player killer = (Player) event.getDamager();
+
+            if(NBTUtil.INSTANCE.getCustomAttr(killer.getInventory().getItemInMainHand(), "ID").equals("MAGIC_WAND")){
                 EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
 
             }
+
         }
 
 	}

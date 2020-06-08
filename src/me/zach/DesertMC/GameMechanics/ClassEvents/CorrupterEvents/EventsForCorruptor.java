@@ -35,4 +35,12 @@ public class EventsForCorruptor {
         }
 
     }
+
+    public void t2Event(EntityDamageByEntityEvent event){
+        if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
+            Player killer = (Player) event.getDamager();
+            Player killed = (Player) event.getEntity();
+
+        }
+    }
 }
