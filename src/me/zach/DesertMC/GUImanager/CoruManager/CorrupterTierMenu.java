@@ -100,18 +100,18 @@ public class CorrupterTierMenu {
 			case 3:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Volcanic Sword ");
-				glore.add(ChatColor.DARK_GRAY + "(On every tenth kill, everyone around you is ");
+				glore.add(ChatColor.DARK_GRAY + "(On every fifth kill, everyone around you is ");
 				glore.add(ChatColor.DARK_GRAY + "shot away in a massive explosion");
 				
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Volcanic Sword");
-				ylore.add(ChatColor.DARK_GRAY + "(On every tenth kill with this weapon, everyone around you is ");
+				ylore.add(ChatColor.DARK_GRAY + "(On every fifth kill with this weapon, everyone around you is ");
 				ylore.add(ChatColor.DARK_GRAY + "shot away in a massive explosion)");
 				
 				
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Volcanic Sword ");
-				rlore.add(ChatColor.DARK_GRAY + "(On every tenth kill with this weapon, everyone around you is ");
+				rlore.add(ChatColor.DARK_GRAY + "(On every fifth kill with this weapon, everyone around you is ");
 				rlore.add(ChatColor.DARK_GRAY + "shot away in a massive explosion)");
 				
 				break;

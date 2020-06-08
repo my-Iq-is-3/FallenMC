@@ -3,6 +3,7 @@ package me.zach.DesertMC.CommandsPackage;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import net.minecraft.server.v1_9_R1.CommandExecute;
+import net.minecraft.server.v1_9_R1.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class ItemCommand extends CommandExecute implements CommandExecutor, Listener {
-    private ItemStack sg;
+    public static final ItemCommand INSTANCE = new ItemCommand();
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args){
         if(commandSender instanceof Player){
@@ -34,13 +35,14 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
 
                         if(args[0].equalsIgnoreCase("scoutgoggles") || args[0].equalsIgnoreCase("magicwand")){
                             if(args[0].equalsIgnoreCase("magicwand")){
-                                player.getInventory().addItem(ItemCommand.getMw());
+                                player.getInventory().addItem(ItemCommand.INSTANCE.getMagicWand());
                             }
                             if(args[0].equalsIgnoreCase("scoutgoggles")){
-                                player.getInventory().addItem(ItemCommand.getSg());
+                                player.getInventory().addItem(ItemCommand.INSTANCE.getSg());
                             }
-
-
+                            if(args[0].equalsIgnoreCase("volcanicsword")){
+                                player.getInventory().addItem(ItemCommand.INSTANCE.getVolcanicSword());
+                            }
                         }else{
                             player.sendMessage(ChatColor.RED + "Please say a valid item.");
                         }
@@ -67,7 +69,7 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         }
         return false;
     }
-    public static ItemStack getSg(){
+    public ItemStack getSg(){
         ItemStack scoutgoggles = new ItemStack(Material.LEATHER_HELMET);
         LeatherArmorMeta sgm = (LeatherArmorMeta) scoutgoggles.getItemMeta();
         sgm.setDisplayName(ChatColor.GREEN + "Scout Goggles");
@@ -89,7 +91,7 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         return scoutgoggleNBT.getItem();
     }
 
-    public static ItemStack getMw(){
+    public ItemStack getMagicWand(){
         ItemStack MagicWand = new ItemStack(Material.STICK);
         ItemMeta mwm = MagicWand.getItemMeta();
         mwm.setDisplayName(ChatColor.LIGHT_PURPLE + "Magic Wand");
@@ -117,5 +119,38 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         customattr.setBoolean("CAN_ENCHANT", false);
 
         return mwnbt.getItem();
+    }
+
+    public ItemStack getVolcanicSword(){
+
+        ItemStack vs = new ItemStack(Material.GOLD_SWORD);
+        ItemMeta vsm = vs.getItemMeta();
+        ArrayList<String> vslist = new ArrayList<>();
+
+        vsm.setDisplayName(ChatColor.RED + "Volcanic Sword");
+
+        vslist.add(" ");
+        vslist.add(ChatColor.RED + "Streak Ability: Erupt");
+        vslist.add(ChatColor.DARK_GRAY + "Every" + ChatColor.RED + " 5 " + ChatColor.DARK_GRAY + "kills with this item,");
+        vslist.add(ChatColor.DARK_GRAY + "all players within a" + ChatColor.RED + " 5 " + ChatColor.DARK_GRAY + "block radius");
+        vslist.add(ChatColor.DARK_GRAY + "are shot away in a" + ChatColor.RED + " massive " + ChatColor.DARK_GRAY + "explosion!");
+
+
+        vsm.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+        vsm.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        vsm.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+
+        vsm.setLore(vslist);
+        vs.setItemMeta(vsm);
+
+        NBTItem nbtvs = new NBTItem(vs);
+        nbtvs.setByte("Unbreakable", (byte) 1);
+        NBTCompound nbtvscomp = nbtvs.addCompound("CustomAttributes");
+        nbtvscomp.setString("ID", "VOLCANIC_SWORD");
+        nbtvscomp.setString("UUID", UUID.randomUUID().toString());
+        nbtvscomp.setBoolean("CAN_ENCHANT", true);
+
+
+        return nbtvs.getItem();
     }
 }
