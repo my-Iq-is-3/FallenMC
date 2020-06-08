@@ -2,6 +2,7 @@ package me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents;
 
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.PlayerManager.Events;
+import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.NBTUtil;
 import org.bukkit.Bukkit;
@@ -48,19 +49,25 @@ public class EventsForCorruptor {
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
             Player killer = (Player) event.getDamager();
             Player killed = (Player) event.getEntity();
-
+            killer.sendMessage(Prefix.DEBUG + "1");
             if (killed.getHealth() - event.getDamage() < 0.1) {
+                killer.sendMessage(Prefix.DEBUG + "2");
                 ItemStack item = killed.getInventory().getItemInMainHand();
                 if (NBTUtil.INSTANCE.getCustomAttr(item, "ID").equals("VOLCANIC_SWORD")) {
+                    killer.sendMessage(Prefix.DEBUG + "3");
                     if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
+                        killer.sendMessage(Prefix.DEBUG + "4");
                         if ((Events.ks.get(killer.getUniqueId()) % 5) == 0) {
+                            killer.sendMessage(Prefix.DEBUG + "5");
                             for (Entity near : Bukkit.getOnlinePlayers()) {
-                                if (near.getLocation().distance(killer.getLocation()) <= 5) {
-
+                                near.sendMessage(Prefix.DEBUG + "6");
+                                if (near.getLocation().distance(killer.getLocation()) <= 5 && !near.equals(killer)) {
+                                    near.sendMessage(Prefix.DEBUG + "7");
                                     Location nearloc = near.getLocation();
                                     Location eLoc = killer.getLocation();
                                     Location newLoc = nearloc.subtract(eLoc);
-                                    Vector newV = new Vector(newLoc.toVector().normalize().multiply(2).getY(), 2, newLoc.toVector().normalize().multiply(2).getZ());
+                                    Vector newV = newLoc.toVector().normalize().multiply(2);
+                                    newV.setY(2);
                                     near.setVelocity(newV);
                                     near.sendMessage(ChatColor.RED + "You were pushed back!");
 

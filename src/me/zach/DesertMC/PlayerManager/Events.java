@@ -112,12 +112,14 @@ public class Events implements Listener {
 	    if(DesertMain.ct1players.contains(event.getDamager().getUniqueId())){
 			event.setDamage(event.getDamage() * 1.1);
 		}
-
-		executeKill(event);
 		EventsForCorruptor.INSTANCE.t1Event(event);
+
 		EventsForWizard.INSTANCE.wizardt4(event);
 		EventsForWizard.INSTANCE.wizardt1(event);
 		EventsForWizard.INSTANCE.wizardt8(event);
+
+		EventsForCorruptor.INSTANCE.volcanicSword(event);
+		executeKill(event);
 
 		if(event.getDamager() instanceof Player){
             Player killer = (Player) event.getDamager();
@@ -152,9 +154,9 @@ public class Events implements Listener {
 						if(random < 2){
 							soulsgained = 1;
 							if(main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null){
-								main.getConfig().set("player." + killer.getUniqueId() + ".souls", main.getConfig().getInt("player." + killer.getUniqueId() + ".souls") + 1);
+								main.getConfig().set("players." + killer.getUniqueId() + ".souls", main.getConfig().getInt("player." + killer.getUniqueId() + ".souls") + 1);
 							}else{
-								main.getConfig().set("player." + killer.getUniqueId() + ".souls", 1);
+								main.getConfig().set("players." + killer.getUniqueId() + ".souls", 1);
 							}
 						}else{
 							soulsgained = 0;
@@ -186,6 +188,7 @@ public class Events implements Listener {
 						((Player) event.getDamager()).playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 4);
 						economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
 						ConfigUtils.addXP(killer,ConfigUtils.findClass(killer), xpgained);
+						main.saveConfig();
 					}
 
 					// Some more events that execute on hit.
@@ -248,9 +251,6 @@ public class Events implements Listener {
 						ks.put(event.getDamager().getUniqueId(), ks.get(event.getDamager().getUniqueId()) + 1);
 					}
 					ks.put(event.getEntity().getUniqueId(), 0);
-					// Here, we put all of the events/rewards.
-					EventsForWizard.INSTANCE.wizardt4(event);
-					EventsForWizard.INSTANCE.wizardt1(event);
 					player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1, 0.5f);
 					killer.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 4);
 					economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);

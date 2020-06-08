@@ -41,23 +41,22 @@ public class DesertMain extends JavaPlugin implements Listener {
 			registerCommands(cmdsfile,new Commands());
 			registerEvents(this);
 
+
 			
 			getCommand("item").setExecutor(new ItemCommand());
-			getCommand("item").setTabCompleter(new TabCompleter() {
-				@Override
-				public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-					List<String> args = new ArrayList<String>();
-					if(strings.length == 1) {
+			getCommand("item").setTabCompleter((commandSender,command,s,strings) -> {
+				List<String> args = new ArrayList<String>();
+				if(strings.length == 1) {
 
-						if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("item")) {
-							args.add("ScoutGoggles");
-							args.add("MagicWand");
-							args.add("VolcanicSword");
-						}
+					if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("item")) {
+						args.add("ScoutGoggles");
+						args.add("MagicWand");
+						args.add("VolcanicSword");
 					}
-					return args;
 				}
+				return args;
 			});
+
 
 
 

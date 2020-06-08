@@ -7,6 +7,7 @@ import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -140,54 +141,57 @@ public class EventsForWizard implements Listener {
 
 //  Stun
     public void wizardt4(EntityDamageByEntityEvent event){
-        Player killed = (Player) event.getEntity();
-        if(killed.getHealth() - event.getDamage() < 0.1){
-            if(event.getDamager() instanceof Arrow){
+        if(event.getEntity() instanceof Player){
+            Player killed = (Player) event.getEntity();
+            if(killed.getHealth() - event.getDamage() < 0.1){
+                if(event.getDamager() instanceof Arrow){
 
-                Arrow arrow = (Arrow) event.getDamager();
-                Player killer = (Player) arrow.getShooter();
-                if(ConfigUtils.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.getLevel("wizard",killed) > 4){
-                    double random = (Math.random() * 100) + 1;
-                    if(random <= 10){
-                        double walkspeedbefore = killer.getWalkSpeed();
-                        killer.setWalkSpeed(0);
-                        killer.playSound(killer.getLocation(), Sound.BLOCK_ANVIL_BREAK,1f,2f);
-                        killer.sendTitle(ChatColor.YELLOW + "You were Stunned", ChatColor.DARK_GRAY + "By " + killed.getName());
-                        PotionEffect poison = new PotionEffect(PotionEffectType.POISON, 60, 1, false, false);
-                        killer.addPotionEffect(poison);
-                        new BukkitRunnable(){
+                    Arrow arrow = (Arrow) event.getDamager();
+                    Player killer = (Player) arrow.getShooter();
+                    if(ConfigUtils.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.getLevel("wizard",killed) > 4){
+                        double random = (Math.random() * 100) + 1;
+                        if(random <= 10){
+                            double walkspeedbefore = killer.getWalkSpeed();
+                            killer.setWalkSpeed(0);
+                            killer.playSound(killer.getLocation(), Sound.BLOCK_ANVIL_BREAK,1f,2f);
+                            killer.sendTitle(ChatColor.YELLOW + "You were Stunned", ChatColor.DARK_GRAY + "By " + killed.getName());
+                            PotionEffect poison = new PotionEffect(PotionEffectType.POISON, 60, 1, false, false);
+                            killer.addPotionEffect(poison);
+                            new BukkitRunnable(){
 
-                            @Override
-                            public void run() {
-                                killer.setWalkSpeed((float) walkspeedbefore);
-                            }
+                                @Override
+                                public void run() {
+                                    killer.setWalkSpeed((float) walkspeedbefore);
+                                }
 
-                        }.runTaskLater(DesertMain.getPlugin(DesertMain.class), 60);
+                            }.runTaskLater(DesertMain.getPlugin(DesertMain.class), 60);
+                        }
                     }
-                }
-            }else if(event.getDamager() instanceof Player){
-                Player killer = (Player) event.getDamager();
-                if(ConfigUtils.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.getLevel("wizard",killed) > 4){
-                    double random = (Math.random() * 100) + 1;
-                    if(random <= 10){
-                        double walkspeedbefore = killer.getWalkSpeed();
-                        killer.setWalkSpeed(0);
-                        killer.playSound(killer.getLocation(), Sound.BLOCK_ANVIL_BREAK,1f,2f);
-                        killer.sendTitle(ChatColor.YELLOW + "You were Stunned", ChatColor.DARK_GRAY + "By " + killed.getName());
-                        PotionEffect poison = new PotionEffect(PotionEffectType.POISON, 60, 1, false, false);
-                        killer.addPotionEffect(poison);
-                        new BukkitRunnable(){
+                }else if(event.getDamager() instanceof Player){
+                    Player killer = (Player) event.getDamager();
+                    if(ConfigUtils.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.getLevel("wizard",killed) > 4){
+                        double random = (Math.random() * 100) + 1;
+                        if(random <= 10){
+                            double walkspeedbefore = killer.getWalkSpeed();
+                            killer.setWalkSpeed(0);
+                            killer.playSound(killer.getLocation(), Sound.BLOCK_ANVIL_BREAK,1f,2f);
+                            killer.sendTitle(ChatColor.YELLOW + "You were Stunned", ChatColor.DARK_GRAY + "By " + killed.getName());
+                            PotionEffect poison = new PotionEffect(PotionEffectType.POISON, 60, 1, false, false);
+                            killer.addPotionEffect(poison);
+                            new BukkitRunnable(){
 
-                            @Override
-                            public void run() {
-                                killer.setWalkSpeed((float) walkspeedbefore);
-                            }
+                                @Override
+                                public void run() {
+                                    killer.setWalkSpeed((float) walkspeedbefore);
+                                }
 
-                        }.runTaskLater(DesertMain.getPlugin(DesertMain.class), 60);
+                            }.runTaskLater(DesertMain.getPlugin(DesertMain.class), 60);
+                        }
                     }
                 }
             }
         }
+
 
 
     }
