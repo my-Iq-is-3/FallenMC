@@ -52,6 +52,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 						if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("item")) {
 							args.add("ScoutGoggles");
 							args.add("MagicWand");
+							args.add("VolcanicSword");
 						}
 					}
 					return args;
@@ -97,7 +98,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 					}
 				}
 			}
-		}.runTaskTimer(this,0,60);
+		}.runTaskTimer(this,0,40);
 	}
 
 
