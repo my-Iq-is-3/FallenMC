@@ -33,7 +33,7 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
 
 
 
-                        if(args[0].equalsIgnoreCase("scoutgoggles") || args[0].equalsIgnoreCase("magicwand")){
+                        if(args[0].equalsIgnoreCase("scoutgoggles") || args[0].equalsIgnoreCase("magicwand") || args[0].equalsIgnoreCase("volcanicsword")){
                             if(args[0].equalsIgnoreCase("magicwand")){
                                 player.getInventory().addItem(ItemCommand.INSTANCE.getMagicWand());
                             }

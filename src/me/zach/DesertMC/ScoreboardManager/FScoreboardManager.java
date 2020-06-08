@@ -24,6 +24,10 @@ public class FScoreboardManager {
 			Objective objective = mains.registerNewObjective("main", "dummy");
 			objective.setDisplayName(ChatColor.AQUA + "" + ChatColor.BOLD + "FallenMC");
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+			System.out.println("ConfigUtils: " + ConfigUtils.INSTANCE);
+			System.out.println("Level: " + ConfigUtils.INSTANCE.getLevel(ConfigUtils.INSTANCE.findClass(player),player));
+			System.out.println("Class: " + ConfigUtils.INSTANCE.findClass(player));
+
 
 			Score gems = objective.getScore("Gems" + ChatColor.DARK_GRAY + ": " + ChatColor.GREEN + economyConfig.getInt("players." + player.getUniqueId() + ".balance"));
 			Score level = objective.getScore("Level" + ChatColor.DARK_GRAY + ": " + ChatColor.AQUA + ConfigUtils.INSTANCE.getLevel(ConfigUtils.INSTANCE.findClass(player), player));
