@@ -202,16 +202,16 @@ public class CorrupterTierMenu {
 			greenlevel.setItemMeta(gmeta);
 			redlevel.setItemMeta(rmeta);
 			yellowlevel.setItemMeta(ymeta);
-			if(ConfigUtils.INSTANCE.getLevel("corrupter",player) > level) {
+			if(ConfigUtils.getLevel("corrupter",player) > level) {
 				inventory.setItem(i, greenlevel);
-			} else if(ConfigUtils.INSTANCE.getLevel("corrupter",player) == level) {
+			} else if(ConfigUtils.getLevel("corrupter",player) == level) {
 				inventory.setItem(i, yellowlevel);
-			} else if(ConfigUtils.INSTANCE.getLevel("corrupter",player) < level) {
+			} else if(ConfigUtils.getLevel("corrupter",player) < level) {
 				inventory.setItem(i, redlevel);
 			}
 		}
 
-		if(ConfigUtils.INSTANCE.findClass(player).equalsIgnoreCase("corrupter")){
+		if(ConfigUtils.findClass(player).equalsIgnoreCase("corrupter")){
 			inventory.setItem(22,selected);
 		}else{
 			inventory.setItem(22,nselected);

@@ -29,7 +29,7 @@ public class EventsForWizard implements Listener {
         if (event.getDamager() instanceof Player) {
             if (((Player) event.getDamager()).getHealth() - event.getDamage() < 0.1) {
                 Player killer = (Player) event.getDamager();
-                if (ConfigUtils.INSTANCE.findClass(killer).equals("wizard") && ConfigUtils.INSTANCE.getLevel("wizard", killer) > 1) {
+                if (ConfigUtils.findClass(killer).equals("wizard") && ConfigUtils.getLevel("wizard", killer) > 1) {
                     for (Player player : event.getDamager().getWorld().getPlayers()) {
 
 
@@ -58,7 +58,7 @@ public class EventsForWizard implements Listener {
             } else if (event.getDamager() instanceof Arrow) {
                 Arrow arrow = (Arrow) event.getDamager();
                 Player killer = (Player) arrow.getShooter();
-                if (ConfigUtils.INSTANCE.findClass(killer).equals("wizard") && ConfigUtils.INSTANCE.getLevel("wizard", killer) > 1) {
+                if (ConfigUtils.findClass(killer).equals("wizard") && ConfigUtils.getLevel("wizard", killer) > 1) {
                     for (Player player : event.getDamager().getWorld().getPlayers()) {
 
 
@@ -111,8 +111,8 @@ public class EventsForWizard implements Listener {
         int randint = rgen.nextInt(allpotionEffects.length);
         int randint1 = rgen.nextInt(badpoteff.length);
 
-        if(ConfigUtils.INSTANCE.findClass(damager).equals("wizard")){
-            if(ConfigUtils.INSTANCE.getLevel("wizard",damager) > 3 && ConfigUtils.INSTANCE.getLevel("wizard",damager) <= 7){
+        if(ConfigUtils.findClass(damager).equals("wizard")){
+            if(ConfigUtils.getLevel("wizard",damager) > 3 && ConfigUtils.getLevel("wizard",damager) <= 7){
                 if(randint <= 3){
                     damager.sendMessage(ChatColor.RED + "You gave " + damaged.getName() + " " + allpotionEffects[randint]);
                     ParticleEffect.VILLAGER_HAPPY.display(0.5f,0.5f,0.5f,0,30,damaged.getLocation().add(0,0.5,0), 5);
@@ -120,7 +120,7 @@ public class EventsForWizard implements Listener {
                     ParticleEffect.REDSTONE.display(0.5f,0.5f,0.5f,0,30,damaged.getLocation().add(0,0.5,0),5);
                 }
                 damaged.addPotionEffect(allpotionEffects[randint]);
-            }else if(ConfigUtils.INSTANCE.getLevel("wizard",damager) > 7){
+            }else if(ConfigUtils.getLevel("wizard",damager) > 7){
                 ParticleEffect.REDSTONE.display(0.5f,0.5f,0.5f,0,30,damaged.getLocation().add(0,0.5,0),5);
                 damaged.addPotionEffect(badpoteff[randint1]);
             }else{
@@ -146,7 +146,7 @@ public class EventsForWizard implements Listener {
 
                 Arrow arrow = (Arrow) event.getDamager();
                 Player killer = (Player) arrow.getShooter();
-                if(ConfigUtils.INSTANCE.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.INSTANCE.getLevel("wizard",killed) > 4){
+                if(ConfigUtils.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.getLevel("wizard",killed) > 4){
                     double random = (Math.random() * 100) + 1;
                     if(random <= 10){
                         double walkspeedbefore = killer.getWalkSpeed();
@@ -167,7 +167,7 @@ public class EventsForWizard implements Listener {
                 }
             }else if(event.getDamager() instanceof Player){
                 Player killer = (Player) event.getDamager();
-                if(ConfigUtils.INSTANCE.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.INSTANCE.getLevel("wizard",killed) > 4){
+                if(ConfigUtils.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.getLevel("wizard",killed) > 4){
                     double random = (Math.random() * 100) + 1;
                     if(random <= 10){
                         double walkspeedbefore = killer.getWalkSpeed();
@@ -197,7 +197,7 @@ public class EventsForWizard implements Listener {
     public void wizardt8(EntityDamageByEntityEvent event){
         if(DesertMain.laststandcd.contains((Player)event.getEntity())) return;
             Player damaged = (Player) event.getEntity();
-            if(ConfigUtils.INSTANCE.getLevel("wizard", damaged) > 8 && ConfigUtils.INSTANCE.findClass(damaged).equals("wizard")){
+            if(ConfigUtils.getLevel("wizard", damaged) > 8 && ConfigUtils.findClass(damaged).equals("wizard")){
                 if(damaged.getHealth() - event.getDamage() <= 2){
                     PotionEffect res = new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,60,1,true,false);
                     PotionEffect speed = new PotionEffect(PotionEffectType.SPEED,60,1,true,false);

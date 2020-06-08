@@ -39,7 +39,7 @@ public class ClassSelector{
 		
 		
 
-		if(ConfigUtils.INSTANCE.findClass(player).equals("tank")) {
+		if(ConfigUtils.findClass(player).equals("tank")) {
 			tankmeta.setDisplayName(ChatColor.GREEN + "Tank Class");
 			tanklore.add(ChatColor.DARK_GRAY + "" + ChatColor.ITALIC + "Currently selected class");
 		}else {
@@ -55,7 +55,7 @@ public class ClassSelector{
 		ItemMeta scoutmeta = scout.getItemMeta();
 		scoutmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		ArrayList<String> scoutlore = new ArrayList<String>();
-		if(ConfigUtils.INSTANCE.findClass(player).equals("scout")) {
+		if(ConfigUtils.findClass(player).equals("scout")) {
 			scoutmeta.setDisplayName(ChatColor.GREEN + "Scout Class");
 			scoutlore.add(ChatColor.DARK_GRAY + "" + ChatColor.ITALIC + "Currently selected class");
 		} else{
@@ -74,7 +74,7 @@ public class ClassSelector{
 		
 		wizardmeta.setColor(Color.fromRGB(0, 1, 254));
 		ArrayList<String> wizardlore = new ArrayList<String>();
-		if(ConfigUtils.INSTANCE.findClass(player).equals("wizard")) {
+		if(ConfigUtils.findClass(player).equals("wizard")) {
 			wizardmeta.setDisplayName(ChatColor.GREEN + "Wizard Class");
 			wizardlore.add(ChatColor.DARK_GRAY + "" + ChatColor.ITALIC + "Currently selected class");
 		}else {
@@ -90,7 +90,7 @@ public class ClassSelector{
 		ItemMeta corruptmeta = corrupt.getItemMeta();
 		corruptmeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 		ArrayList<String> corruptlore = new ArrayList<String>();
-		if(ConfigUtils.INSTANCE.findClass(player).equals("corrupter")) {
+		if(ConfigUtils.findClass(player).equals("corrupter")) {
 			corruptmeta.setDisplayName(ChatColor.GREEN + "Corrupter Class");
 			corruptlore.add(ChatColor.DARK_GRAY + "" + ChatColor.ITALIC + "Currently selected class");
 		}else {

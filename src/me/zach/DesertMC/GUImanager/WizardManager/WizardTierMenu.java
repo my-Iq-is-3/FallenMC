@@ -190,17 +190,17 @@ public class WizardTierMenu {
 			greenlevel.setItemMeta(gmeta);
 			redlevel.setItemMeta(rmeta);
 			yellowlevel.setItemMeta(ymeta);
-			if(ConfigUtils.INSTANCE.getLevel("wizard",player) > level) {
+			if(ConfigUtils.getLevel("wizard",player) > level) {
 				inventory.setItem(i, greenlevel);
-			} else if(ConfigUtils.INSTANCE.getLevel("wizard",player) == level) {
+			} else if(ConfigUtils.getLevel("wizard",player) == level) {
 				inventory.setItem(i, yellowlevel);
-			} else if(ConfigUtils.INSTANCE.getLevel("wizard",player) < level) {
+			} else if(ConfigUtils.getLevel("wizard",player) < level) {
 				inventory.setItem(i, redlevel);
 			}
 
 
 		}
-		if(ConfigUtils.INSTANCE.findClass(player).equalsIgnoreCase("wizard")){
+		if(ConfigUtils.findClass(player).equalsIgnoreCase("wizard")){
 			inventory.setItem(22,selected);
 		}else{
 			inventory.setItem(22,nselected);

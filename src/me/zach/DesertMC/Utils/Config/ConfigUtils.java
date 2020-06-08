@@ -6,9 +6,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public class ConfigUtils {
-	public static final ConfigUtils INSTANCE = new ConfigUtils();
-	private final DesertMain main = DesertMain.getInstance;
-	private final FileConfiguration config = main.getConfig();
+
+	private static final DesertMain main = DesertMain.getInstance;
+	private static final FileConfiguration config = main.getConfig();
 
 	private ConfigUtils() {
 		
@@ -16,19 +16,19 @@ public class ConfigUtils {
 		
 	}
 
-	public int getLevel(String playerclass, Player player) throws NullPointerException {
+	public static int getLevel(String playerclass, Player player) throws NullPointerException {
 		if(!main.getConfig().contains("players." + player.getUniqueId() + ".classes." + playerclass + ".level")) return 0;
 		return main.getConfig().getInt("players." + player.getUniqueId() + ".classes." + playerclass + ".level");
 	}
 	
-	public int getXpToNext(Player player, String playerclass) throws NullPointerException{
+	public static int getXpToNext(Player player, String playerclass) throws NullPointerException{
 		if(!main.getConfig().contains("players." + player.getUniqueId() + ".classes." + playerclass + ".xptonext")){
 			return 0;
 		}
 		return main.getConfig().getInt("players." + player.getUniqueId() + ".classes." + playerclass + ".xptonext");
 	}
 	
-	public String findClass(Player player) {
+	public static String findClass(Player player) {
 		
 		if(main.getConfig().getString("players." + player.getUniqueId() + ".classes.inuse") != null) {
 			return main.getConfig().getString("players." + player.getUniqueId() + ".classes.inuse");
@@ -38,7 +38,7 @@ public class ConfigUtils {
 		
 	}
 
-	public Object getXP(Player player, String playerclass) throws NullPointerException {
+	public static Object getXP(Player player, String playerclass) throws NullPointerException {
 
 
 			return main.getConfig().getInt("players." + player.getUniqueId() + ".classes." + playerclass + ".hasxp");
@@ -46,7 +46,7 @@ public class ConfigUtils {
 
 	}
 
-	public void resetclass(Player player, String playerclass){
+	public static void resetclass(Player player, String playerclass){
 		// 100 xp to next level
 		main.getConfig().set("players." + player.getUniqueId() + ".classes." + playerclass + ".xptonext", 100);
 		main.getConfig().set("players." + player.getUniqueId() + ".classes." + playerclass + ".hasxp", 0);
@@ -55,12 +55,12 @@ public class ConfigUtils {
 	}
 
 
-	public void setClass(Player player, String newclass){
+	public static void setClass(Player player, String newclass){
 		config.set("players." + player.getUniqueId() + ".classes.inuse", newclass);
 	}
 
 	@SuppressWarnings("deprecation")
-	public void addXP(Player player, String classtoaddto, int amount) throws Exception {
+	public static void addXP(Player player, String classtoaddto, int amount) throws Exception {
 
 		int xptonext = getXpToNext(player, classtoaddto);
 		if(getLevel(classtoaddto, player) >= 10) {

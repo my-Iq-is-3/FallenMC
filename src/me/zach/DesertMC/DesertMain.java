@@ -86,13 +86,13 @@ public class DesertMain extends JavaPlugin implements Listener {
 					for(Player p : w.getPlayers()){
 
 						Location location = p.getLocation();
-						if(location.subtract(0,10,0).getBlock().getType().equals(Material.DIAMOND_BLOCK) && ConfigUtils.INSTANCE.getLevel("wizard",p) > 5 && ConfigUtils.INSTANCE.findClass(p).equals("wizard")){
+						if(location.subtract(0,10,0).getBlock().getType().equals(Material.DIAMOND_BLOCK) && ConfigUtils.getLevel("wizard",p) > 5 && ConfigUtils.findClass(p).equals("wizard")){
 							p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 0, true,false));
-						}else if(location.subtract(0,10,0).getBlock().getType().equals(Material.EMERALD_BLOCK) && ConfigUtils.INSTANCE.getLevel("tank",p) > 4 && ConfigUtils.INSTANCE.findClass(p).equals("tank")){
+						}else if(location.subtract(0,10,0).getBlock().getType().equals(Material.EMERALD_BLOCK) && ConfigUtils.getLevel("tank",p) > 4 && ConfigUtils.findClass(p).equals("tank")){
 							p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 0, true,false));
-						}else if(location.subtract(0,10,0).getBlock().getType().equals(Material.IRON_BLOCK) && ConfigUtils.INSTANCE.getLevel("scout",p) > 5 && ConfigUtils.INSTANCE.findClass(p).equals("scout")){
+						}else if(location.subtract(0,10,0).getBlock().getType().equals(Material.IRON_BLOCK) && ConfigUtils.getLevel("scout",p) > 5 && ConfigUtils.findClass(p).equals("scout")){
 							p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 0, true,false));
-						}else if(location.subtract(0,10,0).getBlock().getType().equals(Material.GOLD_BLOCK) && ConfigUtils.INSTANCE.getLevel("corrupter",p) > 5 && ConfigUtils.INSTANCE.findClass(p).equals("corrupter")){
+						}else if(location.subtract(0,10,0).getBlock().getType().equals(Material.GOLD_BLOCK) && ConfigUtils.getLevel("corrupter",p) > 5 && ConfigUtils.findClass(p).equals("corrupter")){
 							p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 0, true,false));
 						}
 					}

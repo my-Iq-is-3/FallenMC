@@ -180,7 +180,7 @@ public class InvEvents implements Listener {
 		if(classinv.getName().equals("Wizard Class")){
 			event.setCancelled(true);
 			if(item.getType().equals(Material.STAINED_GLASS)){
-				ConfigUtils.INSTANCE.setClass(player, "wizard");
+				ConfigUtils.setClass(player, "wizard");
 				new WizardTierMenu(player).openInventory();
 			}
 		}
@@ -188,7 +188,7 @@ public class InvEvents implements Listener {
 		if(classinv.getName().equals("Scout Class")){
 			event.setCancelled(true);
 			if(item.getType().equals(Material.STAINED_GLASS)){
-				ConfigUtils.INSTANCE.setClass(player, "scout");
+				ConfigUtils.setClass(player, "scout");
 				new ScoutTierMenu(player).openInventory();
 			}
 		}
@@ -196,7 +196,7 @@ public class InvEvents implements Listener {
 		if(classinv.getName().equals("Tank Class")){
 			event.setCancelled(true);
 			if(item.getType().equals(Material.STAINED_GLASS)){
-				ConfigUtils.INSTANCE.setClass(player, "tank");
+				ConfigUtils.setClass(player, "tank");
 				new TankTierMenu(player).openInventory();
 			}
 		}
@@ -204,7 +204,7 @@ public class InvEvents implements Listener {
 		if(classinv.getName().equals("Corrupter Class")){
 			event.setCancelled(true);
 			if(item.getType().equals(Material.STAINED_GLASS)){
-				ConfigUtils.INSTANCE.setClass(player, "corrupter");
+				ConfigUtils.setClass(player, "corrupter");
 				new CorrupterTierMenu(player).openInventory();
 			}
 		}

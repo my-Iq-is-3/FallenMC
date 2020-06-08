@@ -159,9 +159,9 @@ public class Events implements Listener {
 						}else{
 							soulsgained = 0;
 						}
-						int xpgained = (ConfigUtils.INSTANCE.getLevel(ConfigUtils.INSTANCE.findClass(player),player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
+						int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player),player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
 
-						int gemsgained = (ConfigUtils.INSTANCE.getLevel(ConfigUtils.INSTANCE.findClass(player),player) * 15) + ks.get(player.getUniqueId()) * 3;
+						int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player),player) * 15) + ks.get(player.getUniqueId()) * 3;
 
 						event.getDamager().sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
 						if(!ks.containsKey(event.getDamager().getUniqueId())) {
@@ -185,7 +185,7 @@ public class Events implements Listener {
 						player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1, 0.5f);
 						((Player) event.getDamager()).playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 4);
 						economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
-						ConfigUtils.INSTANCE.addXP(killer,ConfigUtils.INSTANCE.findClass(killer), xpgained);
+						ConfigUtils.addXP(killer,ConfigUtils.findClass(killer), xpgained);
 					}
 
 					// Some more events that execute on hit.
@@ -237,9 +237,9 @@ public class Events implements Listener {
 						soulsgained = 0;
 					}
 					DesertMain.getInstance.getConfig().set("players." + killer.getUniqueId() + ".souls", DesertMain.getInstance.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + soulsgained);
-					int xpgained = (ConfigUtils.INSTANCE.getLevel(ConfigUtils.INSTANCE.findClass(player),player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
+					int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player),player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
 
-					int gemsgained = (ConfigUtils.INSTANCE.getLevel(ConfigUtils.INSTANCE.findClass(player),player) * 15) + ks.get(player.getUniqueId()) * 3;
+					int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player),player) * 15) + ks.get(player.getUniqueId()) * 3;
 
 					killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
 					if(!ks.containsKey(event.getDamager().getUniqueId())) {
@@ -254,7 +254,7 @@ public class Events implements Listener {
 					player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1, 0.5f);
 					killer.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 4);
 					economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
-					ConfigUtils.INSTANCE.addXP(killer,ConfigUtils.INSTANCE.findClass(killer), xpgained);
+					ConfigUtils.addXP(killer,ConfigUtils.findClass(killer), xpgained);
 				}
 
 			}

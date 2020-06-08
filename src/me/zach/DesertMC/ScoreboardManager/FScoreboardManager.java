@@ -24,28 +24,28 @@ public class FScoreboardManager {
 			Objective objective = mains.registerNewObjective("main", "dummy");
 			objective.setDisplayName(ChatColor.AQUA + "" + ChatColor.BOLD + "FallenMC");
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-			System.out.println("ConfigUtils: " + ConfigUtils.INSTANCE);
-			System.out.println("Level: " + ConfigUtils.INSTANCE.getLevel(ConfigUtils.INSTANCE.findClass(player),player));
-			System.out.println("Class: " + ConfigUtils.INSTANCE.findClass(player));
+//			System.out.println("ConfigUtils: " + ConfigUtils.INSTANCE);
+//			System.out.println("Level: " + ConfigUtils.INSTANCE.getLevel(ConfigUtils.INSTANCE.findClass(player),player));
+//			System.out.println("Class: " + ConfigUtils.INSTANCE.findClass(player));
 
 
 			Score gems = objective.getScore("Gems" + ChatColor.DARK_GRAY + ": " + ChatColor.GREEN + economyConfig.getInt("players." + player.getUniqueId() + ".balance"));
-			Score level = objective.getScore("Level" + ChatColor.DARK_GRAY + ": " + ChatColor.AQUA + ConfigUtils.INSTANCE.getLevel(ConfigUtils.INSTANCE.findClass(player), player));
+			Score level = objective.getScore("Level" + ChatColor.DARK_GRAY + ": " + ChatColor.AQUA + ConfigUtils.getLevel(ConfigUtils.findClass(player), player));
 			Score souls = objective.getScore("Souls" + ChatColor.DARK_GRAY + ": " + ChatColor.LIGHT_PURPLE + DesertMain.getInstance.getConfig().getInt("players." + player.getUniqueId() + ".souls"));
 			Score xp;
 			//set experience element
 
-			if(ConfigUtils.INSTANCE.getXP(player, ConfigUtils.INSTANCE.findClass(player)).equals("MAX")) {
+			if(ConfigUtils.getXP(player, ConfigUtils.findClass(player)).equals("MAX")) {
 				xp = objective.getScore("XP" + ChatColor.DARK_GRAY + ": " + ChatColor.AQUA + "MAX");
 
 			}else {
 
-				int totalxp = ConfigUtils.INSTANCE.getXpToNext(player, ConfigUtils.INSTANCE.findClass(player)) + (Integer)ConfigUtils.INSTANCE.getXP(player,ConfigUtils.INSTANCE.findClass(player));
-				xp = objective.getScore("XP" + ChatColor.DARK_GRAY + ": " + ChatColor.GREEN + ConfigUtils.INSTANCE.getXP(player, ConfigUtils.INSTANCE.findClass(player)) + ChatColor.WHITE + "/" + ChatColor.DARK_GRAY + totalxp);
+				int totalxp = ConfigUtils.getXpToNext(player, ConfigUtils.findClass(player)) + (Integer)ConfigUtils.getXP(player,ConfigUtils.findClass(player));
+				xp = objective.getScore("XP" + ChatColor.DARK_GRAY + ": " + ChatColor.GREEN + ConfigUtils.getXP(player, ConfigUtils.findClass(player)) + ChatColor.WHITE + "/" + ChatColor.DARK_GRAY + totalxp);
 			}
 
 			//Now we have to make the first letter uppercase for the player classes
-			String betterclass = ConfigUtils.INSTANCE.findClass(player);
+			String betterclass = ConfigUtils.findClass(player);
 			char[] betterclassarr = betterclass.toCharArray();
 			betterclassarr[0] = Character.toUpperCase(betterclassarr[0]);
 			Score playerclass = objective.getScore("Class" + ChatColor.DARK_GRAY + ": " + ChatColor.GREEN + new String(betterclassarr));

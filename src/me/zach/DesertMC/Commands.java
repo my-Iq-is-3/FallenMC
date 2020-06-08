@@ -62,7 +62,7 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
 
         	if(command.getName().equalsIgnoreCase("resetclass")){
         		if(player.hasPermission("admin")){
-        			ConfigUtils.INSTANCE.resetclass(player,ConfigUtils.INSTANCE.findClass(player));
+        			ConfigUtils.resetclass(player,ConfigUtils.findClass(player));
         		}else{
         			player.sendMessage(ChatColor.RED + "Only admins can use this command");
 				}
@@ -74,7 +74,7 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
         			if(player.hasPermission("admin")){
 						try {
 							int xptoadd = Integer.parseInt(args[1]);
-							ConfigUtils.INSTANCE.addXP(player, args[0], xptoadd);
+							ConfigUtils.addXP(player, args[0], xptoadd);
 							player.sendMessage(ChatColor.GREEN + "Added " + xptoadd + " XP to your " + args[0] + " class!");
 
 						} catch(Exception e) {
@@ -97,15 +97,15 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
 					}else{
         				if(args[0].equalsIgnoreCase("class")){
         					player.sendMessage(Prefix.DEBUG.toString());
-        					player.sendMessage(ChatColor.GREEN + "Wizard Level: " + ConfigUtils.INSTANCE.getLevel("wizard", player));
-							player.sendMessage(ChatColor.GREEN + "Tank Level: " + ConfigUtils.INSTANCE.getLevel("tank", player));
-							player.sendMessage(ChatColor.GREEN + "Corrupter Level: " + ConfigUtils.INSTANCE.getLevel("corrupter", player));
-							player.sendMessage(ChatColor.GREEN + "Scout Level: " + ConfigUtils.INSTANCE.getLevel("scout", player));
+        					player.sendMessage(ChatColor.GREEN + "Wizard Level: " + ConfigUtils.getLevel("wizard", player));
+							player.sendMessage(ChatColor.GREEN + "Tank Level: " + ConfigUtils.getLevel("tank", player));
+							player.sendMessage(ChatColor.GREEN + "Corrupter Level: " + ConfigUtils.getLevel("corrupter", player));
+							player.sendMessage(ChatColor.GREEN + "Scout Level: " + ConfigUtils.getLevel("scout", player));
 
-							player.sendMessage(ChatColor.GREEN + "Wizard XP: "  + ConfigUtils.INSTANCE.getXP(player, "wizard"));
-							player.sendMessage(ChatColor.GREEN + "Tank XP: "  + ConfigUtils.INSTANCE.getXP(player, "tank"));
-							player.sendMessage(ChatColor.GREEN + "Corrupter XP: "  + ConfigUtils.INSTANCE.getXP(player, "corrupter"));
-							player.sendMessage(ChatColor.GREEN + "Scout XP: "  + ConfigUtils.INSTANCE.getXP(player, "scout"));
+							player.sendMessage(ChatColor.GREEN + "Wizard XP: "  + ConfigUtils.getXP(player, "wizard"));
+							player.sendMessage(ChatColor.GREEN + "Tank XP: "  + ConfigUtils.getXP(player, "tank"));
+							player.sendMessage(ChatColor.GREEN + "Corrupter XP: "  + ConfigUtils.getXP(player, "corrupter"));
+							player.sendMessage(ChatColor.GREEN + "Scout XP: "  + ConfigUtils.getXP(player, "scout"));
         				}
 						if(args[0].equalsIgnoreCase("killstreak")){
 							player.sendMessage(ChatColor.GREEN + "Current killstreak: " + ChatColor.RED + Events.ks.get(player.getUniqueId()));

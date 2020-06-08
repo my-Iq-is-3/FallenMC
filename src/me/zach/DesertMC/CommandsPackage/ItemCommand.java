@@ -3,7 +3,6 @@ package me.zach.DesertMC.CommandsPackage;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import net.minecraft.server.v1_9_R1.CommandExecute;
-import net.minecraft.server.v1_9_R1.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -33,19 +32,24 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
 
 
 
-                        if(args[0].equalsIgnoreCase("scoutgoggles") || args[0].equalsIgnoreCase("magicwand") || args[0].equalsIgnoreCase("volcanicsword")){
+                            boolean isValid = false;
                             if(args[0].equalsIgnoreCase("magicwand")){
                                 player.getInventory().addItem(ItemCommand.INSTANCE.getMagicWand());
+                                isValid = true;
                             }
                             if(args[0].equalsIgnoreCase("scoutgoggles")){
-                                player.getInventory().addItem(ItemCommand.INSTANCE.getSg());
+                                player.getInventory().addItem(ItemCommand.INSTANCE.getScoutGoggles());
+                                isValid = true;
                             }
                             if(args[0].equalsIgnoreCase("volcanicsword")){
                                 player.getInventory().addItem(ItemCommand.INSTANCE.getVolcanicSword());
+                                isValid = true;
                             }
-                        }else{
-                            player.sendMessage(ChatColor.RED + "Please say a valid item.");
-                        }
+
+                            if(!isValid){
+                                player.sendMessage(ChatColor.RED + "Please say a valid item.");
+                            }
+
 
 
 
@@ -69,7 +73,7 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         }
         return false;
     }
-    public ItemStack getSg(){
+    public ItemStack getScoutGoggles(){
         ItemStack scoutgoggles = new ItemStack(Material.LEATHER_HELMET);
         LeatherArmorMeta sgm = (LeatherArmorMeta) scoutgoggles.getItemMeta();
         sgm.setDisplayName(ChatColor.GREEN + "Scout Goggles");

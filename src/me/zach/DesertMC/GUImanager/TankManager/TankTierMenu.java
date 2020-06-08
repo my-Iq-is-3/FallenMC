@@ -188,15 +188,15 @@ public class TankTierMenu {
 			greenlevel.setItemMeta(gmeta);
 			redlevel.setItemMeta(rmeta);
 			yellowlevel.setItemMeta(ymeta);
-			if(ConfigUtils.INSTANCE.getLevel("tank",player) > level) {
+			if(ConfigUtils.getLevel("tank",player) > level) {
 				inventory.setItem(i, greenlevel);
-			} else if(ConfigUtils.INSTANCE.getLevel("tank",player) == level) {
+			} else if(ConfigUtils.getLevel("tank",player) == level) {
 				inventory.setItem(i, yellowlevel);
-			} else if(ConfigUtils.INSTANCE.getLevel("tank",player) < level) {
+			} else if(ConfigUtils.getLevel("tank",player) < level) {
 				inventory.setItem(i, redlevel);
 			}
 		}
-		if(ConfigUtils.INSTANCE.findClass(player).equalsIgnoreCase("tank")){
+		if(ConfigUtils.findClass(player).equalsIgnoreCase("tank")){
 			inventory.setItem(22,selected);
 		}else{
 			inventory.setItem(22,nselected);

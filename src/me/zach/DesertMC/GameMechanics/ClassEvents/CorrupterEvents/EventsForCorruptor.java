@@ -26,7 +26,7 @@ public class EventsForCorruptor {
             Player damager = (Player) event.getDamager();
             if (damaged.getHealth() - event.getDamage() < 0.1) {
 
-                if (ConfigUtils.INSTANCE.getLevel("corrupter", damager) > 1 && ConfigUtils.INSTANCE.findClass(damager).equals("corrupter")) {
+                if (ConfigUtils.getLevel("corrupter", damager) > 1 && ConfigUtils.findClass(damager).equals("corrupter")) {
                     DesertMain.ct1players.add(damager.getUniqueId());
                     new BukkitRunnable() {
 
@@ -52,7 +52,7 @@ public class EventsForCorruptor {
             if (killed.getHealth() - event.getDamage() < 0.1) {
                 ItemStack item = killed.getInventory().getItemInMainHand();
                 if (NBTUtil.INSTANCE.getCustomAttr(item, "ID").equals("VOLCANIC_SWORD")) {
-                    if(ConfigUtils.INSTANCE.findClass(killer).equals("corrupter") && ConfigUtils.INSTANCE.getLevel("corrupter", killer) > 3){
+                    if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
                         if ((Events.ks.get(killer.getUniqueId()) % 5) == 0) {
                             for (Entity near : Bukkit.getOnlinePlayers()) {
                                 if (near.getLocation().distance(killer.getLocation()) <= 5) {
