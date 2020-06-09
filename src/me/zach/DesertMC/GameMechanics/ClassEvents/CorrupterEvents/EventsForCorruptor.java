@@ -75,11 +75,11 @@ public class EventsForCorruptor {
                                         Location nearloc = near.getLocation();
                                         Location eLoc = killer.getLocation();
                                         Location newLoc = nearloc.subtract(eLoc);
-                                        Vector newV = newLoc.toVector().normalize().multiply(2);
+                                        Vector newV = newLoc.toVector().normalize().multiply(1.4);
                                         newV.setY(2);
                                         near.setVelocity(newV);
                                         near.sendMessage(ChatColor.RED + "You were pushed back!");
-                                        
+
                                     }
                                 }
                             }
