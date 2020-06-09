@@ -2,7 +2,6 @@ package me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents;
 
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.PlayerManager.Events;
-import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.NBTUtil;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
@@ -14,21 +13,23 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 public class EventsForCorruptor {
     public static final EventsForCorruptor INSTANCE = new EventsForCorruptor();
 
     public void fort4(EntityDamageByEntityEvent event){
-
+        if(event.getCause().equals(EntityDamageEvent.DamageCause.LAVA) || event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK)){
+            if(event.getEntity() instanceof Player){
+                Player player = (Player) event.getEntity();
+                if(ConfigUtils.findClass(player).equals("corrupter") && ConfigUtils.getLevel("corrupter",player) > 4){
+                    event.setCancelled(true);
+                }
+            }
+        }
     }
 
     public void t1Event(EntityDamageByEntityEvent event) {

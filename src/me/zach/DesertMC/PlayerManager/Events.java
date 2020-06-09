@@ -106,6 +106,9 @@ public class Events implements Listener {
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent event) throws Exception {
 
+		EventsForCorruptor.INSTANCE.fort4(event);
+
+
 		if(event.getCause().equals(EntityDamageEvent.DamageCause.FALL)){
 			event.setCancelled(true);
 		}
