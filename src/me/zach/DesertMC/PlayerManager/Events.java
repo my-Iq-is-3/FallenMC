@@ -6,6 +6,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents.EventsForCorruptor;
 import me.zach.DesertMC.GameMechanics.ClassEvents.WizardEvents.EventsForWizard;
+import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.NBTUtil;
@@ -25,6 +26,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.permissions.Permission;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -100,18 +102,22 @@ public class Events implements Listener {
 		
 	}
 
-
+	@EventHandler
+	public void removeFallDMG(EntityDamageEvent event){
+		EventsForCorruptor.INSTANCE.fort4(event);
+		if(event.getCause().equals(EntityDamageEvent.DamageCause.FALL)){
+			event.setCancelled(true);
+		}
+	}
 
 	FileConfiguration economyConfig = Bukkit.getPluginManager().getPlugin("Econo").getConfig();
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent event) throws Exception {
 
-		EventsForCorruptor.INSTANCE.fort4(event);
 
 
-		if(event.getCause().equals(EntityDamageEvent.DamageCause.FALL)){
-			event.setCancelled(true);
-		}
+
+
 
 
 	    if(event.isCancelled()) return;
@@ -156,12 +162,11 @@ public class Events implements Listener {
 						player.teleport(spawn);
 						event.setCancelled(true);
 						double random = (Math.random() * 5) + 1;
-
 						int soulsgained;
 						if(random < 2){
 							soulsgained = 1;
 							if(main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null){
-								main.getConfig().set("players." + killer.getUniqueId() + ".souls", main.getConfig().getInt("player." + killer.getUniqueId() + ".souls") + 1);
+								main.getConfig().set("players." + killer.getUniqueId() + ".souls", main.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + 1);
 							}else{
 								main.getConfig().set("players." + killer.getUniqueId() + ".souls", 1);
 							}
