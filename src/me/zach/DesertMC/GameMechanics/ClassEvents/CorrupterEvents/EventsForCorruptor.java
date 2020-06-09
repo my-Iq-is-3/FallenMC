@@ -5,12 +5,14 @@ import me.zach.DesertMC.PlayerManager.Events;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.NBTUtil;
+import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
@@ -55,31 +57,21 @@ public class EventsForCorruptor {
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
             Player killer = (Player) event.getDamager();
             Player killed = (Player) event.getEntity();
-            killer.sendMessage(Prefix.DEBUG + "1");
-            killer.sendMessage(killed.getHealth() + " after " + (killed.getHealth() - event.getDamage()));
             if (killed.getHealth() - event.getDamage() < 0.1) {
-                killer.sendMessage(Prefix.DEBUG + "2");
                 if (killer.getInventory().getItemInMainHand() != null) {
                     ItemStack item = killer.getInventory().getItemInMainHand();
                     if (NBTUtil.INSTANCE.getCustomAttr(item, "ID").equals("VOLCANIC_SWORD")) {
-                        killer.sendMessage(Prefix.DEBUG + "3");
                         if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
-                            killer.sendMessage(Prefix.DEBUG + "4");
                             if ((Events.ks.get(killer.getUniqueId()) % 5) == 0) {
-                                killer.sendMessage(Prefix.DEBUG + "5");
                                 for (Entity near : Bukkit.getOnlinePlayers()) {
-                                    near.sendMessage(Prefix.DEBUG + "6");
                                     if (near.getLocation().distance(killer.getLocation()) <= 5 && !near.equals(killer)) {
-                                        near.sendMessage(Prefix.DEBUG + "7");
-                                        killer.sendMessage("BOOM!");
                                         Location nearloc = near.getLocation();
                                         Location eLoc = killer.getLocation();
                                         Location newLoc = nearloc.subtract(eLoc);
                                         Vector newV = newLoc.toVector().normalize().multiply(1.4);
                                         newV.setY(2);
                                         near.setVelocity(newV);
-                                        near.sendMessage(ChatColor.RED + "You were pushed back!");
-
+                                        ParticleEffect.FLAME.display(0.5f,0.5f,0.5f,0.3f,100,killer.getLocation(),100);
                                     }
                                 }
                             }
