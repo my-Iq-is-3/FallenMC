@@ -27,6 +27,9 @@ import java.io.PrintWriter;
 public class EventsForCorruptor {
     public static final EventsForCorruptor INSTANCE = new EventsForCorruptor();
 
+    public void fort4(EntityDamageByEntityEvent event){
+
+    }
 
     public void t1Event(EntityDamageByEntityEvent event) {
         PlayerInteractEvent event1;
@@ -62,7 +65,7 @@ public class EventsForCorruptor {
                     ItemStack item = killer.getInventory().getItemInMainHand();
                     if (NBTUtil.INSTANCE.getCustomAttr(item, "ID").equals("VOLCANIC_SWORD")) {
                         if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
-                            if ((Events.ks.get(killer.getUniqueId()) % 5) == 0) {
+                            if (((Events.ks.get(killer.getUniqueId()) + 1) % 5) == 0) {
                                 for (Entity near : Bukkit.getOnlinePlayers()) {
                                     if (near.getLocation().distance(killer.getLocation()) <= 5 && !near.equals(killer)) {
                                         Location nearloc = near.getLocation();

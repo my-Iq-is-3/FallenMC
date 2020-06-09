@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -105,6 +106,10 @@ public class Events implements Listener {
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent event) throws Exception {
 
+		if(event.getCause().equals(EntityDamageEvent.DamageCause.FALL)){
+			event.setCancelled(true);
+		}
+
 
 	    if(event.isCancelled()) return;
 
@@ -141,7 +146,6 @@ public class Events implements Listener {
 				try {
 					Player player = (Player) event.getEntity();
 					Player killer = (Player) event.getDamager();
-
 					if(player.getHealth() - event.getDamage() < 0.1) {
 						Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
 						player.setHealth(player.getMaxHealth());
