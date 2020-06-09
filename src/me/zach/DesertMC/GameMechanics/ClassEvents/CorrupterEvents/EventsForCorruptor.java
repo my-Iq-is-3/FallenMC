@@ -12,9 +12,15 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public class EventsForCorruptor {
     public static final EventsForCorruptor INSTANCE = new EventsForCorruptor();
@@ -50,34 +56,37 @@ public class EventsForCorruptor {
             Player killer = (Player) event.getDamager();
             Player killed = (Player) event.getEntity();
             killer.sendMessage(Prefix.DEBUG + "1");
+            killer.sendMessage(killed.getHealth() + " after " + (killed.getHealth() - event.getDamage()));
             if (killed.getHealth() - event.getDamage() < 0.1) {
                 killer.sendMessage(Prefix.DEBUG + "2");
-                ItemStack item = killed.getInventory().getItemInMainHand();
-                if (NBTUtil.INSTANCE.getCustomAttr(item, "ID").equals("VOLCANIC_SWORD")) {
-                    killer.sendMessage(Prefix.DEBUG + "3");
-                    if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
-                        killer.sendMessage(Prefix.DEBUG + "4");
-                        if ((Events.ks.get(killer.getUniqueId()) % 5) == 0) {
-                            killer.sendMessage(Prefix.DEBUG + "5");
-                            for (Entity near : Bukkit.getOnlinePlayers()) {
-                                near.sendMessage(Prefix.DEBUG + "6");
-                                if (near.getLocation().distance(killer.getLocation()) <= 5 && !near.equals(killer)) {
-                                    near.sendMessage(Prefix.DEBUG + "7");
-                                    Location nearloc = near.getLocation();
-                                    Location eLoc = killer.getLocation();
-                                    Location newLoc = nearloc.subtract(eLoc);
-                                    Vector newV = newLoc.toVector().normalize().multiply(2);
-                                    newV.setY(2);
-                                    near.setVelocity(newV);
-                                    near.sendMessage(ChatColor.RED + "You were pushed back!");
-
+                if (killer.getInventory().getItemInMainHand() != null) {
+                    ItemStack item = killer.getInventory().getItemInMainHand();
+                    if (NBTUtil.INSTANCE.getCustomAttr(item, "ID").equals("VOLCANIC_SWORD")) {
+                        killer.sendMessage(Prefix.DEBUG + "3");
+                        if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
+                            killer.sendMessage(Prefix.DEBUG + "4");
+                            if ((Events.ks.get(killer.getUniqueId()) % 5) == 0) {
+                                killer.sendMessage(Prefix.DEBUG + "5");
+                                for (Entity near : Bukkit.getOnlinePlayers()) {
+                                    near.sendMessage(Prefix.DEBUG + "6");
+                                    if (near.getLocation().distance(killer.getLocation()) <= 5 && !near.equals(killer)) {
+                                        near.sendMessage(Prefix.DEBUG + "7");
+                                        killer.sendMessage("BOOM!");
+                                        Location nearloc = near.getLocation();
+                                        Location eLoc = killer.getLocation();
+                                        Location newLoc = nearloc.subtract(eLoc);
+                                        Vector newV = newLoc.toVector().normalize().multiply(2);
+                                        newV.setY(2);
+                                        near.setVelocity(newV);
+                                        near.sendMessage(ChatColor.RED + "You were pushed back!");
+                                        
+                                    }
                                 }
                             }
+                        }else{
+                            killer.sendMessage(ChatColor.RED + "You are not high enough level to use this!");
                         }
-                    }else{
-                        killer.sendMessage(ChatColor.RED + "You are not high enough level to use this!");
                     }
-
                 }
 
             }
