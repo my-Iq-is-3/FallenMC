@@ -2,6 +2,8 @@ package me.zach.DesertMC.CommandsPackage;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import me.zach.DesertMC.mythicalitems.Mythical;
+import me.zach.DesertMC.mythicalitems.items.DestroyerItem;
 import net.minecraft.server.v1_9_R1.CommandExecute;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -9,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -18,10 +21,20 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class ItemCommand extends CommandExecute implements CommandExecutor, Listener {
     public static final ItemCommand INSTANCE = new ItemCommand();
+    private static final HashMap<String,ItemStack> items = new HashMap<>();
+
+    static {
+        items.put("MagicWand",INSTANCE.getMagicWand());
+        items.put("ScoutGoggles",INSTANCE.getScoutGoggles());
+        items.put("VolcanicSword",INSTANCE.getVolcanicSword());
+        items.put("Dagger",INSTANCE.getDagger());
+    }
+
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args){
         if(commandSender instanceof Player){
@@ -33,16 +46,13 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
 
 
                             boolean isValid = false;
-                            if(args[0].equalsIgnoreCase("magicwand")){
-                                player.getInventory().addItem(ItemCommand.INSTANCE.getMagicWand());
+                            boolean isMythical = false;
+                            if(args[0].equals("Mythical")){
                                 isValid = true;
-                            }
-                            if(args[0].equalsIgnoreCase("scoutgoggles")){
-                                player.getInventory().addItem(ItemCommand.INSTANCE.getScoutGoggles());
-                                isValid = true;
-                            }
-                            if(args[0].equalsIgnoreCase("volcanicsword")){
-                                player.getInventory().addItem(ItemCommand.INSTANCE.getVolcanicSword());
+                                isMythical = true;
+                                player.sendMessage(ChatColor.RED + "Usage: /item Mythical <id>");
+                            }else if(items.get(args[0]) != null){
+                                player.getInventory().addItem(items.get(args[0]));
                                 isValid = true;
                             }
 
@@ -58,9 +68,18 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
                         e.printStackTrace();
                     }
 
-                }else{
+                }else if(args.length == 0){
                     player.sendMessage(ChatColor.RED + "Usage: /item <item name>");
                     return false;
+                }else if(args.length == 2){
+                    if(args[0].equalsIgnoreCase("mythical")){
+                        try{
+                            int id = Integer.parseInt(args[1]);
+                            player.getInventory().addItem(Mythical.getNewInstance().getByID(id));
+                        }catch(NumberFormatException e){
+                            player.sendMessage(ChatColor.RED + "Invalid ID." + ChatColor.GRAY + " (" + e + ").");
+                        }
+                    }
                 }
 
             }else{
@@ -116,7 +135,6 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         MagicWand.setItemMeta(mwm);
         NBTItem mwnbt = new NBTItem(MagicWand);
         mwnbt.setByte("Unbreakable", (byte)1);
-        mwnbt.setInteger("Damage", 1);
         NBTCompound customattr = mwnbt.addCompound("CustomAttributes");
         customattr.setString("ID", "MAGIC_WAND");
         customattr.setString("UUID", UUID.randomUUID().toString());
@@ -156,5 +174,33 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
 
 
         return nbtvs.getItem();
+    }
+
+    public ItemStack getDagger(){
+        ItemStack dagger = new ItemStack(Material.IRON_SWORD);
+        ItemMeta dm = dagger.getItemMeta();
+        ArrayList<String> dml = new ArrayList<>();
+
+        dm.setDisplayName(ChatColor.BLUE + "Scout Dagger");
+        dml.add(" ");
+        dml.add(ChatColor.BLUE + "Attack Ability: Short-Range");
+        dml.add(ChatColor.DARK_GRAY + "This item is incredibly short range!");
+        dml.add(ChatColor.DARK_GRAY + "You can only hit players within " + ChatColor.BLUE + "2 blocks" + ChatColor.DARK_GRAY + " from you,");
+        dml.add(ChatColor.DARK_GRAY + "but you deal " + ChatColor.BLUE + "5" + " damage.");
+        dm.addItemFlags(ItemFlag.HIDE_ATTRIBUTES,ItemFlag.HIDE_ENCHANTS,ItemFlag.HIDE_UNBREAKABLE);
+        dm.setLore(dml);
+        dagger.setItemMeta(dm);
+
+        NBTItem di = new NBTItem(dagger);
+        NBTCompound customAttributes = di.addCompound("CustomAttributes");
+
+        customAttributes.setString("ID", "DAGGER");
+        customAttributes.setString("UUID", UUID.randomUUID().toString());
+        customAttributes.setBoolean("CAN_ENCHANT", true);
+
+        di.setByte("Unbreakable",(byte)1);
+
+
+        return di.getItem();
     }
 }

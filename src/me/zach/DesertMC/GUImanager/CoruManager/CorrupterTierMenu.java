@@ -147,17 +147,17 @@ public class CorrupterTierMenu {
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
-				glore.add(ChatColor.DARK_GRAY + "With this enchantment, every fifth hit subtracts 0.5 Health from everyone");
+				glore.add(ChatColor.DARK_GRAY + "With this enchantment, every other kill subtracts 0.5 Health from everyone");
 				glore.add(ChatColor.DARK_GRAY + "within 6 blocks.");				
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
-				ylore.add(ChatColor.DARK_GRAY + "With this enchantment, every fifth hit subtracts 0.5 Health from everyone");
+				ylore.add(ChatColor.DARK_GRAY + "With this enchantment, every other kill subtracts 0.5 Health from everyone");
 				ylore.add(ChatColor.DARK_GRAY + "within 6 blocks.");				
 				
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
-				rlore.add(ChatColor.DARK_GRAY + "With this enchantment, every fifth hit subtracts 0.5 Health from everyone");
+				rlore.add(ChatColor.DARK_GRAY + "With this enchantment, every other kill subtracts 0.5 Health from everyone");
 				rlore.add(ChatColor.DARK_GRAY + "within 6 blocks.");
 				break;
 				
@@ -165,17 +165,14 @@ public class CorrupterTierMenu {
 			case 7:
 
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + "- Heal 0.5 Hearts while in lava.");
+				glore.add(ChatColor.GREEN + "- Heal 0.5 Hearts per second while in lava.");
 				
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + "- Heal 0.5 Hearts while in lava.");
+				ylore.add(ChatColor.YELLOW + "- Heal 0.5 Hearts per second while in lava.");
 				
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "- Heal 0.5 Hearts while in lava.");
-
+				rlore.add(ChatColor.RED + "- Heal 0.5 Hearts per second while in lava.");
 				break;
-			
-			
 			case 8:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Deal +5% damage.");
@@ -195,7 +192,6 @@ public class CorrupterTierMenu {
 				break;
 
 			}
-			
 			ymeta.setLore(ylore);
 			gmeta.setLore(glore);
 			rmeta.setLore(rlore);

@@ -1,5 +1,8 @@
 package me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents;
 
+import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.utils.ReflectionUtil;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.PlayerManager.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
@@ -21,7 +24,7 @@ import org.bukkit.util.Vector;
 public class EventsForCorruptor {
     public static final EventsForCorruptor INSTANCE = new EventsForCorruptor();
 
-    public void fort4(EntityDamageByEntityEvent event){
+    public void fort4(EntityDamageEvent event){
         if(event.getCause().equals(EntityDamageEvent.DamageCause.LAVA) || event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK)){
             if(event.getEntity() instanceof Player){
                 Player player = (Player) event.getEntity();
@@ -85,6 +88,47 @@ public class EventsForCorruptor {
                     }
                 }
 
+            }
+        }
+    }
+
+    public void noMercy(EntityDamageByEntityEvent event){
+
+        if(event.getDamager() instanceof Player){
+            Player damager = (Player) event.getDamager();
+            if(damager.getInventory().getItemInMainHand() != null){
+                if(ConfigUtils.getLevel("corrupter",damager) > 6 && ConfigUtils.findClass(damager).equals("corrupter")){
+                    ItemStack heldItemStack = damager.getInventory().getItemInMainHand();
+                    NBTItem hnbt = new NBTItem(heldItemStack);
+                    if(hnbt.getCompound("CustomAttributes").getCompound("enchantments") != null){
+
+                        NBTCompound hnbtc = hnbt.getCompound("CustomAttributes").getCompound("enchantments");
+                        int nomercylvl = hnbtc.getInteger("no_mercy");
+                        if(nomercylvl == 1){
+                            if((Events.ks.get(damager.getUniqueId()) + 1) % 2 == 0){
+                                for(Player player : Bukkit.getOnlinePlayers()){
+                                    if(!player.equals(damager)){
+                                        if(player.getLocation().distance(damager.getLocation()) <= 6){
+                                            player.damage(10,damager);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+                }
+            }
+
+        }
+    }
+
+    public void t8Event(EntityDamageByEntityEvent event){
+        if(event.getDamager() instanceof Player){
+            Player damager = (Player) event.getDamager();
+            if(ConfigUtils.getLevel("corrupter",damager) > 8 && ConfigUtils.findClass(damager).equals("corrupter")){
+                event.setDamage(event.getDamage() * 1.05);
             }
         }
     }

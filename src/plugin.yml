@@ -27,3 +27,8 @@ commands:
   description: Pretty self explanatory
  setks:
   description: sets killstreaks
+ enchantmentmod:
+  description: modifies the item you are holding, putting a custom enchantment on it.
+permissions:
+ admin:
+  description: This permission allows a player to have access to almost all special commands, such as /item, or /setspawn

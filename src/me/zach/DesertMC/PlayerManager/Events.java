@@ -15,6 +15,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -111,21 +112,25 @@ public class Events implements Listener {
 	}
 
 	FileConfiguration economyConfig = Bukkit.getPluginManager().getPlugin("Econo").getConfig();
+
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent event) throws Exception {
-
-
-
-
-
-
-
-	    if(event.isCancelled()) return;
-
-
+		if(event.isCancelled()) return;
+		if(event.getDamager() instanceof Player){
+			Player damager = (Player) event.getDamager();
+			DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), damager.getUniqueId());
+		}else if(event.getDamager() instanceof Arrow){
+			Arrow damager = (Arrow) event.getDamager();
+			if(damager.getShooter() instanceof Player){
+				Player shooter = (Player) damager.getShooter();
+				DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
+			}
+		}
 	    if(DesertMain.ct1players.contains(event.getDamager().getUniqueId())){
 			event.setDamage(event.getDamage() * 1.1);
 		}
+		EventsForCorruptor.INSTANCE.t8Event(event);
+		EventsForCorruptor.INSTANCE.noMercy(event);
 		EventsForCorruptor.INSTANCE.t1Event(event);
 
 		EventsForWizard.INSTANCE.wizardt4(event);
@@ -133,6 +138,7 @@ public class Events implements Listener {
 		EventsForWizard.INSTANCE.wizardt8(event);
 
 		EventsForCorruptor.INSTANCE.volcanicSword(event);
+
 		executeKill(event);
 
 		if(event.getDamager() instanceof Player){
@@ -148,14 +154,13 @@ public class Events implements Listener {
 	}
 
 
-
 	private void executeKill(EntityDamageByEntityEvent event) throws Exception {
-		if(event.getEntity() instanceof Player && !(event.getDamager() instanceof Arrow)) {
-			if(event.getDamager() instanceof Player){
+		if (event.getEntity() instanceof Player && !(event.getDamager() instanceof Arrow)) {
+			if (event.getDamager() instanceof Player) {
 				try {
 					Player player = (Player) event.getEntity();
 					Player killer = (Player) event.getDamager();
-					if(player.getHealth() - event.getDamage() < 0.1) {
+					if (player.getHealth() - event.getDamage() < 0.1) {
 						Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
 						player.setHealth(player.getMaxHealth());
 
@@ -163,68 +168,45 @@ public class Events implements Listener {
 						event.setCancelled(true);
 						double random = (Math.random() * 5) + 1;
 						int soulsgained;
-						if(random < 2){
+						if (random < 2) {
 							soulsgained = 1;
-							if(main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null){
+							if (main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
 								main.getConfig().set("players." + killer.getUniqueId() + ".souls", main.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + 1);
-							}else{
+							} else {
 								main.getConfig().set("players." + killer.getUniqueId() + ".souls", 1);
 							}
-						}else{
+						} else {
 							soulsgained = 0;
 						}
-						int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player),player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
+						int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
 
-						int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player),player) * 15) + ks.get(player.getUniqueId()) * 3;
+						int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
 
 						event.getDamager().sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
-						if(!ks.containsKey(event.getDamager().getUniqueId())) {
+						if (!ks.containsKey(event.getDamager().getUniqueId())) {
 							ks.put(event.getDamager().getUniqueId(), 1);
-						}else {
+						} else {
 							ks.put(event.getDamager().getUniqueId(), ks.get(event.getDamager().getUniqueId()) + 1);
 						}
 						ks.put(event.getEntity().getUniqueId(), 0);
-
-
-
-
-
-
-
-
-
-
-
-
 						player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1, 0.5f);
 						((Player) event.getDamager()).playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 4);
 						economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
-						ConfigUtils.addXP(killer,ConfigUtils.findClass(killer), xpgained);
+						ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
 						main.saveConfig();
 					}
-
-					// Some more events that execute on hit.
-
-
-
-
-
-
-
-
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 
 
-
-		}else if(event.getDamager() instanceof Arrow){
+		} else if (event.getDamager() instanceof Arrow) {
 
 
 			Arrow arrow = (Arrow) event.getDamager();
 
-			if(arrow.getShooter() instanceof Player && event.getEntity() instanceof Player){
+			if (arrow.getShooter() instanceof Player && event.getEntity() instanceof Player) {
 //				ItemStack itemUsed = arrowArray.get(arrow);
 				Player killer = (Player) arrow.getShooter();
 				Player player = (Player) event.getEntity();
@@ -232,7 +214,7 @@ public class Events implements Listener {
 //				if(nbti.getInteger("DAMAGE") != 0){
 //					event.setDamage(nbti.getDouble("DAMAGE"));
 //				}
-				if(player.getHealth() - event.getDamage() < 0.1) {
+				if (player.getHealth() - event.getDamage() < 0.1) {
 					Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
 					player.setHealth(player.getMaxHealth());
 
@@ -241,37 +223,77 @@ public class Events implements Listener {
 					double random = (Math.random() * 5) + 1;
 
 					int soulsgained;
-					if(random < 2){
+					if (random < 2) {
 						soulsgained = 1;
-						if(main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null){
+						if (main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
 							main.getConfig().set("player." + killer.getUniqueId() + ".souls", main.getConfig().getInt("player." + killer.getUniqueId() + ".souls") + 1);
-						}else{
+						} else {
 							main.getConfig().set("player." + killer.getUniqueId() + ".souls", 1);
 						}
-					}else{
+					} else {
 						soulsgained = 0;
 					}
 					DesertMain.getInstance.getConfig().set("players." + killer.getUniqueId() + ".souls", DesertMain.getInstance.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + soulsgained);
-					int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player),player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
+					int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
 
-					int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player),player) * 15) + ks.get(player.getUniqueId()) * 3;
+					int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
 
 					killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
-					if(!ks.containsKey(event.getDamager().getUniqueId())) {
+					if (!ks.containsKey(event.getDamager().getUniqueId())) {
 						ks.put(event.getDamager().getUniqueId(), 1);
-					}else {
+					} else {
 						ks.put(event.getDamager().getUniqueId(), ks.get(event.getDamager().getUniqueId()) + 1);
 					}
 					ks.put(event.getEntity().getUniqueId(), 0);
 					player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1, 0.5f);
 					killer.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 4);
 					economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
-					ConfigUtils.addXP(killer,ConfigUtils.findClass(killer), xpgained);
+					ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
 				}
 
 			}
-		}
+		} else if (event.getEntity() instanceof Player) {
+			UUID uuid = DesertMain.lastdmgers.get(event.getEntity().getUniqueId());
+			Player killer = Bukkit.getPlayer(uuid);
+			Player player = (Player) event.getEntity();
+			if (player.getHealth() - event.getDamage() < 0.1) {
+				Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
+				player.setHealth(player.getMaxHealth());
 
+				player.teleport(spawn);
+				event.setCancelled(true);
+				double random = (Math.random() * 5) + 1;
+
+				int soulsgained;
+				if (random < 2) {
+					soulsgained = 1;
+					if (main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
+						main.getConfig().set("player." + killer.getUniqueId() + ".souls", main.getConfig().getInt("player." + killer.getUniqueId() + ".souls") + 1);
+					} else {
+						main.getConfig().set("player." + killer.getUniqueId() + ".souls", 1);
+					}
+				} else {
+					soulsgained = 0;
+				}
+				DesertMain.getInstance.getConfig().set("players." + killer.getUniqueId() + ".souls", DesertMain.getInstance.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + soulsgained);
+				int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
+
+				int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
+
+				killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
+				if (!ks.containsKey(event.getDamager().getUniqueId())) {
+					ks.put(event.getDamager().getUniqueId(), 1);
+				} else {
+					ks.put(event.getDamager().getUniqueId(), ks.get(event.getDamager().getUniqueId()) + 1);
+				}
+				ks.put(event.getEntity().getUniqueId(), 0);
+				player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1, 0.5f);
+				killer.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 4);
+				economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
+				ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
+			}
+
+		}
 	}
 
 	@EventHandler

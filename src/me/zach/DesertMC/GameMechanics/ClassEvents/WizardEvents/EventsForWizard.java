@@ -200,6 +200,7 @@ public class EventsForWizard implements Listener {
 //  Last Stand
     public void wizardt8(EntityDamageByEntityEvent event){
         if(DesertMain.laststandcd.contains((Player)event.getEntity())) return;
+        if(event.getEntity() instanceof Player){
             Player damaged = (Player) event.getEntity();
             if(ConfigUtils.getLevel("wizard", damaged) > 8 && ConfigUtils.findClass(damaged).equals("wizard")){
                 if(damaged.getHealth() - event.getDamage() <= 2){
@@ -217,6 +218,8 @@ public class EventsForWizard implements Listener {
                 }
 
             }
+        }
+
 
 
     }

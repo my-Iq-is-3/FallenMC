@@ -1,5 +1,6 @@
 package me.zach.DesertMC;
 
+import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.GUImanager.KitsOrTraits;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
@@ -9,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -45,7 +47,29 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
 				}
 			}
-        	
+
+        	if(command.getName().equalsIgnoreCase("enchantmentmod")){
+        		if(player.hasPermission("admin")){
+        			try{
+						ItemStack heldItem = player.getInventory().getItemInMainHand();
+						heldItem.getItemMeta().addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL,1,false);
+						NBTItem nbti = new NBTItem(heldItem);
+						if(nbti.getCompound("CustomAttributes").getCompound("enchantments") != null){
+							NBTCompound ench = nbti.getCompound("CustomAttributes").getCompound("enchantments");
+							ench.setInteger(args[0],Integer.parseInt(args[1]));
+						}else{
+							NBTCompound ench = nbti.getCompound("CustomAttributes").addCompound("enchantments");
+							ench.setInteger(args[0],Integer.parseInt(args[1]));
+						}
+
+
+					}catch(Exception e){
+        				player.sendMessage(ChatColor.RED + "An error occurred. " + e);
+        				e.printStackTrace();
+					}
+				}
+			}
+
         	if(command.getName().equalsIgnoreCase("showplayer")){
 				if(player.hasPermission("admin")){
 					try{
