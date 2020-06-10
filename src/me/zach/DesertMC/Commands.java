@@ -51,16 +51,21 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
         	if(command.getName().equalsIgnoreCase("enchantmentmod")){
         		if(player.hasPermission("admin")){
         			try{
-						ItemStack heldItem = player.getInventory().getItemInMainHand();
-						heldItem.getItemMeta().addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL,1,false);
-						NBTItem nbti = new NBTItem(heldItem);
-						if(nbti.getCompound("CustomAttributes").getCompound("enchantments") != null){
-							NBTCompound ench = nbti.getCompound("CustomAttributes").getCompound("enchantments");
-							ench.setInteger(args[0],Integer.parseInt(args[1]));
+        				if(player.getInventory().getItemInMainHand() != null){
+							ItemStack heldItem = player.getInventory().getItemInMainHand();
+							heldItem.getItemMeta().addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL,1,false);
+							NBTItem nbti = new NBTItem(heldItem);
+							if(nbti.getCompound("CustomAttributes").getCompound("enchantments") != null){
+								NBTCompound ench = nbti.getCompound("CustomAttributes").getCompound("enchantments");
+								ench.setInteger(args[0],Integer.parseInt(args[1]));
+							}else{
+								NBTCompound ench = nbti.getCompound("CustomAttributes").addCompound("enchantments");
+								ench.setInteger(args[0],Integer.parseInt(args[1]));
+							}
 						}else{
-							NBTCompound ench = nbti.getCompound("CustomAttributes").addCompound("enchantments");
-							ench.setInteger(args[0],Integer.parseInt(args[1]));
+        					player.sendMessage(ChatColor.RED + "Please hold an item");
 						}
+
 
 
 					}catch(Exception e){
@@ -113,7 +118,7 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
         			player.sendMessage(ChatColor.RED + "Please specify a valid class.");
         		}
         	}
-        	
+
         	if(command.getName().equalsIgnoreCase("debug")){
         		if(player.hasPermission("admin")){
         			if(args.length == 0){
@@ -137,11 +142,12 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
 						if(args[0].equalsIgnoreCase("NBT")){
 							if(player.getInventory().getItemInMainHand() == null){
 								player.sendMessage(ChatColor.RED + "Please hold an item.");
-								return false;
+							}else{
+								ItemStack helditem = player.getInventory().getItemInMainHand();
+								NBTItem nbti = new NBTItem(helditem);
+								player.sendMessage("" + nbti);
 							}
-							ItemStack helditem = player.getInventory().getItemInMainHand();
-							NBTItem nbti = new NBTItem(helditem);
-							player.sendMessage("" + nbti);
+
 						}
         			}
 				}else{

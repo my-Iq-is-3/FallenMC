@@ -139,6 +139,7 @@ public class Events implements Listener {
 
 		EventsForCorruptor.INSTANCE.volcanicSword(event);
 
+		executeUnexpectedKill(event);
 		executeKill(event);
 
 		if(event.getDamager() instanceof Player){
@@ -153,6 +154,42 @@ public class Events implements Listener {
 
 	}
 
+	private void executeUnexpectedKill(EntityDamageEvent event) throws Exception {
+		UUID uuid = DesertMain.lastdmgers.get(event.getEntity().getUniqueId());
+		Player killer = Bukkit.getPlayer(uuid);
+		Player player = (Player) event.getEntity();
+		if (player.getHealth() - event.getDamage() < 0.1) {
+			Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
+			player.setHealth(player.getMaxHealth());
+
+			player.teleport(spawn);
+			event.setCancelled(true);
+			double random = (Math.random() * 5) + 1;
+
+			int soulsgained;
+			if (random < 2) {
+				soulsgained = 1;
+				if (main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
+					main.getConfig().set("player." + killer.getUniqueId() + ".souls", main.getConfig().getInt("player." + killer.getUniqueId() + ".souls") + 1);
+				} else {
+					main.getConfig().set("player." + killer.getUniqueId() + ".souls", 1);
+				}
+			} else {
+				soulsgained = 0;
+			}
+			DesertMain.getInstance.getConfig().set("players." + killer.getUniqueId() + ".souls", DesertMain.getInstance.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + soulsgained);
+			int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
+
+			int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
+
+			killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
+			ks.put(event.getEntity().getUniqueId(), 0);
+			player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1, 0.5f);
+			killer.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 4);
+			economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
+			ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
+		}
+	}
 
 	private void executeKill(EntityDamageByEntityEvent event) throws Exception {
 		if (event.getEntity() instanceof Player && !(event.getDamager() instanceof Arrow)) {
@@ -252,47 +289,6 @@ public class Events implements Listener {
 				}
 
 			}
-		} else if (event.getEntity() instanceof Player) {
-			UUID uuid = DesertMain.lastdmgers.get(event.getEntity().getUniqueId());
-			Player killer = Bukkit.getPlayer(uuid);
-			Player player = (Player) event.getEntity();
-			if (player.getHealth() - event.getDamage() < 0.1) {
-				Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
-				player.setHealth(player.getMaxHealth());
-
-				player.teleport(spawn);
-				event.setCancelled(true);
-				double random = (Math.random() * 5) + 1;
-
-				int soulsgained;
-				if (random < 2) {
-					soulsgained = 1;
-					if (main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
-						main.getConfig().set("player." + killer.getUniqueId() + ".souls", main.getConfig().getInt("player." + killer.getUniqueId() + ".souls") + 1);
-					} else {
-						main.getConfig().set("player." + killer.getUniqueId() + ".souls", 1);
-					}
-				} else {
-					soulsgained = 0;
-				}
-				DesertMain.getInstance.getConfig().set("players." + killer.getUniqueId() + ".souls", DesertMain.getInstance.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + soulsgained);
-				int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
-
-				int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
-
-				killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
-				if (!ks.containsKey(event.getDamager().getUniqueId())) {
-					ks.put(event.getDamager().getUniqueId(), 1);
-				} else {
-					ks.put(event.getDamager().getUniqueId(), ks.get(event.getDamager().getUniqueId()) + 1);
-				}
-				ks.put(event.getEntity().getUniqueId(), 0);
-				player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1, 0.5f);
-				killer.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 4);
-				economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
-				ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
-			}
-
 		}
 	}
 
