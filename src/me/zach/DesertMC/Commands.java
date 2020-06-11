@@ -2,9 +2,11 @@ package me.zach.DesertMC;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import me.zach.DesertMC.CommandsPackage.ItemCommand;
 import me.zach.DesertMC.GUImanager.KitsOrTraits;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.PlayerManager.Events;
+import me.zach.DesertMC.Utils.nbt.EnchantmentUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -14,7 +16,11 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implements Listener, CommandExecutor{
@@ -51,23 +57,7 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
         	if(command.getName().equalsIgnoreCase("enchantmentmod")){
         		if(player.hasPermission("admin")){
         			try{
-        				if(player.getInventory().getItemInMainHand() != null){
-							ItemStack heldItem = player.getInventory().getItemInMainHand();
-							heldItem.getItemMeta().addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL,1,false);
-							NBTItem nbti = new NBTItem(heldItem);
-							if(nbti.getCompound("CustomAttributes").getCompound("enchantments") != null){
-								NBTCompound ench = nbti.getCompound("CustomAttributes").getCompound("enchantments");
-								ench.setInteger(args[0],Integer.parseInt(args[1]));
-							}else{
-								NBTCompound ench = nbti.getCompound("CustomAttributes").addCompound("enchantments");
-								ench.setInteger(args[0],Integer.parseInt(args[1]));
-							}
-						}else{
-        					player.sendMessage(ChatColor.RED + "Please hold an item");
-						}
-
-
-
+						EnchantmentUtil.getInstance().addEnchantment(args[0],Integer.parseInt(args[1]),player.getInventory().getItemInMainHand(),player);
 					}catch(Exception e){
         				player.sendMessage(ChatColor.RED + "An error occurred. " + e);
         				e.printStackTrace();
@@ -143,9 +133,10 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
 							if(player.getInventory().getItemInMainHand() == null){
 								player.sendMessage(ChatColor.RED + "Please hold an item.");
 							}else{
+								player.sendMessage(ChatColor.GREEN + "Good, item is not null.");
 								ItemStack helditem = player.getInventory().getItemInMainHand();
 								NBTItem nbti = new NBTItem(helditem);
-								player.sendMessage("" + nbti);
+								player.sendMessage(nbti.toString());
 							}
 
 						}

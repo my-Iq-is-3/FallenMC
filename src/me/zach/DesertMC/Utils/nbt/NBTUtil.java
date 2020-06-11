@@ -1,4 +1,4 @@
-package me.zach.DesertMC.Utils;
+package me.zach.DesertMC.Utils.nbt;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;

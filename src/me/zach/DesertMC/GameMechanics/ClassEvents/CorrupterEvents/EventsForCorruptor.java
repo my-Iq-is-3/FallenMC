@@ -2,11 +2,10 @@ package me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
-import de.tr7zw.nbtapi.utils.ReflectionUtil;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.PlayerManager.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
-import me.zach.DesertMC.Utils.NBTUtil;
+import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -94,31 +93,34 @@ public class EventsForCorruptor {
 
     public void noMercy(EntityDamageByEntityEvent event){
 
-        if(event.getDamager() instanceof Player){
+        if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
             Player damager = (Player) event.getDamager();
-            if(damager.getInventory().getItemInMainHand() != null){
-                if(ConfigUtils.getLevel("corrupter",damager) > 6 && ConfigUtils.findClass(damager).equals("corrupter")){
-                    ItemStack heldItemStack = damager.getInventory().getItemInMainHand();
-                    NBTItem hnbt = new NBTItem(heldItemStack);
-                    if(hnbt.getCompound("CustomAttributes").getCompound("enchantments") != null){
-
-                        NBTCompound hnbtc = hnbt.getCompound("CustomAttributes").getCompound("enchantments");
-                        int nomercylvl = hnbtc.getInteger("no_mercy");
-                        if(nomercylvl == 1){
-                            if((Events.ks.get(damager.getUniqueId()) + 1) % 2 == 0){
-                                for(Player player : Bukkit.getOnlinePlayers()){
-                                    if(!player.equals(damager)){
-                                        if(player.getLocation().distance(damager.getLocation()) <= 6){
-                                            player.damage(10,damager);
+            Player damaged = (Player) event.getEntity();
+            if(damaged.getHealth() - event.getDamage() < 0.1){
+                if(damager.getInventory().getItemInMainHand() != null) {
+                    if (ConfigUtils.getLevel("corrupter", damager) > 6 && ConfigUtils.findClass(damager).equals("corrupter")) {
+                        ItemStack heldItemStack = damager.getInventory().getItemInMainHand();
+                        NBTItem hnbt = new NBTItem(heldItemStack);
+                        if (hnbt.getCompound("CustomAttributes").getCompound("enchantments") != null) {
+                            NBTCompound hnbtc = hnbt.getCompound("CustomAttributes").getCompound("enchantments");
+                            int nomercylvl = hnbtc.getInteger("no_mercy");
+                            if (nomercylvl == 1) {
+                                if ((Events.ks.get(damager.getUniqueId()) + 1) % 2 == 0) {
+                                    for (Player player : Bukkit.getOnlinePlayers()) {
+                                        if (!player.equals(damager)) {
+                                            if (player.getLocation().distance(damager.getLocation()) <= 6) {
+                                                player.damage(10, damager);
+                                            }
                                         }
                                     }
                                 }
+
                             }
-
                         }
-                    }
 
+                    }
                 }
+
             }
 
         }

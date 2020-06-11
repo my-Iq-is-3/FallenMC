@@ -1,21 +1,17 @@
 package me.zach.DesertMC.PlayerManager;
 
 
-import de.tr7zw.nbtapi.NBTCompound;
-import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents.EventsForCorruptor;
 import me.zach.DesertMC.GameMechanics.ClassEvents.WizardEvents.EventsForWizard;
-import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
-import me.zach.DesertMC.Utils.NBTUtil;
+import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,7 +23,6 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.permissions.Permission;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;

@@ -3,7 +3,6 @@ package me.zach.DesertMC.CommandsPackage;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.mythicalitems.Mythical;
-import me.zach.DesertMC.mythicalitems.items.DestroyerItem;
 import net.minecraft.server.v1_9_R1.CommandExecute;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -11,7 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -26,13 +24,27 @@ import java.util.UUID;
 
 public class ItemCommand extends CommandExecute implements CommandExecutor, Listener {
     public static final ItemCommand INSTANCE = new ItemCommand();
+
     private static final HashMap<String,ItemStack> items = new HashMap<>();
+
+    public static final HashMap<String,String> enchs = new HashMap<>();
+    public static final HashMap<String,Double> increments = new HashMap<>();
 
     static {
         items.put("MagicWand",INSTANCE.getMagicWand());
         items.put("ScoutGoggles",INSTANCE.getScoutGoggles());
         items.put("VolcanicSword",INSTANCE.getVolcanicSword());
         items.put("Dagger",INSTANCE.getDagger());
+        increments.put("no_mercy",0.5);
+
+        enchs.put("no_mercy_1", getLore(1,"no_mercy"));
+        enchs.put("no_mercy_2", getLore(1,"no_mercy"));
+        enchs.put("no_mercy_3", getLore(1,"no_mercy"));
+        enchs.put("no_mercy_4", getLore(1,"no_mercy"));
+        enchs.put("no_mercy_5", getLore(1,"no_mercy"));
+        enchs.put("no_mercy_6", getLore(1,"no_mercy"));
+        enchs.put("no_mercy_7", getLore(1,"no_mercy"));
+        enchs.put("no_mercy_8", getLore(1,"no_mercy"));
     }
 
     @Override
@@ -92,6 +104,7 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         }
         return false;
     }
+
     public ItemStack getScoutGoggles(){
         ItemStack scoutgoggles = new ItemStack(Material.LEATHER_HELMET);
         LeatherArmorMeta sgm = (LeatherArmorMeta) scoutgoggles.getItemMeta();
@@ -203,4 +216,22 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
 
         return di.getItem();
     }
+
+    private static String getLore(int level, String ench){
+        String nomercy = ChatColor.DARK_PURPLE + "Enchantment: No Mercy{br}" +
+                ChatColor.GRAY + "Every " + ChatColor.GREEN + "2 kills" + ChatColor.GRAY + ", you deal{br}" +
+                ChatColor.GREEN + (increments.get("no_mercy") * level) + " damage" + ChatColor.GRAY +  " to every other player within{br}" +
+                ChatColor.GREEN + "6 blocks" + ChatColor.GRAY + ".";
+
+        switch(ench.toLowerCase()){
+
+            case "no_mercy":
+                return nomercy;
+
+            default:
+                return null;
+        }
+    }
+
+
 }
