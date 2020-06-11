@@ -9,6 +9,7 @@ import me.zach.DesertMC.PlayerManager.Events;
 import me.zach.DesertMC.Utils.nbt.EnchantmentUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -53,6 +54,7 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
 				}
 			}
+
 
         	if(command.getName().equalsIgnoreCase("enchantmentmod")){
         		if(player.hasPermission("admin")){
@@ -130,10 +132,9 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
 							player.sendMessage(ChatColor.GREEN + "Current killstreak: " + ChatColor.RED + Events.ks.get(player.getUniqueId()));
 						}
 						if(args[0].equalsIgnoreCase("NBT")){
-							if(player.getInventory().getItemInMainHand() == null){
+							if(player.getInventory().getItemInMainHand().getType().equals(Material.AIR)){
 								player.sendMessage(ChatColor.RED + "Please hold an item.");
 							}else{
-								player.sendMessage(ChatColor.GREEN + "Good, item is not null.");
 								ItemStack helditem = player.getInventory().getItemInMainHand();
 								NBTItem nbti = new NBTItem(helditem);
 								player.sendMessage(nbti.toString());

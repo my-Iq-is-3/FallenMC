@@ -63,5 +63,14 @@ public class EnchantmentUtil {
         }
     }
 
+    public void getELevel(String ench,ItemStack item) {
+        ItemStack heldItemStack = item;
+        NBTItem hnbt = new NBTItem(heldItemStack);
+        if (hnbt.getCompound("CustomAttributes").getCompound("enchantments") != null) {
+            NBTCompound hnbtc = hnbt.getCompound("CustomAttributes").getCompound("enchantments");
+            int nomercylvl = hnbtc.getInteger(ench);
+        }
+    }
+
     private EnchantmentUtil(){}
 }

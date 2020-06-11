@@ -145,7 +145,6 @@ public class EventsForWizard implements Listener {
             Player killed = (Player) event.getEntity();
             if(killed.getHealth() - event.getDamage() < 0.1){
                 if(event.getDamager() instanceof Arrow){
-
                     Arrow arrow = (Arrow) event.getDamager();
                     Player killer = (Player) arrow.getShooter();
                     if(ConfigUtils.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.getLevel("wizard",killed) > 4){
@@ -194,13 +193,15 @@ public class EventsForWizard implements Listener {
 
 
 
+
     }
 
 
 //  Last Stand
     public void wizardt8(EntityDamageByEntityEvent event){
-        if(DesertMain.laststandcd.contains((Player)event.getEntity())) return;
+
         if(event.getEntity() instanceof Player){
+            if(DesertMain.laststandcd.contains((Player)event.getEntity())) return;
             Player damaged = (Player) event.getEntity();
             if(ConfigUtils.getLevel("wizard", damaged) > 8 && ConfigUtils.findClass(damaged).equals("wizard")){
                 if(damaged.getHealth() - event.getDamage() <= 2){

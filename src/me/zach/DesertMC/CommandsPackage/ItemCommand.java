@@ -37,14 +37,10 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         items.put("Dagger",INSTANCE.getDagger());
         increments.put("no_mercy",0.5);
 
-        enchs.put("no_mercy_1", getLore(1,"no_mercy"));
-        enchs.put("no_mercy_2", getLore(1,"no_mercy"));
-        enchs.put("no_mercy_3", getLore(1,"no_mercy"));
-        enchs.put("no_mercy_4", getLore(1,"no_mercy"));
-        enchs.put("no_mercy_5", getLore(1,"no_mercy"));
-        enchs.put("no_mercy_6", getLore(1,"no_mercy"));
-        enchs.put("no_mercy_7", getLore(1,"no_mercy"));
-        enchs.put("no_mercy_8", getLore(1,"no_mercy"));
+        for(int i = 1;i<9;i++){
+            enchs.put("no_mercy_" + i, getLore(i,"no_mercy"));
+        }
+
     }
 
     @Override
@@ -110,6 +106,8 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         LeatherArmorMeta sgm = (LeatherArmorMeta) scoutgoggles.getItemMeta();
         sgm.setDisplayName(ChatColor.GREEN + "Scout Goggles");
         ArrayList<String> sglore = new ArrayList<String>();
+        sglore.add(" ");
+        sglore.add(ChatColor.GREEN + "Passive Ability: ");
         sglore.add(ChatColor.DARK_GRAY + "While wearing, provides the ability to see invisible players.");
         sgm.setLore(sglore);
         sgm.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -218,19 +216,16 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
     }
 
     private static String getLore(int level, String ench){
-        String nomercy = ChatColor.DARK_PURPLE + "Enchantment: No Mercy{br}" +
-                ChatColor.GRAY + "Every " + ChatColor.GREEN + "2 kills" + ChatColor.GRAY + ", you deal{br}" +
-                ChatColor.GREEN + (increments.get("no_mercy") * level) + " damage" + ChatColor.GRAY +  " to every other player within{br}" +
-                ChatColor.GREEN + "6 blocks" + ChatColor.GRAY + ".";
+        String nomercy = ChatColor.BLUE + "Enchantment: No Mercy " + level + "{br}" +
+                ChatColor.DARK_GRAY + "Every " + ChatColor.GREEN + "2 kills" + ChatColor.DARK_GRAY + ", you deal{br}" +
+                ChatColor.GREEN + (increments.get("no_mercy") * level) + " damage" + ChatColor.DARK_GRAY +  " to every other player within{br}" +
+                ChatColor.GREEN + "6 blocks" + ChatColor.DARK_GRAY + ".";
 
-        switch(ench.toLowerCase()){
+        HashMap<String,String> tempvarEnch = new HashMap<>();
 
-            case "no_mercy":
-                return nomercy;
+        tempvarEnch.put("no_mercy",nomercy);
 
-            default:
-                return null;
-        }
+        return tempvarEnch.get(ench.toLowerCase());
     }
 
 

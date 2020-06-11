@@ -120,7 +120,7 @@ public class ConfigUtils {
 
 			}
 			main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".level", getLevel(classtoaddto, player) + 1);
-			player.sendTitle(ChatColor.BLUE + "You leveled up!", "" + ChatColor.AQUA + (pastlevel + 1));
+			player.sendTitle(ChatColor.BLUE + "You leveled up!", ChatColor.DARK_GRAY + "You are now level " + ChatColor.AQUA + (pastlevel + 1));
 			main.saveConfig();
 
 		}else {

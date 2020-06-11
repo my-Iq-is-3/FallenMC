@@ -109,7 +109,7 @@ public class EventsForCorruptor {
                                     for (Player player : Bukkit.getOnlinePlayers()) {
                                         if (!player.equals(damager)) {
                                             if (player.getLocation().distance(damager.getLocation()) <= 6) {
-                                                player.damage(10, damager);
+                                                player.damage(nomercylvl * 0.5, damager);
                                             }
                                         }
                                     }

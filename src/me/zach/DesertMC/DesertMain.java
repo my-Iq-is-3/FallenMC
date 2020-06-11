@@ -45,16 +45,16 @@ public class DesertMain extends JavaPlugin implements Listener {
 
 
 		getCommand("item").setExecutor(new ItemCommand());
-		getCommand("item").setTabCompleter((commandSender,command,s,strings) -> {
-			List<String> args = new ArrayList<String>();
-			if(strings.length == 1) {
+        getCommand("item").setTabCompleter((commandSender, command, s, strings) -> {
+            List<String> args = new ArrayList<String>();
+            if (strings.length == 1) {
 
-				if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("item")) {
-					args = Arrays.asList("ScoutGoggles","MagicWand","VolcanicSword","Mythical","Dagger");
-				}
-			}
-			return args;
-		});
+                if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("item")) {
+                    args = Arrays.asList("ScoutGoggles", "MagicWand", "VolcanicSword", "Mythical", "Dagger");
+                }
+            }
+            return args;
+        });
 
 
 
@@ -81,7 +81,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 			@Override
 			public void run() {
 				for(Player p : Bukkit.getOnlinePlayers()){
-
+                        p.setFoodLevel(20);
 						Location location = p.getLocation();
 						Location locbefore = location.clone();
 						if(location.subtract(0,10,0).getBlock().getType().equals(Material.DIAMOND_BLOCK) && ConfigUtils.getLevel("wizard",p) > 5 && ConfigUtils.findClass(p).equals("wizard")){
