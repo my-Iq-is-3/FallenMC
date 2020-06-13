@@ -119,13 +119,14 @@ public class Events implements Listener {
 				DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
 			}
 		}
+		
 	    if(DesertMain.ct1players.contains(event.getDamager().getUniqueId())){
 			event.setDamage(event.getDamage() * 1.1);
 		}
+
 		EventsForCorruptor.INSTANCE.t8Event(event);
 		EventsForCorruptor.INSTANCE.noMercy(event);
 		EventsForCorruptor.INSTANCE.t1Event(event);
-
 		EventsForWizard.INSTANCE.wizardt4(event);
 		EventsForWizard.INSTANCE.wizardt1(event);
 		EventsForWizard.INSTANCE.wizardt8(event);
@@ -151,6 +152,7 @@ public class Events implements Listener {
 
 	@EventHandler
 	public void onHit(EntityDamageEvent event) throws Exception {
+		if(event instanceof EntityDamageByEntityEvent) return;
 		executeUnexpectedKill(event);
 	}
 
@@ -162,10 +164,15 @@ public class Events implements Listener {
 			if (player.getHealth() - event.getDamage() < 0.1) {
 				Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
 				player.setHealth(player.getMaxHealth());
-
 				player.teleport(spawn);
-				if(player.getFireTicks() > 0)
-					player.setFireTicks(0);
+
+				new BukkitRunnable(){
+					@Override
+					public void run() {
+						player.setFireTicks(0);
+					}
+				}.runTaskLater(DesertMain.getInstance,10);
+
 				event.setCancelled(true);
 				double random = (Math.random() * 5) + 1;
 
@@ -184,7 +191,11 @@ public class Events implements Listener {
 				int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
 
 				int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
-
+				if (!ks.containsKey(killer.getUniqueId())) {
+					ks.put(killer.getUniqueId(), 1);
+				} else {
+					ks.put(killer.getUniqueId(), ks.get(killer.getUniqueId()) + 1);
+				}
 				killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
 				ks.put(event.getEntity().getUniqueId(), 0);
 				player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1, 0.5f);

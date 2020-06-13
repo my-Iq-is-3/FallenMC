@@ -59,7 +59,7 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
         	if(command.getName().equalsIgnoreCase("enchantmentmod")){
         		if(player.hasPermission("admin")){
         			try{
-						EnchantmentUtil.getInstance().addEnchantment(args[0],Integer.parseInt(args[1]),player.getInventory().getItemInMainHand(),player);
+						player.getInventory().setItemInMainHand(EnchantmentUtil.getInstance().addEnchantment(args[0],Integer.parseInt(args[1]),player.getInventory().getItemInMainHand(),player));
 					}catch(Exception e){
         				player.sendMessage(ChatColor.RED + "An error occurred. " + e);
         				e.printStackTrace();

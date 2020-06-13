@@ -60,11 +60,11 @@ public class ConfigUtils {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static void addXP(Player player, String classtoaddto, int amount) throws Exception {
+	public static void addXP(Player player, String classtoaddto, int amount) {
 
 		int xptonext = getXpToNext(player, classtoaddto);
 		if(getLevel(classtoaddto, player) >= 10) {
-			throw new Exception("Cannot add xp to a maxed out class!");
+			return;
 		}
 
 		if(xptonext <= amount) {

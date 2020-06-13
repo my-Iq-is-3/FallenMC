@@ -10,6 +10,8 @@ import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -18,6 +20,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+
+import java.util.ArrayList;
 
 
 public class EventsForCorruptor {
@@ -64,7 +68,7 @@ public class EventsForCorruptor {
             Player killer = (Player) event.getDamager();
             Player killed = (Player) event.getEntity();
             if (killed.getHealth() - event.getDamage() < 0.1) {
-                if (killer.getInventory().getItemInMainHand() != null) {
+                if (!killer.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
                     ItemStack item = killer.getInventory().getItemInMainHand();
                     if (NBTUtil.INSTANCE.getCustomAttr(item, "ID").equals("VOLCANIC_SWORD")) {
                         if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
@@ -90,27 +94,40 @@ public class EventsForCorruptor {
             }
         }
     }
-
+// at me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents.EventsForCorruptor.noMercy(EventsForCorruptor.java:127) ~[?:?]
     public void noMercy(EntityDamageByEntityEvent event){
+
 
         if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
             Player damager = (Player) event.getDamager();
             Player damaged = (Player) event.getEntity();
             if(damaged.getHealth() - event.getDamage() < 0.1){
-                if(damager.getInventory().getItemInMainHand() != null) {
+                if(damager.getInventory().getItemInMainHand().getType() != Material.AIR) {
                     if (ConfigUtils.getLevel("corrupter", damager) > 6 && ConfigUtils.findClass(damager).equals("corrupter")) {
                         ItemStack heldItemStack = damager.getInventory().getItemInMainHand();
                         NBTItem hnbt = new NBTItem(heldItemStack);
                         if (hnbt.getCompound("CustomAttributes").getCompound("enchantments") != null) {
+
                             NBTCompound hnbtc = hnbt.getCompound("CustomAttributes").getCompound("enchantments");
                             int nomercylvl = hnbtc.getInteger("no_mercy");
-                            if (nomercylvl == 1) {
+                            if (nomercylvl > 0) {
+
                                 if ((Events.ks.get(damager.getUniqueId()) + 1) % 2 == 0) {
+
                                     for (Player player : Bukkit.getOnlinePlayers()) {
                                         if (!player.equals(damager)) {
-                                            if (player.getLocation().distance(damager.getLocation()) <= 6) {
-                                                player.damage(nomercylvl * 0.5, damager);
-                                            }
+                                            ParticleEffect.SMOKE_NORMAL.display(0,0,0,0,10,player.getLocation().clone().add(0,2,0));
+                                            new BukkitRunnable(){
+                                                @Override
+                                                public void run(){
+                                                    if (player.getLocation().distance(damager.getLocation()) <= 6) {
+
+                                                        player.damage(nomercylvl * 0.5, damager);
+                                                        ParticleEffect.SMOKE_NORMAL.display(0.3f,0.3f,0.3f,0.3f,30,player.getLocation().clone().add(0,2,0));
+                                                    }
+                                                }
+                                            }.runTaskLater(DesertMain.getInstance,10);
+
                                         }
                                     }
                                 }
