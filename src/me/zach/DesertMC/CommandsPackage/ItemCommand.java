@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class ItemCommand extends CommandExecute implements CommandExecutor, Listener {
@@ -27,24 +28,24 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
 
     private static final HashMap<String,ItemStack> items = new HashMap<>();
 
-    public static final HashMap<String,String> enchs = new HashMap<>();
-    public static final HashMap<String,Double> increments = new HashMap<>();
-
+    /**
+     * @String1 ID [no_mercy,spike,giant_slayer]
+     * @String2 CUTE_NAME [No Mercy,Spike,Giant Slayer]
+     */
+    public static final HashMap<String, String> enchs = new HashMap<>();
+    public static final List<String> sEnchants = new ArrayList<>();
     static {
         items.put("MagicWand",INSTANCE.getMagicWand());
         items.put("ScoutGoggles",INSTANCE.getScoutGoggles());
         items.put("VolcanicSword",INSTANCE.getVolcanicSword());
         items.put("Dagger",INSTANCE.getDagger());
-        increments.put("no_mercy",0.5);
 
-        for(int i = 1;i<9;i++){
-            enchs.put("no_mercy_" + i, getLore(i,"no_mercy"));
-        }
+        enchs.put("no_mercy","No Mercy");
 
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args){
+    public boolean onCommand(CommandSender commandSender, Command command, String s, String args[]){
         if(commandSender instanceof Player){
             if(commandSender.hasPermission("item")){
                 Player player = (Player) commandSender;
@@ -215,18 +216,6 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         return di.getItem();
     }
 
-    private static String getLore(int level, String ench){
-        String nomercy = ChatColor.BLUE + "Enchantment: No Mercy " + level + "{br}" +
-                ChatColor.DARK_GRAY + "Every " + ChatColor.GREEN + "2 kills" + ChatColor.DARK_GRAY + ", you deal{br}" +
-                ChatColor.GREEN + (increments.get("no_mercy") * level) + " damage" + ChatColor.DARK_GRAY +  " to every other player within{br}" +
-                ChatColor.GREEN + "6 blocks" + ChatColor.DARK_GRAY + ".";
-
-        HashMap<String,String> tempvarEnch = new HashMap<>();
-
-        tempvarEnch.put("no_mercy",nomercy);
-
-        return tempvarEnch.get(ench.toLowerCase());
-    }
 
 
 }
