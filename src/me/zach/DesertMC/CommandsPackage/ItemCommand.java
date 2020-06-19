@@ -27,11 +27,6 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
     public static final ItemCommand INSTANCE = new ItemCommand();
 
     private static final HashMap<String,ItemStack> items = new HashMap<>();
-
-    /**
-     * @String1 ID [no_mercy,spike,giant_slayer]
-     * @String2 CUTE_NAME [No Mercy,Spike,Giant Slayer]
-     */
     public static final HashMap<String, String> enchs = new HashMap<>();
     public static final List<String> sEnchants = new ArrayList<>();
     static {
@@ -39,13 +34,14 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         items.put("ScoutGoggles",INSTANCE.getScoutGoggles());
         items.put("VolcanicSword",INSTANCE.getVolcanicSword());
         items.put("Dagger",INSTANCE.getDagger());
-
-        enchs.put("no_mercy","No Mercy");
-
+        enchs.put("no_mercy",ChatColor.GRAY + "\u25CF" + ChatColor.BLUE + " No Mercy");
+        enchs.put("giant_slayer",ChatColor.LIGHT_PURPLE + "\u25CF" + ChatColor.BLUE + " Giant Slayer");
+        enchs.put("spike",ChatColor.GRAY + "\u25CF" + ChatColor.BLUE + " Spike");
+        enchs.put("test",ChatColor.LIGHT_PURPLE + "\u25CF" + ChatColor.BLUE + " test");
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String s, String args[]){
+    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args){
         if(commandSender instanceof Player){
             if(commandSender.hasPermission("item")){
                 Player player = (Player) commandSender;
