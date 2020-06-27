@@ -1,11 +1,9 @@
 package me.zach.DesertMC;
 
-import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
-import me.zach.DesertMC.CommandsPackage.ItemCommand;
 import me.zach.DesertMC.GUImanager.KitsOrTraits;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
-import me.zach.DesertMC.PlayerManager.Events;
+import me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager.Events;
 import me.zach.DesertMC.Utils.nbt.EnchantmentUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,15 +11,10 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implements Listener, CommandExecutor{

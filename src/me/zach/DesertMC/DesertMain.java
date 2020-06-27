@@ -2,18 +2,13 @@ package me.zach.DesertMC;
 
 import me.zach.DesertMC.CommandsPackage.ItemCommand;
 import me.zach.DesertMC.GUImanager.InvEvents;
-import me.zach.DesertMC.PlayerManager.Events;
+import me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
-import me.zach.DesertMC.mythicalitems.Mythical;
-import me.zach.DesertMC.mythicalitems.items.DestroyerItem;
+import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -35,7 +30,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
-//		Color Char (for later access): §
+// TODO Color Char (for later access): §
 
 		getInstance = this;
 		String[] cmdsfile = {"enchantmentmod","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer"};
@@ -91,18 +86,20 @@ public class DesertMain extends JavaPlugin implements Listener {
 						}else if(location.subtract(0,10,0).getBlock().getType().equals(Material.IRON_BLOCK) && ConfigUtils.getLevel("scout",p) > 5 && ConfigUtils.findClass(p).equals("scout")){
 							p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 0, true,false));
 						}else if(location.subtract(0,10,0).getBlock().getType().equals(Material.GOLD_BLOCK) && ConfigUtils.getLevel("corrupter",p) > 5 && ConfigUtils.findClass(p).equals("corrupter")){
-							p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 40, 0, true,false));
+							p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 0, true,false));
 						}
-						if(locbefore.getBlock().getType().equals(Material.LAVA)){
+
+						if(location.getBlock().getType().equals(Material.LAVA) || location.getBlock().getType().equals(Material.STATIONARY_LAVA)){
 							if(ConfigUtils.findClass(p).equals("corrupter") && ConfigUtils.getLevel("corrupter",p) > 7){
-								p.setHealth(p.getHealth() + 0.5);
+								if(p.getHealth() + 0.5 <= p.getMaxHealth()){
+									p.setHealth(p.getHealth() + 0.5);
+								}else if(p.getHealth() + 0.5  > p.getMaxHealth()){
+									p.setHealth(p.getMaxHealth());
+								}
+								ParticleEffect.VILLAGER_HAPPY.display(0.2f,0.2f,0.2f,0,10,location,10);
 							}
 						}
-
 					}
-
-
-
 			}
 		}.runTaskTimer(this,0,20);
 	}

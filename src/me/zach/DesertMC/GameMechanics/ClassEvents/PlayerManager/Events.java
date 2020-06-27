@@ -1,14 +1,14 @@
-package me.zach.DesertMC.PlayerManager;
+package me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager;
 
 
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents.EventsForCorruptor;
+import me.zach.DesertMC.GameMechanics.ClassEvents.ScoutEvents.EventsForScout;
 import me.zach.DesertMC.GameMechanics.ClassEvents.WizardEvents.EventsForWizard;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.bukkit.*;
-import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -130,7 +130,7 @@ public class Events implements Listener {
 		EventsForWizard.INSTANCE.wizardt4(event);
 		EventsForWizard.INSTANCE.wizardt1(event);
 		EventsForWizard.INSTANCE.wizardt8(event);
-
+		EventsForScout.getInstance().t1Event(event);
 		EventsForCorruptor.INSTANCE.volcanicSword(event);
 
 

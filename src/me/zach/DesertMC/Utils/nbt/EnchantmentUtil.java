@@ -80,8 +80,6 @@ public class EnchantmentUtil {
                 ench.setInteger(enchantment,lvl); // set the enchantment
 
 
-
-
                 ItemStack ritem = nbti.getItem(); // get the finished nbt item
                 ItemMeta ritemMeta = ritem.getItemMeta(); // get the item meta
                 List<String> lore = ritemMeta.getLore(); // get the lore for the item

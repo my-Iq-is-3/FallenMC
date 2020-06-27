@@ -13,7 +13,7 @@ public enum Prefix {
     private final ChatColor color;
     private final String content;
     private final boolean isBold;
-    private Prefix(ChatColor color, String content,boolean bold){
+    Prefix(ChatColor color, String content,boolean bold){
         this.color = color;
         this.content = content;
         this.isBold = bold;
