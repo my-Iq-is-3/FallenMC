@@ -11,3 +11,5 @@ commands:
     description: give a hammer
   givebookdummy:
     description: gives a dummy book
+  debugnbt:
+    description: shows nbt for held item

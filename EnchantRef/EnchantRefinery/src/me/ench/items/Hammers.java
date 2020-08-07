@@ -2,7 +2,6 @@ package me.ench.items;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -14,12 +13,13 @@ import java.util.ArrayList;
 
 public class Hammers {
 
-    private static ItemStack getSpecialHammer() {
+    public static ItemStack getSpecialHammer() {
         ItemStack sphammeritem = new ItemStack(Material.GOLD_HOE);
         ItemMeta sphammermeta = sphammeritem.getItemMeta();
         sphammermeta.setDisplayName(ChatColor.LIGHT_PURPLE + "Special Hammer");
         sphammermeta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, false);
         sphammermeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        sphammermeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         ArrayList<String> sphammerlore = new ArrayList<String>();
         sphammerlore.add("");
         sphammerlore.add(ChatColor.GOLD + "A special hammer obtained from tournaments, or an extremely rare drop from killing players.");
@@ -29,13 +29,14 @@ public class Hammers {
         sphammeritem.setItemMeta(sphammermeta);
         NBTItem NBTItem = new NBTItem(sphammeritem);
         NBTCompound NBTComp = NBTItem.addCompound("CustomAttributes");
+        NBTComp.setInteger("MIN_LEVELS_TO_UPGRADE", 4);
         NBTComp.setInteger("MAX_LEVELS_TO_UPGRADE", 5);
         NBTComp.setInteger("DOWNGRADE_CHANCE", 5);
-        return NBTItem.getItem();
+        return NBTItem.getItem().clone();
     }
-    public static final ItemStack SpecialHammer = getSpecialHammer();
 
-    private static ItemStack getDiamondHammer() {
+
+    public static ItemStack getDiamondHammer() {
         ItemStack dhammeritem = new ItemStack(Material.DIAMOND_HOE);
         ItemMeta dhammermeta = dhammeritem.getItemMeta();
         dhammermeta.setDisplayName(ChatColor.AQUA + "Diamond Hammer");
@@ -48,13 +49,13 @@ public class Hammers {
         dhammeritem.setItemMeta(dhammermeta);
         NBTItem NBTItem = new NBTItem(dhammeritem);
         NBTCompound NBTComp = NBTItem.addCompound("CustomAttributes");
+        NBTComp.setInteger("MIN_LEVELS_TO_UPGRADE", 3);
         NBTComp.setInteger("MAX_LEVELS_TO_UPGRADE", 4);
         NBTComp.setInteger("DOWNGRADE_CHANCE", 10);
-        return NBTItem.getItem();
+        return NBTItem.getItem().clone();
     }
-    public static final ItemStack DiamondHammer = getDiamondHammer();
 
-    private static ItemStack getIronHammer() {
+    public static ItemStack getIronHammer() {
         ItemStack ihammeritem = new ItemStack(Material.IRON_HOE);
         ItemMeta ihammermeta = ihammeritem.getItemMeta();
         ihammermeta.setDisplayName(ChatColor.AQUA + "Iron Hammer");
@@ -67,14 +68,14 @@ public class Hammers {
         ihammeritem.setItemMeta(ihammermeta);
         NBTItem NBTItem = new NBTItem(ihammeritem);
         NBTCompound NBTComp = NBTItem.addCompound("CustomAttributes");
+        NBTComp.setInteger("MIN_LEVELS_TO_UPGRADE", 2);
         NBTComp.setInteger("MAX_LEVELS_TO_UPGRADE", 3);
         NBTComp.setInteger("DOWNGRADE_CHANCE", 15);
-        return NBTItem.getItem();
+        return NBTItem.getItem().clone();
     }
 
-    public static final ItemStack IronHammer = getIronHammer();
 
-    private static ItemStack getStoneHammer() {
+    public static ItemStack getStoneHammer() {
         ItemStack sthammeritem = new ItemStack(Material.STONE_HOE);
         ItemMeta sthammermeta = sthammeritem.getItemMeta();
         sthammermeta.setDisplayName(ChatColor.AQUA + "Stone Hammer");
@@ -87,14 +88,14 @@ public class Hammers {
         sthammeritem.setItemMeta(sthammermeta);
         NBTItem NBTItem = new NBTItem(sthammeritem);
         NBTCompound NBTComp = NBTItem.addCompound("CustomAttributes");
+        NBTComp.setInteger("MIN_LEVELS_TO_UPGRADE", 1);
         NBTComp.setInteger("MAX_LEVELS_TO_UPGRADE", 2);
         NBTComp.setInteger("DOWNGRADE_CHANCE", 25);
-        return NBTItem.getItem();
+        return NBTItem.getItem().clone();
     }
     
-    public static final ItemStack StoneHammer = getStoneHammer();
 
-    private static ItemStack getWoodHammer() {
+    public static ItemStack getWoodHammer() {
         ItemStack wdhammeritem = new ItemStack(Material.WOOD_HOE);
         ItemMeta wdhammermeta = wdhammeritem.getItemMeta();
         wdhammermeta.setDisplayName(ChatColor.AQUA + "Wood Hammer");
@@ -107,13 +108,13 @@ public class Hammers {
         wdhammeritem.setItemMeta(wdhammermeta);
         NBTItem NBTItem = new NBTItem(wdhammeritem);
         NBTCompound NBTComp = NBTItem.addCompound("CustomAttributes");
+        NBTComp.setInteger("MIN_LEVELS_TO_UPGRADE", 1);
         NBTComp.setInteger("MAX_LEVELS_TO_UPGRADE", 1);
         NBTComp.setInteger("DOWNGRADE_CHANCE", 40);
-        return NBTItem.getItem();
+
+        return NBTItem.getItem().clone();
 
     }
-
-    public static final ItemStack WoodHammer = getWoodHammer();
 
 
 

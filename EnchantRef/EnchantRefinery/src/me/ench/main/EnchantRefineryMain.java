@@ -11,6 +11,8 @@ public class EnchantRefineryMain extends JavaPlugin {
         getCommand("testinv").setExecutor(commands);
         getCommand("givehammer").setExecutor(commands);
         getCommand("givebookdummy").setExecutor(commands);
+        getCommand("debugnbt").setExecutor(commands);
+
         Bukkit.getPluginManager().registerEvents(new RefineryInventory(), this);
         loadConfig();
         saveConfig();
