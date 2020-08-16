@@ -1,6 +1,8 @@
 package me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents;
 
 import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTContainer;
+import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager.Events;
@@ -11,7 +13,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -19,6 +23,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+
+import java.util.Random;
 
 
 public class EventsForCorruptor {
@@ -91,7 +97,7 @@ public class EventsForCorruptor {
             }
         }
     }
-// at me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents.EventsForCorruptor.noMercy(EventsForCorruptor.java:127) ~[?:?]
+
     public void noMercy(EntityDamageByEntityEvent event){
 
 
@@ -145,6 +151,25 @@ public class EventsForCorruptor {
             Player damager = (Player) event.getDamager();
             if(ConfigUtils.getLevel("corrupter",damager) > 8 && ConfigUtils.findClass(damager).equals("corrupter")){
                 event.setDamage(event.getDamage() * 1.05);
+            }
+        }
+    }
+
+    public void corruptedSword(EntityDamageByEntityEvent event){
+        if(event.getDamager() instanceof Player){
+            Player hitter = (Player) event.getDamager();
+
+            if(hitter.getInventory().getItemInMainHand() != null){
+                if(NBTUtil.INSTANCE.getCustomAttr(hitter.getInventory().getItemInMainHand(),"ID").equals("CORRUPTED_SWORD")){
+                    Random rgen = new Random();
+                    final int RANDOM_INTEGER = rgen.nextInt(10);
+                    if(RANDOM_INTEGER + 1 < 2){
+                        ArmorStand hfa = (ArmorStand) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.ARMOR_STAND);
+                        NBTEntity hfanbt = new NBTEntity(hfa);
+                        hfanbt.mergeCompound(new NBTContainer("{Marker:1b,Hellfire:1b,Unbreakable:1b,Invisible:0b}"));
+                        event.getEntity().getLocation().getBlock().setType(Material.FIRE);
+                    }
+                }
             }
         }
     }

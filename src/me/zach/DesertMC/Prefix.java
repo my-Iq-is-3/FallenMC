@@ -8,7 +8,6 @@ public enum Prefix {
     SERVER(ChatColor.RED,"SERVER",false);
 
 
-
     private final ChatColor bold = ChatColor.BOLD;
     private final ChatColor color;
     private final String content;

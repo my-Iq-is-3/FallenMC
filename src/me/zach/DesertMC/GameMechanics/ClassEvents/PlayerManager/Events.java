@@ -4,9 +4,12 @@ package me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents.EventsForCorruptor;
 import me.zach.DesertMC.GameMechanics.ClassEvents.ScoutEvents.EventsForScout;
+import me.zach.DesertMC.GameMechanics.ClassEvents.TankEvents.EventsForTank;
 import me.zach.DesertMC.GameMechanics.ClassEvents.WizardEvents.EventsForWizard;
+import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,7 +23,10 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -106,6 +112,56 @@ public class Events implements Listener {
 
 	FileConfiguration economyConfig = Bukkit.getPluginManager().getPlugin("Econo").getConfig();
 
+
+	public static void check(DesertMain main){
+		new BukkitRunnable(){
+
+			@Override
+			public void run() {
+				for(Player p : Bukkit.getOnlinePlayers()){
+					p.setFoodLevel(20);
+					Location location = p.getLocation();
+					Location locbefore = location.clone();
+					if(location.subtract(0,10,0).getBlock().getType().equals(Material.DIAMOND_BLOCK) && ConfigUtils.getLevel("wizard",p) > 5 && ConfigUtils.findClass(p).equals("wizard")){
+						p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 0, true,false));
+					}else if(location.subtract(0,10,0).getBlock().getType().equals(Material.EMERALD_BLOCK) && ConfigUtils.getLevel("tank",p) > 4 && ConfigUtils.findClass(p).equals("tank")){
+						p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 0, true,false));
+					}else if(location.subtract(0,10,0).getBlock().getType().equals(Material.IRON_BLOCK) && ConfigUtils.getLevel("scout",p) > 5 && ConfigUtils.findClass(p).equals("scout")){
+						p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 0, true,false));
+					}else if(location.subtract(0,10,0).getBlock().getType().equals(Material.GOLD_BLOCK) && ConfigUtils.getLevel("corrupter",p) > 5 && ConfigUtils.findClass(p).equals("corrupter")){
+						p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 0, true,false));
+					}
+
+					if(locbefore.getBlock().getType().equals(Material.LAVA) || locbefore.getBlock().getType().equals(Material.STATIONARY_LAVA)){
+						p.sendMessage(Prefix.DEBUG + "1");
+						if(ConfigUtils.findClass(p).equals("corrupter") && ConfigUtils.getLevel("corrupter",p) > 7){
+							if(p.getHealth() + 0.5 <= p.getMaxHealth()){
+								p.setHealth(p.getHealth() + 0.5);
+							}else if(p.getHealth() + 0.5  > p.getMaxHealth()){
+								p.setHealth(p.getMaxHealth());
+							}
+							ParticleEffect.VILLAGER_HAPPY.display(1,1,1,0,50,locbefore,10);
+						}
+					}
+				}
+			}
+		}.runTaskTimer(main,0,20);
+	}
+
+	@EventHandler
+	public void onCrouchToggle(PlayerToggleSneakEvent event){
+		if(DesertMain.crouchers.get(event.getPlayer().getUniqueId()) != null){
+			if(DesertMain.crouchers.get(event.getPlayer().getUniqueId())) {
+				DesertMain.crouchers.put(event.getPlayer().getUniqueId(), false);
+			}else{
+				DesertMain.crouchers.put(event.getPlayer().getUniqueId(), true);
+			}
+
+		}else{
+			DesertMain.crouchers.put(event.getPlayer().getUniqueId(),true);
+		}
+	}
+
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent event) throws Exception {
 		if(event.isCancelled()) return;
@@ -131,22 +187,19 @@ public class Events implements Listener {
 		EventsForWizard.INSTANCE.wizardt1(event);
 		EventsForWizard.INSTANCE.wizardt8(event);
 		EventsForScout.getInstance().t1Event(event);
+		EventsForScout.getInstance().t4Event(event);
+		EventsForScout.getInstance().daggerHit(event);
+		EventsForScout.getInstance().t8Event(event);
 		EventsForCorruptor.INSTANCE.volcanicSword(event);
-
+		EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
+		EventsForCorruptor.INSTANCE.corruptedSword(event);
+		EventsForTank.getInstance().t1Event(event);
+		EventsForTank.getInstance().t5Event(event);
+		EventsForTank.getInstance().t8Event(event);
 
 		executeKill(event);
 
-		if(event.getDamager() instanceof Player){
-            Player killer = (Player) event.getDamager();
-			if(!killer.getInventory().getItemInMainHand().getType().equals(Material.AIR)){
-				if(NBTUtil.INSTANCE.getCustomAttr(killer.getInventory().getItemInMainHand(), "ID").equals("MAGIC_WAND")){
-					EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
 
-				}
-			}
-
-
-        }
 
 	}
 

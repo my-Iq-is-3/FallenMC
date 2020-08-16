@@ -24,6 +24,11 @@ public class Mythical {
         return new Mythical();
     }
 
+
+
+    // On class load (happens once at the start of the program) load
+    // all of the mythical weapons into a hashmap called mythicalItems
+    // and make the key an increasing number
     static {
         MythicalItem destroyerItem = new DestroyerItem();
         mythicalItems.put(1, parseItem(destroyerItem));
@@ -49,4 +54,5 @@ public class Mythical {
     public int parsePrice(MythicalItem mythicalItem){
         return mythicalItem.getPrice();
     }
+
 }
