@@ -1,0 +1,12 @@
+name: Traits
+author: DrMlem
+version: 1.0.0
+main: me.gabriel.Traits.TraitsMain
+description: traits for FallenMC
+
+commands:
+ traits:
+  usage: /<command>
+  description: opens the traits menu (TEST COMMAND)
+ traitsconfig:
+  usage: /<command> <get/set> <type> <path> <value>
