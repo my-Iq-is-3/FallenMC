@@ -1,0 +1,34 @@
+name: Fallen
+main: me.zach.DesertMC.DesertMain
+version: "1.0"
+author: BitGen
+description: Core Plugin
+
+commands:
+ speed:
+  description: Set player speed
+ invincible:
+  description: Set player invincible
+ setspawn:
+  description: Set lobby spawn
+ kot:
+  description: Opens selector inv
+ classexp:
+  description: Gives class xp
+ item:
+  description: Gives an in-game item
+ showplayer:
+  description: Shows a player
+ hideplayer:
+  description: Hides a player
+ debug:
+  description: Debugs something
+ resetclass:
+  description: Pretty self explanatory
+ setks:
+  description: sets killstreaks
+ enchantmentmod:
+  description: modifies the item you are holding, putting a custom enchantment on it.
+permissions:
+ admin:
+  description: This permission allows a player to have access to almost all special commands, such as /item, or /setspawn
