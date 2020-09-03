@@ -109,7 +109,7 @@ public class Events implements Listener {
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent event) throws Exception {
 		if(event.isCancelled()) return;
-		if(event.getDamager() instanceof Player){
+		if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
 			Player damager = (Player) event.getDamager();
 			DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), damager.getUniqueId());
 		}else if(event.getDamager() instanceof Arrow){
