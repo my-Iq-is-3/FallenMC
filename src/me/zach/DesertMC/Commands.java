@@ -5,6 +5,7 @@ import me.zach.DesertMC.GUImanager.KitsOrTraits;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager.Events;
 import me.zach.DesertMC.Utils.nbt.EnchantmentUtil;
+import net.minecraft.server.v1_8_R3.CommandExecute;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -17,13 +18,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 
-public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implements Listener, CommandExecutor{
+public class Commands extends CommandExecute implements Listener, CommandExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player) {
         	Player player = ((Player) sender).getPlayer();
         	DesertMain main = DesertMain.getInstance;
         	Plugin mainpl = DesertMain.getPlugin(DesertMain.class);
+
         	if(command.getName().equalsIgnoreCase("setspawn")) {
         		if(player.hasPermission("admin")) {
         			main.getConfig().set("server.lobbyspawn", player.getLocation());
@@ -52,7 +54,7 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
         	if(command.getName().equalsIgnoreCase("enchantmentmod")){
         		if(player.hasPermission("admin")){
         			try{
-						player.getInventory().setItemInMainHand(EnchantmentUtil.getInstance().addEnchantment(args[0],Integer.parseInt(args[1]),player.getInventory().getItemInMainHand(),player));
+						player.getInventory().setItemInHand(EnchantmentUtil.getInstance().addEnchantment(args[0],Integer.parseInt(args[1]),player.getInventory().getItemInHand(),player));
 					}catch(Exception e){
         				player.sendMessage(ChatColor.RED + "An error occurred. " + e);
         				e.printStackTrace();
@@ -125,10 +127,10 @@ public class Commands extends net.minecraft.server.v1_9_R1.CommandExecute implem
 							player.sendMessage(ChatColor.GREEN + "Current killstreak: " + ChatColor.RED + Events.ks.get(player.getUniqueId()));
 						}
 						if(args[0].equalsIgnoreCase("NBT")){
-							if(player.getInventory().getItemInMainHand().getType().equals(Material.AIR)){
+							if(player.getInventory().getItemInHand().getType().equals(Material.AIR)){
 								player.sendMessage(ChatColor.RED + "Please hold an item.");
 							}else{
-								ItemStack helditem = player.getInventory().getItemInMainHand();
+								ItemStack helditem = player.getInventory().getItemInHand();
 								NBTItem nbti = new NBTItem(helditem);
 								player.sendMessage(nbti.toString());
 							}

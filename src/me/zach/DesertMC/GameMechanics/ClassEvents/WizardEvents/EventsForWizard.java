@@ -94,8 +94,8 @@ public class EventsForWizard implements Listener {
     }
 //  MW Hit
     public void magicWandHit(Player damaged, Player damager) {
-        if (!damager.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
-            if (NBTUtil.INSTANCE.getCustomAttr(damager.getInventory().getItemInMainHand(), "ID").equals("MAGIC_WAND")) {
+        if (!damager.getInventory().getItemInHand().getType().equals(Material.AIR)) {
+            if (NBTUtil.INSTANCE.getCustomAttr(damager.getInventory().getItemInHand(), "ID").equals("MAGIC_WAND")) {
                 ItemStack boots = damaged.getInventory().getBoots();
                 if(boots != null){
                     if(NBTUtil.INSTANCE.getCustomAttr(boots,"ID").equals("STUBBORN_BOOTS")){
@@ -171,7 +171,7 @@ public class EventsForWizard implements Listener {
                         if(random <= 10){
                             double walkspeedbefore = killer.getWalkSpeed();
                             killer.setWalkSpeed(0);
-                            killer.playSound(killer.getLocation(), Sound.BLOCK_ANVIL_BREAK,1f,2f);
+                            killer.playSound(killer.getLocation(), Sound.ANVIL_BREAK,1f,2f);
                             killer.sendTitle(ChatColor.YELLOW + "You were Stunned", ChatColor.DARK_GRAY + "By " + killed.getName());
                             PotionEffect poison = new PotionEffect(PotionEffectType.POISON, 60, 1, false, false);
                             killer.addPotionEffect(poison);
@@ -192,7 +192,7 @@ public class EventsForWizard implements Listener {
                         if(random <= 10){
                             double walkspeedbefore = killer.getWalkSpeed();
                             killer.setWalkSpeed(0);
-                            killer.playSound(killer.getLocation(), Sound.BLOCK_ANVIL_BREAK,1f,2f);
+                            killer.playSound(killer.getLocation(), Sound.ANVIL_BREAK,1f,2f);
                             killer.sendTitle(ChatColor.YELLOW + "You were Stunned", ChatColor.DARK_GRAY + "By " + killed.getName());
                             PotionEffect poison = new PotionEffect(PotionEffectType.POISON, 60, 1, false, false);
                             killer.addPotionEffect(poison);

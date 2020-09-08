@@ -138,15 +138,15 @@ public class TankTierMenu {
 				
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Stubborn Boots");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Stubborn Boots.");
 				glore.add(ChatColor.DARK_GRAY + "While wearing, you are immune to the effects of the Magic Wand.");
 				
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- Stubborn Boots");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- Stubborn Boots.");
 				ylore.add(ChatColor.DARK_GRAY + "While wearing, you are immune to the effects of the Magic Wand.");
 				
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- Stubborn Boots");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- Stubborn Boots.");
 				rlore.add(ChatColor.DARK_GRAY + "While wearing, you are immune to the effects of the Magic Wand.");
 				break;
 				

@@ -23,7 +23,7 @@ public class EnchantmentUtil {
 
     public ItemStack addEnchantment(String enchantment, int lvl, ItemStack item, Player player){
 
-        if(player.getInventory().getItemInMainHand() != null && ItemCommand.enchs.get(enchantment) != null){
+        if(player.getInventory().getItemInHand() != null && ItemCommand.enchs.get(enchantment) != null){
             ItemMeta im = item.getItemMeta();
             im.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL,1,true);
             item.setItemMeta(im);

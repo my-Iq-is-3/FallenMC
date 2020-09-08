@@ -20,7 +20,7 @@ import me.zach.DesertMC.GUImanager.WizardManager.WizardTierMenu;
 
 
 public class InvEvents implements Listener {
-	FileConfiguration economyConfig = Bukkit.getPluginManager().getPlugin("Econo").getConfig();
+	FileConfiguration economyConfig = Bukkit.getPluginManager().getPlugin("Fallen").getConfig();
 
 	@SuppressWarnings("unused")
 	@EventHandler
@@ -63,7 +63,7 @@ public class InvEvents implements Listener {
 				if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 3){
 					player.getInventory().addItem(new ItemStack(Material.BOW));
 					economyConfig.set("players." + player.getUniqueId() + ".balance", economyConfig.getInt("players." + player.getUniqueId() + ".balance") - 3);
-					Bukkit.getPluginManager().getPlugin("Econo").saveConfig();
+					Bukkit.getPluginManager().getPlugin("Fallen").saveConfig();
 					shop.updateInventory();
 				}
 			}
@@ -72,7 +72,7 @@ public class InvEvents implements Listener {
 				if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 10){
 					player.getInventory().addItem(new ItemStack(Material.ARROW,10));
 					economyConfig.set("players." + player.getUniqueId() + ".balance", economyConfig.getInt("players." + player.getUniqueId() + ".balance") - 10);
-					Bukkit.getPluginManager().getPlugin("Econo").saveConfig();
+					Bukkit.getPluginManager().getPlugin("Fallen").saveConfig();
 					shop.updateInventory();
 				}
 			}
@@ -81,7 +81,7 @@ public class InvEvents implements Listener {
 				if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 5){
 					player.getInventory().addItem(new ItemStack(Material.FISHING_ROD));
 					economyConfig.set("players." + player.getUniqueId() + ".balance", economyConfig.getInt("players." + player.getUniqueId() + ".balance") - 5);
-					Bukkit.getPluginManager().getPlugin("Econo").saveConfig();
+					Bukkit.getPluginManager().getPlugin("Fallen").saveConfig();
 					shop.updateInventory();
 				}
 			}
@@ -90,7 +90,7 @@ public class InvEvents implements Listener {
 				if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 20){
 					player.getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE));
 					economyConfig.set("players." + player.getUniqueId() + ".balance", economyConfig.getInt("players." + player.getUniqueId() + ".balance") - 20);
-					Bukkit.getPluginManager().getPlugin("Econo").saveConfig();
+					Bukkit.getPluginManager().getPlugin("Fallen").saveConfig();
 					shop.updateInventory();
 				}
 			}
@@ -102,7 +102,7 @@ public class InvEvents implements Listener {
 					player.getInventory().addItem(new ItemStack(Material.IRON_HELMET));
 					
 					economyConfig.set("players." + player.getUniqueId() + ".balance", economyConfig.getInt("players." + player.getUniqueId() + ".balance") - 60);
-					Bukkit.getPluginManager().getPlugin("Econo").saveConfig();
+					Bukkit.getPluginManager().getPlugin("Fallen").saveConfig();
 					shop.updateInventory();
 				}
 			}
@@ -116,7 +116,7 @@ public class InvEvents implements Listener {
 						player.getInventory().addItem(new ItemStack(Material.DIAMOND_HELMET));
 						
 						economyConfig.set("players." + player.getUniqueId() + ".balance", economyConfig.getInt("players." + player.getUniqueId() + ".balance") - 100);
-						Bukkit.getPluginManager().getPlugin("Econo").saveConfig();
+						Bukkit.getPluginManager().getPlugin("Fallen").saveConfig();
 						shop.updateInventory();
 					}
 				}

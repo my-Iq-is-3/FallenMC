@@ -71,8 +71,8 @@ public class EventsForCorruptor {
             Player killer = (Player) event.getDamager();
             Player killed = (Player) event.getEntity();
             if (killed.getHealth() - event.getDamage() < 0.1) {
-                if (!killer.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
-                    ItemStack item = killer.getInventory().getItemInMainHand();
+                if (!killer.getInventory().getItemInHand().getType().equals(Material.AIR)) {
+                    ItemStack item = killer.getInventory().getItemInHand();
                     if (NBTUtil.INSTANCE.getCustomAttr(item, "ID").equals("VOLCANIC_SWORD")) {
                         if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
                             if (((Events.ks.get(killer.getUniqueId()) + 1) % 5) == 0) {
@@ -105,9 +105,9 @@ public class EventsForCorruptor {
             Player damager = (Player) event.getDamager();
             Player damaged = (Player) event.getEntity();
             if(damaged.getHealth() - event.getDamage() < 0.1){
-                if(damager.getInventory().getItemInMainHand().getType() != Material.AIR) {
+                if(damager.getInventory().getItemInHand().getType() != Material.AIR) {
                     if (ConfigUtils.getLevel("corrupter", damager) > 6 && ConfigUtils.findClass(damager).equals("corrupter")) {
-                        ItemStack heldItemStack = damager.getInventory().getItemInMainHand();
+                        ItemStack heldItemStack = damager.getInventory().getItemInHand();
                         NBTItem hnbt = new NBTItem(heldItemStack);
                         if (hnbt.getCompound("CustomAttributes").getCompound("enchantments") != null) {
 
@@ -159,8 +159,8 @@ public class EventsForCorruptor {
         if(event.getDamager() instanceof Player){
             Player hitter = (Player) event.getDamager();
 
-            if(hitter.getInventory().getItemInMainHand() != null){
-                if(NBTUtil.INSTANCE.getCustomAttr(hitter.getInventory().getItemInMainHand(),"ID").equals("CORRUPTED_SWORD")){
+            if(hitter.getInventory().getItemInHand() != null){
+                if(NBTUtil.INSTANCE.getCustomAttr(hitter.getInventory().getItemInHand(),"ID").equals("CORRUPTED_SWORD")){
                     Random rgen = new Random();
                     final int RANDOM_INTEGER = rgen.nextInt(10);
                     if(RANDOM_INTEGER + 1 < 2){

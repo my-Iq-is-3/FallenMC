@@ -4,12 +4,10 @@ package me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents.EventsForCorruptor;
 import me.zach.DesertMC.GameMechanics.ClassEvents.ScoutEvents.EventsForScout;
-import me.zach.DesertMC.GameMechanics.ClassEvents.TankEvents.EventsForTank;
 import me.zach.DesertMC.GameMechanics.ClassEvents.WizardEvents.EventsForWizard;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
-import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.bukkit.*;
@@ -22,10 +20,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -186,15 +185,8 @@ public class Events implements Listener {
 		EventsForWizard.INSTANCE.wizardt1(event);
 		EventsForWizard.INSTANCE.wizardt8(event);
 		EventsForScout.getInstance().t1Event(event);
-		EventsForScout.getInstance().t4Event(event);
-		EventsForScout.getInstance().daggerHit(event);
-		EventsForScout.getInstance().t8Event(event);
 		EventsForCorruptor.INSTANCE.volcanicSword(event);
-		EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
-		EventsForCorruptor.INSTANCE.corruptedSword(event);
-		EventsForTank.getInstance().t1Event(event);
-		EventsForTank.getInstance().t5Event(event);
-		EventsForTank.getInstance().t8Event(event);
+
 
 		executeKill(event);
 

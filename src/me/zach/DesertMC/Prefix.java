@@ -4,8 +4,12 @@ import org.bukkit.ChatColor;
 @SuppressWarnings("unused")
 public enum Prefix {
 
-    DEBUG(ChatColor.GREEN,"DEBUG",true),
-    SERVER(ChatColor.RED,"SERVER",false);
+    DEBUG(ChatColor.DARK_PURPLE,"[DEBUG]",true),
+    MYSTIC(ChatColor.LIGHT_PURPLE, "MYSTIC", true),
+    SUPPORTER(ChatColor.GREEN, "SUPPORTER", true),
+    SERVER(ChatColor.DARK_BLUE,"[SERVER]",false),
+    COOWNER(ChatColor.GOLD, "CO-OWNER", false);
+
 
 
     private final ChatColor bold = ChatColor.BOLD;
@@ -22,9 +26,9 @@ public enum Prefix {
     @Override
     public String toString() {
         if(isBold){
-            return color + "[" + bold + content + color + "]";
+            return color + "" + bold + content + color;
         }else{
-            return color + "[" + content + "]";
+            return color + content;
         }
     }
 }
