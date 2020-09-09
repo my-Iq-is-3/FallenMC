@@ -4,6 +4,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.GUImanager.KitsOrTraits;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager.Events;
+import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.EnchantmentUtil;
 import net.minecraft.server.v1_8_R3.CommandExecute;
 import org.bukkit.Bukkit;
@@ -59,6 +60,28 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         				player.sendMessage(ChatColor.RED + "An error occurred. " + e);
         				e.printStackTrace();
 					}
+				}
+			}
+        	if(command.getName().equalsIgnoreCase("title")){
+        		try{
+        			Prefix p = Prefix.valueOf(args[0].toUpperCase());
+					if(TitleUtils.setTitle(player, p)){
+						player.sendMessage(ChatColor.GREEN + "Prefix successfully set to \"" + p.toString() + ChatColor.GREEN + "\"");
+						return true;
+					}else{
+						player.sendMessage(ChatColor.RED + "Sorry, it seems you don't own that title.");
+						return false;
+					}
+				}catch(Exception e){
+        			if(e instanceof IllegalArgumentException){
+        				player.sendMessage(ChatColor.RED + "It appears that title doesn't exist.");
+        				return false;
+        			}
+        			else if(e instanceof NullPointerException){
+        				player.sendMessage(ChatColor.RED + "Usage: /title <titletoequip>");
+        				return false;
+        			}
+
 				}
 			}
 
