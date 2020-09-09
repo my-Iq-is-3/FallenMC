@@ -5,7 +5,9 @@ import org.bukkit.ChatColor;
 
 public enum Rank {
     MYSTIC(Prefix.MYSTIC, ChatColor.LIGHT_PURPLE),
-    SUPPORTER(Prefix.SUPPORTER, ChatColor.GREEN);
+    SUPPORTER(Prefix.SUPPORTER, ChatColor.GREEN),
+    COOWNER(Prefix.COOWNER, ChatColor.GOLD),
+    ADMIN(Prefix.ADMIN, ChatColor.RED);
     protected final Prefix p;
     protected final ChatColor c;
     Rank(Prefix pr, ChatColor ch){

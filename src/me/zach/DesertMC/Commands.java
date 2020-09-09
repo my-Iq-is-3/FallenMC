@@ -62,14 +62,20 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 					}
 				}
 			}
-        	if(command.getName().equalsIgnoreCase("title")){
+        	if(command.getName().equalsIgnoreCase("selecttitle")){
         		try{
         			Prefix p = Prefix.valueOf(args[0].toUpperCase());
 					if(TitleUtils.setTitle(player, p)){
 						player.sendMessage(ChatColor.GREEN + "Prefix successfully set to \"" + p.toString() + ChatColor.GREEN + "\"");
 						return true;
 					}else{
-						player.sendMessage(ChatColor.RED + "Sorry, it seems you don't own that title.");
+						if(player.hasPermission("admin")){
+							TitleUtils.addTitle(player, p);
+							TitleUtils.setTitle(player, p);
+							player.sendMessage(ChatColor.YELLOW + "You didn't have that title so I added it for you and selected it.");
+							return true;
+						}else player.sendMessage(ChatColor.RED + "Sorry, it seems you don't own that title.");
+
 						return false;
 					}
 				}catch(Exception e){
@@ -77,10 +83,13 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         				player.sendMessage(ChatColor.RED + "It appears that title doesn't exist.");
         				return false;
         			}
-        			else if(e instanceof NullPointerException){
+        			else if(e instanceof ArrayIndexOutOfBoundsException){
         				player.sendMessage(ChatColor.RED + "Usage: /title <titletoequip>");
         				return false;
-        			}
+        			}else{
+        				e.printStackTrace();
+        				return false;
+					}
 
 				}
 			}

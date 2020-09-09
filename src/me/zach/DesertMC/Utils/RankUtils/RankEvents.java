@@ -20,7 +20,8 @@ public class RankEvents implements Listener {
     @EventHandler
     public void addRankColor(AsyncPlayerChatEvent e){
         if(p.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank") != null){
-            e.setFormat(Rank.valueOf(p.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank")).c + e.getPlayer().getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
+            if(p.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank").equals("COOWNER")) e.setFormat(Rank.valueOf(p.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank")).c + "" + ChatColor.BOLD + e.getPlayer().getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
+            else e.setFormat(Rank.valueOf(p.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank")).c + e.getPlayer().getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
 
         }else{
             e.setFormat(ChatColor.GRAY + e.getPlayer().getName() + ":" + ChatColor.RESET);

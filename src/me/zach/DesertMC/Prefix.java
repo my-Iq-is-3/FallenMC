@@ -4,11 +4,12 @@ import org.bukkit.ChatColor;
 @SuppressWarnings("unused")
 public enum Prefix {
 
-    DEBUG(ChatColor.DARK_PURPLE,"[DEBUG]",true),
+    DEBUG(ChatColor.DARK_PURPLE,"[DEBUG]",false),
     MYSTIC(ChatColor.LIGHT_PURPLE, "MYSTIC", true),
     SUPPORTER(ChatColor.GREEN, "SUPPORTER", true),
     SERVER(ChatColor.DARK_BLUE,"[SERVER]",false),
-    COOWNER(ChatColor.GOLD, "CO-OWNER", false);
+    COOWNER(ChatColor.GOLD, "CO-OWNER", true),
+    ADMIN(ChatColor.RED, "ADMIN", true);
 
 
 
