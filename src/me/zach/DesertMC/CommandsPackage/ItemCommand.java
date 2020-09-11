@@ -33,11 +33,14 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         items.put("MagicWand",INSTANCE.getMagicWand());
         items.put("ScoutGoggles",INSTANCE.getScoutGoggles());
         items.put("VolcanicSword",INSTANCE.getVolcanicSword());
+        items.put("CorruptedSword", INSTANCE.getCorruptedSword());
         items.put("Dagger",INSTANCE.getDagger());
+        items.put("StubbornBoots", INSTANCE.getStubbornBoots());
         enchs.put("no_mercy",ChatColor.GRAY + "\u25CF" + ChatColor.BLUE + " No Mercy");
         enchs.put("giant_slayer",ChatColor.LIGHT_PURPLE + "\u25CF" + ChatColor.BLUE + " Giant Slayer");
         enchs.put("spike",ChatColor.GRAY + "\u25CF" + ChatColor.BLUE + " Spike");
         enchs.put("quick",ChatColor.GRAY + "\u25CF" + ChatColor.BLUE + " Quick");
+
     }
 
     public ItemCommand(){
@@ -237,6 +240,24 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
 
 
         return stubbornBoots;
+    }
+    public ItemStack getCorruptedSword(){
+        ItemStack cblade = new ItemStack(Material.GOLD_SWORD);
+        ItemMeta cbMeta = cblade.getItemMeta();
+        cbMeta.setDisplayName(ChatColor.RED + "Corrupted Sword");
+        ArrayList<String> cbList = new ArrayList<>();
+        cbList.add(" ");
+        cbList.add(ChatColor.RED + "Ability: Hellfire");
+        cbList.add(ChatColor.DARK_GRAY + "Has a chance to spawn a fast damaging fire under your opponent.");
+        cbMeta.setLore(cbList);
+        cblade.setItemMeta(cbMeta);
+        NBTItem cbNbt = new NBTItem(cblade);
+        cbNbt.setBoolean("Unbreakable", true);
+        NBTCompound cbComp = cbNbt.addCompound("CustomAttributes");
+        cbComp.setString("ID", "CORRUPTED_SWORD");
+        cbComp.setString("UUID", UUID.randomUUID() + "");
+        cbComp.setBoolean("CAN_ENCHANT", true);
+        return cbNbt.getItem();
     }
 
     @Override
