@@ -3,6 +3,7 @@ package me.zach.DesertMC;
 import me.zach.DesertMC.CommandsPackage.ItemCommand;
 import me.zach.DesertMC.GUImanager.InvEvents;
 import me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager.Events;
+import me.zach.DesertMC.GameMechanics.ClassEvents.WizardEvents.EventsForWizard;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
@@ -48,6 +49,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(new Events(), p);
 		Bukkit.getPluginManager().registerEvents(new RankEvents(this), p);
 		Bukkit.getPluginManager().registerEvents(new InvEvents(), p);
+		Bukkit.getPluginManager().registerEvents(new EventsForWizard(), this);
 	}
 
 	private void registerCommands(String[] commands, CommandExecutor file){

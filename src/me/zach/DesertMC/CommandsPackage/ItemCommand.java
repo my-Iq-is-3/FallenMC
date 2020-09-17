@@ -31,6 +31,7 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
     public static final char DOT = '\u25CF';
     static {
         items.put("MagicWand",INSTANCE.getMagicWand());
+        items.put("WizardBlade", INSTANCE.getWizardBlade());
         items.put("ScoutGoggles",INSTANCE.getScoutGoggles());
         items.put("VolcanicSword",INSTANCE.getVolcanicSword());
         items.put("CorruptedSword", INSTANCE.getCorruptedSword());
@@ -157,7 +158,7 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
 
     public ItemStack getVolcanicSword(){
 
-        ItemStack vs = new ItemStack(Material.GOLD_SWORD);
+        ItemStack vs = new ItemStack(Material.IRON_SWORD);
         ItemMeta vsm = vs.getItemMeta();
         ArrayList<String> vslist = new ArrayList<>();
 
@@ -242,7 +243,7 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         return stubbornBoots;
     }
     public ItemStack getCorruptedSword(){
-        ItemStack cblade = new ItemStack(Material.GOLD_SWORD);
+        ItemStack cblade = new ItemStack(Material.DIAMOND_SWORD);
         ItemMeta cbMeta = cblade.getItemMeta();
         cbMeta.setDisplayName(ChatColor.RED + "Corrupted Sword");
         ArrayList<String> cbList = new ArrayList<>();
@@ -259,6 +260,31 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         cbComp.setBoolean("CAN_ENCHANT", true);
         return cbNbt.getItem();
     }
+    public ItemStack getWizardBlade(){
+        ItemStack bladeitem = new ItemStack(Material.GOLD_SWORD);
+        ItemMeta bladeMeta = bladeitem.getItemMeta();
+        bladeMeta.setDisplayName(ChatColor.DARK_BLUE + "Wizard Blade (0)");
+        bladeMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE);
+        ArrayList<String> lore = new ArrayList<>();
+        lore.add(" ");
+        lore.add(ChatColor.BLUE + "Ability: Charge-Up");
+        lore.add(ChatColor.DARK_GRAY + "For each kill you get, " + ChatColor.RED + "2" + ChatColor.DARK_GRAY + " armor ignoring");
+        lore.add(ChatColor.DARK_GRAY + "damage will be added to the sword's charge.");
+        lore.add(ChatColor.DARK_GRAY + "Release the charge by right clicking a player.");
+        lore.add(ChatColor.GRAY + "Max Charge: 10");
+
+        bladeMeta.setLore(lore);
+        bladeitem.setItemMeta(bladeMeta);
+        NBTItem bladeNbt = new NBTItem(bladeitem);
+        bladeNbt.setBoolean("Unbreakable", true);
+        NBTCompound bladeComp = bladeNbt.addCompound("CustomAttributes");
+        bladeComp.setString("ID", "WIZARD_BLADE");
+        bladeComp.setString("UUID", UUID.randomUUID().toString());
+        bladeComp.setBoolean("CAN_ENCHANT", true);
+        bladeComp.setInteger("CHARGE", 0);
+        return bladeNbt.getItem();
+    }
+
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
@@ -266,7 +292,7 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
             if (strings.length == 1) {
 
                 if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("item")) {
-                    args = Arrays.asList("ScoutGoggles", "MagicWand", "VolcanicSword", "Mythical", "Dagger");
+                    args = Arrays.asList("ScoutGoggles", "MagicWand", "VolcanicSword", "Mythical", "Dagger", "StubbornBoots", "WizardBlade", "CorruptedSword");
                 }
             }
             return args;

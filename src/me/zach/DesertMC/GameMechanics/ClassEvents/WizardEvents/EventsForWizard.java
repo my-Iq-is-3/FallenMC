@@ -2,30 +2,53 @@ package me.zach.DesertMC.GameMechanics.ClassEvents.WizardEvents;
 
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 
 public class EventsForWizard implements Listener {
 
     public static final EventsForWizard INSTANCE = new EventsForWizard();
+    public static void addBladeCharge(Player player){
 
+        NBTItem bladeNbt = new NBTItem(player.getItemInHand());
+        if(bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") < 10){
+            bladeNbt.getCompound("CustomAttributes").setInteger("CHARGE", bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") + 2);
+            ItemStack newBladeItem = bladeNbt.getItem();
+            ItemMeta newBladeMeta = newBladeItem.getItemMeta();
+            newBladeMeta.setDisplayName(newBladeMeta.getDisplayName().replaceAll((bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") - 2) + "", (bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE")) + ""));
+            newBladeItem.setItemMeta(newBladeMeta);
+            player.setItemInHand(newBladeItem);
+
+            if(bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") == 10) player.sendMessage(ChatColor.DARK_AQUA + "Wizard Blade charge just maxed out!");
+        }else{
+            player.sendMessage(ChatColor.YELLOW + "Wizard Blade charge was already maxed out, right click to release it!");
+        }
+
+    }
 
 //  Invisibility
     public void wizardt1(EntityDamageByEntityEvent event) {
@@ -156,6 +179,45 @@ public class EventsForWizard implements Listener {
 
 
 
+    }
+    @EventHandler
+    public void wizardBlade(PlayerInteractAtEntityEvent e){
+        try{
+            if(new NBTItem(e.getPlayer().getItemInHand()).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE")){
+                NBTItem bladeNbt = new NBTItem(e.getPlayer().getItemInHand());
+                if(e.getRightClicked() instanceof Player) {
+                    if (bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") != 0) {
+                        if (!Bukkit.getPluginManager().getPlugin("Fallen").getConfig().getBoolean("players." + e.getPlayer().getUniqueId() + ".invincible")) {
+                            if (bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") >= ((Player) e.getRightClicked()).getHealth()) {
+                                ItemMeta bladeMeta = bladeNbt.getItem().getItemMeta();
+                                bladeMeta.setDisplayName(bladeMeta.getDisplayName().replaceAll((bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE")) + "", "0"));
+                                bladeNbt.getItem().setItemMeta(bladeMeta);
+                                Events.executeKill((Player) e.getRightClicked(), e.getPlayer());
+                                bladeNbt.getCompound("CustomAttributes").setInteger("CHARGE", 0);
+                                e.getPlayer().setItemInHand(bladeNbt.getItem());
+                                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENDERMAN_HIT, 10, 1.2f);
+                            }else{
+                                ((Player) e.getRightClicked()).setHealth(((Player) e.getRightClicked()).getHealth() - bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE"));
+                                ItemMeta bladeMeta = bladeNbt.getItem().getItemMeta();
+                                bladeMeta.setDisplayName(bladeMeta.getDisplayName().replaceAll((bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE")) + "", "0"));
+                                bladeNbt.getItem().setItemMeta(bladeMeta);
+                                bladeNbt.getCompound("CustomAttributes").setInteger("CHARGE", 0);
+                                e.getPlayer().setItemInHand(bladeNbt.getItem());
+                                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENDERMAN_HIT, 10, 1.2f);
+                            }
+                        }
+                    } else {
+                        e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.VILLAGER_NO, 10, 1);
+                    }
+                }
+            }
+        }catch(Exception ex){
+            if(!(ex instanceof NullPointerException)) {
+                Bukkit.getConsoleSender().sendMessage("Error with wizard blade event: " + "\n" + Arrays.toString(ex.getStackTrace()));
+
+            }
+
+        }
     }
 
 //  Stun

@@ -141,14 +141,25 @@ public class WizardTierMenu {
 				
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - Mythical Items cost 1/5 less Souls.");
-				
+				glore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Lucky Chestplate");
+				glore.add(ChatColor.DARK_GRAY + "(Doubles your chance for souls while worn)");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Wizard Blade");
+				glore.add(ChatColor.DARK_GRAY + "(Charge this sword up by getting a kills. Depending on");
+				glore.add(ChatColor.DARK_GRAY + "how much the sword is charged up, release the charge on a player by right clicking them.)");
+
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - Mythical Items cost 1/5 less Souls.");
-				
+				ylore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Lucky Chestplate");
+				ylore.add(ChatColor.DARK_GRAY + "(Doubles your chance for souls while worn)");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Wizard Blade");
+				ylore.add(ChatColor.DARK_GRAY + "(Charge this sword up by getting a kills. Depending on");
+				ylore.add(ChatColor.DARK_GRAY + "how much the sword is charged up, release the charge on a player by right clicking them.)");
 				
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - Mythical Items cost 1/5 less Souls.");
+				rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Lucky Chestplate");
+				rlore.add(ChatColor.DARK_GRAY + "(Doubles your chance for souls while worn)");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Wizard Blade");
+				rlore.add(ChatColor.DARK_GRAY + "(Charge this sword up by getting a kills. Depending on");
+				rlore.add(ChatColor.DARK_GRAY + "how much the sword is charged up, release the charge on a player by right clicking them.)");
 
 				break;
 				
