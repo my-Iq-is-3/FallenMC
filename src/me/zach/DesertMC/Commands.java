@@ -1,9 +1,9 @@
 package me.zach.DesertMC;
 
 import de.tr7zw.nbtapi.NBTItem;
-import me.zach.DesertMC.GUImanager.KitsOrTraits;
+import me.zach.DesertMC.ClassManager.KitsOrTraits;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
-import me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager.Events;
+import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.EnchantmentUtil;
 import net.minecraft.server.v1_8_R3.CommandExecute;

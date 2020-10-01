@@ -1,11 +1,11 @@
-package me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents;
+package me.zach.DesertMC.ClassManager.CoruManager;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTContainer;
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
-import me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager.Events;
+import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
@@ -166,8 +166,9 @@ public class EventsForCorruptor {
                     if(RANDOM_INTEGER + 1 < 2){
                         ArmorStand hfa = (ArmorStand) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.ARMOR_STAND);
                         NBTEntity hfanbt = new NBTEntity(hfa);
-                        hfanbt.mergeCompound(new NBTContainer("{Marker:1b,Hellfire:1b,Unbreakable:1b,Invisible:0b}"));
-                        event.getEntity().getLocation().getBlock().setType(Material.FIRE);
+                        hfanbt.mergeCompound(new NBTContainer("{Marker:1b,Hellfire:1b,Unbreakable:1b,Invisible:0b,Owner:" + hitter.getUniqueId().toString() + "}"));
+                        event.getEntity().getLocation().clone().subtract(0,10,0).getBlock().setType(Material.FIRE);
+
                     }
                 }
             }

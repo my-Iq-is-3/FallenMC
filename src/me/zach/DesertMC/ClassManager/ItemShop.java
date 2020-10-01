@@ -1,4 +1,4 @@
-package me.zach.DesertMC.GUImanager;
+package me.zach.DesertMC.ClassManager;
 
 import java.util.ArrayList;
 
@@ -11,8 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-import de.tr7zw.nbtapi.NBTContainer;
-import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import net.md_5.bungee.api.ChatColor;
 

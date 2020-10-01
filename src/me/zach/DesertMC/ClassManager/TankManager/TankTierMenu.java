@@ -1,4 +1,4 @@
-package me.zach.DesertMC.GUImanager.TankManager;
+package me.zach.DesertMC.ClassManager.TankManager;
 
 import java.util.ArrayList;
 
@@ -138,28 +138,28 @@ public class TankTierMenu {
 				
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Stubborn Boots.");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Stubborn Boots");
 				glore.add(ChatColor.DARK_GRAY + "While wearing, you are immune to the effects of the Magic Wand.");
 				
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- Stubborn Boots.");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- Stubborn Boots");
 				ylore.add(ChatColor.DARK_GRAY + "While wearing, you are immune to the effects of the Magic Wand.");
 				
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- Stubborn Boots.");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- Stubborn Boots");
 				rlore.add(ChatColor.DARK_GRAY + "While wearing, you are immune to the effects of the Magic Wand.");
 				break;
 				
 				
 			case 7:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Clarity Enchantment");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Fortify Enchantment");
 				glore.add(ChatColor.DARK_GRAY + "Tier II and III");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- Clarity Enchantment");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- Fortify Enchantment");
 				ylore.add(ChatColor.DARK_GRAY + "Tier II and III");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- Clarity Enchantment");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- Fortify Enchantment");
 				rlore.add(ChatColor.DARK_GRAY + "Tier II and III");
 				break;
 			case 8:

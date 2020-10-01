@@ -1,36 +1,39 @@
-package me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager;
+package me.zach.DesertMC.GameMechanics;
 
 
+import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
-import me.zach.DesertMC.GameMechanics.ClassEvents.CorrupterEvents.EventsForCorruptor;
-import me.zach.DesertMC.GameMechanics.ClassEvents.ScoutEvents.EventsForScout;
-import me.zach.DesertMC.GameMechanics.ClassEvents.WizardEvents.EventsForWizard;
+import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
+import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
+import me.zach.DesertMC.ClassManager.TankManager.EventsForTank;
+import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.TitleUtils;
-import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
 public class Events implements Listener {
+
 	DesertMain main = DesertMain.getInstance;
 	public static HashMap<UUID,Integer> ks = new HashMap<UUID, Integer>();
 
@@ -120,6 +123,25 @@ public class Events implements Listener {
 					p.setFoodLevel(20);
 					Location location = p.getLocation();
 					Location locbefore = location.clone();
+					if(location.getBlock().getType() == Material.FIRE){
+
+						for(Entity e:location.getWorld().getEntities()){
+							if(e instanceof ArmorStand){
+								NBTEntity nbta = new NBTEntity(e);
+								if(nbta.getBoolean("Hellfire")){
+									if(e.getLocation().clone().add(0,10,0).distance(p.getLocation()) <= 2){
+										if(p.getHealth() <= 4) p.damage(9999999,Bukkit.getPlayer(UUID.fromString(nbta.getString("Owner"))));
+										if(p.getHealth() > 4){
+											p.damage(0,Bukkit.getPlayer(UUID.fromString(nbta.getString("Owner"))));
+											p.setHealth(p.getHealth()-4);
+										}
+									}
+								}
+							}
+						}
+
+					}
+
 					if(location.subtract(0,10,0).getBlock().getType().equals(Material.DIAMOND_BLOCK) && ConfigUtils.getLevel("wizard",p) > 5 && ConfigUtils.findClass(p).equals("wizard")){
 						p.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 0, true,false));
 					}else if(location.subtract(0,10,0).getBlock().getType().equals(Material.EMERALD_BLOCK) && ConfigUtils.getLevel("tank",p) > 4 && ConfigUtils.findClass(p).equals("tank")){
@@ -185,8 +207,17 @@ public class Events implements Listener {
 		EventsForWizard.INSTANCE.wizardt1(event);
 		EventsForWizard.INSTANCE.wizardt8(event);
 		EventsForScout.getInstance().t1Event(event);
+		EventsForScout.getInstance().t4Event(event);
+		EventsForScout.getInstance().daggerHit(event);
+		EventsForScout.getInstance().t8Event(event);
 		EventsForCorruptor.INSTANCE.volcanicSword(event);
-
+		EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
+		EventsForCorruptor.INSTANCE.corruptedSword(event);
+		EventsForTank.getInstance().t1Event(event);
+		EventsForTank.getInstance().t5Event(event);
+		EventsForTank.getInstance().t8Event(event);
+		EventsForTank.getInstance().fortify(event);
+		EventsForScout.getInstance().alert(event);
 
 		executeKill(event);
 
@@ -252,13 +283,23 @@ public class Events implements Listener {
 
 	}
 
-	private void executeKill(EntityDamageByEntityEvent event) throws Exception {
+	public void executeKill(EntityDamageByEntityEvent event) throws Exception {
 		if (event.getEntity() instanceof Player && !(event.getDamager() instanceof Arrow)) {
 			if (event.getDamager() instanceof Player) {
+
+
 				try {
 					Player player = (Player) event.getEntity();
 					Player killer = (Player) event.getDamager();
 					if (player.getHealth() - event.getDamage() < 0.1) {
+						try{
+							if(new NBTItem(((Player) event.getDamager()).getItemInHand()).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE")) EventsForWizard.addBladeCharge(((Player) event.getDamager()));
+						}catch(Exception ex){
+							if (!(ex instanceof NullPointerException)){
+								Bukkit.getConsoleSender().sendMessage("Error adding charge to wizard blade, error:");
+								ex.printStackTrace();
+							}
+						}
 						Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
 						player.setHealth(player.getMaxHealth());
 
@@ -266,6 +307,7 @@ public class Events implements Listener {
 						if(player.getFireTicks() > 0)
 							player.setFireTicks(0);
 						event.setCancelled(true);
+						int randomCompare = 2;
 						double random = (Math.random() * 5) + 1;
 						int soulsgained;
 						if (random < 2) {
@@ -291,6 +333,8 @@ public class Events implements Listener {
 						ks.put(event.getEntity().getUniqueId(), 0);
 						player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
 						((Player) event.getDamager()).playSound(player.getLocation(), Sound.LEVEL_UP, 1, 4);
+						killer.playSound(player.getLocation(), Sound.BURP, 6, 1.3f);
+						killer.playSound(player.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
 						economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
 						ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
 						main.saveConfig();
@@ -322,9 +366,17 @@ public class Events implements Listener {
 					player.teleport(spawn);
 					event.setCancelled(true);
 					double random = (Math.random() * 5) + 1;
-
+					int randomCompare = 2;
 					int soulsgained;
-					if (random < 2) {
+						try {
+							if(killer.getInventory().getChestplate().getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Lucky Chestplate")) randomCompare = 3;
+						}catch(Exception ex){
+							if( !(ex instanceof NullPointerException)){
+								Bukkit.getConsoleSender().sendMessage("Error occurred checking for lucky chestplate. Error:\n" + Arrays.toString(ex.getStackTrace()));
+							}
+						}
+					if (random < randomCompare) {
+
 						soulsgained = 1;
 						if (main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
 							main.getConfig().set("player." + killer.getUniqueId() + ".souls", main.getConfig().getInt("player." + killer.getUniqueId() + ".souls") + 1);
@@ -347,13 +399,25 @@ public class Events implements Listener {
 					}
 					ks.put(event.getEntity().getUniqueId(), 0);
 					player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
-					killer.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 4);
+					killer.playSound(killer.getLocation(), Sound.LEVEL_UP, 1, 4);
+					killer.playSound(killer.getLocation(), Sound.BURP, 6, 1.3f);
+					killer.playSound(killer.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
 					economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
 					ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
 				}
 
 			}
 		}
+	}
+	@EventHandler
+	public void healthRegen(EntityRegainHealthEvent e){
+		if(e.getEntity() instanceof Player && (e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED) || e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.REGEN))){
+			int random = (int) (Math.random() * 3) + 1;
+			if(random >= 2){
+				e.setCancelled(true);
+			}
+		}
+
 	}
 
 	@EventHandler
@@ -373,6 +437,10 @@ public class Events implements Listener {
 			}
 			
 		}.runTaskTimer(DesertMain.getPlugin(DesertMain.class), 0, 5);
+	}
+	@EventHandler
+	public void forKs(PlayerJoinEvent event){
+		if(!ks.containsKey(event.getPlayer().getUniqueId())) ks.put(event.getPlayer().getUniqueId(), 0);
 	}
 	
 	@EventHandler
@@ -398,16 +466,9 @@ public class Events implements Listener {
 			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.scout.hasxp", 0);
 			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.wizard.hasxp", 0);
 			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.corrupter.hasxp", 0);
-			/* Passives */
-			//speed
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".passive.speed.level", 0);
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".passive.speed.xptonext", 50);
-			//health
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".passive.health.level", 0);
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".passive.health.xptonext", 50);
-			//damage
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".passive.damage.xptonext", 50);
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".passive.damage.level", 0);
+			//init invincible
+			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".invincible", false);
+
 			
 			//init titles
 			TitleUtils.initializeTitles(e.getPlayer());
@@ -420,6 +481,61 @@ public class Events implements Listener {
 
 
 		
+	}
+	public static void executeKill(Player player, Player killer){
+		try {
+
+
+				Location spawn = (Location) DesertMain.getInstance.getConfig().get("server.lobbyspawn");
+				player.setHealth(player.getMaxHealth());
+
+				player.teleport(spawn);
+				if(player.getFireTicks() > 0)
+					player.setFireTicks(0);
+
+
+				double random = (Math.random() * 5) + 1;
+				int soulsgained;
+				int randomCompare = 2;
+				try {
+					if(killer.getInventory().getChestplate().getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Lucky Chestplate")) randomCompare = 3;
+				}catch(Exception ex){
+					if( !(ex instanceof NullPointerException)){
+						Bukkit.getConsoleSender().sendMessage("Error occurred checking for lucky chestplate. Error:\n" + Arrays.toString(ex.getStackTrace()));
+					}
+				}
+				if (random < randomCompare) {
+					soulsgained = 1;
+					if (DesertMain.getInstance.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
+						DesertMain.getInstance.getConfig().set("players." + killer.getUniqueId() + ".souls", DesertMain.getInstance.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + 1);
+					} else {
+						DesertMain.getInstance.getConfig().set("players." + killer.getUniqueId() + ".souls", 1);
+					}
+				} else {
+					soulsgained = 0;
+				}
+				int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
+
+				int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
+
+				killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
+				if (!ks.containsKey(killer.getUniqueId())) {
+					ks.put(killer.getUniqueId(), 1);
+				} else {
+					ks.put(killer.getUniqueId(), ks.get(killer.getUniqueId()) + 1);
+				}
+				ks.put(player.getUniqueId(), 0);
+				player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
+				((Player) killer).playSound(player.getLocation(), Sound.LEVEL_UP, 1, 4);
+				killer.playSound(player.getLocation(), Sound.BURP, 6, 1.3f);
+				killer.playSound(player.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
+				Bukkit.getPluginManager().getPlugin("Fallen").getConfig().set("players." + killer.getUniqueId() + ".balance", Bukkit.getPluginManager().getPlugin("Fallen").getConfig().getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
+				ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
+				DesertMain.getInstance.saveConfig();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 

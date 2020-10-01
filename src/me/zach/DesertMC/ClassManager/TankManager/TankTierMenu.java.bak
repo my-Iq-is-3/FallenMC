@@ -1,4 +1,4 @@
-package me.zach.DesertMC.GUImanager.TankManager;
+package me.zach.DesertMC.ClassManager.TankManager;
 
 import java.util.ArrayList;
 

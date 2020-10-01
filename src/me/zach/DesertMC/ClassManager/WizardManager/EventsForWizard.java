@@ -1,8 +1,8 @@
-package me.zach.DesertMC.GameMechanics.ClassEvents.WizardEvents;
+package me.zach.DesertMC.ClassManager.WizardManager;
 
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
-import me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager.Events;
+import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
@@ -11,7 +11,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,7 +23,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 

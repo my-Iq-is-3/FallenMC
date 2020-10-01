@@ -1,8 +1,7 @@
-package me.zach.DesertMC.GameMechanics.ClassEvents.ScoutEvents;
+package me.zach.DesertMC.ClassManager.ScoutManager;
 
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;

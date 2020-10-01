@@ -1,9 +1,9 @@
 package me.zach.DesertMC;
 
 import me.zach.DesertMC.CommandsPackage.ItemCommand;
-import me.zach.DesertMC.GUImanager.InvEvents;
-import me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager.Events;
-import me.zach.DesertMC.GameMechanics.ClassEvents.WizardEvents.EventsForWizard;
+import me.zach.DesertMC.ClassManager.InvEvents;
+import me.zach.DesertMC.GameMechanics.Events;
+import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;

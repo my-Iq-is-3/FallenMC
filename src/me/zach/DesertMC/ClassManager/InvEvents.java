@@ -1,4 +1,4 @@
-package me.zach.DesertMC.GUImanager;
+package me.zach.DesertMC.ClassManager;
 
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import org.bukkit.Bukkit;
@@ -12,10 +12,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import me.zach.DesertMC.GUImanager.CoruManager.CorrupterTierMenu;
-import me.zach.DesertMC.GUImanager.ScoutManager.ScoutTierMenu;
-import me.zach.DesertMC.GUImanager.TankManager.TankTierMenu;
-import me.zach.DesertMC.GUImanager.WizardManager.WizardTierMenu;
+import me.zach.DesertMC.ClassManager.CoruManager.CorrupterTierMenu;
+import me.zach.DesertMC.ClassManager.ScoutManager.ScoutTierMenu;
+import me.zach.DesertMC.ClassManager.TankManager.TankTierMenu;
+import me.zach.DesertMC.ClassManager.WizardManager.WizardTierMenu;
 
 
 

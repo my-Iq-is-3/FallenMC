@@ -1,4 +1,4 @@
-package me.zach.DesertMC.GUImanager;
+package me.zach.DesertMC.ClassManager;
 
 import java.util.ArrayList;
 

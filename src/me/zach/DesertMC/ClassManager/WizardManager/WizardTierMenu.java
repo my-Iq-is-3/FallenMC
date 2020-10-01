@@ -1,4 +1,4 @@
-package me.zach.DesertMC.GUImanager.WizardManager;
+package me.zach.DesertMC.ClassManager.WizardManager;
 
 import java.util.ArrayList;
 
@@ -156,7 +156,7 @@ public class WizardTierMenu {
 				
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Lucky Chestplate");
-				rlore.add(ChatColor.DARK_GRAY + "(Doubles your chance for souls while worn)");
+				rlore.add(ChatColor.DARK_GRAY + "(Doubles your souls while worn)");
 				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Wizard Blade");
 				rlore.add(ChatColor.DARK_GRAY + "(Charge this sword up by getting a kills. Depending on");
 				rlore.add(ChatColor.DARK_GRAY + "how much the sword is charged up, release the charge on a player by right clicking them.)");

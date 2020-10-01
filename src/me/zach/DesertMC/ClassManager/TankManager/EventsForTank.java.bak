@@ -1,6 +1,5 @@
-package me.zach.DesertMC.GameMechanics.ClassEvents.TankEvents;
+package me.zach.DesertMC.ClassManager.TankManager;
 
-import com.sun.org.apache.xerces.internal.impl.dv.dtd.ENTITYDatatypeValidator;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import org.bukkit.entity.Player;
