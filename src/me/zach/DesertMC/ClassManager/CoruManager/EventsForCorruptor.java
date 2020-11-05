@@ -4,22 +4,23 @@ import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTContainer;
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.nbtinjector.NBTInjector;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -27,7 +28,7 @@ import org.bukkit.util.Vector;
 import java.util.Random;
 
 
-public class EventsForCorruptor {
+public class EventsForCorruptor implements Listener {
     public static final EventsForCorruptor INSTANCE = new EventsForCorruptor();
 
     public void fort4(EntityDamageEvent event){
@@ -164,14 +165,27 @@ public class EventsForCorruptor {
                     Random rgen = new Random();
                     final int RANDOM_INTEGER = rgen.nextInt(10);
                     if(RANDOM_INTEGER + 1 < 2){
-                        ArmorStand hfa = (ArmorStand) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.ARMOR_STAND);
-                        NBTEntity hfanbt = new NBTEntity(hfa);
+                        Entity hfa = event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation().subtract(0, 10, 0), EntityType.ARMOR_STAND);
+                        hfa = NBTInjector.patchEntity(hfa);
+                        NBTCompound hfanbt = NBTInjector.getNbtData(hfa);
                         hfanbt.mergeCompound(new NBTContainer("{Marker:1b,Hellfire:1b,Unbreakable:1b,Invisible:0b,Owner:" + hitter.getUniqueId().toString() + "}"));
-                        event.getEntity().getLocation().clone().subtract(0,10,0).getBlock().setType(Material.FIRE);
-
+                        event.getEntity().getLocation().getBlock().setType(Material.FIRE);
                     }
                 }
             }
         }
     }
+    public void corrupterLeggings(Player killer, Player killed){
+        Random rgen = new Random();
+        int r = rgen.nextInt(5);
+        if(r == 0 && ConfigUtils.getLevel("corrupter", killed) > 5){
+            Entity hfa = killer.getWorld().spawnEntity(killer.getLocation().subtract(0, 10, 0), EntityType.ARMOR_STAND);
+            hfa = NBTInjector.patchEntity(hfa);
+            NBTCompound hfanbt = NBTInjector.getNbtData(hfa);
+            hfanbt.mergeCompound(new NBTContainer("{Marker:1b,Hellfire:1b,Unbreakable:1b,Invisible:0b,Owner:" + killer.getUniqueId().toString() + "}"));
+            killer.getLocation().getBlock().setType(Material.FIRE);
+        }
+    }
+
+
 }

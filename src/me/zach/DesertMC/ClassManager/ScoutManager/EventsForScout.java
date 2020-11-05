@@ -9,6 +9,7 @@ import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -19,7 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class EventsForScout {
+public class EventsForScout implements Listener {
 
     private static final EventsForScout INSTANCE = new EventsForScout();
 
@@ -29,11 +30,11 @@ public class EventsForScout {
 
     public void medKit(PlayerInteractEvent event){
         Player player = event.getPlayer();
-        if(player.getInventory().getItemInMainHand() != null){
-            ItemStack handItem = player.getInventory().getItemInMainHand();
+        if(player.getInventory().getItemInHand() != null){
+            ItemStack handItem = player.getInventory().getItemInHand();
             if(NBTUtil.INSTANCE.getCustomAttr(handItem,"ID").equals("FIRST_AID_KIT")){
                 if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK){
-                    if(ConfigUtils.getLevel("scout",player) > 4 && ConfigUtils.findClass(player).equals("scout")){
+                    if(ConfigUtils.findClass(player).equals("scout")){
                         List<String> lore = handItem.getItemMeta().getLore();
                         NBTCompound nbtCompound = new NBTItem(handItem).getCompound("CustomAttributes");
                         int usesLeft = nbtCompound.getInteger("UsesLeft");
@@ -91,7 +92,7 @@ public class EventsForScout {
         if(event.getDamager() instanceof Player && event.getEntity() instanceof LivingEntity){
             Player damager = (Player) event.getDamager();
             LivingEntity damaged = (LivingEntity) event.getEntity();
-            if(ConfigUtils.getLevel("scout",damager) > 6 && ConfigUtils.findClass(damager).equals("scout")){
+            if(ConfigUtils.getLevel("scout",damager) > 4 && ConfigUtils.findClass(damager).equals("scout")){
                 if(NBTUtil.INSTANCE.getCustomAttr(damager.getInventory().getItemInHand(),"ID").equals("SCOUT_DAGGER")){
                     if(damager.getLocation().distance(damaged.getLocation()) > 2){
                         event.setCancelled(true);
@@ -108,6 +109,22 @@ public class EventsForScout {
                 if(damager.isSprinting()) event.setDamage(event.getDamage() * 1.05);
             }
         }
+    }
+
+    public void scoutBlade(Player hitter, Player hit){
+        if(ConfigUtils.getLevel("scout", hitter) > 6 && ConfigUtils.findClass(hitter).equals("scout")) {
+            if (hit.canSee(hitter) && !(DesertMain.scoutBladeCD.contains(hitter.getUniqueId()))) {
+                hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 2));
+                DesertMain.scoutBladeCD.add(hitter.getUniqueId());
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        DesertMain.scoutBladeCD.remove(hitter.getUniqueId());
+                    }
+                }.runTaskLater(DesertMain.getInstance, 340);
+            }
+        }
+
     }
 
     public void alert(EntityDamageByEntityEvent event){

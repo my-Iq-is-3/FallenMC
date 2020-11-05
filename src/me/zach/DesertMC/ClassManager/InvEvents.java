@@ -97,7 +97,6 @@ public class InvEvents implements Listener {
 				
 			if(item.getType().equals(Material.IRON_BLOCK)) {
 				if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 60){
-					player.getInventory().addItem(new ItemStack(Material.IRON_SWORD));
 					player.getInventory().addItem(new ItemStack(Material.IRON_CHESTPLATE));
 					player.getInventory().addItem(new ItemStack(Material.IRON_HELMET));
 					
@@ -109,11 +108,9 @@ public class InvEvents implements Listener {
 				
 				
 				
-				if(item.getType().equals(Material.DIAMOND_BLOCK)) {
-						if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 100){
-						player.getInventory().addItem(new ItemStack(Material.DIAMOND_SWORD));
-						player.getInventory().addItem(new ItemStack(Material.DIAMOND_CHESTPLATE));
-						player.getInventory().addItem(new ItemStack(Material.DIAMOND_HELMET));
+				if(item.getType().equals(Material.IRON_SWORD)) {
+						if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 15){
+						player.getInventory().addItem(new ItemStack(Material.IRON_SWORD));
 						
 						economyConfig.set("players." + player.getUniqueId() + ".balance", economyConfig.getInt("players." + player.getUniqueId() + ".balance") - 100);
 						Bukkit.getPluginManager().getPlugin("Fallen").saveConfig();

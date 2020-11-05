@@ -90,10 +90,13 @@ public class CorrupterTierMenu {
 			case 2:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Unlock the " + ChatColor.BOLD + "Corrupter Shop.");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Lava Cake");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Unlock the " + ChatColor.BOLD + "Corrupter Shop.");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Lava Cake");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Unlock the " + ChatColor.BOLD + "Corrupter Shop.");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Lava Cake");
 				
 				break;
 			case 3:
@@ -117,47 +120,55 @@ public class CorrupterTierMenu {
 			case 4:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Immunity to fire and lava.");
-				glore.add(ChatColor.GREEN + "§lSHOP UNLOCK " + ChatColor.GREEN + "- Corrupted Sword");
-				glore.add(ChatColor.DARK_GRAY + "Has a chance to spawn " + ChatColor.GOLD + "Hellfire" + ChatColor.DARK_GRAY + " beneath the player you hit.");
+
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Immunity to fire and lava.");
-				ylore.add(ChatColor.YELLOW + "§lSHOP UNLOCK " + ChatColor.YELLOW + "- Corrupted Sword");
-				ylore.add(ChatColor.DARK_GRAY + "Has a chance to spawn " + ChatColor.GOLD + "Hellfire" + ChatColor.DARK_GRAY + " beneath the player you hit.");
+
 
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Immunity to fire and lava.");
-				rlore.add(ChatColor.RED + "§lSHOP UNLOCK " + ChatColor.RED + "- Corrupted Sword");
-				rlore.add(ChatColor.DARK_GRAY + "Has a chance to spawn " + ChatColor.GOLD + "Hellfire" + ChatColor.DARK_GRAY + " beneath the player you hit.");
 
 				break;
 			case 5:
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Permanent strength 1 in the nether biome.");
+				glore.add(ChatColor.BOLD + "" + ChatColor.GREEN + "SHOP UNLOCK " + ChatColor.GREEN + "- Corrupter Leggings");
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Permanent strength 1 in the nether biome.");
+				ylore.add(ChatColor.BOLD + "" + ChatColor.YELLOW + "SHOP UNLOCK " + ChatColor.YELLOW + "- Corrupter Leggings");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Permanent strength 1 in the nether biome.");
+				glore.add(ChatColor.BOLD + "" + ChatColor.RED + "SHOP UNLOCK " + ChatColor.RED + "- Corrupter Leggings");
 				break;
 			case 6:
 				
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
+				glore.add(ChatColor.GREEN + "§lSHOP UNLOCK " + ChatColor.GREEN + "- Corrupted Sword");
+				glore.add(ChatColor.DARK_GRAY + "Has a chance to spawn " + ChatColor.GOLD + "Hellfire" + ChatColor.DARK_GRAY + " beneath the player you hit.");
+				/*glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
 				glore.add(ChatColor.DARK_GRAY + "With this enchantment, every other kill subtracts 0.5 Health from everyone");
-				glore.add(ChatColor.DARK_GRAY + "within 6 blocks.");				
+				glore.add(ChatColor.DARK_GRAY + "within 6 blocks.");
+				 */
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
+				ylore.add(ChatColor.YELLOW + "§lSHOP UNLOCK " + ChatColor.YELLOW + "- Corrupted Sword");
+				ylore.add(ChatColor.DARK_GRAY + "Has a chance to spawn " + ChatColor.GOLD + "Hellfire" + ChatColor.DARK_GRAY + " beneath the player you hit.");
+				/*ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
 				ylore.add(ChatColor.DARK_GRAY + "With this enchantment, every other kill subtracts 0.5 Health from everyone");
-				ylore.add(ChatColor.DARK_GRAY + "within 6 blocks.");				
+				ylore.add(ChatColor.DARK_GRAY + "within 6 blocks.");
+				 */
 				
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
+				rlore.add(ChatColor.RED + "§lSHOP UNLOCK " + ChatColor.RED + "- Corrupted Sword");
+				rlore.add(ChatColor.DARK_GRAY + "Has a chance to spawn " + ChatColor.GOLD + "Hellfire" + ChatColor.DARK_GRAY + " beneath the player you hit.");
+				/*rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
 				rlore.add(ChatColor.DARK_GRAY + "With this enchantment, every other kill subtracts 0.5 Health from everyone");
 				rlore.add(ChatColor.DARK_GRAY + "within 6 blocks.");
+				 */
 				break;
 				
 				

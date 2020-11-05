@@ -1,7 +1,7 @@
 package me.zach.DesertMC.Utils;
 
-import net.minecraft.server.v1_9_R1.EntityLiving;
-import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
+import net.minecraft.server.v1_8_R3.EntityLiving;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

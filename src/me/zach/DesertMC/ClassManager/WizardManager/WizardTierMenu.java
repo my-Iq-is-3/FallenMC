@@ -79,11 +79,13 @@ public class WizardTierMenu {
 			case 1:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Full invisibility for 1s on kill.");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Magic Snack");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Full invisibility for 1s on kill.");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Magic Snack");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Full invisibility for 1s on kill.");
-				//add level 1 rewards
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Magic Snack");
 				break;
 				
 			case 2:
@@ -142,14 +144,14 @@ public class WizardTierMenu {
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Lucky Chestplate");
-				glore.add(ChatColor.DARK_GRAY + "(Doubles your chance for souls while worn)");
+				glore.add(ChatColor.DARK_GRAY + "(Doubles your souls while worn)");
 				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Wizard Blade");
 				glore.add(ChatColor.DARK_GRAY + "(Charge this sword up by getting a kills. Depending on");
 				glore.add(ChatColor.DARK_GRAY + "how much the sword is charged up, release the charge on a player by right clicking them.)");
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Lucky Chestplate");
-				ylore.add(ChatColor.DARK_GRAY + "(Doubles your chance for souls while worn)");
+				ylore.add(ChatColor.DARK_GRAY + "(Doubles your souls while worn)");
 				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Wizard Blade");
 				ylore.add(ChatColor.DARK_GRAY + "(Charge this sword up by getting a kills. Depending on");
 				ylore.add(ChatColor.DARK_GRAY + "how much the sword is charged up, release the charge on a player by right clicking them.)");

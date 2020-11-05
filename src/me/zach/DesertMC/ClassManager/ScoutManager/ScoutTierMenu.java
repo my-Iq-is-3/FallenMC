@@ -91,44 +91,46 @@ public class ScoutTierMenu{
 			case 2:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Unlock the " + ChatColor.BOLD + "Scout Shop.");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Energy Snack");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Unlock the " + ChatColor.BOLD + "Scout Shop.");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Energy Snack");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Unlock the " + ChatColor.BOLD + "Scout Shop.");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Energy Snack");
 				//add level 2 rewards
 				break;
 			case 3:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + " SHOP UNLOCK" + ChatColor.GREEN + " - Scout Goggles ");
-				glore.add(ChatColor.DARK_GRAY + "(Leather Helmet that while worn ");
+				glore.add(ChatColor.DARK_GRAY + "(Diamond Helmet that while worn ");
 				glore.add(ChatColor.DARK_GRAY + " provides the ability to see invisible players).");
 				
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + " SHOP UNLOCK" + ChatColor.YELLOW + " - Scout Goggles ");
-				ylore.add(ChatColor.DARK_GRAY + "(Leather Helmet that while worn ");
+				ylore.add(ChatColor.DARK_GRAY + "(Diamond Helmet that while worn ");
 				ylore.add(ChatColor.DARK_GRAY + " provides the ability to see invisible players).");
 				
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + " SHOP UNLOCK" + ChatColor.RED + " - Scout Goggles ");
-				rlore.add(ChatColor.DARK_GRAY + "(Leather Helmet that while worn ");
+				rlore.add(ChatColor.DARK_GRAY + "(Diamond Helmet that while worn ");
 				rlore.add(ChatColor.DARK_GRAY + " provides the ability to see invisible players).");
 				break;
 			case 4:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - 1/2 Absorbtion heart on kill.");
 				glore.add(ChatColor.GREEN + "§lSHOP UNLOCK§a - Alert Enchantment");
-				glore.add(ChatColor.GREEN + "§lSHOP UNLOCK§a - First Aid Kit");
-
+				glore.add(ChatColor.GREEN + "§lSHOP UNLOCK§a - Scout Dagger");
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - 1/2 Absorbtion heart on kill.");
 				ylore.add(ChatColor.YELLOW + "§lSHOP UNLOCK§e - Alert Enchantment");
-				ylore.add(ChatColor.YELLOW+ "§lSHOP UNLOCK§e - First Aid Kit");
+				ylore.add(ChatColor.YELLOW + "§lSHOP UNLOCK§e - Scout Dagger");
 
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - 1/2 Absorbtion heart on kill.");
 				rlore.add(ChatColor.RED + "§lSHOP UNLOCK§c - Alert Enchantment");
-				rlore.add(ChatColor.RED + "§lSHOP UNLOCK§c - First Aid Kit");
+				rlore.add(ChatColor.RED + "§lSHOP UNLOCK§c - Scout Dagger");
 				break;
 			case 5:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
@@ -151,11 +153,11 @@ public class ScoutTierMenu{
 				break;
 			case 7:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.GREEN + "- Quick Enchantment");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.GREEN + "- Alert Enchantment Tier 3");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.YELLOW + "- Quick Enchantment");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.YELLOW + "- Alert Enchantment Tier 3");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.RED + "- Quick Enchantment");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.RED + "- Alert Enchantment Tier 3");
 				break;
 			case 8:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");

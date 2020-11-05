@@ -91,7 +91,7 @@ public class ItemShop {
 		glore.add(ChatColor.DARK_GRAY + "A golden apple that is consumed");
 		glore.add(ChatColor.DARK_GRAY + "on eat.");
 		glore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " Regen II for 5 seconds");
-		glore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " Absorpbtion I for 2 minutes (" + ChatColor.YELLOW + "❤❤" + ChatColor.DARK_GRAY + ")");
+		glore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " Absorption I for 2 minutes (" + ChatColor.YELLOW + "❤❤" + ChatColor.DARK_GRAY + ")");
 		glore.add("");
 		glore.add(ChatColor.WHITE + "Cost: " + ChatColor.GREEN + "20 Gems");
 		if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 20) {
@@ -122,7 +122,6 @@ public class ItemShop {
 		packLore.add(ChatColor.DARK_GRAY + "Contents: ");
 		packLore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " x1 Iron Helmet");
 		packLore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " x1 Iron Chestplate");
-		packLore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " x1 Iron Sword");
 		ipackMeta.setLore(packLore);
 		itemPackage.setItemMeta(ipackMeta);
 		addLore(itemPackage, 60, packLore, player);
@@ -132,7 +131,7 @@ public class ItemShop {
 		
 		
 		//diamond package
-		ItemStack itemPackageD = new ItemStack(Material.DIAMOND_BLOCK);
+		/*ItemStack itemPackageD = new ItemStack(Material.DIAMOND_BLOCK);
 		ItemMeta ipackDMeta = itemPackage.getItemMeta();
 		ipackDMeta.setDisplayName(ChatColor.WHITE + "Diamond Package");
 		ArrayList<String> dpackLore = new ArrayList<String>();
@@ -143,9 +142,20 @@ public class ItemShop {
 		ipackDMeta.setLore(dpackLore);
 		itemPackageD.setItemMeta(ipackDMeta);
 		addLore(itemPackageD, 100, dpackLore, player);
-		shop.setItem(25, itemPackageD);
+		shop.setItem(25, itemPackageD);*/
+
 		//---------------------------------------------------------------
-		//e golden apple
+		//iron sword
+		ItemStack sword = new ItemStack(Material.IRON_SWORD);
+		ItemMeta swordMeta = sword.getItemMeta();
+		swordMeta.setDisplayName(ChatColor.WHITE + "Iron Sword");
+		ArrayList<String> swordlore = new ArrayList<String>();
+		swordlore.add(ChatColor.DARK_GRAY + "An Iron sword.");
+
+		swordMeta.setLore(swordlore);
+		sword.setItemMeta(swordMeta);
+		addLore(sword, 15, swordlore, player);
+		shop.setItem(25, sword);
 		
 		
 		player.openInventory(shop);

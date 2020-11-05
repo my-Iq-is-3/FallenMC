@@ -1,9 +1,10 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="MainPlugin:jar">
-    <output-path>$USER_HOME$/Desktop/server/plugins</output-path>
+    <output-path>$USER_HOME$/Desktop/Server/plugins</output-path>
     <root id="archive" name="MainPlugin.jar">
       <element id="module-output" name="MainPlugin" />
-      <element id="extracted-dir" path="$USER_HOME$/Downloads/spigot-1.9-R0.1-SNAPSHOT-latest.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Desktop/Server/spigot.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/FallenItems.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

@@ -117,9 +117,10 @@ public class EventsForWizard implements Listener {
     public void magicWandHit(Player damaged, Player damager) {
         if (!damager.getInventory().getItemInHand().getType().equals(Material.AIR)) {
             if (NBTUtil.INSTANCE.getCustomAttr(damager.getInventory().getItemInHand(), "ID").equals("MAGIC_WAND")) {
+
                 ItemStack boots = damaged.getInventory().getBoots();
                 if(boots != null){
-                    if(NBTUtil.INSTANCE.getCustomAttr(boots,"ID").equals("STUBBORN_BOOTS")){
+                    if(NBTUtil.INSTANCE.getCustomAttr(boots,"ID").equals("STUBBORN_BOOTS") && ConfigUtils.getLevel("tank", damaged) > 5){
                         return;
                     }
                 }

@@ -1,16 +1,32 @@
 package me.zach.DesertMC.ClassManager.TankManager;
 
+import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.PlayerUtils;
+import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import sun.security.krb5.Config;
 
-public class EventsForTank {
+public class EventsForTank implements Listener {
     public static EventsForTank getInstance(){
         return new EventsForTank();
     }
@@ -70,11 +86,22 @@ public class EventsForTank {
                 if(armor[i] != null){
                     NBTItem nbtarmor = new NBTItem(armor[i]);
                     try{
-                        level += nbtarmor.getCompound("CustomAttributes").getCompound("enchantments").getInteger("fortify");
+                        if(nbtarmor.getCompound("CustomAttributes").getCompound("enchantments").getInteger("fortify") <= 2) {
+                            if(ConfigUtils.getLevel("tank", damaged) > 4) {
+                                level += nbtarmor.getCompound("CustomAttributes").getCompound("enchantments").getInteger("fortify");
+                            }
+                        }else{
+                            if(nbtarmor.getCompound("CustomAttributes").getCompound("enchantments").getInteger("fortify") == 3){
+                                if(ConfigUtils.getLevel("tank", damaged) > 7) {
+                                    level += nbtarmor.getCompound("CustomAttributes").getCompound("enchantments").getInteger("fortify");
+                                }
+                            }
+                        }
                     }catch(NullPointerException ignored){}
 
                 }
             }
+
 
             event.setDamage(event.getDamage() - event.getDamage()*(0.01*level));
             if(!DesertMain.slowed.contains(damaged.getUniqueId())){
@@ -89,4 +116,73 @@ public class EventsForTank {
             }
         }
     }
+    public void bludgeon(EntityDamageByEntityEvent e){
+        if(e.getDamager() instanceof Player && e.getEntity() instanceof Player){
+            Player damager = (Player) e.getDamager();
+            Player damaged = (Player) e.getEntity();
+            int extradamage = 0;
+            if(damager.getFallDistance() > 0.0f) {
+                if (ConfigUtils.getLevel("tank", damager) > 3 && ConfigUtils.findClass(damager).equals("tank")) {
+                    for (ItemStack item : damaged.getInventory().getArmorContents()) {
+                        if (item != null) {
+                            if (!item.getType().equals(Material.AIR) && !item.getType().toString().startsWith("CHAINMAIL")) {
+                                extradamage += 1;
+                            }
+                        }
+                    }
+                }
+                e.setDamage(e.getDamage() + extradamage);
+            }
+        }
+    }
+    @EventHandler
+    public void stomper(PlayerInteractEvent e){
+        if(e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
+            Player clicker = e.getPlayer();
+
+            if (ConfigUtils.getLevel("tank", clicker) > 6 && ConfigUtils.findClass(clicker).equals("tank") && !DesertMain.stomperCD.contains(clicker.getUniqueId())) {
+                if(!DesertMain.stomperStage.containsKey(clicker.getUniqueId())){
+                    DesertMain.stomperStage.put(clicker.getUniqueId(), e.getClickedBlock());
+                }else if(DesertMain.stomperStage.get(clicker.getUniqueId()).equals(e.getClickedBlock())){
+                    Player closest = null;
+                    for(Player player : e.getClickedBlock().getWorld().getPlayers()){
+                        if(closest == null){
+                            if(clicker.getLocation().distance(player.getLocation()) <= 7 && !player.getUniqueId().equals(clicker.getUniqueId())){
+                                closest = player;
+                            }
+                        }
+                        else{
+                            if(clicker.getLocation().distance(player.getLocation()) < clicker.getLocation().distance(closest.getLocation()) && clicker.getLocation().distance(player.getLocation()) <= 7 && !player.getUniqueId().equals(clicker.getUniqueId())){
+                                closest = player;
+                            }
+                        }
+                    }
+                    if(closest != null) {
+                        DesertMain.stomperCD.add(clicker.getUniqueId());
+                        DesertMain.stomperStage.remove(clicker.getUniqueId());
+                        clicker.sendMessage(ChatColor.GOLD + "Damaged " + ChatColor.RED + closest.getName() + " for 4 damage!");
+                        clicker.playSound(clicker.getLocation(), Sound.ENDERDRAGON_HIT, 10, 1);
+                        if(closest.getHealth() <= 4){
+                            Events.executeKill(closest, clicker);
+                        }else{
+                            closest.setHealth(closest.getHealth() - 4);
+                            closest.setVelocity(closest.getVelocity().setY(2));
+                        }
+                        new BukkitRunnable() {
+                            public void run() {
+                                DesertMain.stomperCD.remove(clicker.getUniqueId());
+                            }
+                        }.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), 140);
+                    }else{
+                        clicker.sendMessage(ChatColor.RED + "No players nearby!");
+                        clicker.playSound(clicker.getLocation(), Sound.GLASS, 10, 1);
+                    }
+                }else{
+                    DesertMain.stomperStage.remove(clicker.getUniqueId());
+                }
+            }
+        }
+    }
+
+
 }

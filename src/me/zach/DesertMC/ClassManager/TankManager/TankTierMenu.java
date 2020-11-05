@@ -90,37 +90,38 @@ public class TankTierMenu {
 			case 2:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Unlock the " + ChatColor.BOLD + "Tank Shop.");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Protein Snack");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Unlock the " + ChatColor.BOLD + "Tank Shop.");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Protein Snack");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Unlock the " + ChatColor.BOLD + "Tank Shop.");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Protein Snack");
 				//add level 2 rewards
 				break;
 			case 3:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Clarity Enchantment ");
-				glore.add(ChatColor.DARK_GRAY + "Tier I");
 
-				
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Bludgeon");
+
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Clarity Enchantment");
-				ylore.add(ChatColor.DARK_GRAY + "Tier I");
-				
+
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- Bludgeon");
 				
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Clarity Enchantment");
-				rlore.add(ChatColor.DARK_GRAY + "Tier I");
-				
+
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- Bludgeon");
 				break;
 			case 4:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - Permanent strength 1 in swamp biome.");
-
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Fortify Enchantment ");
+				glore.add(ChatColor.DARK_GRAY + "Tier I");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - Permanent strength 1 in the swamp biome.");
-				
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Fortify Enchantment");
+				ylore.add(ChatColor.DARK_GRAY + "Tier I");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - Permanent strength 1 in the swamp biome.");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Fortify Enchantment");
+				rlore.add(ChatColor.DARK_GRAY + "Tier I");
 				break;
 			case 5:
 				
@@ -133,34 +134,38 @@ public class TankTierMenu {
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Vengance");
 				rlore.add(ChatColor.DARK_GRAY + " Slowness 1 and Weakness 4 to your killer for 2s on death.");
-				break;
-			case 6:
-				
-				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Stubborn Boots");
 				glore.add(ChatColor.DARK_GRAY + "While wearing, you are immune to the effects of the Magic Wand.");
-				
+
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- Stubborn Boots");
 				ylore.add(ChatColor.DARK_GRAY + "While wearing, you are immune to the effects of the Magic Wand.");
-				
+
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- Stubborn Boots");
 				rlore.add(ChatColor.DARK_GRAY + "While wearing, you are immune to the effects of the Magic Wand.");
 				break;
-				
-				
+			case 6:
+				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Stomper");
+				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Stomper");
+
+				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Stomper");
+
+				break;
 			case 7:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Fortify Enchantment");
-				glore.add(ChatColor.DARK_GRAY + "Tier II and III");
+				glore.add(ChatColor.DARK_GRAY + "Tier III");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- Fortify Enchantment");
-				ylore.add(ChatColor.DARK_GRAY + "Tier II and III");
+				ylore.add(ChatColor.DARK_GRAY + "Tier III");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- Fortify Enchantment");
-				rlore.add(ChatColor.DARK_GRAY + "Tier II and III");
+				rlore.add(ChatColor.DARK_GRAY + "Tier III");
 				break;
 			case 8:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
