@@ -5,6 +5,7 @@
       <element id="module-output" name="MainPlugin" />
       <element id="extracted-dir" path="$USER_HOME$/Desktop/Server/spigot.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/FallenItems.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/npclib-plugin-2.10-SNAPSHOT.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

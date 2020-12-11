@@ -82,9 +82,9 @@ public class EventsForTank implements Listener {
             ItemStack[] armor = PlayerUtils.getArmor(damaged);
             int level = 0;
 
-            for(int i=0;i<5;i++){
-                if(armor[i] != null){
-                    NBTItem nbtarmor = new NBTItem(armor[i]);
+            for(ItemStack armorA : armor){
+                if(armorA != null){
+                    NBTItem nbtarmor = new NBTItem(armorA);
                     try{
                         if(nbtarmor.getCompound("CustomAttributes").getCompound("enchantments").getInteger("fortify") <= 2) {
                             if(ConfigUtils.getLevel("tank", damaged) > 4) {
@@ -120,6 +120,9 @@ public class EventsForTank implements Listener {
         if(e.getDamager() instanceof Player && e.getEntity() instanceof Player){
             Player damager = (Player) e.getDamager();
             Player damaged = (Player) e.getEntity();
+            try{
+                if(!NBTUtil.INSTANCE.getCustomAttr(damager.getItemInHand(), "ID").equals("BLUDGEON")) return;
+            }catch(NullPointerException ignored){}
             int extradamage = 0;
             if(damager.getFallDistance() > 0.0f) {
                 if (ConfigUtils.getLevel("tank", damager) > 3 && ConfigUtils.findClass(damager).equals("tank")) {
@@ -139,6 +142,9 @@ public class EventsForTank implements Listener {
     public void stomper(PlayerInteractEvent e){
         if(e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
             Player clicker = e.getPlayer();
+            try{
+                if(!NBTUtil.INSTANCE.getCustomAttr(clicker.getItemInHand(), "ID").equals("STOMPER")) return;
+            }catch(NullPointerException ignored){}
 
             if (ConfigUtils.getLevel("tank", clicker) > 6 && ConfigUtils.findClass(clicker).equals("tank") && !DesertMain.stomperCD.contains(clicker.getUniqueId())) {
                 if(!DesertMain.stomperStage.containsKey(clicker.getUniqueId())){

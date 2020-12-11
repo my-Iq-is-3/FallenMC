@@ -49,18 +49,17 @@ public class EventsForWizard implements Listener {
     }
 
 //  Invisibility
-    public void wizardt1(EntityDamageByEntityEvent event) {
+    public void wizardt1(Player killer) {
 
-        if (event.getDamager() instanceof Player) {
-            if (((Player) event.getDamager()).getHealth() - event.getDamage() < 0.1) {
-                Player killer = (Player) event.getDamager();
+
+
                 if (ConfigUtils.findClass(killer).equals("wizard") && ConfigUtils.getLevel("wizard", killer) > 1) {
-                    for (Player player : event.getDamager().getWorld().getPlayers()) {
+                    for (Player player : killer.getWorld().getPlayers()) {
 
 
                         if (player.getInventory().getHelmet() != null) {
                             NBTItem helmet = new NBTItem(player.getInventory().getHelmet());
-                            if (!helmet.getCompound("CustomAttributes").getString("ID").equalsIgnoreCase("SCOUT_GOGGLES")) {
+                            if (NBTUtil.INSTANCE.getCustomAttr(helmet.getItem(), "ID").equalsIgnoreCase("SCOUT_GOGGLES")) {
                                 player.hidePlayer(killer);
                             }
                         } else {
@@ -72,7 +71,7 @@ public class EventsForWizard implements Listener {
 
                         @Override
                         public void run() {
-                            for (Player player : event.getDamager().getWorld().getPlayers()) {
+                            for (Player player : killer.getWorld().getPlayers()) {
 
                                 player.showPlayer(killer);
 
@@ -80,37 +79,8 @@ public class EventsForWizard implements Listener {
                         }
                     }.runTaskLater(DesertMain.getInstance, 40);
                 }
-            } else if (event.getDamager() instanceof Arrow) {
-                Arrow arrow = (Arrow) event.getDamager();
-                Player killer = (Player) arrow.getShooter();
-                if (ConfigUtils.findClass(killer).equals("wizard") && ConfigUtils.getLevel("wizard", killer) > 1) {
-                    for (Player player : event.getDamager().getWorld().getPlayers()) {
 
 
-                        if (player.getInventory().getHelmet() != null) {
-                            NBTItem helmet = new NBTItem(player.getInventory().getHelmet());
-                            if (!helmet.getCompound("CustomAttributes").getString("ID").equalsIgnoreCase("SCOUT_GOGGLES")) {
-                                player.hidePlayer(killer);
-                            }
-                        } else {
-                            player.hidePlayer(killer);
-                        }
-                    }
-
-                    new BukkitRunnable() {
-
-                        @Override
-                        public void run() {
-                            for (Player player : event.getDamager().getWorld().getPlayers()) {
-
-                                player.showPlayer(killer);
-
-                            }
-                        }
-                    }.runTaskLater(DesertMain.getInstance, 40);
-                }
-            }
-        }
 
     }
 //  MW Hit
@@ -149,18 +119,21 @@ public class EventsForWizard implements Listener {
                 if(ConfigUtils.findClass(damager).equals("wizard")){
                     if(ConfigUtils.getLevel("wizard",damager) > 3 && ConfigUtils.getLevel("wizard",damager) <= 7){
                         if(randint <= 3){
-                            damager.sendMessage(ChatColor.RED + "You gave " + damaged.getName() + " " + allpotionEffects[randint]);
+                            damager.sendMessage(ChatColor.RED + "You gave " + damaged.getName() + " " + ChatColor.GREEN + "" + allpotionEffects[randint].getType().toString());
                             ParticleEffect.VILLAGER_HAPPY.display(0.5f,0.5f,0.5f,0,30,damaged.getLocation().add(0,0.5,0), 5);
                         }else {
                             ParticleEffect.REDSTONE.display(0.5f,0.5f,0.5f,0,30,damaged.getLocation().add(0,0.5,0),5);
+                            damager.sendMessage(ChatColor.RED + "You gave " + damaged.getName() + " " + ChatColor.RED + "" + allpotionEffects[randint].getType().toString());
                         }
                         damaged.addPotionEffect(allpotionEffects[randint]);
                     }else if(ConfigUtils.getLevel("wizard",damager) > 7){
                         ParticleEffect.REDSTONE.display(0.5f,0.5f,0.5f,0,30,damaged.getLocation().add(0,0.5,0),5);
                         damaged.addPotionEffect(badpoteff[randint1]);
+                        damager.sendMessage(ChatColor.RED + "You gave " + damaged.getName() + " " + ChatColor.RED + "" + allpotionEffects[randint1].getType().toString());
                     }else{
                         damager.sendMessage(ChatColor.RED + "You can't use this ability!");
                     }
+
                     DesertMain.mwcd.add(damager);
                     new BukkitRunnable(){
 

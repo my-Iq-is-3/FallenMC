@@ -12,6 +12,7 @@ import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
+import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.apache.commons.lang.ObjectUtils;
@@ -23,6 +24,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -125,6 +127,7 @@ public class Events implements Listener {
 			@Override
 			public void run() {
 				for(Player p : Bukkit.getOnlinePlayers()){
+					if(!DesertMain.eating.contains(p.getUniqueId()))
 					p.setFoodLevel(20);
 					Location location = p.getLocation();
 					Location locbefore = location.clone();
@@ -191,38 +194,65 @@ public class Events implements Listener {
 				DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
 			}
 		}
-		
-	    if(DesertMain.ct1players.contains(event.getDamager().getUniqueId())){
-			event.setDamage(event.getDamage() * 1.1);
+		if(event.getDamager() instanceof Player){
+
+			if(((Player)event.getDamager()).getItemInHand().getType().equals(Material.DOUBLE_PLANT)){
+				event.setCancelled(true);
+				return;
+			}
+			if(event.getEntity() instanceof Player){
+				if(DesertMain.ct1players.contains(event.getDamager().getUniqueId())){
+					event.setDamage(event.getDamage() * 1.1);
+				}
+				EventsForScout.getInstance().daggerHit(event);
+				EventsForCorruptor.INSTANCE.t8Event(event);
+				EventsForCorruptor.INSTANCE.noMercy(event);
+				EventsForCorruptor.INSTANCE.t1Event(event);
+				EventsForWizard.INSTANCE.wizardt4(event);
+
+				EventsForWizard.INSTANCE.wizardt8(event);
+				EventsForScout.getInstance().t1Event(event);
+				EventsForScout.getInstance().t4Event(event);
+
+				EventsForScout.getInstance().t8Event(event);
+				EventsForCorruptor.INSTANCE.volcanicSword(event);
+				EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
+				EventsForCorruptor.INSTANCE.corruptedSword(event);
+				EventsForTank.getInstance().t1Event(event);
+				EventsForTank.getInstance().t5Event(event);
+				EventsForTank.getInstance().t8Event(event);
+				EventsForTank.getInstance().fortify(event);
+				EventsForScout.getInstance().alert(event);
+				EventsForTank.getInstance().bludgeon(event);
+				EventsForScout.getInstance().scoutBlade((Player)event.getDamager(), (Player) event.getEntity());
+			}
+			snackHit(event);
+			executeKill(event);
 		}
 
-		EventsForCorruptor.INSTANCE.t8Event(event);
-		EventsForCorruptor.INSTANCE.noMercy(event);
-		EventsForCorruptor.INSTANCE.t1Event(event);
-		EventsForWizard.INSTANCE.wizardt4(event);
-		EventsForWizard.INSTANCE.wizardt1(event);
-		EventsForWizard.INSTANCE.wizardt8(event);
-		EventsForScout.getInstance().t1Event(event);
-		EventsForScout.getInstance().t4Event(event);
-		EventsForScout.getInstance().daggerHit(event);
-		EventsForScout.getInstance().t8Event(event);
-		EventsForCorruptor.INSTANCE.volcanicSword(event);
-		EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
-		EventsForCorruptor.INSTANCE.corruptedSword(event);
-		EventsForTank.getInstance().t1Event(event);
-		EventsForTank.getInstance().t5Event(event);
-		EventsForTank.getInstance().t8Event(event);
-		EventsForTank.getInstance().fortify(event);
-		EventsForScout.getInstance().alert(event);
-		EventsForTank.getInstance().bludgeon(event);
-		EventsForScout.getInstance().scoutBlade((Player)event.getDamager(), (Player) event.getEntity());
-		snackHit(event);
+	}
 
-		executeKill(event);
+	@EventHandler
+	public void eating(PlayerInteractEvent e){
+		try {
+			if (e.getPlayer().getItemInHand().getType().equals(Material.COOKIE)) {
+				if(e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
+					e.getPlayer().setFoodLevel(19);
+					DesertMain.eating.add(e.getPlayer().getUniqueId());
+					new BukkitRunnable(){
+						public void run(){
 
-
-		
-
+							e.getPlayer().setFoodLevel(20);
+							new BukkitRunnable(){
+								public void run(){
+									DesertMain.eating.remove(e.getPlayer().getUniqueId());
+								}
+							}.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), 10);
+						}
+					}.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), 60);
+				}
+			}
+		}catch(NullPointerException ignored){}
 	}
 
 	@EventHandler
@@ -258,7 +288,7 @@ public class Events implements Listener {
 				int randomCompare = 2;
 				double random = (Math.random() * 5) + 1;
 				int soulsgained = 0;
-
+				EventsForWizard.INSTANCE.wizardt1(killer);
 				if (random < randomCompare) {
 					try {
 						if(killer.getInventory().getChestplate().getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Lucky Chestplate")){
@@ -302,6 +332,31 @@ public class Events implements Listener {
 		}
 
 	}
+	private static void callOnKill(Player player, Player killer){
+		EventsForWizard.INSTANCE.wizardt1(killer);
+		try{
+			if(new NBTItem(killer.getItemInHand()).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE")) EventsForWizard.addBladeCharge(killer);
+		}catch(Exception ex){
+			if (!(ex instanceof NullPointerException)){
+				Bukkit.getConsoleSender().sendMessage("Error adding charge to wizard blade, error:");
+				ex.printStackTrace();
+			}
+		}
+		try {
+			if(new NBTItem(killer.getInventory().getLeggings()).getString("ID").equals("CORRUPTER_LEGGINGS")) EventsForCorruptor.INSTANCE.corrupterLeggings(killer, player);
+		}catch(Exception ex){
+			if(!(ex instanceof NullPointerException)){
+				Bukkit.getConsoleSender().sendMessage("Error checking for corrupter leggings: " + ex.toString());
+			}
+		}
+		for(ItemStack item : player.getInventory().getContents()){
+			try{
+				if(new NBTItem(item).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE")){
+					new NBTItem(item).getCompound("CustomAttributes").setInteger("CHARGE", 0);
+				}
+			}catch(NullPointerException ignored){}
+		}
+	}
 	private Player getPlayer(Entity entity){
 		if(entity instanceof Player) return (Player) entity;
 		else return (Player) ((Arrow)entity).getShooter();
@@ -314,21 +369,7 @@ public class Events implements Listener {
 			try {
 
 				if (player.getHealth() - event.getDamage() < 0.1) {
-					try{
-						if(new NBTItem(((Player) event.getDamager()).getItemInHand()).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE")) EventsForWizard.addBladeCharge(((Player) event.getDamager()));
-					}catch(Exception ex){
-						if (!(ex instanceof NullPointerException)){
-							Bukkit.getConsoleSender().sendMessage("Error adding charge to wizard blade, error:");
-							ex.printStackTrace();
-						}
-					}
-					try {
-						if(new NBTItem(killer.getInventory().getLeggings()).getString("ID").equals("CORRUPTER_LEGGINGS")) EventsForCorruptor.INSTANCE.corrupterLeggings(killer, player);
-					}catch(Exception ex){
-						if(!(ex instanceof NullPointerException)){
-							Bukkit.getConsoleSender().sendMessage("Error checking for corrupter leggings: " + ex.toString());
-						}
-					}
+					callOnKill(player, killer);
 					Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
 					player.setHealth(player.getMaxHealth());
 
@@ -361,11 +402,7 @@ public class Events implements Listener {
 					int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
 
 					int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
-					for(ItemStack item : player.getInventory().getContents()){
-						try{
-							if(new NBTItem(item).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE")) new NBTItem(item).getCompound("CustomAttributes").setInteger("CHARGE", 0);
-						}catch(NullPointerException ignored){}
-					}
+
 					DesertMain.snack.remove(player.getUniqueId());
 					event.getDamager().sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
 					if (!ks.containsKey(event.getDamager().getUniqueId())) {
@@ -393,9 +430,14 @@ public class Events implements Listener {
 	@EventHandler
 	public void healthRegen(EntityRegainHealthEvent e){
 		if(e.getEntity() instanceof Player && (e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED) || e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.REGEN))){
-			int random = (int) (Math.random() * 3) + 1;
-			if(random >= 2){
+			if(!DesertMain.eating.contains(e.getEntity().getUniqueId())){
+				DesertMain.eating.remove(e.getEntity().getUniqueId());
 				e.setCancelled(true);
+			}else {
+				int random = (int) (Math.random() * 3) + 1;
+				if (random >= 2) {
+					e.setCancelled(true);
+				}
 			}
 		}
 
@@ -457,16 +499,20 @@ public class Events implements Listener {
 			main.saveConfig();
 			e.setJoinMessage(e.getPlayer().getName() + ChatColor.GOLD + " just joined for the first time, give them a warm welcome!");
 		} else {
-			e.setJoinMessage("");
+			if(main.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank") != null)e.setJoinMessage(Rank.valueOf(main.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank")).p + Rank.valueOf(main.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank")).c.toString() + " " + e.getPlayer().getName() + " just joined.");
+			else e.setJoinMessage("");
+
 		}
+		Player p = e.getPlayer();
+		p.sendMessage(ChatColor.GREEN + "Welcome to the FallenMC pre-alpha testing server!\nUse /kot to select a class and see it's rewards." + ChatColor.YELLOW + " If you are not opped, press your designated op command block." + ChatColor.GREEN + " Use /item to grant any of the items from the classes. Items are tabcompleteable, press space then tab after typing out /item to see all of them." + ChatColor.YELLOW + " An items ability WILL NOT WORK if you don't have the right class selected and at the right level. To do this, select the class with /kot and level it using /classexp (your class here in lowercase) 99999." + ChatColor.GREEN + "\n To open the traits menu use /traits, and to give yourself more trait tokens use /traitsconfig set int (your uuid here) 99999. \n For the Enchant Refinery, use /testinv, but you will need a hammer and book first. To get a hammer, enter /givehammer (level 1-5). Each level is a different hammer. To give yourself a dummy book, use /givebookdummy. \nPLease scroll up to read this whole thing, and have fun testing!");
 
 
 		
 	}
 	public static void executeKill(Player player, Player killer){
 		try {
-
-
+				callOnKill(player, killer);
+				EventsForWizard.INSTANCE.wizardt1(killer);
 				Location spawn = (Location) DesertMain.getInstance.getConfig().get("server.lobbyspawn");
 				player.setHealth(player.getMaxHealth());
 
@@ -478,16 +524,9 @@ public class Events implements Listener {
 				double random = (Math.random() * 5) + 1;
 				int soulsgained = 0;
 				int randomCompare = 2;
-				try {
-					if(new NBTItem(killer.getInventory().getLeggings()).getString("ID").equals("CORRUPTER_LEGGINGS")) EventsForCorruptor.INSTANCE.corrupterLeggings(killer, player);
-				}catch(Exception ex){
-					if(!(ex instanceof NullPointerException)){
-						Bukkit.getConsoleSender().sendMessage("Error checking for corrupter leggings: " + ex.toString());
-					}
-				}
 				if (random < randomCompare) {
 					try {
-						if(killer.getInventory().getChestplate().getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Lucky Chestplate")) soulsgained = 2;
+						if(new NBTItem(killer.getInventory().getChestplate()).getCompound("CustomAttributes").getString("ID").equals("LUCKY_CHESTPLATE")) soulsgained = 2;
 						else{
 							soulsgained = 1;
 						}
@@ -514,11 +553,6 @@ public class Events implements Listener {
 					ks.put(killer.getUniqueId(), 1);
 				} else {
 					ks.put(killer.getUniqueId(), ks.get(killer.getUniqueId()) + 1);
-				}
-				for(ItemStack item : player.getInventory().getContents()){
-					try{
-						if(new NBTItem(item).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE")) new NBTItem(item).getCompound("CustomAttributes").setInteger("CHARGE", 0);
-					}catch(NullPointerException ignored){}
 				}
 				DesertMain.snack.remove(player.getUniqueId());
 				ks.put(player.getUniqueId(), 0);

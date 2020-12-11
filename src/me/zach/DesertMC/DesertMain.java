@@ -9,8 +9,8 @@ import me.zach.DesertMC.ClassManager.InvEvents;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
+import net.jitse.npclib.NPCLib;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
@@ -35,10 +35,13 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public static HashMap<UUID, Block> stomperStage = new HashMap<>();
 	public static ArrayList<UUID> stomperCD = new ArrayList<>();
 	public static HashMap<UUID, String> snack = new HashMap<>();
+	public static ArrayList<UUID> eating = new ArrayList<>();
+	public static HashMap<UUID, ArrayList<Object>> weightQueue = new HashMap<>();
+	private static NPCLib library;
 	@Override
 	public void onEnable() {
 // TODO Color Char (for later access): §
-
+		library = new NPCLib(this);
 		getInstance = this;
 		String[] cmdsfile = {"enchantmentmod","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle"};
 		registerCommands(cmdsfile,new Commands());
@@ -57,6 +60,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(EventsForCorruptor.INSTANCE, this);
 		Bukkit.getPluginManager().registerEvents(EventsForTank.getInstance(), this);
 		Bukkit.getPluginManager().registerEvents(EventsForScout.getInstance(), this);
+		Bukkit.getPluginManager().registerEvents(new SPolice(), this);
 	}
 
 	private void registerCommands(String[] commands, CommandExecutor file){
@@ -64,12 +68,12 @@ public class DesertMain extends JavaPlugin implements Listener {
 			getCommand(s).setExecutor(file);
 		}
 	}
-
-
-
 	private void loadConfig() {
 		getConfig().options().copyDefaults(true);
 		saveConfig();
+	}
+	public static NPCLib getNPCLib(){
+		return library;
 	}
 	
 	

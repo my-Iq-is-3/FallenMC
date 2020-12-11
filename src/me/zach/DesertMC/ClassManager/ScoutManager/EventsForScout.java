@@ -92,10 +92,12 @@ public class EventsForScout implements Listener {
         if(event.getDamager() instanceof Player && event.getEntity() instanceof LivingEntity){
             Player damager = (Player) event.getDamager();
             LivingEntity damaged = (LivingEntity) event.getEntity();
+
             if(ConfigUtils.getLevel("scout",damager) > 4 && ConfigUtils.findClass(damager).equals("scout")){
                 if(NBTUtil.INSTANCE.getCustomAttr(damager.getInventory().getItemInHand(),"ID").equals("SCOUT_DAGGER")){
-                    if(damager.getLocation().distance(damaged.getLocation()) > 2){
+                    if(damager.getLocation().distance(damaged.getLocation()) > 1){
                         event.setCancelled(true);
+                        event.setDamage(8.5);
                     }
                 }
             }
@@ -112,9 +114,12 @@ public class EventsForScout implements Listener {
     }
 
     public void scoutBlade(Player hitter, Player hit){
+        try{
+            if(!NBTUtil.INSTANCE.getCustomAttr(hitter.getItemInHand(), "ID").equals("SCOUT_BLADE")) return;
+        }catch(NullPointerException ignored){}
         if(ConfigUtils.getLevel("scout", hitter) > 6 && ConfigUtils.findClass(hitter).equals("scout")) {
             if (hit.canSee(hitter) && !(DesertMain.scoutBladeCD.contains(hitter.getUniqueId()))) {
-                hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 2));
+                hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 2));
                 DesertMain.scoutBladeCD.add(hitter.getUniqueId());
                 new BukkitRunnable() {
                     @Override
@@ -134,9 +139,9 @@ public class EventsForScout implements Listener {
             Player damaged = (Player) event.getEntity();
             ItemStack[] armor = PlayerUtils.getArmor(damaged);
 
-            for(int i=0;i<5;i++){
-                if(armor[i] != null){
-                    NBTItem nbtarmor = new NBTItem(armor[i]);
+            for(ItemStack armorA : armor){
+                if(armorA != null){
+                    NBTItem nbtarmor = new NBTItem(armorA);
                     try{
                         level += nbtarmor.getCompound("CustomAttributes").getCompound("enchantments").getInteger("alert");
                     }catch(NullPointerException ignored){}
