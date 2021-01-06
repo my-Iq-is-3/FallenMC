@@ -4,6 +4,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.ClassManager.KitsOrTraits;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Prefix;
+import me.zach.DesertMC.SPolice;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.TitleUtils;
@@ -39,7 +40,13 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 				}
         		
         	}
-        	
+        	if(command.getName().equalsIgnoreCase("spawnspolice")){
+        		if(player.hasPermission("admin")){
+					SPolice.createPolice(player.getLocation());
+				}else{
+        			player.sendMessage(ChatColor.RED + "Sorry, you don't have access to that command.");
+				}
+			}
         	if(command.getName().equalsIgnoreCase("hideplayer")){
         		if(player.hasPermission("admin")){
         			try{

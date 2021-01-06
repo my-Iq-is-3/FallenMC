@@ -2,14 +2,14 @@ package me.zach.DesertMC;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.NBTList;
 import me.zach.DesertMC.GameMechanics.Events;
 import net.jitse.npclib.NPCLib;
 import net.jitse.npclib.api.NPC;
 import net.jitse.npclib.api.events.NPCInteractEvent;
 import net.jitse.npclib.api.skin.MineSkinFetcher;
 import net.jitse.npclib.api.skin.Skin;
-import net.jitse.npclib.api.state.NPCAnimation;
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventory;
 import org.bukkit.entity.Player;
@@ -27,6 +27,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import static me.zach.DesertMC.DesertMain.weightQueue;
@@ -54,11 +56,9 @@ public class SPolice implements Listener {
     }
     public void onHit(EntityDamageByEntityEvent e){
         Player p = (Player) e.getDamager();
-
-
         try{
-            int weight = new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getInteger("WEIGHT");
-            weight += new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getInteger("WEIGHT_ADD");
+            double weight = new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getDouble("WEIGHT");
+            weight += new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getDouble("WEIGHT_ADD");
                 ArrayList<Object> itemsandhits;
                 if(weightQueue.containsKey(p.getUniqueId())) {
                     itemsandhits = weightQueue.get(p.getUniqueId());
@@ -66,9 +66,8 @@ public class SPolice implements Listener {
                     itemsandhits = new ArrayList<>();
                 }
                 if(itemsandhits.contains(new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID"))){
-                    itemsandhits.set(itemsandhits.indexOf(new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID") + 1), (int) itemsandhits.get(itemsandhits.indexOf(new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID")) + 1) + weight);
+                    itemsandhits.set(itemsandhits.indexOf(new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID")) + 1, (int) itemsandhits.get(itemsandhits.indexOf(new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID")) + 1) + weight);
                     weightQueue.put(p.getUniqueId(), itemsandhits);
-                    
                 }else {
                     boolean foundEmpty = false;
                     for (int i = 0; !foundEmpty; i++) {
@@ -89,7 +88,26 @@ public class SPolice implements Listener {
         }
 
     }
-    public void createPolice(Location loc){
+
+
+
+
+    public static boolean roll(ItemStack weapon){ //TODO current task finishing this method
+        NBTItem weaponNBT = new NBTItem(weapon);
+        NBTCompound weaponCompound = weaponNBT.getCompound("CustomAttributes");
+        if(weaponCompound.getDouble("WEIGHT") == 0) return false;
+        double weight = weaponCompound.getDouble("WEIGHT");
+        int digits = Double.toString(weight).substring((Double.toString(weight) + "").indexOf(".")).length();
+        StringBuilder toMultiply = new StringBuilder("1");
+        for(int i = 0; i<=digits; i++) {
+            toMultiply.append("0");
+        }
+        int weightInteger = (int) weight * Integer.parseInt(toMultiply.toString());
+        int random = new Random().nextInt((((100 * Integer.parseInt(toMultiply.toString()))) - weightInteger) + weightInteger + 1);
+        if(random == 100 * Integer.parseInt(toMultiply.toString())) return true;
+        else return false;
+    }
+    public static void createPolice(Location loc){
         NPCLib library = DesertMain.getNPCLib();
         ArrayList<String> text = new ArrayList<>();
 
@@ -166,11 +184,12 @@ public class SPolice implements Listener {
                             p.sendMessage(ChatColor.RED + "Full Inventory!");
                             return;
                         }
+
                         ItemStack token = e.getClickedInventory().getItem(4);
                         token.setType(Material.valueOf(new NBTItem(token).getCompound("CustomAttributes").getString("PREV_MATERIAL")));
                         ItemMeta tokenMeta = token.getItemMeta();
                         tokenMeta.setDisplayName(tokenMeta.getDisplayName().replaceAll(ChatColor.RED + "Seized ", ""));
-                        tokenMeta.setLore(new NBTItem(token).getCompound("CustomAttributes").getStringList("PREV_LORE"));
+                        tokenMeta.setLore((List<String>) new NBTItem(token).getCompound("CustomAttributes").getObject("PREV_LORE", List.class));
                         token.setItemMeta(tokenMeta);
                         NBTItem tokenNBT = new NBTItem(token);
                         tokenNBT.getCompound("CustomAttributes").setString("ID", tokenNBT.getString("PREV_ID"));
@@ -179,14 +198,14 @@ public class SPolice implements Listener {
                         tokenComp.removeKey("PREV_MATERIAL");
                         tokenComp.removeKey("PREV_LORE");
                         tokenComp.removeKey("PREV_ID");
-                        tokenComp.setInteger("WEIGHT", 0);
+                        tokenComp.setDouble("WEIGHT", 0.00);
                         ItemStack cleanItem = tokenNBT.getItem();
                         pl.getConfig().set("players." + p.getUniqueId() + ".gems", pl.getConfig().getInt("players." + p.getUniqueId() + ".gems") - 200);
                         e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));
                         p.closeInventory();
                         p.getInventory().setItem(p.getInventory().firstEmpty(), cleanItem);
                         Events.ks.put(p.getUniqueId(), 0);
-                        p.sendMessage(Prefix.NPC + ChatColor.DARK_GRAY.toString() + " | " + ChatColor.AQUA + "Streak Police" + ChatColor.GRAY + ": " + ChatColor.WHITE + "I put the item in your first open slot. Pleasure doin business with ya.");
+                        p.sendMessage(Prefix.NPC + ChatColor.DARK_GRAY.toString() + " | " + ChatColor.AQUA + "Streak Police" + ChatColor.GRAY + ": " + ChatColor.WHITE + "I put the item in your first open slot. Pleasure doin' business with ya.");
 
                     }else{
                         p.getInventory().addItem(e.getClickedInventory().getItem(4));
@@ -207,6 +226,53 @@ public class SPolice implements Listener {
             if(cantClick.contains(ev.getPlayer().getUniqueId())) ev.setCancelled(true);
         }catch(NullPointerException ignored){}
     }
+
+
+    public static void onKill(EntityDamageByEntityEvent e){
+        if(e.getDamager() instanceof Player && e.getEntity() instanceof Player){
+            Player killer =(Player)  e.getDamager();
+            Player dieer = (Player) e.getEntity();
+            if(!weightQueue.containsKey(killer.getUniqueId())){
+                Bukkit.getConsoleSender().sendMessage("Hmm, something went wrong. It looks like the player that just got a kill (" + killer.getName() + ", " + killer.getUniqueId() + ") wasn't registered in the item weight queue. FIX ME GABE");
+            }else{
+                ArrayList<Object> itemsandhits = weightQueue.get(killer.getUniqueId());
+                for(int i = 0; i<itemsandhits.size(); i+=2){
+                    for(int a = 0; a<killer.getInventory().getContents().length; a++){
+                        try{
+                            ItemStack item = killer.getInventory().getContents()[a];
+                            if(new NBTItem(item).getCompound("CustomAttributes").getString("UUID").equals(itemsandhits.get(i))){
+                                NBTItem nbt = new NBTItem(item);
+                                NBTCompound compound = nbt.getCompound("CustomAttributes");
+                                compound.setDouble("WEIGHT", compound.getDouble("WEIGHT") + (int) itemsandhits.get(i + 1));
+                                killer.getInventory().setItem(a, nbt.getItem());
+
+                                break;
+                            }
+
+                        }catch(NullPointerException ignored){}
+                    }
+                }
+            }
+        }
+    }
+
+    public static void seize(ItemStack item){
+        try{
+
+            NBTItem nbt = new NBTItem(item);
+            NBTCompound compound = nbt.getCompound("CustomAttributes");
+            compound.setString("PREV_ID", compound.getString("ID"));
+            compound.setString("ID", "TOKEN");
+            compound.setString("PREV_MATERIAL", item.getType().toString());
+            item.setType(Material.DOUBLE_PLANT);
+            compound.setObject("PREV_LORE", item.getItemMeta().getLore());
+
+        }catch(NullPointerException n){
+            Bukkit.getConsoleSender().sendMessage("An item that was requested to be seized did not have the proper NBT. Item: " + item.toString());
+        }
+
+    }
+
 
     @EventHandler
     public void policeClick(NPCInteractEvent event){

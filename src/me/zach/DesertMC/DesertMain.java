@@ -38,6 +38,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public static ArrayList<UUID> eating = new ArrayList<>();
 	public static HashMap<UUID, ArrayList<Object>> weightQueue = new HashMap<>();
 	private static NPCLib library;
+	//How to generate a random long: (long) (Math.random() * (rightLimit - leftLimit));
 	@Override
 	public void onEnable() {
 // TODO Color Char (for later access): §
