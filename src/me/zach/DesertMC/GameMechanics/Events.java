@@ -15,7 +15,6 @@ import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
-import org.apache.commons.lang.ObjectUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.ArmorStand;
@@ -194,6 +193,7 @@ public class Events implements Listener {
 				DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
 			}
 		}
+
 		if(event.getDamager() instanceof Player){
 
 			if(((Player)event.getDamager()).getItemInHand().getType().equals(Material.DOUBLE_PLANT)){
@@ -204,6 +204,7 @@ public class Events implements Listener {
 				if(DesertMain.ct1players.contains(event.getDamager().getUniqueId())){
 					event.setDamage(event.getDamage() * 1.1);
 				}
+				SPolice.onHit(event);
 				EventsForScout.getInstance().daggerHit(event);
 				EventsForCorruptor.INSTANCE.t8Event(event);
 				EventsForCorruptor.INSTANCE.noMercy(event);

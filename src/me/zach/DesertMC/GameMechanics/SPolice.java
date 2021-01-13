@@ -1,9 +1,12 @@
-package me.zach.DesertMC;
+package me.zach.DesertMC.GameMechanics;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import de.tr7zw.nbtapi.NBTList;
+import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
+import me.zach.DesertMC.NPCClass;
+import me.zach.DesertMC.Prefix;
 import net.jitse.npclib.NPCLib;
 import net.jitse.npclib.api.NPC;
 import net.jitse.npclib.api.events.NPCInteractEvent;
@@ -34,11 +37,13 @@ import java.util.UUID;
 import static me.zach.DesertMC.DesertMain.weightQueue;
 
 
-public class SPolice implements Listener {
+public class SPolice extends NPCSuper implements Listener {
+    public static SPolice INSTANCE = new SPolice();
     private static ItemStack trueItem = new ItemStack(Material.STAINED_CLAY, 1, (short) 5);
     private static ItemMeta trueMeta = trueItem.getItemMeta();
     private static ItemStack falseItem = new ItemStack(Material.STAINED_GLASS, 1, (short) 14);
     private static ItemMeta falseMeta = falseItem.getItemMeta();
+    private static Inventory inv = Bukkit.getPluginManager().getPlugin("Fallen").getServer().createInventory(null, 27, "Recover Seized Items");
     static{
         trueMeta.setDisplayName(ChatColor.GREEN + "Click to retrieve");
         ArrayList<String> lore = new ArrayList<>();
@@ -53,8 +58,26 @@ public class SPolice implements Listener {
         flore.add(ChatColor.RED + "token for me to give it back.");
         falseMeta.setLore(flore);
         falseItem.setItemMeta(falseMeta);
+        ItemStack pane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 9);
+        ItemMeta paneMeta = pane.getItemMeta();
+        paneMeta.setDisplayName(" ");
+        pane.setItemMeta(paneMeta);
+
+        for(int i = 0; i<27; i++){
+            inv.setItem(i, pane);
+        }
+
+        inv.setItem(4, new ItemStack(Material.AIR));
+        inv.setItem(22, falseItem);
     }
-    public void onHit(EntityDamageByEntityEvent e){
+    public SPolice(){
+        super(ChatColor.AQUA + "Streak Police", 240562954,
+                "To retrieve items that I have taken, all you gotta do is give me the token and " + ChatColor.GREEN + "100 Bones-" + ChatColor.WHITE + " sorry, " + ChatColor.GREEN + "100 Gems" + ChatColor.WHITE + ". I'm also gonna have to reset your streak.",
+                Sound.WOLF_BARK, 90, inv, ChatColor.GRAY + "Click me to recover your seized items");
+    }
+
+
+    public static void onHit(EntityDamageByEntityEvent e){
         Player p = (Player) e.getDamager();
         try{
             double weight = new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getDouble("WEIGHT");
@@ -92,7 +115,7 @@ public class SPolice implements Listener {
 
 
 
-    public static boolean roll(ItemStack weapon){ //TODO current task finishing this method
+    public static boolean roll(ItemStack weapon){
         NBTItem weaponNBT = new NBTItem(weapon);
         NBTCompound weaponCompound = weaponNBT.getCompound("CustomAttributes");
         if(weaponCompound.getDouble("WEIGHT") == 0) return false;
@@ -107,31 +130,6 @@ public class SPolice implements Listener {
         if(random == 100 * Integer.parseInt(toMultiply.toString())) return true;
         else return false;
     }
-    public static void createPolice(Location loc){
-        NPCLib library = DesertMain.getNPCLib();
-        ArrayList<String> text = new ArrayList<>();
-
-        text.add(ChatColor.AQUA + "Streak Police");
-        text.add(ChatColor.GRAY + "Click me to retrieve your seized items");
-        NPC npc = library.createNPC(text);
-        npc.setLocation(loc);
-        MineSkinFetcher.fetchSkinFromIdAsync(240562954, new MineSkinFetcher.Callback() {
-            @Override
-            public void call(Skin skin) {
-                npc.setSkin(skin);
-                npc.create();
-                for(Player player : Bukkit.getServer().getOnlinePlayers()){
-                    npc.show(player);
-                }
-            }
-            @Override
-            public void failed(){
-                Bukkit.getConsoleSender().sendMessage("Skin fetch failed!");
-
-            }
-        });
-    }
-    private static ArrayList<UUID> cantClick = new ArrayList<>();
     @EventHandler
     public void closeOnInv(InventoryCloseEvent e){
         if(e.getInventory().getName().equals("Recover Seized Items")){
@@ -141,14 +139,9 @@ public class SPolice implements Listener {
             e.getInventory().setItem(4, new ItemStack(Material.AIR));
         }
     }
-    @EventHandler
-    public void pickupOnInv(PlayerPickupItemEvent e){
-        try {
-            if (e.getPlayer().getOpenInventory().getTopInventory().getName().equals("Recover Seized Items")) {
-                e.setCancelled(true);
-            }
-        }catch(NullPointerException ignored){ }
-    }
+
+
+
     @EventHandler
     public void onInvClick(InventoryClickEvent e) {
         if(e.getWhoClicked() instanceof Player){
@@ -220,12 +213,7 @@ public class SPolice implements Listener {
         }
 
     }
-    @EventHandler
-    public void moveOnInv(PlayerMoveEvent ev){
-        try{
-            if(cantClick.contains(ev.getPlayer().getUniqueId())) ev.setCancelled(true);
-        }catch(NullPointerException ignored){}
-    }
+
 
 
     public static void onKill(EntityDamageByEntityEvent e){
@@ -245,7 +233,12 @@ public class SPolice implements Listener {
                                 NBTCompound compound = nbt.getCompound("CustomAttributes");
                                 compound.setDouble("WEIGHT", compound.getDouble("WEIGHT") + (int) itemsandhits.get(i + 1));
                                 killer.getInventory().setItem(a, nbt.getItem());
-
+                                if(roll(item)) {
+                                    killer.getInventory().setItem(a, seize(item));
+                                    killer.playSound(killer.getLocation(), Sound.PISTON_EXTEND, 7, 1);
+                                    killer.playSound(killer.getLocation(), Sound.ANVIL_LAND, 10, 1);
+                                    killer.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "YOUR ITEM HAS BEEN SEIZED!" + ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back. It was replaced with a token you can use to recover it. Item: " + ChatColor.YELLOW + item.getItemMeta().getDisplayName());
+                                }
                                 break;
                             }
 
@@ -256,7 +249,7 @@ public class SPolice implements Listener {
         }
     }
 
-    public static void seize(ItemStack item){
+    public static ItemStack seize(ItemStack item){
         try{
 
             NBTItem nbt = new NBTItem(item);
@@ -266,14 +259,21 @@ public class SPolice implements Listener {
             compound.setString("PREV_MATERIAL", item.getType().toString());
             item.setType(Material.DOUBLE_PLANT);
             compound.setObject("PREV_LORE", item.getItemMeta().getLore());
-
+            ArrayList<String> lore = new ArrayList<>();
+            lore.add(ChatColor.RED + "This item was SEIZED! Take it to");
+            lore.add(ChatColor.RED + "the Streak Police to get it back.");
+            item.getItemMeta().setLore(lore);
+            String name = item.getItemMeta().getDisplayName();
+            item.getItemMeta().setDisplayName("Seized " + name);
+            compound.setInteger("WEIGHT", 0);
+            return nbt.getItem();
         }catch(NullPointerException n){
-            Bukkit.getConsoleSender().sendMessage("An item that was requested to be seized did not have the proper NBT. Item: " + item.toString());
+            throw new NullPointerException("An item that was requested to be seized did not have the proper NBT. Item: " + item.toString());
         }
 
     }
 
-
+   /*  pre-npcsuper spolice code
     @EventHandler
     public void policeClick(NPCInteractEvent event){
         try {
@@ -302,5 +302,49 @@ public class SPolice implements Listener {
             }
         }catch(NullPointerException ignored){}
     }
+
+
+    public void createNPC(Location loc) {
+        NPCLib library = DesertMain.getNPCLib();
+        ArrayList<String> text = new ArrayList<>();
+
+        text.add(ChatColor.AQUA + "Streak Police");
+        text.add(ChatColor.GRAY + "Click me to retrieve your seized items");
+        NPC npc = library.createNPC(text);
+        npc.setLocation(loc);
+        MineSkinFetcher.fetchSkinFromIdAsync(240562954, new MineSkinFetcher.Callback() {
+            @Override
+            public void call(Skin skin) {
+                npc.setSkin(skin);
+                npc.create();
+                for(Player player : Bukkit.getServer().getOnlinePlayers()){
+                    npc.show(player);
+                }
+            }
+            @Override
+            public void failed(){
+                Bukkit.getConsoleSender().sendMessage("Skin fetch failed! NPC: Streak_Police");
+
+            }
+        });
+    }
+
+    @EventHandler
+    public void moveOnInv(PlayerMoveEvent ev){
+        try{
+            if(cantClick.contains(ev.getPlayer().getUniqueId())) ev.setCancelled(true);
+        }catch(NullPointerException ignored){}
+    }
+                              @EventHandler
+                                    public void pickupOnInv(PlayerPickupItemEvent e){
+                                        try {
+                                            if (e.getPlayer().getOpenInventory().getTopInventory().getName().equals("Recover Seized Items")) {
+                                                e.setCancelled(true);
+                                            }
+                                        }catch(NullPointerException ignored){ }
+                                    }
+
+    */
+
 
 }

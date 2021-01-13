@@ -3,8 +3,11 @@ package me.zach.DesertMC.CommandsPackage;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.ClassManager.KitsOrTraits;
 import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.GameMechanics.NPCSuper;
+import me.zach.DesertMC.GameMechanics.SoulShop;
+import me.zach.DesertMC.NPCClass;
 import me.zach.DesertMC.Prefix;
-import me.zach.DesertMC.SPolice;
+import me.zach.DesertMC.GameMechanics.SPolice;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.TitleUtils;
@@ -16,13 +19,23 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
-public class Commands extends CommandExecute implements Listener, CommandExecutor{
+
+public class Commands extends CommandExecute implements Listener, CommandExecutor, TabCompleter {
+	public static HashMap<String, NPCSuper> npcsAndName = new HashMap<>();
+	static{
+		npcsAndName.put("STREAK_POLICE", SPolice.INSTANCE);
+	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player) {
@@ -40,9 +53,17 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 				}
         		
         	}
-        	if(command.getName().equalsIgnoreCase("spawnspolice")){
+        	if(command.getName().equalsIgnoreCase("spawnnpc")){
         		if(player.hasPermission("admin")){
-					SPolice.createPolice(player.getLocation());
+					if(args[0] != null){
+						try{
+							npcsAndName.get(String.join("_", args).toUpperCase()).createNPC(((Player) sender).getLocation());
+						}catch(NullPointerException nul){
+							sender.sendMessage(ChatColor.RED + "Sorry, that NPC either doesn't exist of isn't registered.");
+						}
+					}else{
+						return false;
+					}
 				}else{
         			player.sendMessage(ChatColor.RED + "Sorry, you don't have access to that command.");
 				}
@@ -259,4 +280,15 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         }
 		return true;
     }
+	@Override
+	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
+		List<String> args = new ArrayList<String>();
+		if (strings.length == 1) {
+
+			if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("spawnnpc")) {
+				args = Arrays.asList("SOUL_BROKER", "STREAK_POLICE");
+			}
+		}
+		return args;
+	}
 }

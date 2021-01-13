@@ -8,6 +8,7 @@ import me.zach.DesertMC.CommandsPackage.ItemCommand;
 import me.zach.DesertMC.ClassManager.InvEvents;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
+import me.zach.DesertMC.GameMechanics.SPolice;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import net.jitse.npclib.NPCLib;
 import org.bukkit.Bukkit;
