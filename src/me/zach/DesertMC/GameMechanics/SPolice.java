@@ -2,78 +2,72 @@ package me.zach.DesertMC.GameMechanics;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
-import de.tr7zw.nbtapi.NBTList;
-import me.zach.DesertMC.DesertMain;
-import me.zach.DesertMC.GameMechanics.Events;
-import me.zach.DesertMC.NPCClass;
+import me.zach.DesertMC.GameMechanics.NPCStructure.NPCDataPasser;
+import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.Prefix;
-import net.jitse.npclib.NPCLib;
-import net.jitse.npclib.api.NPC;
 import net.jitse.npclib.api.events.NPCInteractEvent;
-import net.jitse.npclib.api.skin.MineSkinFetcher;
-import net.jitse.npclib.api.skin.Skin;
-import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 import static me.zach.DesertMC.DesertMain.weightQueue;
 
 
 public class SPolice extends NPCSuper implements Listener {
     public static SPolice INSTANCE = new SPolice();
-    private static ItemStack trueItem = new ItemStack(Material.STAINED_CLAY, 1, (short) 5);
-    private static ItemMeta trueMeta = trueItem.getItemMeta();
     private static ItemStack falseItem = new ItemStack(Material.STAINED_GLASS, 1, (short) 14);
-    private static ItemMeta falseMeta = falseItem.getItemMeta();
-    private static Inventory inv = Bukkit.getPluginManager().getPlugin("Fallen").getServer().createInventory(null, 27, "Recover Seized Items");
+    private static ItemStack trueItem = new ItemStack(Material.STAINED_CLAY, 1, (short) 5);
     static{
+        ItemMeta trueMeta = trueItem.getItemMeta();
+        ItemMeta falseMeta = falseItem.getItemMeta();
         trueMeta.setDisplayName(ChatColor.GREEN + "Click to retrieve");
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GREEN + "Cough up 200 gems, and I'll give");
         lore.add(ChatColor.GREEN + "your item back no problem. (breaks streak!)");
         trueMeta.setLore(lore);
         trueItem.setItemMeta(trueMeta);
-
         falseMeta.setDisplayName(ChatColor.RED + "Insert Token");
         ArrayList<String> flore = new ArrayList<>();
         flore.add(ChatColor.RED + "You're gonna need a seized item");
         flore.add(ChatColor.RED + "token for me to give it back.");
         falseMeta.setLore(flore);
         falseItem.setItemMeta(falseMeta);
-        ItemStack pane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 9);
-        ItemMeta paneMeta = pane.getItemMeta();
-        paneMeta.setDisplayName(" ");
-        pane.setItemMeta(paneMeta);
-
-        for(int i = 0; i<27; i++){
-            inv.setItem(i, pane);
-        }
-
-        inv.setItem(4, new ItemStack(Material.AIR));
-        inv.setItem(22, falseItem);
     }
+
     public SPolice(){
         super(ChatColor.AQUA + "Streak Police", 240562954,
                 "To retrieve items that I have taken, all you gotta do is give me the token and " + ChatColor.GREEN + "100 Bones-" + ChatColor.WHITE + " sorry, " + ChatColor.GREEN + "100 Gems" + ChatColor.WHITE + ". I'm also gonna have to reset your streak.",
-                Sound.WOLF_BARK, 90, inv, ChatColor.GRAY + "Click me to recover your seized items");
+                Sound.WOLF_BARK, 100,
+                new NPCDataPasser() {
+                    @Override
+                    public Inventory getStartInventory(NPCInteractEvent event) {
+                        ItemStack pane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 9);
+                        ItemMeta paneMeta = pane.getItemMeta();
+                        paneMeta.setDisplayName(" ");
+                        pane.setItemMeta(paneMeta);
+                        Inventory inv = Bukkit.getPluginManager().getPlugin("Fallen").getServer().createInventory(null, 27, "Recover Seized Items");
+                        for(int i = 0; i<27; i++){
+                            inv.setItem(i, pane);
+                        }
+
+                        inv.setItem(4, new ItemStack(Material.AIR));
+                        inv.setItem(22, falseItem);
+                        return inv;
+                    }
+                },ChatColor.GRAY + "Click me to recover your seized items");
     }
 
 
@@ -146,66 +140,80 @@ public class SPolice extends NPCSuper implements Listener {
     public void onInvClick(InventoryClickEvent e) {
         if(e.getWhoClicked() instanceof Player){
             Player p = (Player) e.getWhoClicked();
-            if(p.getOpenInventory().getTopInventory().getName().equals("Recover Seized Items")){
+            if(cantClick.contains(p.getUniqueId())){
                 e.setCancelled(true);
-                try{
-                    if(new NBTItem(e.getCurrentItem()).getCompound("CustomAttributes").getString("ID").equals("TOKEN")){
-                        if(e.getClickedInventory().getName().equals("Recover Seized Items")){
-                            p.getInventory().addItem(e.getCurrentItem());
-                            e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));
-                            e.getClickedInventory().setItem(24, falseItem);
-                        }else{
-                            try{
-                                if(!p.getOpenInventory().getTopInventory().getItem(4).getType().equals(Material.AIR)) p.getInventory().addItem(p.getOpenInventory().getTopInventory().getItem(4));
-                            }catch(NullPointerException ignored){}
-                            p.getOpenInventory().getTopInventory().setItem(4, e.getCurrentItem());
-                            p.getInventory().setItem(e.getSlot(), new ItemStack(Material.AIR));
-                            p.getOpenInventory().getTopInventory().setItem(24, trueItem);
+                if(e.getClick().equals(ClickType.LEFT) || e.getClick().equals(ClickType.RIGHT)) {
+                    try {
+                        if (new NBTItem(e.getCurrentItem()).getCompound("CustomAttributes").getString("ID").equals("TOKEN")) {
+                            if (e.getClickedInventory().getName().equals("Recover Seized Items")) {
+                                p.getInventory().addItem(e.getCurrentItem());
+                                e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));
+                                e.getClickedInventory().setItem(24, falseItem);
+                            } else {
+                                try {
+                                    if (!p.getOpenInventory().getTopInventory().getItem(4).getType().equals(Material.AIR))
+                                        p.getInventory().addItem(p.getOpenInventory().getTopInventory().getItem(4));
+                                } catch (NullPointerException ignored) {
+                                }
+                                p.getOpenInventory().getTopInventory().setItem(4, e.getCurrentItem());
+                                p.getInventory().setItem(e.getSlot(), new ItemStack(Material.AIR));
+                                p.getOpenInventory().getTopInventory().setItem(24, trueItem);
+                            }
                         }
+                    } catch (NullPointerException ignored) {
                     }
-                }catch(NullPointerException ignored){}
-                if(e.getCurrentItem().isSimilar(falseItem)){
-                    p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
-                }else if(e.getCurrentItem().isSimilar(trueItem)){
-                    Plugin pl = Bukkit.getPluginManager().getPlugin("Fallen");
-                    if(pl.getConfig().getInt("players." + p.getUniqueId() + ".gems") >= 200){
-                        if(p.getInventory().firstEmpty() == -1){
+                    if (e.getCurrentItem().isSimilar(falseItem)) {
+                        p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
+                    } else if (e.getCurrentItem().isSimilar(trueItem)) {
+                        Plugin pl = Bukkit.getPluginManager().getPlugin("Fallen");
+                        if (pl.getConfig().getInt("players." + p.getUniqueId() + ".gems") >= 200) {
+                            if (p.getInventory().firstEmpty() == -1) {
+                                p.getInventory().addItem(e.getClickedInventory().getItem(4));
+                                e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));
+                                p.closeInventory();
+                                p.playSound(p.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
+                                p.sendMessage(ChatColor.RED + "Full Inventory!");
+                                return;
+                            }
+
+                            ItemStack token = e.getClickedInventory().getItem(4);
+                            token.setType(Material.valueOf(new NBTItem(token).getCompound("CustomAttributes").getString("PREV_MATERIAL")));
+                            ItemMeta tokenMeta = token.getItemMeta();
+                            tokenMeta.setDisplayName(tokenMeta.getDisplayName().replaceAll(ChatColor.RED + "Seized ", ""));
+                            List<String> lore = (List<String>) new NBTItem(token).getCompound("CustomAttributes").getObject("PREV_LORE", List.class);
+                            String wString = ChatColor.GRAY + "Weight: " + ChatColor.GREEN + "0";
+                            for (int i = 0; i < lore.size(); i++) {
+                                String line = lore.get(i);
+                                if (line.contains("Weight: ")) {
+                                    lore.set(i, wString);
+                                    break;
+                                }
+                            }
+                            tokenMeta.setLore(lore);
+                            token.setItemMeta(tokenMeta);
+                            NBTItem tokenNBT = new NBTItem(token);
+                            tokenNBT.getCompound("CustomAttributes").setString("ID", tokenNBT.getString("PREV_ID"));
+                            //wiping PREVs
+                            NBTCompound tokenComp = tokenNBT.getCompound("CustomAttributes");
+                            tokenComp.removeKey("PREV_MATERIAL");
+                            tokenComp.removeKey("PREV_LORE");
+                            tokenComp.removeKey("PREV_ID");
+                            tokenComp.setDouble("WEIGHT", 0.00);
+                            ItemStack cleanItem = tokenNBT.getItem();
+                            pl.getConfig().set("players." + p.getUniqueId() + ".gems", pl.getConfig().getInt("players." + p.getUniqueId() + ".gems") - 200);
+                            e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));
+                            p.closeInventory();
+                            p.getInventory().setItem(p.getInventory().firstEmpty(), cleanItem);
+                            Events.ks.put(p.getUniqueId(), 0);
+                            p.sendMessage(Prefix.NPC + ChatColor.DARK_GRAY.toString() + " | " + ChatColor.AQUA + "Streak Police" + ChatColor.GRAY + ": " + ChatColor.WHITE + "I put the item in your first open slot. Pleasure doin' business with ya.");
+
+                        } else {
                             p.getInventory().addItem(e.getClickedInventory().getItem(4));
                             e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));
                             p.closeInventory();
                             p.playSound(p.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
-                            p.sendMessage(ChatColor.RED + "Full Inventory!");
-                            return;
+                            p.sendMessage(ChatColor.RED + "Not enough gems!");
                         }
-
-                        ItemStack token = e.getClickedInventory().getItem(4);
-                        token.setType(Material.valueOf(new NBTItem(token).getCompound("CustomAttributes").getString("PREV_MATERIAL")));
-                        ItemMeta tokenMeta = token.getItemMeta();
-                        tokenMeta.setDisplayName(tokenMeta.getDisplayName().replaceAll(ChatColor.RED + "Seized ", ""));
-                        tokenMeta.setLore((List<String>) new NBTItem(token).getCompound("CustomAttributes").getObject("PREV_LORE", List.class));
-                        token.setItemMeta(tokenMeta);
-                        NBTItem tokenNBT = new NBTItem(token);
-                        tokenNBT.getCompound("CustomAttributes").setString("ID", tokenNBT.getString("PREV_ID"));
-                        //wiping PREVs
-                        NBTCompound tokenComp = tokenNBT.getCompound("CustomAttributes");
-                        tokenComp.removeKey("PREV_MATERIAL");
-                        tokenComp.removeKey("PREV_LORE");
-                        tokenComp.removeKey("PREV_ID");
-                        tokenComp.setDouble("WEIGHT", 0.00);
-                        ItemStack cleanItem = tokenNBT.getItem();
-                        pl.getConfig().set("players." + p.getUniqueId() + ".gems", pl.getConfig().getInt("players." + p.getUniqueId() + ".gems") - 200);
-                        e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));
-                        p.closeInventory();
-                        p.getInventory().setItem(p.getInventory().firstEmpty(), cleanItem);
-                        Events.ks.put(p.getUniqueId(), 0);
-                        p.sendMessage(Prefix.NPC + ChatColor.DARK_GRAY.toString() + " | " + ChatColor.AQUA + "Streak Police" + ChatColor.GRAY + ": " + ChatColor.WHITE + "I put the item in your first open slot. Pleasure doin' business with ya.");
-
-                    }else{
-                        p.getInventory().addItem(e.getClickedInventory().getItem(4));
-                        e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));
-                        p.closeInventory();
-                        p.playSound(p.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
-                        p.sendMessage(ChatColor.RED + "Not enough gems!");
                     }
                 }
             }
@@ -272,6 +280,7 @@ public class SPolice extends NPCSuper implements Listener {
         }
 
     }
+
 
    /*  pre-npcsuper spolice code
     @EventHandler

@@ -11,27 +11,47 @@ public class ConfigUtils {
 	private static final FileConfiguration config = main.getConfig();
 
 	private ConfigUtils() {
-		
-		
-		
+
+	}
+
+	public static boolean deductSouls(Player player, int amount){
+		int souls = config.getInt("players." + player.getUniqueId() + ".souls");
+		if(souls >= amount){
+			config.set("players." + player.getUniqueId() + ".souls", souls - amount);
+			main.saveConfig();
+			return true;
+		}else return false;
+	}
+
+	public static int getSouls(Player player){
+		return config.getInt("players." + player.getUniqueId() + ".souls");
+	}
+
+	public static boolean deductGems(Player player, int amount){
+		int gems = config.getInt("players." + player.getUniqueId() + ".gems");
+		if(gems >= amount){
+			config.set("players." + player.getUniqueId() + ".gems", gems - amount);
+			main.saveConfig();
+			return true;
+		}else return false;
 	}
 
 	public static int getLevel(String playerclass, Player player) throws NullPointerException {
-		if(!main.getConfig().contains("players." + player.getUniqueId() + ".classes." + playerclass + ".level")) return 0;
-		return main.getConfig().getInt("players." + player.getUniqueId() + ".classes." + playerclass + ".level");
+		if(!config.contains("players." + player.getUniqueId() + ".classes." + playerclass + ".level")) return 0;
+		return config.getInt("players." + player.getUniqueId() + ".classes." + playerclass + ".level");
 	}
 	
 	public static int getXpToNext(Player player, String playerclass) throws NullPointerException{
-		if(!main.getConfig().contains("players." + player.getUniqueId() + ".classes." + playerclass + ".xptonext")){
+		if(!config.contains("players." + player.getUniqueId() + ".classes." + playerclass + ".xptonext")){
 			return 0;
 		}
-		return main.getConfig().getInt("players." + player.getUniqueId() + ".classes." + playerclass + ".xptonext");
+		return config.getInt("players." + player.getUniqueId() + ".classes." + playerclass + ".xptonext");
 	}
 	
 	public static String findClass(Player player) {
 		
-		if(main.getConfig().getString("players." + player.getUniqueId() + ".classes.inuse") != null) {
-			return main.getConfig().getString("players." + player.getUniqueId() + ".classes.inuse");
+		if(config.getString("players." + player.getUniqueId() + ".classes.inuse") != null) {
+			return config.getString("players." + player.getUniqueId() + ".classes.inuse");
 		} else {
 			return "none";
 		}
@@ -41,16 +61,20 @@ public class ConfigUtils {
 	public static Object getXP(Player player, String playerclass) throws NullPointerException {
 
 
-			return main.getConfig().getInt("players." + player.getUniqueId() + ".classes." + playerclass + ".hasxp");
+			return config.getInt("players." + player.getUniqueId() + ".classes." + playerclass + ".hasxp");
 
 
 	}
 
+	public static int getGems(Player p){
+		return config.getInt("players." + p.getUniqueId() + ".gems");
+	}
+
 	public static void resetclass(Player player, String playerclass){
 		// 100 xp to next level
-		main.getConfig().set("players." + player.getUniqueId() + ".classes." + playerclass + ".xptonext", 100);
-		main.getConfig().set("players." + player.getUniqueId() + ".classes." + playerclass + ".hasxp", 0);
-		main.getConfig().set("players." + player.getUniqueId() + ".classes." + playerclass + ".level", 1);
+		config.set("players." + player.getUniqueId() + ".classes." + playerclass + ".xptonext", 100);
+		config.set("players." + player.getUniqueId() + ".classes." + playerclass + ".hasxp", 0);
+		config.set("players." + player.getUniqueId() + ".classes." + playerclass + ".level", 1);
 		main.saveConfig();
 	}
 
@@ -68,65 +92,65 @@ public class ConfigUtils {
 		}
 
 		if(xptonext <= amount) {
-			int pastlevel = main.getConfig().getInt("players." + player.getUniqueId() + ".classes." + classtoaddto + ".level");
+			int pastlevel = config.getInt("players." + player.getUniqueId() + ".classes." + classtoaddto + ".level");
 			switch (pastlevel) {
 			case 1:
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 500);
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 500);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
 
 				break;
 			case 2:
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 1000);
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 1000);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
 				break;
 			case 3:
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 2500);
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 2500);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
 				main.saveConfig();
 				break;
 			case 4:
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 4000);
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 4000);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
 				main.saveConfig();
 				break;
 			case 5:
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 7000);
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 7000);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
 				main.saveConfig();
 				break;
 			case 6:
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 8500);
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 8500);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
 				main.saveConfig();
 				break;
 			case 7:
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 10000);
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 10000);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
 				main.saveConfig();
 				break;
 			case 8:
 
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 20000);
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 20000);
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
 				main.saveConfig();
 				break;
 			case 9:
 
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", "MAX");
-				main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", "MAX");
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", "MAX");
+				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", "MAX");
 				main.saveConfig();
 				break;
 
 
 			}
-			main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".level", getLevel(classtoaddto, player) + 1);
+			config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".level", getLevel(classtoaddto, player) + 1);
 			player.sendTitle(ChatColor.BLUE + "You leveled up!", ChatColor.DARK_GRAY + "You are now level " + ChatColor.AQUA + (pastlevel + 1));
 			main.saveConfig();
 
 		}else {
 			if(!getXP(player,classtoaddto).equals("MAX")) {
-			main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", (Integer)getXP(player, classtoaddto) + amount);
-			main.getConfig().set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", getXpToNext(player, classtoaddto) - amount);
+			config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", (Integer)getXP(player, classtoaddto) + amount);
+			config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", getXpToNext(player, classtoaddto) - amount);
 			}
 			main.saveConfig();
 
