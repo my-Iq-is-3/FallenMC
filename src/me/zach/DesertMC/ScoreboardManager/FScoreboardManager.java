@@ -12,7 +12,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
 
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
-import me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager.Events;
+import me.zach.DesertMC.GameMechanics.Events;
 
 
 public class FScoreboardManager {

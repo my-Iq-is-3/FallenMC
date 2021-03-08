@@ -8,8 +8,8 @@ public enum Rank {
     SUPPORTER(Prefix.SUPPORTER, ChatColor.GREEN),
     COOWNER(Prefix.COOWNER, ChatColor.GOLD),
     ADMIN(Prefix.ADMIN, ChatColor.RED);
-    protected final Prefix p;
-    protected final ChatColor c;
+    public final Prefix p;
+    public final ChatColor c;
     Rank(Prefix pr, ChatColor ch){
         c = ch;
         p = pr;

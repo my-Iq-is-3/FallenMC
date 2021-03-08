@@ -30,7 +30,7 @@ public class TitleUtils {
         pl.saveConfig();
     }
     public static void addTitle(Player p, Prefix pr){
-        List<String> titles = pl.getConfig().getStringList("players." + p.getUniqueId() + "titles");
+        List<String> titles = pl.getConfig().getStringList("players." + p.getUniqueId() + ".titles");
         titles.add(pr.name());
         p.sendMessage(ChatColor.GRAY + "You have just received the title \"" + pr + ChatColor.GRAY +"\". Wear it with pride using /selecttitle " + pr.name());
         pl.getConfig().set("players." + p.getUniqueId() + ".titles", titles);

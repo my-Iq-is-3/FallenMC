@@ -14,7 +14,7 @@ public class NBTUtil {
     public String getCustomAttr(ItemStack item, String key) throws NullPointerException{
 
         NBTItem nbti = new NBTItem(item);
-        if(nbti.getCompound("CustomAttributes") == null)throw new NullPointerException("Cannot get string from CustomAttributes if CustomAttributes is null");
+        if(nbti.getCompound("CustomAttributes") == null)return "null";
 
 
         NBTCompound nbtCompound = nbti.getCompound("CustomAttributes");

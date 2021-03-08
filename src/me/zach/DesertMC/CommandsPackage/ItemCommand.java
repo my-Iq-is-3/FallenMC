@@ -6,6 +6,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.mythicalitems.Mythical;
 import net.minecraft.server.v1_8_R3.CommandExecute;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -20,7 +21,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-
+import itempackage.Items;
 import java.util.*;
 
 public class ItemCommand extends CommandExecute implements CommandExecutor, Listener, TabCompleter {
@@ -30,13 +31,23 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
     public static final HashMap<String, String> enchs = new HashMap<>();
     public static final char DOT = '\u25CF';
     static {
-        items.put("MagicWand",INSTANCE.getMagicWand());
-        items.put("WizardBlade", INSTANCE.getWizardBlade());
-        items.put("ScoutGoggles",INSTANCE.getScoutGoggles());
-        items.put("VolcanicSword",INSTANCE.getVolcanicSword());
-        items.put("CorruptedSword", INSTANCE.getCorruptedSword());
-        items.put("Dagger",INSTANCE.getDagger());
-        items.put("StubbornBoots", INSTANCE.getStubbornBoots());
+        items.put("MagicWand",itempackage.Items.getMagicWand());
+        items.put("WizardBlade", Items.getWizardBlade());
+        items.put("ScoutGoggles",Items.getScoutGoggles());
+        items.put("VolcanicSword",Items.getVolcanicSword());
+        items.put("CorruptedSword", Items.getCorruptedSword());
+        items.put("LuckyChestplate", Items.getLuckyChestplate());
+        items.put("CorrupterLeggings", Items.getCorrupterLeggings());
+        items.put("ScoutBlade", Items.getScoutBlade());
+        items.put("Dagger",Items.getDagger());
+        items.put("StubbornBoots", Items.getStubbornBoots());
+        items.put("FirstAidKit", Items.getFirstAidKit());
+        items.put("Stomper", Items.getStomper());
+        items.put("MagicSnack", Items.getMagicSnack());
+        items.put("ProteinSnack", Items.getProteinSnack());
+        items.put("LavaCake", Items.getLavaCake());
+        items.put("Bludgeon", Items.getBludgeon());
+        items.put("EnergySnack", Items.getEnergySnack());
         enchs.put("no_mercy",ChatColor.GRAY + "\u25CF" + ChatColor.BLUE + " No Mercy");
         enchs.put("giant_slayer",ChatColor.LIGHT_PURPLE + "\u25CF" + ChatColor.BLUE + " Giant Slayer");
         enchs.put("spike",ChatColor.GRAY + "\u25CF" + ChatColor.BLUE + " Spike");
@@ -51,8 +62,10 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args){
         if(commandSender instanceof Player){
-            if(commandSender.hasPermission("item")){
+            if(commandSender.hasPermission("item") ||commandSender.hasPermission("admin")){
+
                 Player player = (Player) commandSender;
+
                 if(args.length == 1){
                     try {
 
@@ -103,187 +116,7 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         return false;
     }
 
-    public ItemStack getScoutGoggles(){
-        ItemStack scoutgoggles = new ItemStack(Material.LEATHER_HELMET);
-        LeatherArmorMeta sgm = (LeatherArmorMeta) scoutgoggles.getItemMeta();
-        sgm.setDisplayName(ChatColor.GREEN + "Scout Goggles");
-        ArrayList<String> sglore = new ArrayList<>();
-        sglore.add(" ");
-        sglore.add(ChatColor.GREEN + "Passive Ability: Clarity");
-        sglore.add(ChatColor.DARK_GRAY + "While wearing, provides the ability to see invisible players.");
-        sgm.setLore(sglore);
-        sgm.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        sgm.setColor(Color.GREEN);
-        sgm.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        sgm.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
 
-        scoutgoggles.setItemMeta(sgm);
-        NBTItem scoutgoggleNBT = new NBTItem(scoutgoggles);
-        scoutgoggleNBT.setByte("Unbreakable", (byte)1);
-        NBTCompound customattr = scoutgoggleNBT.addCompound("CustomAttributes");
-        customattr.setString("ID", "SCOUT_GOGGLES");
-        customattr.setString("UUID", UUID.randomUUID().toString());
-        customattr.setBoolean("CAN_ENCHANT", true);
-        return scoutgoggleNBT.getItem();
-    }
-
-    public ItemStack getMagicWand(){
-        ItemStack MagicWand = new ItemStack(Material.STICK);
-        ItemMeta mwm = MagicWand.getItemMeta();
-        mwm.setDisplayName(ChatColor.LIGHT_PURPLE + "Magic Wand");
-        ArrayList<String> mwlore = new ArrayList<>();
-        mwlore.add("");
-        mwlore.add(ChatColor.LIGHT_PURPLE + "Attack Ability: Unstable Magic");
-        mwlore.add(ChatColor.DARK_GRAY + "On hit, can either apply a good effect");
-        mwlore.add(ChatColor.DARK_GRAY + "or a bad effect to your opponent.");
-        mwlore.add("");
-        mwlore.add(ChatColor.GRAY + "Cooldown: " + ChatColor.RED + "5 Seconds");
-
-        mwm.setLore(mwlore);
-        mwm.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL,1,true);
-        mwm.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        mwm.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        mwm.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-
-        MagicWand.setItemMeta(mwm);
-        NBTItem mwnbt = new NBTItem(MagicWand);
-        mwnbt.setByte("Unbreakable", (byte)1);
-        NBTCompound customattr = mwnbt.addCompound("CustomAttributes");
-        customattr.setString("ID", "MAGIC_WAND");
-        customattr.setString("UUID", UUID.randomUUID().toString());
-        customattr.setBoolean("CAN_ENCHANT", false);
-
-        return mwnbt.getItem();
-    }
-
-    public ItemStack getVolcanicSword(){
-
-        ItemStack vs = new ItemStack(Material.IRON_SWORD);
-        ItemMeta vsm = vs.getItemMeta();
-        ArrayList<String> vslist = new ArrayList<>();
-
-        vsm.setDisplayName(ChatColor.RED + "Volcanic Sword");
-
-        vslist.add(" ");
-        vslist.add(ChatColor.RED + "Streak Ability: Erupt");
-        vslist.add(ChatColor.DARK_GRAY + "Every" + ChatColor.RED + " 5 " + ChatColor.DARK_GRAY + "kills with this item,");
-        vslist.add(ChatColor.DARK_GRAY + "all players within a" + ChatColor.RED + " 5 " + ChatColor.DARK_GRAY + "block radius");
-        vslist.add(ChatColor.DARK_GRAY + "are shot away in a" + ChatColor.RED + " massive " + ChatColor.DARK_GRAY + "explosion!");
-
-
-        vsm.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        vsm.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        vsm.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-
-        vsm.setLore(vslist);
-        vs.setItemMeta(vsm);
-
-        NBTItem nbtvs = new NBTItem(vs);
-        nbtvs.setByte("Unbreakable", (byte) 1);
-        NBTCompound nbtvscomp = nbtvs.addCompound("CustomAttributes");
-        nbtvscomp.setString("ID", "VOLCANIC_SWORD");
-        nbtvscomp.setString("UUID", UUID.randomUUID().toString());
-        nbtvscomp.setBoolean("CAN_ENCHANT", true);
-
-
-        return nbtvs.getItem();
-    }
-
-    public ItemStack getDagger(){
-        ItemStack dagger = new ItemStack(Material.DIAMOND_SWORD,1,(short) 13);
-        ItemMeta dm = dagger.getItemMeta();
-        ArrayList<String> dml = new ArrayList<>();
-
-        dm.setDisplayName(ChatColor.BLUE + "Scout Dagger");
-        dml.add(" ");
-        dml.add(ChatColor.BLUE + "Attack Ability: Short Range");
-        dml.add(ChatColor.DARK_GRAY + "This item is incredibly short range!");
-        dml.add(ChatColor.DARK_GRAY + "You can only hit players within " + ChatColor.BLUE + "2 blocks" + ChatColor.DARK_GRAY + " from you,");
-        dml.add(ChatColor.DARK_GRAY + "but you deal " + ChatColor.BLUE + "10" + " damage.");
-        dm.addItemFlags(ItemFlag.HIDE_ATTRIBUTES,ItemFlag.HIDE_ENCHANTS,ItemFlag.HIDE_UNBREAKABLE);
-        dm.setLore(dml);
-        dagger.setItemMeta(dm);
-
-        NBTItem di = new NBTItem(dagger);
-        NBTCompound customAttributes = di.addCompound("CustomAttributes");
-
-        customAttributes.setString("ID", "SCOUT_DAGGER");
-        customAttributes.setString("UUID", UUID.randomUUID().toString());
-        customAttributes.setBoolean("CAN_ENCHANT", true);
-
-        di.setByte("Unbreakable",(byte)1);
-
-
-        return di.getItem();
-    }
-
-    public ItemStack getStubbornBoots(){
-        ItemStack stubbornBoots = new ItemStack(Material.IRON_BOOTS);
-        ItemMeta sbm = stubbornBoots.getItemMeta();
-        sbm.setDisplayName(ChatColor.GREEN + "Stubborn Boots");
-        ArrayList<String> sbl = new ArrayList<>();
-        sbl.add(" ");
-        sbl.add(ChatColor.GREEN + "Passive Ability: True Defense");
-        sbl.add(ChatColor.DARK_GRAY + "While wearing, grants protection from");
-        sbl.add(ChatColor.DARK_GRAY + "the " + ChatColor.LIGHT_PURPLE + "Magic Wand.");
-        sbm.setLore(sbl);
-        sbm.addItemFlags(ItemFlag.HIDE_UNBREAKABLE,ItemFlag.HIDE_ENCHANTS);
-        stubbornBoots.setItemMeta(sbm);
-        NBTItem nbtStubbornBoots = new NBTItem(stubbornBoots);
-        nbtStubbornBoots.setBoolean("Unbreakable",true);
-
-        NBTCompound nbtCustomAttr = nbtStubbornBoots.addCompound("CustomAttributes");
-        nbtCustomAttr.setString("ID","STUBBORN_BOOTS");
-        nbtCustomAttr.setString("UUID",UUID.randomUUID().toString());
-        nbtCustomAttr.setBoolean("CAN_ENCHANT",true);
-        stubbornBoots = nbtStubbornBoots.getItem();
-
-
-
-        return stubbornBoots;
-    }
-    public ItemStack getCorruptedSword(){
-        ItemStack cblade = new ItemStack(Material.DIAMOND_SWORD);
-        ItemMeta cbMeta = cblade.getItemMeta();
-        cbMeta.setDisplayName(ChatColor.RED + "Corrupted Sword");
-        ArrayList<String> cbList = new ArrayList<>();
-        cbList.add(" ");
-        cbList.add(ChatColor.RED + "Ability: Hellfire");
-        cbList.add(ChatColor.DARK_GRAY + "Has a chance to spawn a fast damaging fire under your opponent.");
-        cbMeta.setLore(cbList);
-        cblade.setItemMeta(cbMeta);
-        NBTItem cbNbt = new NBTItem(cblade);
-        cbNbt.setBoolean("Unbreakable", true);
-        NBTCompound cbComp = cbNbt.addCompound("CustomAttributes");
-        cbComp.setString("ID", "CORRUPTED_SWORD");
-        cbComp.setString("UUID", UUID.randomUUID() + "");
-        cbComp.setBoolean("CAN_ENCHANT", true);
-        return cbNbt.getItem();
-    }
-    public ItemStack getWizardBlade(){
-        ItemStack bladeitem = new ItemStack(Material.GOLD_SWORD);
-        ItemMeta bladeMeta = bladeitem.getItemMeta();
-        bladeMeta.setDisplayName(ChatColor.DARK_BLUE + "Wizard Blade (0)");
-        bladeMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE);
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(" ");
-        lore.add(ChatColor.BLUE + "Ability: Charge-Up");
-        lore.add(ChatColor.DARK_GRAY + "For each kill you get, " + ChatColor.RED + "2" + ChatColor.DARK_GRAY + " armor ignoring");
-        lore.add(ChatColor.DARK_GRAY + "damage will be added to the sword's charge.");
-        lore.add(ChatColor.DARK_GRAY + "Release the charge by right clicking a player.");
-        lore.add(ChatColor.GRAY + "Max Charge: 10");
-
-        bladeMeta.setLore(lore);
-        bladeitem.setItemMeta(bladeMeta);
-        NBTItem bladeNbt = new NBTItem(bladeitem);
-        bladeNbt.setBoolean("Unbreakable", true);
-        NBTCompound bladeComp = bladeNbt.addCompound("CustomAttributes");
-        bladeComp.setString("ID", "WIZARD_BLADE");
-        bladeComp.setString("UUID", UUID.randomUUID().toString());
-        bladeComp.setBoolean("CAN_ENCHANT", true);
-        bladeComp.setInteger("CHARGE", 0);
-        return bladeNbt.getItem();
-    }
 
 
     @Override
@@ -292,7 +125,7 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
             if (strings.length == 1) {
 
                 if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("item")) {
-                    args = Arrays.asList("ScoutGoggles", "MagicWand", "VolcanicSword", "Mythical", "Dagger", "StubbornBoots", "WizardBlade", "CorruptedSword");
+                    args = Arrays.asList("ScoutGoggles", "MagicWand", "VolcanicSword", "Mythical", "Dagger", "StubbornBoots", "WizardBlade", "CorruptedSword", "LuckyChestplate", "CorrupterLeggings", "FirstAidKit", "ScoutBlade", "MagicSnack", "ProteinSnack", "LavaCake", "EnergySnack", "Bludgeon", "Stomper");
                 }
             }
             return args;
