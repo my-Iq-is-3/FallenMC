@@ -5,6 +5,7 @@ import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
+import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -160,23 +161,23 @@ public class EventsForWizard implements Listener {
                 if(e.getRightClicked() instanceof Player) {
                     if (bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") != 0) {
                         if (!Bukkit.getPluginManager().getPlugin("Fallen").getConfig().getBoolean("players." + e.getPlayer().getUniqueId() + ".invincible")) {
-                            if (bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") >= ((Player) e.getRightClicked()).getHealth()) {
-                                ItemMeta bladeMeta = bladeNbt.getItem().getItemMeta();
-                                bladeMeta.setDisplayName(bladeMeta.getDisplayName().replaceAll((bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE")) + "", "0"));
-                                bladeNbt.getItem().setItemMeta(bladeMeta);
-                                Events.executeKill((Player) e.getRightClicked(), e.getPlayer());
-                                bladeNbt.getCompound("CustomAttributes").setInteger("CHARGE", 0);
-                                e.getPlayer().setItemInHand(bladeNbt.getItem());
-                                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENDERMAN_HIT, 10, 1.2f);
-                            }else{
-                                ((Player) e.getRightClicked()).setHealth(((Player) e.getRightClicked()).getHealth() - bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE"));
-                                ItemMeta bladeMeta = bladeNbt.getItem().getItemMeta();
-                                bladeMeta.setDisplayName(bladeMeta.getDisplayName().replaceAll((bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE")) + "", "0"));
-                                bladeNbt.getItem().setItemMeta(bladeMeta);
-                                bladeNbt.getCompound("CustomAttributes").setInteger("CHARGE", 0);
-                                e.getPlayer().setItemInHand(bladeNbt.getItem());
-                                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENDERMAN_HIT, 10, 1.2f);
-                            }
+//                            if (bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") >= ((Player) e.getRightClicked()).getHealth()) {
+                            ItemMeta bladeMeta = bladeNbt.getItem().getItemMeta();
+                            bladeMeta.setDisplayName(bladeMeta.getDisplayName().replaceAll((bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE")) + "", "0"));
+                            bladeNbt.getItem().setItemMeta(bladeMeta);
+                            PlayerUtils.trueDamage((Player) e.getRightClicked(), (double) bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE"), e.getPlayer());
+                            bladeNbt.getCompound("CustomAttributes").setInteger("CHARGE", 0);
+                            e.getPlayer().setItemInHand(bladeNbt.getItem());
+                            e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENDERMAN_HIT, 10, 1.2f);
+
+//                            }else{
+//                                ItemMeta bladeMeta = bladeNbt.getItem().getItemMeta();
+//                                bladeMeta.setDisplayName(bladeMeta.getDisplayName().replaceAll((bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE")) + "", "0"));
+//                                bladeNbt.getItem().setItemMeta(bladeMeta);
+//                                bladeNbt.getCompound("CustomAttributes").setInteger("CHARGE", 0);
+//                                e.getPlayer().setItemInHand(bladeNbt.getItem());
+//                                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENDERMAN_HIT, 10, 1.2f);
+//                            }
                         }
                     } else {
                         e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.VILLAGER_NO, 10, 1);
@@ -203,20 +204,10 @@ public class EventsForWizard implements Listener {
                     if(ConfigUtils.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.getLevel("wizard",killed) > 4){
                         double random = (Math.random() * 100) + 1;
                         if(random <= 10){
-                            double walkspeedbefore = killer.getWalkSpeed();
-                            killer.setWalkSpeed(0);
+                            killer.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,60,10));
                             killer.playSound(killer.getLocation(), Sound.ANVIL_BREAK,1f,2f);
-                            killer.sendTitle(ChatColor.YELLOW + "You were Stunned", ChatColor.DARK_GRAY + "By " + killed.getName());
                             PotionEffect poison = new PotionEffect(PotionEffectType.POISON, 60, 1, false, false);
                             killer.addPotionEffect(poison);
-                            new BukkitRunnable(){
-
-                                @Override
-                                public void run() {
-                                    killer.setWalkSpeed((float) walkspeedbefore);
-                                }
-
-                            }.runTaskLater(DesertMain.getPlugin(DesertMain.class), 60);
                         }
                     }
                 }else if(event.getDamager() instanceof Player){
@@ -227,7 +218,6 @@ public class EventsForWizard implements Listener {
                             double walkspeedbefore = killer.getWalkSpeed();
                             killer.setWalkSpeed(0);
                             killer.playSound(killer.getLocation(), Sound.ANVIL_BREAK,1f,2f);
-                            killer.sendTitle(ChatColor.YELLOW + "You were Stunned", ChatColor.DARK_GRAY + "By " + killed.getName());
                             PotionEffect poison = new PotionEffect(PotionEffectType.POISON, 60, 1, false, false);
                             killer.addPotionEffect(poison);
                             new BukkitRunnable(){
