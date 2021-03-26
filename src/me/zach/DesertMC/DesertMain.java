@@ -9,6 +9,7 @@ import me.zach.DesertMC.ClassManager.InvEvents;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.GameMechanics.SPolice;
+import me.zach.DesertMC.GameMechanics.SoulShop;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import net.jitse.npclib.NPCLib;
 import org.bukkit.Bukkit;
@@ -37,7 +38,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public static ArrayList<UUID> stomperCD = new ArrayList<>();
 	public static HashMap<UUID, String> snack = new HashMap<>();
 	public static ArrayList<UUID> eating = new ArrayList<>();
-	public static HashMap<UUID, ArrayList<Object>> weightQueue = new HashMap<>();
+	public static HashMap<UUID, HashMap<UUID, Integer>> weightQueue = new HashMap<>();
 	private static NPCLib library;
 	//How to generate a random long: (long) (Math.random() * (rightLimit - leftLimit));
 	@Override
@@ -45,7 +46,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 // TODO Color Char (for later access): §
 		library = new NPCLib(this);
 		getInstance = this;
-		String[] cmdsfile = {"enchantmentmod","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle"};
+		String[] cmdsfile = {"enchantmentmod","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
@@ -62,7 +63,8 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(EventsForCorruptor.INSTANCE, this);
 		Bukkit.getPluginManager().registerEvents(EventsForTank.getInstance(), this);
 		Bukkit.getPluginManager().registerEvents(EventsForScout.getInstance(), this);
-		Bukkit.getPluginManager().registerEvents(new SPolice(), this);
+		Bukkit.getPluginManager().registerEvents(SPolice.INSTANCE, this);
+		Bukkit.getPluginManager().registerEvents(SoulShop.INSTANCE, this);
 	}
 
 	private void registerCommands(String[] commands, CommandExecutor file){

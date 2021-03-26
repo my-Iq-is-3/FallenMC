@@ -19,9 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static me.zach.DesertMC.DesertMain.weightQueue;
 
@@ -76,26 +74,22 @@ public class SPolice extends NPCSuper implements Listener {
         try{
             double weight = new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getDouble("WEIGHT");
             weight += new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getDouble("WEIGHT_ADD");
-                ArrayList<Object> itemsandhits;
+            boolean madeNew = false;
+                HashMap<UUID, Integer> itemsandhits;
                 if(weightQueue.containsKey(p.getUniqueId())) {
                     itemsandhits = weightQueue.get(p.getUniqueId());
                 }else{
-                    itemsandhits = new ArrayList<>();
+                    itemsandhits = new HashMap<>();
+                    madeNew = true;
                 }
                 if(itemsandhits.contains(new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID"))){
                     itemsandhits.set(itemsandhits.indexOf(new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID")) + 1, (int) itemsandhits.get(itemsandhits.indexOf(new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID")) + 1) + weight);
-                    weightQueue.put(p.getUniqueId(), itemsandhits);
                 }else {
-                    boolean foundEmpty = false;
-                    for (int i = 0; !foundEmpty; i++) {
-                        if (itemsandhits.get(i) == null) {
-                            foundEmpty = true;
-                            itemsandhits.set(i, new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID"));
-                            itemsandhits.set(i + 1, weight);
-                            weightQueue.put(p.getUniqueId(), itemsandhits);
-                        }
-
-                    }
+                    p.sendMessage("Adding weight " + weight + "to index " + (itemsandhits.size() + 1));
+                    p.sendMessage("Adding item UUID " + new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID") + " to index " + itemsandhits.size());
+                    itemsandhits.add(new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID"));
+                    itemsandhits.add(weight);
+                    if(madeNew) weightQueue.put(p.getUniqueId(), itemsandhits);
                 }
 
 
@@ -129,8 +123,8 @@ public class SPolice extends NPCSuper implements Listener {
         if(e.getInventory().getName().equals("Recover Seized Items")){
             try {
                 e.getPlayer().getInventory().addItem(e.getInventory().getItem(4));
-            }catch(NullPointerException ignored){}
-            e.getInventory().setItem(4, new ItemStack(Material.AIR));
+            }catch(IllegalArgumentException ignored){}
+            e.getInventory().clear(4);
         }
     }
 
@@ -148,7 +142,7 @@ public class SPolice extends NPCSuper implements Listener {
                             if (e.getClickedInventory().getName().equals("Recover Seized Items")) {
                                 p.getInventory().addItem(e.getCurrentItem());
                                 e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));
-                                e.getClickedInventory().setItem(24, falseItem);
+                                e.getClickedInventory().setItem(22, falseItem);
                             } else {
                                 try {
                                     if (!p.getOpenInventory().getTopInventory().getItem(4).getType().equals(Material.AIR))
@@ -157,7 +151,7 @@ public class SPolice extends NPCSuper implements Listener {
                                 }
                                 p.getOpenInventory().getTopInventory().setItem(4, e.getCurrentItem());
                                 p.getInventory().setItem(e.getSlot(), new ItemStack(Material.AIR));
-                                p.getOpenInventory().getTopInventory().setItem(24, trueItem);
+                                p.getOpenInventory().getTopInventory().setItem(22, trueItem);
                             }
                         }
                     } catch (NullPointerException ignored) {
@@ -166,7 +160,8 @@ public class SPolice extends NPCSuper implements Listener {
                         p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
                     } else if (e.getCurrentItem().isSimilar(trueItem)) {
                         Plugin pl = Bukkit.getPluginManager().getPlugin("Fallen");
-                        if (pl.getConfig().getInt("players." + p.getUniqueId() + ".gems") >= 200) {
+                        if (pl.getConfig().getInt("players." + p.getUniqueId() + ".balance") >= 200) {
+                            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Player " + p.getName() + " recovered a seized item with " + pl.getConfig().getInt("players." + p.getUniqueId() + ".balance") + "gems.");
                             if (p.getInventory().firstEmpty() == -1) {
                                 p.getInventory().addItem(e.getClickedInventory().getItem(4));
                                 e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));
@@ -175,12 +170,14 @@ public class SPolice extends NPCSuper implements Listener {
                                 p.sendMessage(ChatColor.RED + "Full Inventory!");
                                 return;
                             }
-
                             ItemStack token = e.getClickedInventory().getItem(4);
-                            token.setType(Material.valueOf(new NBTItem(token).getCompound("CustomAttributes").getString("PREV_MATERIAL")));
+                            NBTItem tokenNBT = new NBTItem(token);
+
+                            token.setType(Material.valueOf(tokenNBT.getCompound("CustomAttributes").getString("PREV_MATERIAL")));
                             ItemMeta tokenMeta = token.getItemMeta();
-                            tokenMeta.setDisplayName(tokenMeta.getDisplayName().replaceAll(ChatColor.RED + "Seized ", ""));
-                            List<String> lore = (List<String>) new NBTItem(token).getCompound("CustomAttributes").getObject("PREV_LORE", List.class);
+                            tokenMeta.setDisplayName(tokenMeta.getDisplayName().replaceAll( "Seized ", ""));
+                            List<String> lore = (List<String>) tokenNBT.getCompound("CustomAttributes").getObject("PREV_LORE", List.class);
+                            String prevID = tokenNBT.getCompound("CustomAttributes").getString("PREV_ID");
                             String wString = ChatColor.GRAY + "Weight: " + ChatColor.GREEN + "0";
                             for (int i = 0; i < lore.size(); i++) {
                                 String line = lore.get(i);
@@ -191,8 +188,8 @@ public class SPolice extends NPCSuper implements Listener {
                             }
                             tokenMeta.setLore(lore);
                             token.setItemMeta(tokenMeta);
-                            NBTItem tokenNBT = new NBTItem(token);
-                            tokenNBT.getCompound("CustomAttributes").setString("ID", tokenNBT.getString("PREV_ID"));
+                            tokenNBT = new NBTItem(token);
+                            tokenNBT.getCompound("CustomAttributes").setString("ID", prevID);
                             //wiping PREVs
                             NBTCompound tokenComp = tokenNBT.getCompound("CustomAttributes");
                             tokenComp.removeKey("PREV_MATERIAL");
@@ -200,14 +197,15 @@ public class SPolice extends NPCSuper implements Listener {
                             tokenComp.removeKey("PREV_ID");
                             tokenComp.setDouble("WEIGHT", 0.00);
                             ItemStack cleanItem = tokenNBT.getItem();
-                            pl.getConfig().set("players." + p.getUniqueId() + ".gems", pl.getConfig().getInt("players." + p.getUniqueId() + ".gems") - 200);
-                            e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));
-                            p.closeInventory();
+                            pl.getConfig().set("players." + p.getUniqueId() + ".balance", pl.getConfig().getInt("players." + p.getUniqueId() + ".balance") - 200);
+                            pl.saveConfig();
+                            e.getClickedInventory().clear(4);
+                               p.closeInventory();
                             p.getInventory().setItem(p.getInventory().firstEmpty(), cleanItem);
                             Events.ks.put(p.getUniqueId(), 0);
                             p.sendMessage(Prefix.NPC + ChatColor.DARK_GRAY.toString() + " | " + ChatColor.AQUA + "Streak Police" + ChatColor.GRAY + ": " + ChatColor.WHITE + "I put the item in your first open slot. Pleasure doin' business with ya.");
 
-                        } else {
+                        }else{
                             p.getInventory().addItem(e.getClickedInventory().getItem(4));
                             e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));
                             p.closeInventory();
@@ -227,31 +225,39 @@ public class SPolice extends NPCSuper implements Listener {
     public static void onKill(EntityDamageByEntityEvent e){
         if(e.getDamager() instanceof Player && e.getEntity() instanceof Player){
             Player killer =(Player)  e.getDamager();
-            Player dieer = (Player) e.getEntity();
             if(!weightQueue.containsKey(killer.getUniqueId())){
                 Bukkit.getConsoleSender().sendMessage("Hmm, something went wrong. It looks like the player that just got a kill (" + killer.getName() + ", " + killer.getUniqueId() + ") wasn't registered in the item weight queue. FIX ME GABE");
             }else{
-                ArrayList<Object> itemsandhits = weightQueue.get(killer.getUniqueId());
-                for(int i = 0; i<itemsandhits.size(); i+=2){
-                    for(int a = 0; a<killer.getInventory().getContents().length; a++){
+                HashMap<UUID, Integer> itemsandhits = weightQueue.get(killer.getUniqueId());
+                ArrayList<UUID> toRemove = new ArrayList<>();
+                List<UUID> keyList = new ArrayList<>(itemsandhits.keySet());
+                for(UUID targetId : keyList){
+                    getItem: for(int a = 0; a<killer.getInventory().getContents().length; a++){
                         try{
+
                             ItemStack item = killer.getInventory().getContents()[a];
-                            if(new NBTItem(item).getCompound("CustomAttributes").getString("UUID").equals(itemsandhits.get(i))){
+                            killer.sendMessage("Checking if item " + item.getItemMeta().getDisplayName() + " matches item uuid " + targetId);
+
+                            if(new NBTItem(item).getCompound("CustomAttributes").getString("UUID").equals(targetId.toString())){
                                 NBTItem nbt = new NBTItem(item);
                                 NBTCompound compound = nbt.getCompound("CustomAttributes");
-                                compound.setDouble("WEIGHT", compound.getDouble("WEIGHT") + (int) itemsandhits.get(i + 1));
+                                compound.setDouble("WEIGHT", compound.getDouble("WEIGHT") + itemsandhits.get(targetId));
+                                toRemove.add(targetId);
                                 killer.getInventory().setItem(a, nbt.getItem());
                                 if(roll(item)) {
                                     killer.getInventory().setItem(a, seize(item));
                                     killer.playSound(killer.getLocation(), Sound.PISTON_EXTEND, 7, 1);
                                     killer.playSound(killer.getLocation(), Sound.ANVIL_LAND, 10, 1);
-                                    killer.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "YOUR ITEM HAS BEEN SEIZED!" + ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back. It was replaced with a token you can use to recover it. Item: " + ChatColor.YELLOW + item.getItemMeta().getDisplayName());
+                                    killer.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "YOUR ITEM HAS BEEN SEIZED! " + ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back. It was replaced with a token you can use to recover it. Item: " + ChatColor.YELLOW + item.getItemMeta().getDisplayName());
                                 }
-                                break;
+                                break getItem;
                             }
 
                         }catch(NullPointerException ignored){}
                     }
+                }
+                for(UUID id : toRemove){
+                    keyList.remove(id);
                 }
             }
         }
@@ -259,21 +265,24 @@ public class SPolice extends NPCSuper implements Listener {
 
     public static ItemStack seize(ItemStack item){
         try{
-
-            NBTItem nbt = new NBTItem(item);
-            NBTCompound compound = nbt.getCompound("CustomAttributes");
-            compound.setString("PREV_ID", compound.getString("ID"));
-            compound.setString("ID", "TOKEN");
-            compound.setString("PREV_MATERIAL", item.getType().toString());
+            ItemStack prevItem = item.clone();
             item.setType(Material.DOUBLE_PLANT);
-            compound.setObject("PREV_LORE", item.getItemMeta().getLore());
             ArrayList<String> lore = new ArrayList<>();
             lore.add(ChatColor.RED + "This item was SEIZED! Take it to");
             lore.add(ChatColor.RED + "the Streak Police to get it back.");
-            item.getItemMeta().setLore(lore);
-            String name = item.getItemMeta().getDisplayName();
-            item.getItemMeta().setDisplayName("Seized " + name);
-            compound.setInteger("WEIGHT", 0);
+            ItemMeta meta = item.getItemMeta();
+            meta.setLore(lore);
+            String name = meta.getDisplayName();
+            meta.setDisplayName(ChatColor.RED + "Seized " + name);
+            item.setItemMeta(meta);
+            NBTItem nbt = new NBTItem(item);
+            NBTCompound compound = nbt.getCompound("CustomAttributes");
+            compound.setObject("PREV_LORE", prevItem.getItemMeta().getLore());
+            compound.setDouble("WEIGHT", 0.00);
+            System.out.println(new NBTItem(prevItem).getCompound("CustomAttributes").getString("ID"));
+            compound.setString("PREV_ID", new NBTItem(prevItem).getCompound("CustomAttributes").getString("ID"));
+            compound.setString("ID", "TOKEN");
+            compound.setString("PREV_MATERIAL", prevItem.getType().toString());
             return nbt.getItem();
         }catch(NullPointerException n){
             throw new NullPointerException("An item that was requested to be seized did not have the proper NBT. Item: " + item.toString());

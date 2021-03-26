@@ -1,7 +1,7 @@
 name: Fallen
 main: me.zach.DesertMC.DesertMain
 version: "1.0"
-author: DrMlem/BitGen
+author: DrMlem/GodofMicrowaves
 description: Core Plugin
 
 commands:
@@ -34,6 +34,9 @@ commands:
  spawnnpc:
   description: Spawns an npc.
   usage: /<command> <npc name>
+ seizehelditem:
+  description: Seizes a target player's held item.
+  usage: /<command> <target player>
 permissions:
  admin:
-  description: This permission allows a player to have access to almost all special commands, such as /item, or /setspawn
+  description: This permission allows a player to have access to almost all special commands, such as /item, or /setspawn.

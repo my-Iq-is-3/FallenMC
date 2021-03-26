@@ -1,7 +1,9 @@
 package me.zach.DesertMC.GameMechanics;
 
+import com.sun.org.apache.bcel.internal.generic.ArrayInstruction;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import jdk.nashorn.internal.runtime.arrays.ArrayIndex;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCDataPasser;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
@@ -25,9 +27,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import static org.bukkit.Note.Tone;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class SoulShop extends NPCSuper implements Listener{
     static Plugin pl = Bukkit.getPluginManager().getPlugin("Fallen");
@@ -39,14 +44,15 @@ public class SoulShop extends NPCSuper implements Listener{
     static ItemStack decrease = new ItemStack(Material.REDSTONE_BLOCK);
     static ItemMeta increaseMeta = increase.getItemMeta();
     static ItemMeta decreaseMeta = decrease.getItemMeta();
+    static ArrayList<UUID> dontGiveItemOnClose = new ArrayList<>();
     static{
         //creating some unchanging items statically to save on processing power and ram
-        clear.addEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1);
         ItemMeta clearMeta = clear.getItemMeta();
         paneMeta.setDisplayName(" ");
         pane.setItemMeta(paneMeta);
+        clearMeta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, true);
         clearMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "Clear Weight");
-        clearMeta.setLore(Arrays.asList(ChatColor.YELLOW + "Temporarily clear an item of", ChatColor.YELLOW + "its weight.", "", ChatColor.YELLOW + "Cost: ??? (Add an item to view cost)"));
+        clearMeta.setLore(Arrays.asList(ChatColor.YELLOW + "Temporarily clear an item of", ChatColor.YELLOW + "its weight.", "", ChatColor.YELLOW + "Cost: (Add an item to view cost)"));
         clearMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
         clear.setItemMeta(clearMeta);
 
@@ -84,7 +90,7 @@ public class SoulShop extends NPCSuper implements Listener{
                     for(int i = 0; i<36; i++){
                         startInv.setItem(i, pane);
                     }
-                    startInv.setItem(13, new ItemStack(Material.AIR));
+                    startInv.clear(13);
                     ItemStack soulsItem = new ItemStack(Material.INK_SACK, 1, (short) 9);
                     ItemMeta soulsMeta = soulsItem.getItemMeta();
                     soulsMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + pl.getConfig().getInt("players." + event.getWhoClicked().getUniqueId() + ".souls") + " Soul(s)");
@@ -129,7 +135,11 @@ public class SoulShop extends NPCSuper implements Listener{
                     } catch (NullPointerException ignored) {
                     }
                     //does the clicked item have the necessary values to be a player's item?
-                    if (nbt.hasKey("WEIGHT") && nbt.hasKey("WEIGHT_ADD")) {
+                    boolean playerItem = false;
+                    try {
+                        playerItem = nbt.hasKey("WEIGHT") && nbt.hasKey("WEIGHT_ADD") && !nbt.getString("ID").equals("TOKEN");
+                    }catch(NullPointerException ignored){}
+                    if(playerItem){
                         //checking if it is in the shopInv or player inventory
                         if (!event.getClickedInventory().getName().equals(shopInv.getName())) {
                             //checking if the shop inventory's item slot is open, and if so, adding the item occupying the slot into the player's inventory
@@ -149,8 +159,8 @@ public class SoulShop extends NPCSuper implements Listener{
                             List<String> nLore = newClearMeta.getLore();
                             //calculating the price
                             int price = (int) (15 * (nbt.getDouble("WEIGHT_ADD") / 0.01));
-                            //adding it to the lore, and replacing the old "??? (Add an item to view cost)" string
-                            nLore.set(3, nLore.get(3).replaceAll("??? (Add an item to view cost)", ChatColor.BLUE.toString() + price));
+                            //adding it to the lore, and replacing the old "(Add an item to view cost)" string
+                            nLore.set(3, nLore.get(3).replaceAll("\\(Add an item to view cost\\)", ChatColor.BLUE.toString() + price));
                             //creating an NBTItem for the clear item, and then setting the "PRICE" value with the integer we have already calculated
                             newClearMeta.setLore(nLore);
                             newClear.setItemMeta(newClearMeta);
@@ -194,24 +204,42 @@ public class SoulShop extends NPCSuper implements Listener{
                             }
 
                         }
-                    } else if (item.getItemMeta().getDisplayName().equals(ChatColor.LIGHT_PURPLE + "Reduce Weight Per Hit")) {
+                    }else if(item.getItemMeta().getDisplayName().equals("§dReduce Weight Per Hit")){
                         if (!event.getClickedInventory().getName().equals(shopInv.getName())) {
                             Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Player " + p.getUniqueId() + " clicked the Reduce Item Weight Per Hit item, but the click didn't occur in the shop inventory! Something's fishy...");
                             p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
-                        } else {
-
+                        }else{
+                            try {
+                                ItemStack itemToReduce = shopInv.getItem(13);
+                                dontGiveItemOnClose.add(p.getUniqueId());
+                                p.closeInventory();
+                                try{
+                                    cantClick.add(p.getUniqueId());
+                                    p.openInventory(getReduceInventory(p, itemToReduce));
+                                }catch(Exception e){
+                                    p.sendMessage(ChatColor.RED + "Insert an item before you try to reduce its WPH!");
+                                    cantClick.remove(p.getUniqueId());
+                                    throw e;
+                                }
+                            }catch(NullPointerException ignored){
+                                p.closeInventory();
+                                cantClick.remove(p.getUniqueId());
+                                p.sendMessage(ChatColor.RED + "Insert an item before you try to reduce its WPH!");
+                            }
                         }
                     } else {
                         p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
                     }
 
 
-                }catch(NullPointerException ignored){}
+                }catch(NullPointerException ex){throw ex;}
             }
         }
     }
 
     public void reduceInvClick(InventoryClickEvent e){
+        e.setCancelled(true);
+        Bukkit.getConsoleSender().sendMessage("Reduce inventory click registered.");
         Player p = (Player) e.getWhoClicked();
         Inventory inv = e.getClickedInventory();
         ItemStack item = e.getCurrentItem();
@@ -220,6 +248,8 @@ public class SoulShop extends NPCSuper implements Listener{
             boolean ifIncrease = meta.getDisplayName().equals(ChatColor.GREEN + "Increase WPH to remove");
             boolean ifDecrease = meta.getDisplayName().equals(ChatColor.GREEN + "Decrease WPH to remove");
             if (ifIncrease || ifDecrease){
+                if(ifIncrease) System.out.println("Increase");
+                else System.out.println("Decrease");
                 try{
                     NBTItem nbt = new NBTItem(item);
                     NBTCompound compound = nbt.getCompound("CustomAttributes");
@@ -236,11 +266,12 @@ public class SoulShop extends NPCSuper implements Listener{
                         else splitCond = WPHtoRemove == 0;
                         //creating another split condition, if we the item clicked is the decrease item, we set the condition to if the WPH to remove (after modification) is less than 0, if it is the increase item we set the condition to if the WPH to remove (after modification) subtracted from the weapon WPH is less than 0
                         boolean splitCond2;
-                        if(ifIncrease) splitCond2 = WPHtoRemove + increment > weaponWPH;
+                        if(ifIncrease) splitCond2 = (WPHtoRemove + increment) > weaponWPH;
                         else splitCond2 = WPHtoRemove - increment < 0;
                         double splitDouble;
                         if(ifIncrease) splitDouble = weaponWPH;
                         else splitDouble = 0;
+                        System.out.println(increment + "");
                         if(splitCond){
                             p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
                             return;
@@ -251,40 +282,46 @@ public class SoulShop extends NPCSuper implements Listener{
                             if(ifIncrease) WPHtoRemove += increment;
                             else WPHtoRemove -= increment;
                         }
-                        bookNBT.getCompound("CustomAttributes").setDouble("WPH_TO_REMOVE", WPHtoRemove);
-                        int price = 34404;
+                        int price;
                         try{
                             price = calculateReducePrice(WPHtoRemove);
-                            bookNBT.getCompound("CustomAttributes").setInteger("PRICE", price);
                         }catch(Exception exception){
                             Bukkit.getConsoleSender().sendMessage(exception.getMessage());
                             p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
                             return;
                         }
-                        //iterating through the book lore and finding the line with Price:, and then replacing it with our new price
-                        book = bookNBT.getItem();
-                        ItemMeta bookMeta = book.getItemMeta();
-                        List<String> newLore = bookMeta.getLore();
-                        String priceString = "Price: " + ChatColor.BLUE + "" + price + ChatColor.LIGHT_PURPLE + " Souls";
-                        for(int i = 0; i<newLore.size(); i++){
-                            String line = newLore.get(i);
-                            if(line.contains("Price: ")){
-                                newLore.set(i, priceString);
-                                break;
-                            }
-                        }
-                        bookMeta.setLore(newLore);
-                        book.setItemMeta(bookMeta);
-                        inv.setItem(13, book);
+                        //iterating through the book lore and updating some lines
+                        inv.setItem(13, getBook(p, weaponWPH, WPHtoRemove, price));
                     }else if(e.getClick().equals(ClickType.RIGHT)){
+                        DecimalFormat formatter = new DecimalFormat("#.#####");
+                        formatter.setRoundingMode(RoundingMode.HALF_EVEN);
                         if(increment * 10 > 0.05){
-                            nbt.setDouble("INCREMENT", 0.00005);
-                            inv.setItem(e.getSlot(), nbt.getItem());
+                            List<String> newLore = item.getItemMeta().getLore();
+                            newLore.remove(0);
+                            newLore.add(0, ChatColor.GRAY + "Current increment: " + ChatColor.BLUE + formatter.format(0.00005) + "%");
+                            ItemMeta newMeta = item.getItemMeta();
+                            newMeta.setLore(newLore);
+                            item.setItemMeta(newMeta);
                             p.playSound(p.getLocation(), Sound.NOTE_PLING, 10, 1.1f);
+                            NBTItem newNBT = new NBTItem(item);
+                            newNBT.getCompound("CustomAttributes").setDouble("INCREMENT", 0.00005);
+                            if(ifIncrease) inv.setItem(17, newNBT.getItem());
+                            else inv.setItem(9, newNBT.getItem());
                         }else{
-                            nbt.setDouble("INCREMENT", increment * 10);
-                            inv.setItem(e.getSlot(), nbt.getItem());
+                            final double newIncrement = increment * 10;
                             p.playSound(p.getLocation(), Sound.NOTE_PLING, 10, 1);
+                            List<String> newLore = item.getItemMeta().getLore();
+                            newLore.remove(0);
+                            newLore.add(0, ChatColor.GRAY + "Current increment: " + ChatColor.BLUE + formatter.format(newIncrement) + "%");
+                            ItemMeta newMeta = item.getItemMeta();
+                            newMeta.setLore(newLore);
+                            item.setItemMeta(newMeta);
+                            NBTItem newNBT = new NBTItem(item);
+                            System.out.println(newIncrement + "");
+                            System.out.println("" + formatter.format(newIncrement));
+                            newNBT.getCompound("CustomAttributes").setDouble("INCREMENT", newIncrement);
+                            if(ifIncrease) inv.setItem(17, newNBT.getItem());
+                            else inv.setItem(9, newNBT.getItem());
                         }
                     }
                 }catch(NullPointerException requiredValuesAbsent){
@@ -292,30 +329,40 @@ public class SoulShop extends NPCSuper implements Listener{
                 }
             }else if(meta.getDisplayName().equals(ChatColor.YELLOW + "Weapon Details")){
                 NBTItem nbt = new NBTItem(item);
-                if(ConfigUtils.deductGems(p, nbt.getInteger("PRICE"))){
-                    //if the player does have enough gems, subtract the gems and remove the WPH from their weapon.
-                    NBTItem weaponNBT = new NBTItem(inv.getItem(4));
-                    //TODO current task finishing the actual transaction confirmation code
-                    weaponNBT.setDouble("WEIGHT_ADD", weaponNBT.getDouble("WEIGHT_ADD") - nbt.getDouble("WPH_TO_REMOVE"));
-                    inv.clear(4);
-                    p.closeInventory();
-                    p.getInventory().addItem(weaponNBT.getItem());
-                    List<List<Note>> notes;
-                    notes = Arrays.asList(naturalNoteChord(0, Tone.A, Tone.C), naturalNoteChord(0, Tone.B, Tone.D), naturalNoteChord(0, Tone.C, Tone.E), naturalNoteChord(0, Tone.D, Tone.F), naturalNoteChord(0, Tone.E, Tone.G));
-                    this.npcMessage(p, "Alright, I just took that WPH off your item. Just... do me a favor and don't tell anyone about this, ok? This stuff is my entire income... and standing in one place won't pay for itself ;)");
-                    new BukkitRunnable(){
-                        int i = 0;
-                        public void run(){
-                            for(Note note : notes.get(i)){
-                                p.playNote(p.getLocation(), Instrument.PIANO, note);
+                p.sendMessage("Weapon Details item nbt: " + nbt);
+                if(nbt.getCompound("CustomAttributes").getInteger("PRICE") > 0) {
+                    if (ConfigUtils.deductGems(p, nbt.getInteger("PRICE"))) {
+                        //if the player has enough gems, subtract the gems and remove the WPH from their weapon.
+                        NBTItem weaponNBT = new NBTItem(inv.getItem(4));
+                        weaponNBT.getCompound("CustomAttributes").setDouble("WEIGHT_ADD", weaponNBT.getCompound("CustomAttributes").getDouble("WEIGHT_ADD") - nbt.getCompound("CustomAttributes").getDouble("WPH_TO_REMOVE"));
+                        inv.clear(4);
+                        p.closeInventory();
+                        p.getInventory().addItem(weaponNBT.getItem());
+                        List<List<Note>> notes;
+                        notes = Arrays.asList(naturalNoteChord(0, Tone.A, Tone.C), naturalNoteChord(0, Tone.B, Tone.D), naturalNoteChord(0, Tone.C, Tone.E), naturalNoteChord(1, Tone.D, Tone.F), naturalNoteChord(1, Tone.E, Tone.G));
+                        npcMessage(p, "Alright, I just took that WPH off your item. Just... do me a favor and don't tell anyone about this, ok? This stuff is my entire income... and standing in one place won't pay for itself ;)");
+                        new BukkitRunnable() {
+                            int i = 0;
+                            public void run() {
+                                try {
+                                    for (Note note : notes.get(i)) {
+                                        p.playNote(p.getLocation(), Instrument.PIANO, note);
+                                    }
+                                    i++;
+                                }catch(ArrayIndexOutOfBoundsException ex){
+                                    cancel();
+                                }
                             }
-                        }
-                    }.runTaskTimer(pl, 0, 3);
+                        }.runTaskTimer(pl, 0, 3);
+                    } else {
+                        //if the player doesn't have enough gems, close the inventory, tell them they don't have enough gems, and play a sound
+                        p.closeInventory();
+                        p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
+                        npcMessage(p, "Hey, stop tryna cheap me out. I don't negotiate my rates, get a few more souls then come back to me.");
+                    }
                 }else{
-                    //if the player doesn't have enough gems, close the inventory, tell them they don't have enough gems, and play a sound
                     p.closeInventory();
-                    p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
-                    npcMessage(p, "Hey, stop tryna cheap me out. I don't negotiate my rates, get a few more gems then come back to me.");
+                    npcMessage(p, "But... you didn't even ask me to remove anything...");
                 }
             }
         }
@@ -329,7 +376,31 @@ public class SoulShop extends NPCSuper implements Listener{
         return chord;
     }
 
-    public Inventory getReduceInventory(ItemStack weaponToReduce) throws NullPointerException{
+    public static ItemStack getBook(Player p, double weaponWPH, double WPHtoRemove, int price){
+        ItemStack book = new ItemStack(Material.BOOK);
+        ItemMeta bookMeta = book.getItemMeta();
+        bookMeta.setDisplayName(ChatColor.YELLOW + "Weapon Details");
+        bookMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        DecimalFormat formatter = new DecimalFormat("#.######");
+        formatter.setRoundingMode(RoundingMode.HALF_EVEN);
+        ArrayList<String> lore = new ArrayList<>(Arrays.asList(ChatColor.YELLOW + "Weight Per Hit to remove: " + ChatColor.BLUE.toString() + formatter.format(WPHtoRemove),
+                ChatColor.YELLOW + "Use the buttons on the",
+                ChatColor.YELLOW + "left and right to modify this.",
+                ChatColor.YELLOW + "Item WPH after modification: " + (formatter.format(weaponWPH - WPHtoRemove)),
+                ChatColor.YELLOW + "Price: " + ChatColor.BLUE + price + ChatColor.LIGHT_PURPLE + " Souls"));
+        if(ConfigUtils.getSouls(p) >= price){
+            lore.add(ChatColor.GREEN + "Click to confirm!");
+            bookMeta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, true);
+        }else lore.add(ChatColor.RED + "Not enough souls!");
+        bookMeta.setLore(lore);
+        book.setItemMeta(bookMeta);
+        NBTItem bookNBT = new NBTItem(book);
+        bookNBT.addCompound("CustomAttributes").setInteger("PRICE", price);
+        bookNBT.getCompound("CustomAttributes").setDouble("WPH_TO_REMOVE", WPHtoRemove);
+        return bookNBT.getItem();
+    }
+
+    public Inventory getReduceInventory(Player p, ItemStack weaponToReduce) throws NullPointerException{
         double WPH;
         Inventory inv = pl.getServer().createInventory(null, 27, "Reduce Item WPH");
 
@@ -343,22 +414,8 @@ public class SoulShop extends NPCSuper implements Listener{
             throw new NullPointerException(ChatColor.RED + "Item passed through getReduceInventory method without required nbt values (CustomAttributes, WEIGHT_ADD)");
         }
 
-        ItemStack book = new ItemStack(Material.BOOK);
-        ItemMeta bookMeta = book.getItemMeta();
-        bookMeta.setDisplayName(ChatColor.YELLOW + "Weapon Details");
-        bookMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        bookMeta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, false);
-        bookMeta.setLore(Arrays.asList(ChatColor.YELLOW + "Weight Per Hit to remove: " + ChatColor.BLUE.toString() + "0",
-                ChatColor.YELLOW + "Use the buttons on the",
-                ChatColor.YELLOW + "left and right to modify this.",
-                ChatColor.YELLOW + "Item WPH after modification: " + WPH,
-                ChatColor.YELLOW + "Price: " + ChatColor.BLUE + "0" + ChatColor.LIGHT_PURPLE + " Souls",
-                ChatColor.GREEN + "Click to confirm"));
-        book.setItemMeta(bookMeta);
-        NBTItem bookNBT = new NBTItem(book);
-        bookNBT.addCompound("CustomAttributes").setInteger("PRICE", 0);
-        bookNBT.getCompound("CustomAttributes").setInteger("WPH_TO_REMOVE", 0);
-        inv.setItem(13, bookNBT.getItem());
+
+        inv.setItem(13, getBook(p, WPH,0, 0));
         inv.setItem(4, weaponToReduce);
         inv.setItem(9, decrease);
         inv.setItem(17, increase);
@@ -402,12 +459,16 @@ public class SoulShop extends NPCSuper implements Listener{
     public void closeOnInv(InventoryCloseEvent event){
         if(event.getInventory().getName().equals("Soul Shop") || event.getInventory().getName().equals("Reduce Item WPH")){
             try{
+                if(dontGiveItemOnClose.contains(event.getPlayer().getUniqueId())){
+                    dontGiveItemOnClose.remove(event.getPlayer().getUniqueId());
+                    return;
+                }
                 if(event.getInventory().getName().equals("Soul Shop")) {
                     event.getPlayer().getInventory().addItem(event.getInventory().getItem(13));
                 }else if(event.getInventory().getName().equals("Reduce Item WPH")){
                     event.getPlayer().getInventory().addItem(event.getInventory().getItem(4));
                 }
-            }catch(NullPointerException ignored){}
+            }catch(IllegalArgumentException ignored){}
             event.getInventory().clear(13);
         }
     }

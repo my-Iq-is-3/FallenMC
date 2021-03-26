@@ -24,7 +24,7 @@ public class RankEvents implements Listener {
             else e.setFormat(Rank.valueOf(p.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank")).c + e.getPlayer().getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
 
         }else{
-            e.setFormat(ChatColor.GRAY + e.getPlayer().getName() + ":" + ChatColor.RESET + e.getFormat());
+            e.setFormat(ChatColor.GRAY + e.getPlayer().getName() + ": " + ChatColor.GRAY + e.getMessage());
         }
         Prefix title = null;
         String displayCase = null;

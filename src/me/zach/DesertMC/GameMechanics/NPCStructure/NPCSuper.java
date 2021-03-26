@@ -29,7 +29,7 @@ public class NPCSuper implements Listener {
     String clickMsg;
     Sound clickSnd;
     int clickwait;
-    ArrayList<String> npctext;
+    ArrayList<String> npctext = new ArrayList<>();
     public ArrayList<UUID> cantClick = new ArrayList<>();
     NPCDataPasser passer;
     public NPCSuper(String npcName, int skinID, String clickMessage, Sound clickSound, int clickWaitTime, NPCDataPasser dataPasser, String... npcTextExcludingName){
@@ -38,7 +38,7 @@ public class NPCSuper implements Listener {
         clickMsg = clickMessage;
         clickSnd = clickSound;
         clickwait = clickWaitTime;
-        npctext = (ArrayList<String>) Arrays.asList(npcTextExcludingName);
+        npctext.addAll(Arrays.asList(npcTextExcludingName));
         passer = dataPasser;
     }
 
@@ -65,7 +65,7 @@ public class NPCSuper implements Listener {
     public void createNPC(Location loc){
         NPCLib library = DesertMain.getNPCLib();
         List<String> text = npctext;
-        text.add(0, name);
+        if(!text.get(0).equals(name)) text.add(0, name);
         NPC npc = library.createNPC(text);
         npc.setLocation(loc);
         MineSkinFetcher.fetchSkinFromIdAsync(id, new MineSkinFetcher.Callback() {
@@ -88,6 +88,7 @@ public class NPCSuper implements Listener {
     public void NPCClick(NPCInteractEvent event){
         try {
             if (event.getNPC().getText().get(0).equals(name) && !cantClick.contains(event.getWhoClicked().getUniqueId())){
+                Bukkit.getConsoleSender().sendMessage("NPC click registered. Player: " + event.getWhoClicked().getName() + ", NPC: " + name);
                 npcMessage(event.getWhoClicked(), clickMsg);
                 event.getWhoClicked().playSound(event.getWhoClicked().getLocation(), clickSnd, 10, 1);
                 cantClick.add(event.getWhoClicked().getUniqueId());
@@ -114,5 +115,5 @@ public class NPCSuper implements Listener {
     @EventHandler
     public void kickOnInv(PlayerKickEvent e){cantClick.remove(e.getPlayer().getUniqueId());}
     @EventHandler
-    public void dropOnInv(PlayerDropItemEvent e){e.setCancelled(true);}
+    public void dropOnInv(PlayerDropItemEvent e){if(cantClick.contains(e.getPlayer().getUniqueId())) e.setCancelled(true);}
 }

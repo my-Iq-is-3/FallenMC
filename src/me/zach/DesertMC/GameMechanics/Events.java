@@ -289,6 +289,7 @@ public class Events implements Listener {
 				int randomCompare = 2;
 				double random = (Math.random() * 5) + 1;
 				int soulsgained = 0;
+
 				EventsForWizard.INSTANCE.wizardt1(killer);
 				if (random < randomCompare) {
 					try {

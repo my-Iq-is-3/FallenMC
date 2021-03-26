@@ -144,7 +144,7 @@ public class EventsForTank implements Listener {
             Player clicker = e.getPlayer();
             try{
                 if(!NBTUtil.INSTANCE.getCustomAttr(clicker.getItemInHand(), "ID").equals("STOMPER")) return;
-            }catch(NullPointerException ignored){}
+            }catch(NullPointerException ex){return;}
 
             if (ConfigUtils.getLevel("tank", clicker) > 6 && ConfigUtils.findClass(clicker).equals("tank") && !DesertMain.stomperCD.contains(clicker.getUniqueId())) {
                 if(!DesertMain.stomperStage.containsKey(clicker.getUniqueId())){

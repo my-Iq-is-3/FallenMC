@@ -185,7 +185,7 @@ public class EventsForWizard implements Listener {
             }
         }catch(Exception ex){
             if(!(ex instanceof NullPointerException)) {
-                Bukkit.getConsoleSender().sendMessage("Error with wizard blade event: " + "\n" + Arrays.toString(ex.getStackTrace()));
+                Bukkit.getConsoleSender().sendMessage("Error with wizard blade event:\n" + ex);
 
             }
 

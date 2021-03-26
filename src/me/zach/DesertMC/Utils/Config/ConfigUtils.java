@@ -28,9 +28,9 @@ public class ConfigUtils {
 	}
 
 	public static boolean deductGems(Player player, int amount){
-		int gems = config.getInt("players." + player.getUniqueId() + ".gems");
+		int gems = config.getInt("players." + player.getUniqueId() + ".balance");
 		if(gems >= amount){
-			config.set("players." + player.getUniqueId() + ".gems", gems - amount);
+			config.set("players." + player.getUniqueId() + ".balance", gems - amount);
 			main.saveConfig();
 			return true;
 		}else return false;
@@ -67,7 +67,7 @@ public class ConfigUtils {
 	}
 
 	public static int getGems(Player p){
-		return config.getInt("players." + p.getUniqueId() + ".gems");
+		return config.getInt("players." + p.getUniqueId() + ".balance");
 	}
 
 	public static void resetclass(Player player, String playerclass){

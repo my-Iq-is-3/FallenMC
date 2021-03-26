@@ -4,6 +4,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.ClassManager.KitsOrTraits;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
+import me.zach.DesertMC.GameMechanics.SoulShop;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.GameMechanics.SPolice;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
@@ -21,6 +22,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 	public static HashMap<String, NPCSuper> npcsAndName = new HashMap<>();
 	static{
 		npcsAndName.put("STREAK_POLICE", SPolice.INSTANCE);
+		npcsAndName.put("SOUL_BROKER", SoulShop.INSTANCE);
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -42,7 +45,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         	Plugin mainpl = DesertMain.getPlugin(DesertMain.class);
 
         	if(command.getName().equalsIgnoreCase("setspawn")) {
-        		if(player.hasPermission("admin")) {
+        		if(player.hasPermission("admin")){
         			main.getConfig().set("server.lobbyspawn", player.getLocation());
         			player.sendMessage(ChatColor.BLUE + "Spawn > "+ ChatColor.DARK_GRAY + "Set the spawn for Lobby");
         			main.saveConfig();
@@ -51,15 +54,37 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 				}
         		
         	}
+        	if(command.getName().equalsIgnoreCase("seizehelditem")){
+        		if(player.hasPermission("admin")){
+        			try{
+
+        				Player target = Bukkit.getServer().getPlayerExact(args[0]);
+        				PlayerInventory targetInv = target.getInventory();
+        				ItemStack seizedItem = SPolice.seize(targetInv.getItemInHand());
+        				int itemSeizeSlot = targetInv.getHeldItemSlot();
+        				targetInv.clear(itemSeizeSlot);
+        				targetInv.setItem(itemSeizeSlot, seizedItem);
+        				return true;
+					}catch(NullPointerException ex){
+        				player.sendMessage(ChatColor.RED + "You either didn't specify a target player, or the item they were holding wasn't eligible to be seized.");
+					}
+				}else{
+        			player.sendMessage(ChatColor.RED + "Sorry, you can't use this command.");
+				}
+			}
         	if(command.getName().equalsIgnoreCase("spawnnpc")){
+        		player.sendMessage("Command registered.");
         		if(player.hasPermission("admin")){
 					if(args[0] != null){
+						player.sendMessage("args[0] wasn't null");
 						try{
-							npcsAndName.get(String.join("_", args).toUpperCase()).createNPC(((Player) sender).getLocation());
+							npcsAndName.get(String.join("_", args).toUpperCase()).createNPC((player.getLocation()));
+							player.sendMessage("got npc");
 						}catch(NullPointerException nul){
-							sender.sendMessage(ChatColor.RED + "Sorry, that NPC either doesn't exist of isn't registered.");
+							player.sendMessage(ChatColor.RED + "Sorry, that NPC either doesn't exist of isn't registered.");
 						}
 					}else{
+						player.sendMessage(ChatColor.RED + "Incorrect Usage!");
 						return false;
 					}
 				}else{
