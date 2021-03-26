@@ -3,6 +3,7 @@ package me.zach.DesertMC.GameMechanics;
 
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
+
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
@@ -15,6 +16,7 @@ import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import me.zach.artifacts.events.ArtifactEvents;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.ArmorStand;
@@ -49,6 +51,7 @@ public class Events implements Listener {
 	public void arrowShoot(ProjectileLaunchEvent event){
 		if(event.getEntity().getShooter() instanceof Player && event.getEntity() instanceof Arrow){
 			arrowArray.put((Arrow) event.getEntity(),((Player)event.getEntity().getShooter()).getInventory().getItemInHand());
+			ArtifactEvents.shootEvent(event);
 		}
 
 	}
@@ -182,6 +185,7 @@ public class Events implements Listener {
 
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent event) throws Exception {
+		ArtifactEvents.hitEvent(event);
 		if(event.isCancelled()) return;
 		if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
 			Player damager = (Player) event.getDamager();
@@ -262,28 +266,33 @@ public class Events implements Listener {
 		executeUnexpectedKill(event);
 	}
 
-	private void executeUnexpectedKill(EntityDamageEvent event) throws Exception {
+	private void executeUnexpectedKill(EntityDamageEvent event) throws NullPointerException {
 		UUID uuid = DesertMain.lastdmgers.get(event.getEntity().getUniqueId());
 		Player killer = Bukkit.getPlayer(uuid);
-		if(event.getEntity() instanceof Player){
+
+		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
 			if (player.getHealth() - event.getDamage() < 0.1) {
+
 				Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
-				player.setHealth(player.getMaxHealth());
-				player.teleport(spawn);
+				if (spawn == null) {
+					player.teleport(player.getWorld().getSpawnLocation());
+				} else player.teleport(spawn);
 				try {
-					if(new NBTItem(killer.getInventory().getLeggings()).getString("ID").equals("CORRUPTER_LEGGINGS")) EventsForCorruptor.INSTANCE.corrupterLeggings(killer, player);
-				}catch(Exception ex){
-					if(!(ex instanceof NullPointerException)){
+					
+						if (new NBTItem(killer.getInventory().getLeggings()).getString("ID").equals("CORRUPTER_LEGGINGS"))
+							EventsForCorruptor.INSTANCE.corrupterLeggings(killer, player);
+				} catch (Exception ex) {
+					if (!(ex instanceof NullPointerException)) {
 						Bukkit.getConsoleSender().sendMessage("Error checking for corrupter leggings: " + ex.toString());
 					}
 				}
-				new BukkitRunnable(){
+				new BukkitRunnable() {
 					@Override
 					public void run() {
 						player.setFireTicks(0);
 					}
-				}.runTaskLater(DesertMain.getInstance,10);
+				}.runTaskLater(DesertMain.getInstance, 10);
 
 				event.setCancelled(true);
 				int randomCompare = 2;
@@ -291,49 +300,56 @@ public class Events implements Listener {
 				int soulsgained = 0;
 
 				EventsForWizard.INSTANCE.wizardt1(killer);
+				 EventsForWizard.INSTANCE.wizardt1(killer);
 				if (random < randomCompare) {
 					try {
-						if(killer.getInventory().getChestplate().getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Lucky Chestplate")){
-							soulsgained = 2;
-						}else soulsgained = 1;
-					}catch(Exception ex){
+						
+							if (killer.getInventory().getChestplate().getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Lucky Chestplate")) {
+								soulsgained = 2;
+							} else soulsgained = 1;
+					} catch (Exception ex) {
 						soulsgained = 1;
-						if( !(ex instanceof NullPointerException)){
+						if (!(ex instanceof NullPointerException)) {
 							Bukkit.getConsoleSender().sendMessage("Error occurred checking for lucky chestplate. Error:\n" + Arrays.toString(ex.getStackTrace()));
 						}
 					}
-					if (main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
-						main.getConfig().set("players." + killer.getUniqueId() + ".souls", main.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + soulsgained);
-					} else {
-						main.getConfig().set("players." + killer.getUniqueId() + ".souls", soulsgained);
-					}
+					
+						if (main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
+							main.getConfig().set("players." + killer.getUniqueId() + ".souls", main.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + soulsgained);
+						} else {
+							main.getConfig().set("players." + killer.getUniqueId() + ".souls", soulsgained);
+						}
 				}
 				int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
 
 				int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
-				if (!ks.containsKey(killer.getUniqueId())) {
+				 if (!ks.containsKey(killer.getUniqueId())) {
 					ks.put(killer.getUniqueId(), 1);
 				} else {
 					ks.put(killer.getUniqueId(), ks.get(killer.getUniqueId()) + 1);
 				}
-				killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
+				
+					killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
 				ks.put(event.getEntity().getUniqueId(), 0);
 
-				for(ItemStack item : player.getInventory().getContents()){
-					try{
-						if(new NBTItem(item).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE")) new NBTItem(item).getCompound("CustomAttributes").setInteger("CHARGE", 0);
-					}catch(NullPointerException ignored){}
+				for (ItemStack item : player.getInventory().getContents()) {
+					try {
+						if (new NBTItem(item).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE"))
+							new NBTItem(item).getCompound("CustomAttributes").setInteger("CHARGE", 0);
+					} catch (NullPointerException ignored) {
+					}
 				}
 				DesertMain.snack.remove(player.getUniqueId());
 
 				player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
-				killer.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 4);
-				economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
-				ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
+				 killer.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 4);
+				
+					economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
+				 ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
 			}
 		}
-
 	}
+
 	private static void callOnKill(Player player, Player killer){
 		EventsForWizard.INSTANCE.wizardt1(killer);
 		try{
@@ -358,6 +374,7 @@ public class Events implements Listener {
 				}
 			}catch(NullPointerException ignored){}
 		}
+
 	}
 	private Player getPlayer(Entity entity){
 		if(entity instanceof Player) return (Player) entity;
