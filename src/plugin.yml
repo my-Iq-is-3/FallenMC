@@ -5,6 +5,8 @@ author: DrMlem/GodofMicrowaves
 description: Core Plugin
 
 commands:
+ addweight:
+  description: Adds weight (double) to held item
  speed:
   description: Set player speed
  invincible:

@@ -16,7 +16,6 @@ import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
-import me.zach.artifacts.events.ArtifactEvents;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.ArmorStand;
@@ -38,12 +37,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Events implements Listener {
 
 	DesertMain main = DesertMain.getInstance;
-	public static HashMap<UUID,Integer> ks = new HashMap<UUID, Integer>();
+	public static HashMap<UUID,Integer> ks = new HashMap<>();
 
 	HashMap<Arrow, ItemStack> arrowArray = new HashMap<>();
 
@@ -51,7 +52,7 @@ public class Events implements Listener {
 	public void arrowShoot(ProjectileLaunchEvent event){
 		if(event.getEntity().getShooter() instanceof Player && event.getEntity() instanceof Arrow){
 			arrowArray.put((Arrow) event.getEntity(),((Player)event.getEntity().getShooter()).getInventory().getItemInHand());
-			ArtifactEvents.shootEvent(event);
+			//ArtifactEvents.shootEvent(event);
 		}
 
 	}
@@ -185,8 +186,9 @@ public class Events implements Listener {
 
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent event) throws Exception {
-		ArtifactEvents.hitEvent(event);
+		//ArtifactEvents.hitEvent(event);
 		if(event.isCancelled()) return;
+		if(event.getDamage() == 0) return;
 		if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
 			Player damager = (Player) event.getDamager();
 			DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), damager.getUniqueId());
@@ -374,20 +376,22 @@ public class Events implements Listener {
 				}
 			}catch(NullPointerException ignored){}
 		}
+		SPolice.onKill(killer);
 
 	}
 	private Player getPlayer(Entity entity){
 		if(entity instanceof Player) return (Player) entity;
 		else return (Player) ((Arrow)entity).getShooter();
 	}
-	public void executeKill(EntityDamageByEntityEvent event) throws Exception {
+	public void executeKill(EntityDamageByEntityEvent event){
 		if (event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Arrow)) {
 			Player player = (Player) event.getEntity();
 			Player killer = getPlayer(event.getDamager());
 
 			try {
-
+				killer.sendMessage("Inside executeKill try/catch");
 				if (player.getHealth() - event.getDamage() < 0.1) {
+					killer.sendMessage("Above callOnKill");
 					callOnKill(player, killer);
 					Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
 					player.setHealth(player.getMaxHealth());
@@ -396,10 +400,10 @@ public class Events implements Listener {
 					if(player.getFireTicks() > 0)
 						player.setFireTicks(0);
 					event.setCancelled(true);
-					int randomCompare = 2;
-					double random = (Math.random() * 5) + 1;
+					int random = new Random().nextInt(4);
 					int soulsgained = 0;
-					if (random < randomCompare) {
+					if (random == 0) {
+						Bukkit.getConsoleSender().sendMessage("Souls gained should be 1");
 						try {
 							if(killer.getInventory().getChestplate().getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Lucky Chestplate")){
 								soulsgained = 2;
@@ -407,7 +411,7 @@ public class Events implements Listener {
 						}catch(Exception ex){
 							soulsgained = 1;
 							if( !(ex instanceof NullPointerException)){
-								Bukkit.getConsoleSender().sendMessage("Error occurred checking for lucky chestplate. Error:\n" + Arrays.toString(ex.getStackTrace()));
+								Bukkit.getConsoleSender().sendMessage("Error occurred checking for lucky chestplate. Error:\n" + ex);
 							}
 						}
 						if (main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
@@ -418,10 +422,8 @@ public class Events implements Listener {
 					} else {
 						soulsgained = 0;
 					}
-					int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
-
-					int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
-
+					int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + (ks.get(event.getDamager().getUniqueId()) * 5);
+					int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + (ks.get(event.getDamager().getUniqueId()) * 3);
 					DesertMain.snack.remove(player.getUniqueId());
 					event.getDamager().sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
 					if (!ks.containsKey(event.getDamager().getUniqueId())) {
@@ -431,7 +433,7 @@ public class Events implements Listener {
 					}
 					ks.put(event.getEntity().getUniqueId(), 0);
 					player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
-					((Player) event.getDamager()).playSound(player.getLocation(), Sound.LEVEL_UP, 1, 4);
+					killer.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 4);
 					killer.playSound(player.getLocation(), Sound.BURP, 6, 1.3f);
 					killer.playSound(player.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
 					economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);

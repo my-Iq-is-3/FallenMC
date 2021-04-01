@@ -1,8 +1,5 @@
 package me.zach.DesertMC.Utils;
 
-import me.zach.DesertMC.GameMechanics.ClassEvents.PlayerManager.Events;
-import me.zach.artifacts.gui.helpers.ArtifactUtils;
-import me.zach.artifacts.gui.inv.ArtifactData;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -31,15 +28,16 @@ public class PlayerUtils {
     }
 
     public static void trueDamage(Player victim, double dmg, Player damager){
-        ArtifactData vad = new ArtifactData(victim);
-        if(ArtifactUtils.contains(vad.getSelected(), (byte) 10)){
+        //ArtifactData vad = new ArtifactData(victim);
+        /*if(ArtifactUtils.contains(vad.getSelected(), (byte) 10)){
             double dmgsub = 15*vad.rarities()[9].mult*5; // 30
             dmgsub/=100; // 0.3
             dmgsub++; // 1.3
             dmg/=dmgsub; // if its 10 its ~7
         }
+         */
         if(victim.getHealth() <= dmg){
-            victim.damage(Integer.MAX_VALUE,damager);
+            victim.damage(999,damager);
         }else{
             victim.damage(0,damager);
             victim.setHealth(victim.getHealth()-dmg);

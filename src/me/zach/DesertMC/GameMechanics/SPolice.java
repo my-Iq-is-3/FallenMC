@@ -2,11 +2,12 @@ package me.zach.DesertMC.GameMechanics;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
-import me.zach.DesertMC.GameMechanics.NPCStructure.NPCDataPasser;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.Prefix;
-import net.jitse.npclib.api.events.NPCInteractEvent;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,17 +18,21 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.map.MapView;
 import org.bukkit.plugin.Plugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static me.zach.DesertMC.DesertMain.weightQueue;
 
 
 public class SPolice extends NPCSuper implements Listener {
     public static SPolice INSTANCE = new SPolice();
-    private static ItemStack falseItem = new ItemStack(Material.STAINED_GLASS, 1, (short) 14);
-    private static ItemStack trueItem = new ItemStack(Material.STAINED_CLAY, 1, (short) 5);
+    private static final ItemStack falseItem = new ItemStack(Material.STAINED_GLASS, 1, (short) 14);
+    private static final ItemStack trueItem = new ItemStack(Material.STAINED_CLAY, 1, (short) 5);
     static{
         ItemMeta trueMeta = trueItem.getItemMeta();
         ItemMeta falseMeta = falseItem.getItemMeta();
@@ -49,22 +54,19 @@ public class SPolice extends NPCSuper implements Listener {
         super(ChatColor.AQUA + "Streak Police", 240562954,
                 "To retrieve items that I have taken, all you gotta do is give me the token and " + ChatColor.GREEN + "100 Bones-" + ChatColor.WHITE + " sorry, " + ChatColor.GREEN + "100 Gems" + ChatColor.WHITE + ". I'm also gonna have to reset your streak.",
                 Sound.WOLF_BARK, 100,
-                new NPCDataPasser() {
-                    @Override
-                    public Inventory getStartInventory(NPCInteractEvent event) {
-                        ItemStack pane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 9);
-                        ItemMeta paneMeta = pane.getItemMeta();
-                        paneMeta.setDisplayName(" ");
-                        pane.setItemMeta(paneMeta);
-                        Inventory inv = Bukkit.getPluginManager().getPlugin("Fallen").getServer().createInventory(null, 27, "Recover Seized Items");
-                        for(int i = 0; i<27; i++){
-                            inv.setItem(i, pane);
-                        }
-
-                        inv.setItem(4, new ItemStack(Material.AIR));
-                        inv.setItem(22, falseItem);
-                        return inv;
+                event -> {
+                    ItemStack pane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 9);
+                    ItemMeta paneMeta = pane.getItemMeta();
+                    paneMeta.setDisplayName(" ");
+                    pane.setItemMeta(paneMeta);
+                    Inventory inv = Bukkit.getPluginManager().getPlugin("Fallen").getServer().createInventory(null, 27, "Recover Seized Items");
+                    for(int i = 0; i<27; i++){
+                        inv.setItem(i, pane);
                     }
+
+                    inv.setItem(4, new ItemStack(Material.AIR));
+                    inv.setItem(22, falseItem);
+                    return inv;
                 },ChatColor.GRAY + "Click me to recover your seized items");
     }
 
@@ -72,31 +74,27 @@ public class SPolice extends NPCSuper implements Listener {
     public static void onHit(EntityDamageByEntityEvent e){
         Player p = (Player) e.getDamager();
         try{
-            double weight = new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getDouble("WEIGHT");
-            weight += new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getDouble("WEIGHT_ADD");
+            double weight = new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getDouble("WEIGHT_ADD");
             boolean madeNew = false;
-                HashMap<UUID, Integer> itemsandhits;
+                HashMap<String, Double> itemsandhits;
                 if(weightQueue.containsKey(p.getUniqueId())) {
                     itemsandhits = weightQueue.get(p.getUniqueId());
                 }else{
                     itemsandhits = new HashMap<>();
                     madeNew = true;
                 }
-                if(itemsandhits.contains(new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID"))){
-                    itemsandhits.set(itemsandhits.indexOf(new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID")) + 1, (int) itemsandhits.get(itemsandhits.indexOf(new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID")) + 1) + weight);
-                }else {
-                    p.sendMessage("Adding weight " + weight + "to index " + (itemsandhits.size() + 1));
-                    p.sendMessage("Adding item UUID " + new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID") + " to index " + itemsandhits.size());
-                    itemsandhits.add(new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID"));
-                    itemsandhits.add(weight);
+                String itemId = new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID");
+                if(itemsandhits.containsKey(itemId)){
+                    p.sendMessage("Adding weight " + weight + " to itemsandhits");
+                    p.sendMessage("Adding item UUID " + itemId + "to itemsandhits with previous value " + itemsandhits.get(itemId));
+                    itemsandhits.put(itemId, itemsandhits.get(itemId) + weight);
+                }else{
+                    p.sendMessage("Adding weight " + weight + " to itemsandhits");
+                    p.sendMessage("Adding item UUID " + itemId + "to itemsandhits");
+                    itemsandhits.put(itemId, weight);
                     if(madeNew) weightQueue.put(p.getUniqueId(), itemsandhits);
                 }
-
-
-
-        }catch(NullPointerException ignored){
-            return;
-        }
+        }catch(NullPointerException ignored){}
 
     }
 
@@ -108,15 +106,9 @@ public class SPolice extends NPCSuper implements Listener {
         NBTCompound weaponCompound = weaponNBT.getCompound("CustomAttributes");
         if(weaponCompound.getDouble("WEIGHT") == 0) return false;
         double weight = weaponCompound.getDouble("WEIGHT");
-        int digits = Double.toString(weight).substring((Double.toString(weight) + "").indexOf(".")).length();
-        StringBuilder toMultiply = new StringBuilder("1");
-        for(int i = 0; i<=digits; i++) {
-            toMultiply.append("0");
-        }
-        int weightInteger = (int) weight * Integer.parseInt(toMultiply.toString());
-        int random = new Random().nextInt((((100 * Integer.parseInt(toMultiply.toString()))) - weightInteger) + weightInteger + 1);
-        if(random == 100 * Integer.parseInt(toMultiply.toString())) return true;
-        else return false;
+        final ThreadLocalRandom random = ThreadLocalRandom.current();
+        final double roll = random.nextDouble(0, 100);
+        return roll <= weight;
     }
     @EventHandler
     public void closeOnInv(InventoryCloseEvent e){
@@ -222,43 +214,44 @@ public class SPolice extends NPCSuper implements Listener {
 
 
 
-    public static void onKill(EntityDamageByEntityEvent e){
-        if(e.getDamager() instanceof Player && e.getEntity() instanceof Player){
-            Player killer =(Player)  e.getDamager();
-            if(!weightQueue.containsKey(killer.getUniqueId())){
-                Bukkit.getConsoleSender().sendMessage("Hmm, something went wrong. It looks like the player that just got a kill (" + killer.getName() + ", " + killer.getUniqueId() + ") wasn't registered in the item weight queue. FIX ME GABE");
-            }else{
-                HashMap<UUID, Integer> itemsandhits = weightQueue.get(killer.getUniqueId());
-                ArrayList<UUID> toRemove = new ArrayList<>();
-                List<UUID> keyList = new ArrayList<>(itemsandhits.keySet());
-                for(UUID targetId : keyList){
-                    getItem: for(int a = 0; a<killer.getInventory().getContents().length; a++){
-                        try{
+    public static void onKill(Player player){
+        if(!weightQueue.containsKey(player.getUniqueId())){
+            Bukkit.getConsoleSender().sendMessage("Hmm, something went wrong. It looks like the player that just got a kill (" + player.getName() + ", " + player.getUniqueId() + ") wasn't registered in the item weight queue. FIX ME GABE");
+        }else{
+            HashMap<String, Double> itemsandhits = weightQueue.get(player.getUniqueId());
+            ArrayList<String> toRemove = new ArrayList<>();
+            List<String> keyList = new ArrayList<>(itemsandhits.keySet());
+            for(String targetId : keyList){
+                getItem: for(int a = 0; a<player.getInventory().getContents().length; a++){
+                    try{
 
-                            ItemStack item = killer.getInventory().getContents()[a];
-                            killer.sendMessage("Checking if item " + item.getItemMeta().getDisplayName() + " matches item uuid " + targetId);
+                        ItemStack item = player.getInventory().getContents()[a];
+                        Bukkit.getConsoleSender().sendMessage("Checking if item " + item.getItemMeta().getDisplayName() + " matches item uuid " + targetId);
 
-                            if(new NBTItem(item).getCompound("CustomAttributes").getString("UUID").equals(targetId.toString())){
-                                NBTItem nbt = new NBTItem(item);
-                                NBTCompound compound = nbt.getCompound("CustomAttributes");
-                                compound.setDouble("WEIGHT", compound.getDouble("WEIGHT") + itemsandhits.get(targetId));
-                                toRemove.add(targetId);
-                                killer.getInventory().setItem(a, nbt.getItem());
-                                if(roll(item)) {
-                                    killer.getInventory().setItem(a, seize(item));
-                                    killer.playSound(killer.getLocation(), Sound.PISTON_EXTEND, 7, 1);
-                                    killer.playSound(killer.getLocation(), Sound.ANVIL_LAND, 10, 1);
-                                    killer.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "YOUR ITEM HAS BEEN SEIZED! " + ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back. It was replaced with a token you can use to recover it. Item: " + ChatColor.YELLOW + item.getItemMeta().getDisplayName());
-                                }
-                                break getItem;
+                        if(new NBTItem(item).getCompound("CustomAttributes").getString("UUID").equals(targetId)){
+                            NBTItem nbt = new NBTItem(item);
+                            NBTCompound compound = nbt.getCompound("CustomAttributes");
+                            double weight = compound.getDouble("WEIGHT");
+                            Bukkit.getConsoleSender().sendMessage("It's a match! Adding weight " + itemsandhits.get(targetId) + " with previous weapon weight " + weight + "...");
+                            compound.setDouble("WEIGHT", weight + itemsandhits.get(targetId));
+                            toRemove.add(targetId);
+                            Bukkit.getConsoleSender().sendMessage(toRemove.toString());
+                            player.getInventory().setItem(a, nbt.getItem());
+                            if(roll(item)) {
+                                player.getInventory().setItem(a, seize(item));
+                                player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 7, 1);
+                                player.playSound(player.getLocation(), Sound.ANVIL_LAND, 10, 1);
+                                player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "YOUR ITEM HAS BEEN SEIZED! " + ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back. It was replaced with a token you can use to recover it. Item: " + ChatColor.YELLOW + item.getItemMeta().getDisplayName());
+                                Bukkit.getConsoleSender().sendMessage(item.getItemMeta().getDisplayName() + ChatColor.RESET + " seized with weight " + weight);
                             }
+                            break getItem;
+                        }
 
-                        }catch(NullPointerException ignored){}
-                    }
+                    }catch(NullPointerException ignored){Bukkit.getConsoleSender().sendMessage("occurred in onKill catch");}
                 }
-                for(UUID id : toRemove){
-                    keyList.remove(id);
-                }
+            }
+            for(String uuid : toRemove){
+                itemsandhits.remove(uuid);
             }
         }
     }

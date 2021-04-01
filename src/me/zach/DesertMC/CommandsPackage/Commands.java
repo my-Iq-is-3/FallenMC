@@ -1,5 +1,6 @@
 package me.zach.DesertMC.CommandsPackage;
 
+import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.ClassManager.KitsOrTraits;
 import me.zach.DesertMC.DesertMain;
@@ -64,12 +65,29 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         				int itemSeizeSlot = targetInv.getHeldItemSlot();
         				targetInv.clear(itemSeizeSlot);
         				targetInv.setItem(itemSeizeSlot, seizedItem);
+        				player.sendMessage(ChatColor.GREEN + "Item seized successfully");
         				return true;
 					}catch(NullPointerException ex){
         				player.sendMessage(ChatColor.RED + "You either didn't specify a target player, or the item they were holding wasn't eligible to be seized.");
 					}
 				}else{
         			player.sendMessage(ChatColor.RED + "Sorry, you can't use this command.");
+				}
+			}
+        	if(command.getName().equalsIgnoreCase("addweight")){
+        		if(player.hasPermission("admin")){
+					ItemStack item = player.getItemInHand();
+					NBTItem nbt = new NBTItem(item);
+					NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
+					double toAdd = Double.parseDouble(args[0]);
+					if(customAttributes.hasKey("WEIGHT")){
+						customAttributes.setDouble("WEIGHT", customAttributes.getDouble("WEIGHT") + toAdd);
+					}else customAttributes.setDouble("WEIGHT", toAdd);
+					player.setItemInHand(nbt.getItem());
+					player.sendMessage(ChatColor.GREEN + "Added weight successfully");
+					return true;
+				}else{
+        			player.sendMessage(ChatColor.RED + "You don't have permission to use this command");
 				}
 			}
         	if(command.getName().equalsIgnoreCase("spawnnpc")){

@@ -38,7 +38,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public static ArrayList<UUID> stomperCD = new ArrayList<>();
 	public static HashMap<UUID, String> snack = new HashMap<>();
 	public static ArrayList<UUID> eating = new ArrayList<>();
-	public static HashMap<UUID, HashMap<UUID, Integer>> weightQueue = new HashMap<>();
+	public static HashMap<UUID, HashMap<String, Double>> weightQueue = new HashMap<>();
 	private static NPCLib library;
 	//How to generate a random long: (long) (Math.random() * (rightLimit - leftLimit));
 	@Override
@@ -46,7 +46,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 // TODO Color Char (for later access): §
 		library = new NPCLib(this);
 		getInstance = this;
-		String[] cmdsfile = {"enchantmentmod","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem"};
+		String[] cmdsfile = {"enchantmentmod","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
