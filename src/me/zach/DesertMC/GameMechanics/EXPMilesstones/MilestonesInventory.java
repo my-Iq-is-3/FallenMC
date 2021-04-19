@@ -63,6 +63,7 @@ public class MilestonesInventory implements Listener {
         if(page == 0){
             page = Math.floorDiv(lv - 1, 29) + 1;
         }else if(page < 0) throw new IllegalArgumentException("Page passed through rewardsList(Player p, int page) must be greater than 0!");
+        if(page > 2) page = 2;
         for(int i = (page * 29) - 29; i<=page * 29; i++){
             list.add(new RewardsItem(i + 1, lv));
         }

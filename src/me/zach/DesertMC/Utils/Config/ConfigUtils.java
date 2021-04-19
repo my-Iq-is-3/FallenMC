@@ -103,6 +103,7 @@ public class ConfigUtils {
 		int xptonext = getXpToNext(player, classtoaddto);
 		if(xptonext <= amount) {
 			int pastlevel = config.getInt("players." + player.getUniqueId() + ".classes." + classtoaddto + ".level");
+			if(pastlevel == 10) return;
 			switch (pastlevel) {
 				case 1:
 					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 500);
