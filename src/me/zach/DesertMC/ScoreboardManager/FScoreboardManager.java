@@ -35,6 +35,7 @@ public class FScoreboardManager {
 			Score xp;
 			//set experience element
 
+
 			if(ConfigUtils.getXP(player, ConfigUtils.findClass(player)).equals("MAX")) {
 				xp = objective.getScore("XP" + ChatColor.DARK_GRAY + ": " + ChatColor.AQUA + "MAX");
 
@@ -59,10 +60,10 @@ public class FScoreboardManager {
 			Score ip = objective.getScore(ChatColor.YELLOW + "Make sure to view our shop!");
 
 			//blanks
-			Score blank1 = objective.getScore("   ");
-			Score blank2 = objective.getScore("  ");
-			Score blank3 = objective.getScore(" ");
-			Score blank4 = objective.getScore("");
+			Score blank1 = objective.getScore("    ");
+			Score blank2 = objective.getScore("   ");
+			Score blank3 = objective.getScore("  ");
+			Score blank4 = objective.getScore(" ");
 
 			//now set them to their respective value
 			blank1.setScore(1);
@@ -76,16 +77,7 @@ public class FScoreboardManager {
 			ip.setScore(0);
 			level.setScore(9);
 			blank4.setScore(10);
-
 			player.setScoreboard(mains);
-
-
-
-
-
-
-
-
 	}
 
 }

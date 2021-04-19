@@ -160,7 +160,7 @@ public class EventsForWizard implements Listener {
                 NBTItem bladeNbt = new NBTItem(e.getPlayer().getItemInHand());
                 if(e.getRightClicked() instanceof Player) {
                     if (bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") != 0) {
-                        if (!Bukkit.getPluginManager().getPlugin("Fallen").getConfig().getBoolean("players." + e.getPlayer().getUniqueId() + ".invincible")) {
+                        if (!Events.invincible.contains(e.getRightClicked().getUniqueId())) {
 //                            if (bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") >= ((Player) e.getRightClicked()).getHealth()) {
                             ItemMeta bladeMeta = bladeNbt.getItem().getItemMeta();
                             bladeMeta.setDisplayName(bladeMeta.getDisplayName().replaceAll((bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE")) + "", "0"));

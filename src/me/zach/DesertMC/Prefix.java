@@ -6,6 +6,7 @@ public enum Prefix {
 
     DEBUG(ChatColor.DARK_PURPLE,"[DEBUG]",false),
     MYSTIC(ChatColor.LIGHT_PURPLE, "MYSTIC", true),
+    PIONEER(ChatColor.DARK_PURPLE, "PIONEER", false),
     SUPPORTER(ChatColor.GREEN, "SUPPORTER", true),
     SERVER(ChatColor.DARK_BLUE,"[SERVER]",false),
     COOWNER(ChatColor.GOLD, "CO-OWNER", true),

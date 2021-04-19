@@ -1,6 +1,7 @@
 package me.zach.DesertMC.GameMechanics;
 
 
+import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 
@@ -14,6 +15,7 @@ import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
+import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.bukkit.*;
@@ -23,6 +25,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -35,14 +38,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Events implements Listener {
+import static me.zach.DesertMC.Utils.RankUtils.RankEvents.rankSession;
 
+public class Events implements Listener{
+	public static ArrayList<UUID> invincible = new ArrayList<>();
 	DesertMain main = DesertMain.getInstance;
 	public static HashMap<UUID,Integer> ks = new HashMap<>();
 
@@ -54,9 +56,7 @@ public class Events implements Listener {
 			arrowArray.put((Arrow) event.getEntity(),((Player)event.getEntity().getShooter()).getInventory().getItemInHand());
 			//ArtifactEvents.shootEvent(event);
 		}
-
 	}
-	
 
 	@EventHandler
 	public void illegalCommandSend(PlayerCommandPreprocessEvent event){
@@ -94,23 +94,16 @@ public class Events implements Listener {
 	@EventHandler
 	public void onHitInWhileInvincible(EntityDamageByEntityEvent event) {
 		try {
-		
-				if(event.getEntity() instanceof Player) {
-					Player p = (Player) event.getEntity();
-					UUID uuid = p.getUniqueId();
-		        		if(main.getConfig().getBoolean("players." + uuid + ".invincible")) {
-		        			event.setCancelled(true);
-		        			
-		        		}
-		        	
+			if(event.getEntity() instanceof Player) {
+				Player p = (Player) event.getEntity();
+				UUID uuid = p.getUniqueId();
+				if(invincible.contains(uuid)) {
+					event.setCancelled(true);
 				}
-			
-		
+			}
 		} catch(Exception e) {
-			
 			e.printStackTrace();
 		}
-		
 	}
 
 	@EventHandler
@@ -126,7 +119,6 @@ public class Events implements Listener {
 
 	public static void check(DesertMain main){
 		new BukkitRunnable(){
-
 			@Override
 			public void run() {
 				for(Player p : Bukkit.getOnlinePlayers()){
@@ -134,26 +126,6 @@ public class Events implements Listener {
 					p.setFoodLevel(20);
 					Location location = p.getLocation();
 					Location locbefore = location.clone();
-
-					for(Entity e:location.getWorld().getEntities()){
-						if(e instanceof ArmorStand){
-							NBTEntity nbta = new NBTEntity(e);
-							if(nbta.getBoolean("Hellfire")){
-								if(e.getLocation().clone().add(0,10,0).distanceSquared(p.getLocation()) <= 2.5){
-									if(p.getHealth() <= 4) p.damage(9999999,Bukkit.getPlayer(UUID.fromString(nbta.getString("Owner"))));
-									if(p.getHealth() > 4){
-										p.damage(0,Bukkit.getPlayer(UUID.fromString(nbta.getString("Owner"))));
-										p.setHealth(p.getHealth()-4);
-									}
-								}
-							}
-						}
-					}
-
-
-
-
-
 					if(locbefore.getBlock().getType().equals(Material.LAVA) || locbefore.getBlock().getType().equals(Material.STATIONARY_LAVA)){
 						p.sendMessage(Prefix.DEBUG + "1");
 						if(ConfigUtils.findClass(p).equals("corrupter") && ConfigUtils.getLevel("corrupter",p) > 7){
@@ -172,15 +144,10 @@ public class Events implements Listener {
 
 	@EventHandler
 	public void onCrouchToggle(PlayerToggleSneakEvent event){
-		if(DesertMain.crouchers.get(event.getPlayer().getUniqueId()) != null){
-			if(DesertMain.crouchers.get(event.getPlayer().getUniqueId())) {
-				DesertMain.crouchers.put(event.getPlayer().getUniqueId(), false);
-			}else{
-				DesertMain.crouchers.put(event.getPlayer().getUniqueId(), true);
-			}
-
+		if(DesertMain.crouchers.contains(event.getPlayer().getUniqueId())) {
+			DesertMain.crouchers.remove(event.getPlayer().getUniqueId());
 		}else{
-			DesertMain.crouchers.put(event.getPlayer().getUniqueId(),true);
+			DesertMain.crouchers.add(event.getPlayer().getUniqueId());
 		}
 	}
 
@@ -275,20 +242,13 @@ public class Events implements Listener {
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
 			if (player.getHealth() - event.getDamage() < 0.1) {
-
+				event.setCancelled(true);
+				if(dd(player)) return;
+				callOnKill(player, killer);
 				Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
 				if (spawn == null) {
 					player.teleport(player.getWorld().getSpawnLocation());
 				} else player.teleport(spawn);
-				try {
-					
-						if (new NBTItem(killer.getInventory().getLeggings()).getString("ID").equals("CORRUPTER_LEGGINGS"))
-							EventsForCorruptor.INSTANCE.corrupterLeggings(killer, player);
-				} catch (Exception ex) {
-					if (!(ex instanceof NullPointerException)) {
-						Bukkit.getConsoleSender().sendMessage("Error checking for corrupter leggings: " + ex.toString());
-					}
-				}
 				new BukkitRunnable() {
 					@Override
 					public void run() {
@@ -296,13 +256,10 @@ public class Events implements Listener {
 					}
 				}.runTaskLater(DesertMain.getInstance, 10);
 
-				event.setCancelled(true);
+
 				int randomCompare = 2;
 				double random = (Math.random() * 5) + 1;
 				int soulsgained = 0;
-
-				EventsForWizard.INSTANCE.wizardt1(killer);
-				 EventsForWizard.INSTANCE.wizardt1(killer);
 				if (random < randomCompare) {
 					try {
 						
@@ -333,14 +290,6 @@ public class Events implements Listener {
 				
 					killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
 				ks.put(event.getEntity().getUniqueId(), 0);
-
-				for (ItemStack item : player.getInventory().getContents()) {
-					try {
-						if (new NBTItem(item).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE"))
-							new NBTItem(item).getCompound("CustomAttributes").setInteger("CHARGE", 0);
-					} catch (NullPointerException ignored) {
-					}
-				}
 				DesertMain.snack.remove(player.getUniqueId());
 
 				player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
@@ -369,10 +318,14 @@ public class Events implements Listener {
 				Bukkit.getConsoleSender().sendMessage("Error checking for corrupter leggings: " + ex.toString());
 			}
 		}
-		for(ItemStack item : player.getInventory().getContents()){
+		for(int i = 0; i<36; i++){
+			ItemStack item = killer.getInventory().getItem(i);
 			try{
-				if(new NBTItem(item).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE")){
-					new NBTItem(item).getCompound("CustomAttributes").setInteger("CHARGE", 0);
+				NBTItem nbt = new NBTItem(item);
+				NBTCompound compound = nbt.getCompound("CustomAttributes");
+				if(compound.getString("ID").equals("WIZARD_BLADE")){
+					compound.setInteger("CHARGE", 0);
+					player.getInventory().setItem(i, nbt.getItem());
 				}
 			}catch(NullPointerException ignored){}
 		}
@@ -389,17 +342,15 @@ public class Events implements Listener {
 			Player killer = getPlayer(event.getDamager());
 
 			try {
-				killer.sendMessage("Inside executeKill try/catch");
 				if (player.getHealth() - event.getDamage() < 0.1) {
-					killer.sendMessage("Above callOnKill");
+					event.setCancelled(true);
+					if(dd(player)) return;
 					callOnKill(player, killer);
 					Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
 					player.setHealth(player.getMaxHealth());
-
 					player.teleport(spawn);
 					if(player.getFireTicks() > 0)
 						player.setFireTicks(0);
-					event.setCancelled(true);
 					int random = new Random().nextInt(4);
 					int soulsgained = 0;
 					if (random == 0) {
@@ -448,6 +399,54 @@ public class Events implements Listener {
 
 		}
 	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void rankSession(PlayerJoinEvent e){
+		try {
+			UUID uuid = e.getPlayer().getUniqueId();
+			Rank rank = Rank.valueOf(main.getConfig().getString("player." + uuid + ".rank"));
+			rankSession.put(uuid, rank);
+			Bukkit.getConsoleSender().sendMessage("Updated rank session for player " + e.getPlayer().getName() + ", rankSession:\n" + rankSession + "\nAdded rank " + rank);
+		}catch(IllegalArgumentException | NullPointerException ignored){}
+	}
+
+	public static boolean dd(Player player){
+		AtomicBoolean dd = new AtomicBoolean(false);
+		player.getInventory().forEach(item -> {
+			if(!dd.get()){
+				try {
+					if(NBTUtil.INSTANCE.getCustomAttr(item, "ID").equals("DEATH_DEFIANCE")) {
+						dd.set(true);
+						player.getInventory().remove(item);
+						player.playSound(player.getLocation(), Sound.DIG_STONE, 10, 1);
+						player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 10, 0.9f);
+						new BukkitRunnable() {
+							float tone = 0;
+							@Override
+							public void run() {
+								if (tone >= 2) cancel();
+								else {
+									player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100, tone);
+									tone += 0.1f;
+								}
+							}
+						}.runTaskTimer(Bukkit.getPluginManager().getPlugin("Fallen"), 0, 2);
+						player.sendMessage(ChatColor.YELLOW + "You rise from the ashes!\n" + ChatColor.DARK_GRAY + "Consumed 1 Death Defiance");
+						ParticleEffect.FLAME.display(1, 10, 1, 0, 200, player.getLocation(), 15);
+						player.setHealth(player.getMaxHealth() * 0.2);
+						invincible.add(player.getUniqueId());
+						new BukkitRunnable() {
+							public void run() {
+								invincible.remove(player.getUniqueId());
+							}
+						}.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), 50);
+					}
+				}catch(NullPointerException ignored){}
+			}
+		});
+		return dd.get();
+	}
+
 	@EventHandler
 	public void healthRegen(EntityRegainHealthEvent e){
 		if(e.getEntity() instanceof Player && (e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED) || e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.REGEN))){
@@ -489,6 +488,7 @@ public class Events implements Listener {
 	
 	@EventHandler
 	public void onFirstJoin(PlayerJoinEvent e) {
+		e.getPlayer().sendMessage("working");
 		if(!(main.getConfig().contains("players." + e.getPlayer().getUniqueId()))) {
 			main.getConfig().createSection("players." + e.getPlayer().getUniqueId());
 			/* classes */
@@ -510,10 +510,6 @@ public class Events implements Listener {
 			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.scout.hasxp", 0);
 			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.wizard.hasxp", 0);
 			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.corrupter.hasxp", 0);
-			//init invincible
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".invincible", false);
-
-			
 			//init titles
 			TitleUtils.initializeTitles(e.getPlayer());
 			//save
@@ -522,7 +518,6 @@ public class Events implements Listener {
 		} else {
 			if(main.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank") != null)e.setJoinMessage(Rank.valueOf(main.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank")).p + Rank.valueOf(main.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank")).c.toString() + " " + e.getPlayer().getName() + " just joined.");
 			else e.setJoinMessage("");
-
 		}
 		Player p = e.getPlayer();
 		p.sendMessage(ChatColor.GREEN + "Welcome to the FallenMC pre-alpha testing server!\nUse /kot to select a class and see it's rewards." + ChatColor.YELLOW + " If you are not opped, press your designated op command block." + ChatColor.GREEN + " Use /item to grant any of the items from the classes. Items are tabcompleteable, press space then tab after typing out /item to see all of them." + ChatColor.YELLOW + " An items ability WILL NOT WORK if you don't have the right class selected and at the right level. To do this, select the class with /kot and level it using /classexp (your class here in lowercase) 99999." + ChatColor.GREEN + "\n To open the traits menu use /traits, and to give yourself more trait tokens use /traitsconfig set int (your uuid here) 99999. \n For the Enchant Refinery, use /testinv, but you will need a hammer and book first. To get a hammer, enter /givehammer (level 1-5). Each level is a different hammer. To give yourself a dummy book, use /givebookdummy. \nPLease scroll up to read this whole thing, and have fun testing!");
@@ -532,6 +527,7 @@ public class Events implements Listener {
 	}
 	public static void executeKill(Player player, Player killer){
 		try {
+			if(dd(player)) return;
 				callOnKill(player, killer);
 				EventsForWizard.INSTANCE.wizardt1(killer);
 				Location spawn = (Location) DesertMain.getInstance.getConfig().get("server.lobbyspawn");

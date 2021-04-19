@@ -67,7 +67,7 @@ public class EventsForTank implements Listener {
         if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
             Player damager = (Player) event.getDamager();
             if(ConfigUtils.getLevel("tank",damager) > 7 && ConfigUtils.findClass(damager).equals("tank")){
-                if(DesertMain.crouchers.get(damager.getUniqueId())){
+                if(DesertMain.crouchers.contains(damager.getUniqueId())){
                     event.setDamage(event.getDamage() * 1.05);
                 }
             }

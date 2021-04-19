@@ -4,12 +4,15 @@ import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.ClassManager.KitsOrTraits;
 import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesInventory;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.GameMechanics.SoulShop;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.GameMechanics.SPolice;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.GameMechanics.Events;
+import me.zach.DesertMC.Utils.RankUtils.Rank;
+import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.EnchantmentUtil;
 import net.minecraft.server.v1_8_R3.CommandExecute;
@@ -53,8 +56,45 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         		}else{
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
 				}
-        		
         	}
+
+        	if(command.getName().equalsIgnoreCase("colors")){
+        		if(RankEvents.rankSession.containsKey(player.getUniqueId())){
+        			player.sendMessage(ChatColor.GREEN + "With your rank, you can"  + ChatColor.YELLOW + " include " + ChatColor.AQUA + "colors " + ChatColor.GREEN + "in your messages! Placing a color code in your messages will make any text after that color code your color!\n" + ChatColor.GRAY + "Colors:");
+        			for(String name : RankEvents.friendlyCC.keySet()){
+        				ChatColor color = RankEvents.friendlyCC.get(name);
+        				String colorName = color.name();
+        				player.sendMessage(name + ChatColor.DARK_GRAY + " - " + ChatColor.WHITE + colorName + " or !" + RankEvents.colorShortcuts.get(color));
+					}
+        			return true;
+				}else{
+        			player.sendMessage(ChatColor.RED + "You must have a rank to use this command!");
+        			return false;
+				}
+			}
+
+        	if(command.getName().equalsIgnoreCase("rank")){
+        		if(player.hasPermission("admin")){
+        			if(args[0] != null && args[1] != null){
+        				try{
+        					if(Rank.valueOf(args[1]).equals(Rank.COOWNER) || Rank.valueOf(args[1]).equals(Rank.ADMIN)){
+								if (!player.getUniqueId().toString().equals("7f9ad03e-23ec-4648-91c8-2e0820318a8b")){
+									player.sendMessage(ChatColor.RED + "Nice try. You can't give other people COOWNER or ADMIN.");
+									return false;
+								}
+							}
+        					mainpl.getConfig().set("player." + Bukkit.getPlayer(args[0]).getUniqueId() + ".rank", Rank.valueOf(args[1]).name());
+        					mainpl.saveConfig();
+        					player.sendMessage(ChatColor.GREEN + "Rank set successfully.");
+						}catch(IllegalArgumentException noRankFound){
+        					player.sendMessage(ChatColor.RED + "Rank not found! Usage: /rank <player> <rank>");
+						}
+					}else{
+        				player.sendMessage(ChatColor.RED + "Invalid usage! Usage: /rank <player> <rank>");
+					}
+				}
+			}
+
         	if(command.getName().equalsIgnoreCase("seizehelditem")){
         		if(player.hasPermission("admin")){
         			try{
@@ -73,6 +113,9 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 				}else{
         			player.sendMessage(ChatColor.RED + "Sorry, you can't use this command.");
 				}
+			}
+        	if(command.getName().equalsIgnoreCase("expmilestones")){
+        		player.openInventory(MilestonesInventory.getInventory(player));
 			}
         	if(command.getName().equalsIgnoreCase("addweight")){
         		if(player.hasPermission("admin")){
@@ -304,12 +347,12 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         	}
         	if(command.getName().equalsIgnoreCase("invincible")) {
         		if(player.hasPermission("admin")) {
-	        			if(!main.getConfig().getBoolean("players." + player.getUniqueId() + ".invincible")) {
+	        			if(!Events.invincible.contains(player.getUniqueId())) {
 		        			player.sendMessage(ChatColor.GREEN + "Made you invincible!");
-		        			main.getConfig().set("players." + player.getUniqueId() + ".invincible", true);
-						} else {
-		        			main.getConfig().set("players." + player.getUniqueId() + ".invincible", false);
-		        			player.sendMessage(ChatColor.RED + "Turned off your invincibilty!");
+		        			Events.invincible.add(player.getUniqueId());
+						}else{
+		        			Events.invincible.remove(player.getUniqueId());
+		        			player.sendMessage(ChatColor.RED + "Turned off your invincibility!");
 						}
 					main.saveConfig();
 				} else {

@@ -39,6 +39,24 @@ commands:
  seizehelditem:
   description: Seizes a target player's held item.
   usage: /<command> <target player>
+ explv:
+  description: Sets the global placeholder exp milestone level for testing purposes, since we don't have our database yet
+ expmilestones:
+  description: Opens the exp milestone menu
+  usage: /<command>
+  aliases:
+   - xpmilestones
+   - xpmilestone
+   - expmilestone
+   - exp
+ colors:
+  description: Lists the color codes that ranked players can put in their messages.
+  usage: /<command>
+  aliases:
+   - color
+ rank:
+  description: Sets a player's rank.
+  usage: /<command> <rank>
 permissions:
  admin:
   description: This permission allows a player to have access to almost all special commands, such as /item, or /setspawn.

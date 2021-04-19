@@ -11,6 +11,7 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -25,11 +26,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
+import java.util.UUID;
 
 
 public class EventsForCorruptor implements Listener {
     public static final EventsForCorruptor INSTANCE = new EventsForCorruptor();
+    public static final ArrayList<UUID> hf = new ArrayList<>();
 
     public void fort4(EntityDamageEvent event){
         if(event.getCause().equals(EntityDamageEvent.DamageCause.LAVA) || event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK)){
@@ -156,20 +161,29 @@ public class EventsForCorruptor implements Listener {
         }
     }
 
+    private void hf(Entity e, long duration){
+        if(hf.contains(e.getUniqueId())) return;
+        hf.add(e.getUniqueId());
+        Location playerLocation = e.getLocation();
+        Material typeBefore = playerLocation.getBlock().getType();
+        playerLocation.getBlock().setType(Material.FIRE);
+        new BukkitRunnable(){
+            public void run(){
+                playerLocation.getBlock().setType(typeBefore);
+                hf.remove(e.getUniqueId());
+            }
+        }.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), duration);
+    }
+
     public void corruptedSword(EntityDamageByEntityEvent event){
         if(event.getDamager() instanceof Player){
             Player hitter = (Player) event.getDamager();
-
             if(hitter.getInventory().getItemInHand() != null){
                 if(NBTUtil.INSTANCE.getCustomAttr(hitter.getInventory().getItemInHand(),"ID").equals("CORRUPTED_SWORD")){
                     Random rgen = new Random();
                     final int RANDOM_INTEGER = rgen.nextInt(10);
                     if(RANDOM_INTEGER + 1 < 2){
-                        Entity hfa = event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation().subtract(0, 10, 0), EntityType.ARMOR_STAND);
-                        hfa = NBTInjector.patchEntity(hfa);
-                        NBTCompound hfanbt = NBTInjector.getNbtData(hfa);
-                        hfanbt.mergeCompound(new NBTContainer("{Marker:1b,Hellfire:1b,Unbreakable:1b,Invisible:0b,Owner:" + hitter.getUniqueId().toString() + "}"));
-                        event.getEntity().getLocation().getBlock().setType(Material.FIRE);
+                        hf(event.getEntity(), 100);
                     }
                 }
             }
@@ -186,6 +200,4 @@ public class EventsForCorruptor implements Listener {
             killer.getLocation().getBlock().setType(Material.FIRE);
         }
     }
-
-
 }
