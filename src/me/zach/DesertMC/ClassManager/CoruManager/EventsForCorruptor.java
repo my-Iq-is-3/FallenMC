@@ -172,7 +172,7 @@ public class EventsForCorruptor implements Listener {
                 playerLocation.getBlock().setType(typeBefore);
                 hf.remove(e.getUniqueId());
             }
-        }.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), duration);
+        }.runTaskLater(DesertMain.getInstance, duration);
     }
 
     public void corruptedSword(EntityDamageByEntityEvent event){

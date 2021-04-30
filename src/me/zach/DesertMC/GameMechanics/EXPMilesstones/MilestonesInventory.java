@@ -3,6 +3,7 @@ package me.zach.DesertMC.GameMechanics.EXPMilesstones;
 import itempackage.Items;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.MiscUtils;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -20,7 +21,7 @@ import static me.zach.DesertMC.DesertMain.lv;
 import static me.zach.DesertMC.DesertMain.unclaimed;
 
 public class MilestonesInventory implements Listener {
-    static Plugin pl = Bukkit.getPluginManager().getPlugin("Fallen");
+    static Plugin pl = DesertMain.getInstance;
     static ItemStack empty = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
     static{
         ItemMeta emptyMeta = empty.getItemMeta();
@@ -65,15 +66,17 @@ public class MilestonesInventory implements Listener {
         }else if(page < 0) throw new IllegalArgumentException("Page passed through rewardsList(Player p, int page) must be greater than 0!");
         if(page > 2) page = 2;
         for(int i = (page * 29) - 29; i<=page * 29; i++){
-            list.add(new RewardsItem(i + 1, lv));
+            list.add(new RewardsItem(i + 1, p));
         }
         return list;
     }
     protected static class RewardsItem extends ItemStack{
+
         private static final HashMap<Integer, RewardOverride> overrides = new HashMap<>();
-        public static int parseLevel(ItemStack item){
-            return Integer.parseInt(item.getItemMeta().getDisplayName().replaceAll(ChatColor.GREEN + "Milestone ", ""));
+        public static RewardsItem parseLevel(ItemStack item, Player p){
+            return new RewardsItem(Integer.parseInt(item.getItemMeta().getDisplayName().replaceAll(ChatColor.GREEN + "Milestone ", "")), p);
         }
+
         private static short getColor(int level, int playerLevel){
             if(playerLevel > level) return (short) 5;
             else if(playerLevel == level) return (short) 4;
@@ -88,8 +91,9 @@ public class MilestonesInventory implements Listener {
         Integer level;
         IRewardGrant granter;
         String reward;
-        public RewardsItem(int milestoneLevel, int playerLevel){
+        public RewardsItem(int milestoneLevel, Player p){
             super(type(milestoneLevel), 1);
+            int playerLevel = DesertMain.lv;
             override = overrides.containsKey(level);
             level = milestoneLevel;
             ChatColor textColor = ChatColor.RED;
@@ -101,91 +105,100 @@ public class MilestonesInventory implements Listener {
             }else if(playerLevel == milestoneLevel){
                 textColor = ChatColor.YELLOW;
             }
-            displayName = textColor + "Milestone " + milestoneLevel;
-            if(overrides.containsKey(level)){
-                RewardOverride override = overrides.get(level);
-                reward = override.name;
-                granter = override.granter;
-            }else{
-                switch (milestoneLevel % 5) {
-                    case (0):
-                        int gemsToGrant = 100 * (milestoneLevel / 5);
-                        reward = gemsToGrant + " Gems";
-                        granter = (player, mLevel) -> {
-                            ConfigUtils.addGems(player, gemsToGrant);
-                            return true;
-                        };
-                        break;
-                    case (1):
-                        int soulsToGrant = 7 * (Math.floorDiv(milestoneLevel, 6) + 1);
-                        reward = soulsToGrant + " Souls";
-                        granter = (player, mLevel) -> {
-                            ConfigUtils.addSouls(player, soulsToGrant);
-                            return true;
-                        };
-                        break;
-                    case (2):
-                        reward = "2 Trait Tokens";
-                        Plugin traitsPl = Bukkit.getPluginManager().getPlugin("Traits");
-                        granter = (player, mLevel) -> {
-                            traitsPl.getConfig().set(player.getUniqueId() + ".traittokens", traitsPl.getConfig().getInt(player.getUniqueId() + ".traittokens" + 2));
-                            return true;
-                        };
-                        break;
-                    case (3):
-                        float toBoost = 1 + ((Math.floorDiv(milestoneLevel, 8) + 1) * 0.1f);
-                        if (toBoost > 2f) toBoost = 2f;
-                        reward = toBoost + "x EXP Multiplier";
-                        lore.add(ChatColor.GRAY + "- An EXP multiplier that lasts for 1h.");
-                        float finalToBoost = toBoost;
-                        granter = (player, mLevel) -> {
-                            if (DesertMain.booster.containsKey(player.getUniqueId())) {
-                                player.sendMessage(ChatColor.RED + "You already have a booster active!");
-                                return false;
-                            }
-                            DesertMain.booster.put(player.getUniqueId(), finalToBoost);
-                            return true;
-                        };
-                        break;
-                    case (4):
-                        int hammer = 1;
-                        if (milestoneLevel >= 15) hammer++;
-                        if (milestoneLevel >= 35) hammer++;
-                        if (hammer == 1) {
-                            reward = "Wood Hammer";
-                            granter = (player, mLevel) -> {
-                                if (player.getInventory().firstEmpty() == -1) {
-                                    player.sendMessage(ChatColor.RED + "Full Inventory!");
-                                    return false;
-                                } else {
-                                    player.getInventory().addItem(Items.getWoodHammer());
-                                    return true;
-                                }
-                            };
-                        } else if (hammer == 2) {
-                            reward = "Stone Hammer";
-                            granter = (player, mLevel) -> {
-                                if (player.getInventory().firstEmpty() == -1) {
-                                    player.sendMessage(ChatColor.RED + "Full Inventory!");
-                                    return false;
-                                } else {
-                                    player.getInventory().addItem(Items.getStoneHammer());
-                                    return true;
-                                }
-                            };
-                        } else {
-                            reward = "Iron Hammer";
-                            granter = (player, mLevel) -> {
-                                if (player.getInventory().firstEmpty() == -1) {
-                                    player.sendMessage(ChatColor.RED + "Full Inventory!");
-                                    return false;
-                                } else {
-                                    player.getInventory().addItem(Items.getIronHammer());
-                                    return true;
-                                }
-                            };
-                        }
 
+            displayName = textColor + "Milestone " + milestoneLevel;
+            if(milestoneLevel == 58){
+                reward = DesertMain.resets + MiscUtils.getOrdinalSuffix(DesertMain.resets) + " milestones reset";
+                lore.add(ChatColor.GRAY + "- Display case upgrade: " + MilestonesUtil.getDisplayCase(p) + ChatColor.GRAY + " ➞ " + MilestonesUtil.getNewCase(p));
+                if(MilestonesUtil.cosmetics.containsKey(DesertMain.resets)) lore.add(ChatColor.GRAY + "- New cosmetic: " + MilestonesUtil.cosmetics.get(DesertMain.resets));
+                granter = (player, mLevel) -> false;
+            }else{
+                if (overrides.containsKey(level)) {
+                    RewardOverride override = overrides.get(level);
+                    reward = override.name;
+                    granter = override.granter;
+                } else {
+                    switch (milestoneLevel % 5) {
+                        case (0):
+                            int gemsToGrant = 100 * (milestoneLevel / 5);
+                            reward = gemsToGrant + " Gems";
+                            granter = (player, mLevel) -> {
+                                ConfigUtils.addGems(player, gemsToGrant);
+                                return true;
+                            };
+                            break;
+                        case (1):
+                            int soulsToGrant = 7 * (Math.floorDiv(milestoneLevel, 6) + 1);
+                            reward = soulsToGrant + " Souls";
+                            granter = (player, mLevel) -> {
+                                ConfigUtils.addSouls(player, soulsToGrant);
+                                return true;
+                            };
+                            break;
+                        case (2):
+                            reward = "2 Trait Tokens";
+                            Plugin traitsPl = Bukkit.getPluginManager().getPlugin("Traits");
+                            granter = (player, mLevel) -> {
+                                traitsPl.getConfig().set(player.getUniqueId() + ".traittokens", traitsPl.getConfig().getInt(player.getUniqueId() + ".traittokens" + 2));
+                                traitsPl.saveConfig();
+                                return true;
+                            };
+                            break;
+                        case (3):
+                            float toBoost = 1 + ((Math.floorDiv(milestoneLevel, 8) + 1) * 0.1f);
+                            if (toBoost > 2f) toBoost = 2f;
+                            reward = toBoost + "x EXP Multiplier";
+                            lore.add(ChatColor.GRAY + "- An EXP multiplier that lasts for 1h.");
+                            float finalToBoost = toBoost;
+                            granter = (player, mLevel) -> {
+                                if (DesertMain.booster.containsKey(player.getUniqueId())) {
+                                    player.sendMessage(ChatColor.RED + "You already have a booster active!");
+                                    return false;
+                                }
+                                DesertMain.booster.put(player.getUniqueId(), finalToBoost);
+                                return true;
+                            };
+                            break;
+                        case (4):
+                            int hammer = 1;
+                            if (milestoneLevel >= 15) hammer++;
+                            if (milestoneLevel >= 35) hammer++;
+                            if (hammer == 1) {
+                                reward = "Wood Hammer";
+                                granter = (player, mLevel) -> {
+                                    if (player.getInventory().firstEmpty() == -1) {
+                                        player.sendMessage(ChatColor.RED + "Full Inventory!");
+                                        return false;
+                                    } else {
+                                        player.getInventory().addItem(Items.getWoodHammer());
+                                        return true;
+                                    }
+                                };
+                            } else if (hammer == 2) {
+                                reward = "Stone Hammer";
+                                granter = (player, mLevel) -> {
+                                    if (player.getInventory().firstEmpty() == -1) {
+                                        player.sendMessage(ChatColor.RED + "Full Inventory!");
+                                        return false;
+                                    } else {
+                                        player.getInventory().addItem(Items.getStoneHammer());
+                                        return true;
+                                    }
+                                };
+                            } else {
+                                reward = "Iron Hammer";
+                                granter = (player, mLevel) -> {
+                                    if (player.getInventory().firstEmpty() == -1) {
+                                        player.sendMessage(ChatColor.RED + "Full Inventory!");
+                                        return false;
+                                    } else {
+                                        player.getInventory().addItem(Items.getIronHammer());
+                                        return true;
+                                    }
+                                };
+                            }
+
+                    }
                 }
             }
             if(getType().equals(Material.STAINED_GLASS_PANE)) setDurability(getColor(milestoneLevel, playerLevel));
@@ -207,17 +220,23 @@ public class MilestonesInventory implements Listener {
 
         public void claim(Player player){
             player.closeInventory();
-            if(granter.grant(player, level)){
-                String confirmationMsg = ChatColor.GREEN + "------------- " + ChatColor.BOLD + "REWARD CLAIMED!" + ChatColor.GREEN + " -------------\n\n" + ChatColor.GRAY + "\u25CF Reward:\n     " + reward;
-                unclaimed.remove(level);
-                player.sendMessage(confirmationMsg);
-                StringBuilder dashBuilder = new StringBuilder(ChatColor.GREEN + "");
-                for(int i = 0; i<confirmationMsg.length(); i++){
-                    if(confirmationMsg.charAt(i) == '\n') break;
-                    dashBuilder.append("-");
+            if(level == 58){
+                MilestonesUtil.resetMilestones(player);
+            }else{
+                if (granter.grant(player, level)) {
+                    String confirmationMsg = ChatColor.GREEN + "------------- " + ChatColor.BOLD + "REWARD CLAIMED!" + ChatColor.GREEN + " -------------\n\n" + ChatColor.GRAY + "\u25CF Reward:\n     " + reward;
+                    unclaimed.remove(level);
+                    player.sendMessage(confirmationMsg);
+                    StringBuilder dashBuilder = new StringBuilder(ChatColor.GREEN + "");
+                    for (int i = 0; i < confirmationMsg.length(); i++) {
+                        if (confirmationMsg.charAt(i) == '\n') break;
+                        dashBuilder.append("-");
+                    }
+                    player.sendMessage(dashBuilder.substring(0, dashBuilder.length() - 5) + "");
+                    confirmationSound(player);
+                } else {
+                    player.playSound(player.getLocation(), Sound.NOTE_BASS, 10, 1);
                 }
-                player.sendMessage(dashBuilder.substring(0, dashBuilder.length() - 5) + "");
-                confirmationSound(player);
             }
         }
 
@@ -269,7 +288,6 @@ public class MilestonesInventory implements Listener {
 
         protected static void addOverride(RewardOverride override){
             overrides.put(override.level, override);
-            Bukkit.getConsoleSender().sendMessage("Putting override with level " + override.level + " into overrides map, map:\n" + overrides);
         }
         /**
          * @param override RewardOverride item to override reward with
@@ -277,7 +295,6 @@ public class MilestonesInventory implements Listener {
          */
         protected static void addOverride(RewardOverride override, int mod){
             for(int i = override.level; i <= 58; i++){
-                Bukkit.getConsoleSender().sendMessage("Mod loop index: " + i + "\ni mod param: " + i % mod);
                 if(i % mod == 0 || i == override.level){
                     addOverride(new RewardOverride(override.name, i, override.granter, override.icon));
                 }

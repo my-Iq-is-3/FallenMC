@@ -9,6 +9,7 @@ import me.zach.DesertMC.ClassManager.InvEvents;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesEvents;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesInventory;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesOverride;
+import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.GameMechanics.SPolice;
@@ -29,6 +30,7 @@ import java.util.*;
 
 public class DesertMain extends JavaPlugin implements Listener {
 	public static DesertMain getInstance;
+	public static final Plugin getGeneric = DesertMain.getInstance;
 	public static final ArrayList<UUID> crouchers = new ArrayList<>();
 	public static final ArrayList<UUID> ct1players = new ArrayList<UUID>();
 	public static final HashMap<UUID,UUID> lastdmgers = new HashMap<UUID, UUID>();
@@ -47,6 +49,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public static int lv = 8;
 	public static int xpToNext = 100;
 	public static int currentProgress = 0;
+	public static int resets = 1;
 	public static ArrayList<UUID> claiming = new ArrayList<>();
 	public static final ArrayList<Integer> unclaimed = new ArrayList<>();
 	static{
@@ -59,10 +62,11 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getConsoleSender().sendMessage("1");
 		library = new NPCLib(this);
 		getInstance = this;
-		String[] cmdsfile = {"enchantmentmod","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors"};
+		String[] cmdsfile = {"enchantmentmod","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
+		getCommand("confirmreset").setExecutor(new MilestonesUtil());
 		loadConfig();
 		MilestonesOverride.addOverrides();
 		Events.check(this);

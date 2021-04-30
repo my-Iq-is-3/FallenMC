@@ -15,6 +15,7 @@ import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.EnchantmentUtil;
+import me.zach.DesertMC.cosmetics.Cosmetic;
 import net.minecraft.server.v1_8_R3.CommandExecute;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,14 +46,12 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 	public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player) {
         	Player player = ((Player) sender).getPlayer();
-        	DesertMain main = DesertMain.getInstance;
-        	Plugin mainpl = DesertMain.getPlugin(DesertMain.class);
-
+        	Plugin mainpl = DesertMain.getInstance;
         	if(command.getName().equalsIgnoreCase("setspawn")) {
         		if(player.hasPermission("admin")){
-        			main.getConfig().set("server.lobbyspawn", player.getLocation());
+        			mainpl.getConfig().set("server.lobbyspawn", player.getLocation());
         			player.sendMessage(ChatColor.BLUE + "Spawn > "+ ChatColor.DARK_GRAY + "Set the spawn for Lobby");
-        			main.saveConfig();
+        			mainpl.saveConfig();
         		}else{
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
 				}
@@ -72,7 +71,44 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         			return false;
 				}
 			}
-
+			if(command.getName().equalsIgnoreCase("cosmetic")){
+				if(args.length >= 2){
+					if(args[0].equalsIgnoreCase("set")){
+						Cosmetic toSet = Cosmetic.getFromName(String.join(" ", args).replace("set ", ""));
+						if(toSet != null) {
+							if(toSet.select(player))
+								player.sendMessage(ChatColor.GREEN + "Successfully selected cosmetic " + ChatColor.GOLD + toSet + ChatColor.GRAY + " (" + toSet.cosmeticType + ")");
+							else if(player.hasPermission("admin")){
+								player.sendMessage(ChatColor.GREEN + "You haven't unlocked that one yet, so I added it and selected it for you. Hi admin!");
+								toSet.grant(player);
+								toSet.select(player);
+							}else{
+								player.sendMessage(ChatColor.RED + "You haven't unlocked that cosmetic yet! To see your unlocked cosmetics and more, type /cosmetic to open the menu!");
+							}
+						}
+					}else if(args[0].equalsIgnoreCase("grant")){
+						if(player.hasPermission("admin")){
+							Cosmetic toSet = Cosmetic.getFromName(String.join(" ", args).replace("grant ", ""));
+							if(toSet == null) player.sendMessage(ChatColor.RED + "That cosmetic doesn't exist!");
+							else toSet.grant(player);
+						}else player.sendMessage(ChatColor.RED + "Only admins can do that!");
+					}
+				}else if(args.length >= 1){
+					if(args[0].equalsIgnoreCase("list")){
+						StringBuilder cList = new StringBuilder(ChatColor.GRAY + "Selected Cosmetics:");
+						for (Cosmetic.CosmeticType type : Cosmetic.CosmeticType.values()) {
+							Cosmetic selected = Cosmetic.getSelected(player, type);
+							String name = ChatColor.DARK_GRAY + "None";
+							if (selected != null) name = selected.displayName;
+							cList.append("\n" + ChatColor.GRAY + "Selected " + ChatColor.AQUA).append(type.displayName).append(ChatColor.GRAY).append(": ").append(ChatColor.GOLD).append(name);
+						}
+						player.sendMessage(cList + "");
+					}
+				}else{
+					player.sendMessage(ChatColor.RED + "Invalid Usage! " + ChatColor.YELLOW + "Type /cosmetic to open the menu." + ChatColor.DARK_GRAY + "\nAdditionally, you can use the non-menu command: /cosmetic <set|list> <cosmetic to set>");
+				}
+				return true;
+			}
         	if(command.getName().equalsIgnoreCase("rank")){
         		if(player.hasPermission("admin")){
         			if(args[0] != null && args[1] != null){
@@ -83,7 +119,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 									return false;
 								}
 							}
-        					mainpl.getConfig().set("player." + Bukkit.getPlayer(args[0]).getUniqueId() + ".rank", Rank.valueOf(args[1]).name());
+        					mainpl.getConfig().set("players." + Bukkit.getPlayer(args[0]).getUniqueId() + ".rank", Rank.valueOf(args[1]).name());
         					mainpl.saveConfig();
         					player.sendMessage(ChatColor.GREEN + "Rank set successfully.");
 						}catch(IllegalArgumentException noRankFound){
@@ -94,6 +130,8 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 					}
 				}
 			}
+
+        	if(command.getName().equalsIgnoreCase(""))
 
         	if(command.getName().equalsIgnoreCase("seizehelditem")){
         		if(player.hasPermission("admin")){
@@ -354,7 +392,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 		        			Events.invincible.remove(player.getUniqueId());
 		        			player.sendMessage(ChatColor.RED + "Turned off your invincibility!");
 						}
-					main.saveConfig();
+					mainpl.saveConfig();
 				} else {
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
         		}

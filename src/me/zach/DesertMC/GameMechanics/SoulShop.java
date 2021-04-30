@@ -4,6 +4,7 @@ import com.sun.org.apache.bcel.internal.generic.ArrayInstruction;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import jdk.nashorn.internal.runtime.arrays.ArrayIndex;
+import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCDataPasser;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class SoulShop extends NPCSuper implements Listener{
-    static Plugin pl = Bukkit.getPluginManager().getPlugin("Fallen");
+    static Plugin pl = DesertMain.getInstance;
     static ItemStack clear = new ItemStack(Material.GLASS);
     static ItemStack reduce = new ItemStack(Material.GOLD_NUGGET);
     static ItemStack pane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 9);

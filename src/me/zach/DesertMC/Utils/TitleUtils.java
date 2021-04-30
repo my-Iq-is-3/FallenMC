@@ -1,5 +1,6 @@
 package me.zach.DesertMC.Utils;
 
+import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Prefix;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TitleUtils {
-    private static final Plugin pl = Bukkit.getPluginManager().getPlugin("Fallen");
+    private static final Plugin pl = DesertMain.getInstance;
     public static boolean hasTitle(Player p, Prefix pr){
         return pl.getConfig().getStringList("players." + p.getUniqueId() + ".titles").contains(pr.name());
     }

@@ -2,6 +2,7 @@ package me.zach.DesertMC.GameMechanics;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.Prefix;
 import org.bukkit.Bukkit;
@@ -59,7 +60,7 @@ public class SPolice extends NPCSuper implements Listener {
                     ItemMeta paneMeta = pane.getItemMeta();
                     paneMeta.setDisplayName(" ");
                     pane.setItemMeta(paneMeta);
-                    Inventory inv = Bukkit.getPluginManager().getPlugin("Fallen").getServer().createInventory(null, 27, "Recover Seized Items");
+                    Inventory inv = DesertMain.getInstance.getServer().createInventory(null, 27, "Recover Seized Items");
                     for(int i = 0; i<27; i++){
                         inv.setItem(i, pane);
                     }
@@ -151,7 +152,7 @@ public class SPolice extends NPCSuper implements Listener {
                     if (e.getCurrentItem().isSimilar(falseItem)) {
                         p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
                     } else if (e.getCurrentItem().isSimilar(trueItem)) {
-                        Plugin pl = Bukkit.getPluginManager().getPlugin("Fallen");
+                        Plugin pl = DesertMain.getInstance;
                         if (pl.getConfig().getInt("players." + p.getUniqueId() + ".balance") >= 200) {
                             Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Player " + p.getName() + " recovered a seized item with " + pl.getConfig().getInt("players." + p.getUniqueId() + ".balance") + "gems.");
                             if (p.getInventory().firstEmpty() == -1) {
@@ -292,7 +293,7 @@ public class SPolice extends NPCSuper implements Listener {
                 event.getWhoClicked().sendMessage(Prefix.NPC + ChatColor.DARK_GRAY.toString() + " | " + ChatColor.AQUA + "Streak Police" + ChatColor.GRAY + ": " + ChatColor.WHITE + "To retrieve items that I have taken, all you gotta do is give me the token and " + ChatColor.GREEN + "100 Bones-" + ChatColor.WHITE + " sorry, " + ChatColor.GREEN + "100 Gems" + ChatColor.WHITE + ". I'm also gonna have to reset your streak.");
                 event.getWhoClicked().playSound(event.getWhoClicked().getLocation(), Sound.WOLF_BARK, 10, 1);
                 cantClick.add(event.getWhoClicked().getUniqueId());
-                Inventory inv = Bukkit.getPluginManager().getPlugin("Fallen").getServer().createInventory(null, 27, "Recover Seized Items");
+                Inventory inv = DesertMain.getInstance.getServer().createInventory(null, 27, "Recover Seized Items");
                 ItemStack pane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 9);
                 ItemMeta paneMeta = pane.getItemMeta();
                 paneMeta.setDisplayName(" ");
@@ -309,7 +310,7 @@ public class SPolice extends NPCSuper implements Listener {
                         event.getWhoClicked().openInventory(inv);
                         cantClick.remove(event.getWhoClicked().getUniqueId());
                     }
-                }.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), 80);
+                }.runTaskLater(DesertMain.getInstance, 80);
             }
         }catch(NullPointerException ignored){}
     }

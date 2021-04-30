@@ -57,6 +57,15 @@ commands:
  rank:
   description: Sets a player's rank.
   usage: /<command> <rank>
+ confirmreset:
+  description: Situation specific, clickable command to confirm an EXP Milestones reset
+  usage: /<command>
+ cosmetic:
+  description: Sets a cosmetic, or opens the cosmetic menu
+  usage: /<command>
+  aliases:
+   - cosmetics
+
 permissions:
  admin:
   description: This permission allows a player to have access to almost all special commands, such as /item, or /setspawn.

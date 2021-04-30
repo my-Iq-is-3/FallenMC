@@ -121,9 +121,8 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-            List<String> args = new ArrayList<String>();
+            List<String> args = new ArrayList<>();
             if (strings.length == 1) {
-
                 if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("item")) {
                     args = Arrays.asList("ScoutGoggles", "MagicWand", "VolcanicSword", "Mythical", "Dagger", "StubbornBoots", "WizardBlade", "CorruptedSword", "LuckyChestplate", "CorrupterLeggings", "FirstAidKit", "ScoutBlade", "MagicSnack", "ProteinSnack", "LavaCake", "EnergySnack", "Bludgeon", "Stomper");
                 }

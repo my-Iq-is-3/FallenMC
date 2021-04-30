@@ -96,7 +96,7 @@ public class NPCSuper implements Listener {
                     public void run(){
                         event.getWhoClicked().openInventory(passer.getStartInventory(event));
                     }
-                }.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), clickwait);
+                }.runTaskLater(DesertMain.getInstance, clickwait);
             }
         }catch(NullPointerException ignored){}
     }

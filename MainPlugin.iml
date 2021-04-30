@@ -38,17 +38,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Desktop/Server/spigot.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$USER_HOME$/Desktop/Server/spigot.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$USER_HOME$/Desktop/Server/plugins/item-nbt-api-plugin-2.3.1.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -67,7 +56,18 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/Artifacts.jar!/" />
+          <root url="jar://$USER_HOME$/Desktop/Server/spigot.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$USER_HOME$/Desktop/Server/spigot.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/Desktop/Server/plugins/Artifacts.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

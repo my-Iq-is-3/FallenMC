@@ -55,7 +55,7 @@ public class RankEvents implements Listener {
     }
     Plugin pl;
     @EventHandler
-    public void addRankColor(AsyncPlayerChatEvent e){
+    public void addChatFormatting(AsyncPlayerChatEvent e){
         if(rankSession.containsKey(e.getPlayer().getUniqueId())){
             Player p = e.getPlayer();
             Rank rank = rankSession.get(p.getUniqueId());

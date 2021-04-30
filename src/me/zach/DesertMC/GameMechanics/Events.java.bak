@@ -111,7 +111,7 @@ public class Events implements Listener {
 		}
 	}
 
-	FileConfiguration economyConfig = Bukkit.getPluginManager().getPlugin("Fallen").getConfig();
+	FileConfiguration economyConfig = DesertMain.getInstance.getConfig();
 
 
 	public static void check(DesertMain main){
@@ -235,9 +235,9 @@ public class Events implements Listener {
 				if (random < 2) {
 					soulsgained = 1;
 					if (main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
-						main.getConfig().set("player." + killer.getUniqueId() + ".souls", main.getConfig().getInt("player." + killer.getUniqueId() + ".souls") + 1);
+						main.getConfig().set("players." + killer.getUniqueId() + ".souls", main.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + 1);
 					} else {
-						main.getConfig().set("player." + killer.getUniqueId() + ".souls", 1);
+						main.getConfig().set("players." + killer.getUniqueId() + ".souls", 1);
 					}
 				} else {
 					soulsgained = 0;
@@ -358,9 +358,9 @@ public class Events implements Listener {
 
 						soulsgained = 1;
 						if (main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
-							main.getConfig().set("player." + killer.getUniqueId() + ".souls", main.getConfig().getInt("player." + killer.getUniqueId() + ".souls") + 1);
+							main.getConfig().set("players." + killer.getUniqueId() + ".souls", main.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + 1);
 						} else {
-							main.getConfig().set("player." + killer.getUniqueId() + ".souls", 1);
+							main.getConfig().set("players." + killer.getUniqueId() + ".souls", 1);
 						}
 					} else {
 						soulsgained = 0;
@@ -508,7 +508,7 @@ public class Events implements Listener {
 				((Player) killer).playSound(player.getLocation(), Sound.LEVEL_UP, 1, 4);
 				killer.playSound(player.getLocation(), Sound.BURP, 6, 1.3f);
 				killer.playSound(player.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
-				Bukkit.getPluginManager().getPlugin("Fallen").getConfig().set("players." + killer.getUniqueId() + ".balance", Bukkit.getPluginManager().getPlugin("Fallen").getConfig().getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
+				DesertMain.getInstance.getConfig().set("players." + killer.getUniqueId() + ".balance", DesertMain.getInstance.getConfig().getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
 				ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
 				DesertMain.getInstance.saveConfig();
 

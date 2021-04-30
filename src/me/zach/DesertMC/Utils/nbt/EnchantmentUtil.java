@@ -4,7 +4,6 @@ package me.zach.DesertMC.Utils.nbt;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.CommandsPackage.ItemCommand;
-import me.zach.DesertMC.Utils.stringutil.ListUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;

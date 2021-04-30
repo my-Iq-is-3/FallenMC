@@ -22,9 +22,11 @@ public class MilestonesEvents implements Listener {
         if(e.getClickedInventory().getName().equals("EXP Milestones")){
             e.setCancelled(true);
             try{
-                int level = MilestonesInventory.RewardsItem.parseLevel(e.getCurrentItem());
+
+                MilestonesInventory.RewardsItem item = MilestonesInventory.RewardsItem.parseLevel(e.getCurrentItem(), (Player) e.getWhoClicked());
+                int level = item.level;
                 if (DesertMain.unclaimed.contains(level)) {
-                    new MilestonesInventory.RewardsItem(level, lv).claim((Player) e.getWhoClicked());
+                    item.claim((Player) e.getWhoClicked());
                 }
             }catch(IllegalArgumentException ignored){}
             if(e.getCurrentItem().getType().equals(Material.BREWING_STAND_ITEM) && e.getCurrentItem().containsEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL)){
@@ -32,7 +34,8 @@ public class MilestonesEvents implements Listener {
                 else claiming.add(e.getWhoClicked().getUniqueId());
                 ArrayList<MilestonesInventory.RewardsItem> toClaim = new ArrayList<>();
                 for(int i : unclaimed){
-                    toClaim.add(new MilestonesInventory.RewardsItem(i, DesertMain.lv));
+                    if(i != 58)
+                        toClaim.add(new MilestonesInventory.RewardsItem(i, (Player) e.getWhoClicked()));
                 }
                 Player p = (Player) e.getWhoClicked();
                 p.sendMessage(ChatColor.YELLOW + "Claiming all your milestone rewards...");
@@ -50,7 +53,7 @@ public class MilestonesEvents implements Listener {
                         }
                         i++;
                     }
-                }.runTaskTimer(Bukkit.getPluginManager().getPlugin("Fallen"), 15, 25);
+                }.runTaskTimer(DesertMain.getInstance, 15, 25);
             }
         }
     }

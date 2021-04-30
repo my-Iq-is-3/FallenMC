@@ -178,7 +178,7 @@ public class EventsForTank implements Listener {
                             public void run() {
                                 DesertMain.stomperCD.remove(clicker.getUniqueId());
                             }
-                        }.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), 140);
+                        }.runTaskLater(DesertMain.getInstance, 140);
                     }else{
                         clicker.sendMessage(ChatColor.RED + "No players nearby!");
                         clicker.playSound(clicker.getLocation(), Sound.GLASS, 10, 1);

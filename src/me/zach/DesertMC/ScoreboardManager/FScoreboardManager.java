@@ -16,7 +16,7 @@ import me.zach.DesertMC.GameMechanics.Events;
 
 
 public class FScoreboardManager {
-	private static final FileConfiguration economyConfig = Bukkit.getPluginManager().getPlugin("Fallen").getConfig();
+	private static final FileConfiguration economyConfig = DesertMain.getInstance.getConfig();
 
 	public static void initialize(Player player) {
 			ScoreboardManager smanager = Bukkit.getScoreboardManager();

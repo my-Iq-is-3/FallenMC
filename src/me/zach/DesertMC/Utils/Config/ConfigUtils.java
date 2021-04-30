@@ -1,6 +1,7 @@
 package me.zach.DesertMC.Utils.Config;
 
 import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.Utils.MiscUtils;
 import net.jitse.npclib.NPCLib;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -12,12 +13,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapView;
+import org.bukkit.plugin.Plugin;
 
 import static me.zach.DesertMC.DesertMain.*;
 
 public class ConfigUtils {
 
-	private static final DesertMain main = DesertMain.getInstance;
+	private static final Plugin main = DesertMain.getInstance;
 	private static final FileConfiguration config = main.getConfig();
 
 	private ConfigUtils() {
@@ -99,7 +101,12 @@ public class ConfigUtils {
 		main.saveConfig();
 	}
 
+
+
 	private static void cexp(Player player, String classtoaddto, int amount){
+		if(getLevel(classtoaddto, player) >= 10) {
+			return;
+		}
 		int xptonext = getXpToNext(player, classtoaddto);
 		if(xptonext <= amount) {
 			int pastlevel = config.getInt("players." + player.getUniqueId() + ".classes." + classtoaddto + ".level");
@@ -177,6 +184,7 @@ public class ConfigUtils {
 			else xpToNext = lv * 200;
 			if(lv == 59) player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "MILESTONES MAXED!" + ChatColor.GREEN + " Open the EXP Milestones inventory using /expmilestones and reset your milestones to gain a STAR, and a potential cosmetic!");
 			unclaimed.add(lv - 1);
+			MilestonesUtil.setDisplayCase(MilestonesUtil.getDisplayCase(player).replaceAll("\\d+", DesertMain.lv + ""), player);
 			gexp(player, amount - (prevNext - prevProgress));
 		}else{
 			currentProgress += amount;
@@ -185,9 +193,6 @@ public class ConfigUtils {
 
 	public static void addXP(Player player, String classtoaddto, int amount) {
 		int xptonext = getXpToNext(player, classtoaddto);
-		if(getLevel(classtoaddto, player) >= 10) {
-			return;
-		}
 		if(booster.containsKey(player.getUniqueId())) amount = Math.round(amount * booster.get(player.getUniqueId()));
 		cexp(player, classtoaddto, amount);
 		gexp(player, amount);
