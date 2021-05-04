@@ -30,7 +30,7 @@ import java.util.*;
 
 public class DesertMain extends JavaPlugin implements Listener {
 	public static DesertMain getInstance;
-	public static final Plugin getGeneric = DesertMain.getInstance;
+	public static final Plugin getGeneric = Bukkit.getPluginManager().getPlugin("Fallen");
 	public static final ArrayList<UUID> crouchers = new ArrayList<>();
 	public static final ArrayList<UUID> ct1players = new ArrayList<UUID>();
 	public static final HashMap<UUID,UUID> lastdmgers = new HashMap<UUID, UUID>();
@@ -42,14 +42,14 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public static final HashMap<UUID, Block> stomperStage = new HashMap<>();
 	public static final ArrayList<UUID> stomperCD = new ArrayList<>();
 	public static final HashMap<UUID, String> snack = new HashMap<>();
-	public static final ArrayList<UUID> eating = new ArrayList<>();
+	public static final Set<UUID> eating = new HashSet<>();
 	public static final HashMap<UUID, HashMap<String, Double>> weightQueue = new HashMap<>();
 	public static final HashMap<UUID, Float> booster = new HashMap<>();
 	private static NPCLib library;
 	public static int lv = 8;
 	public static int xpToNext = 100;
 	public static int currentProgress = 0;
-	public static int resets = 1;
+	public static int resets = 0;
 	public static ArrayList<UUID> claiming = new ArrayList<>();
 	public static final ArrayList<Integer> unclaimed = new ArrayList<>();
 	static{

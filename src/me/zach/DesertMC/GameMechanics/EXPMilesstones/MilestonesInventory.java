@@ -108,7 +108,7 @@ public class MilestonesInventory implements Listener {
 
             displayName = textColor + "Milestone " + milestoneLevel;
             if(milestoneLevel == 58){
-                reward = DesertMain.resets + MiscUtils.getOrdinalSuffix(DesertMain.resets) + " milestones reset";
+                reward = (DesertMain.resets + 1) + MiscUtils.getOrdinalSuffix(DesertMain.resets + 1) + " milestones reset";
                 lore.add(ChatColor.GRAY + "- Display case upgrade: " + MilestonesUtil.getDisplayCase(p) + ChatColor.GRAY + " ➞ " + MilestonesUtil.getNewCase(p));
                 if(MilestonesUtil.cosmetics.containsKey(DesertMain.resets)) lore.add(ChatColor.GRAY + "- New cosmetic: " + MilestonesUtil.cosmetics.get(DesertMain.resets));
                 granter = (player, mLevel) -> false;

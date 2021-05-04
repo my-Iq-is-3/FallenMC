@@ -25,6 +25,13 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
     static{
         starColors.addAll(Arrays.asList(ChatColor.YELLOW, ChatColor.BLUE, ChatColor.GREEN, ChatColor.LIGHT_PURPLE, ChatColor.DARK_GREEN, ChatColor.AQUA, ChatColor.DARK_AQUA, ChatColor.GOLD));
         cosmetics.put(0, Cosmetic.EXPLOSION);
+        cosmetics.put(1, Cosmetic.FLAMING_ARROWS);
+        cosmetics.put(2, Cosmetic.WATER_ARROWS);
+        cosmetics.put(3, Cosmetic.DEATH_MESSAGES);
+        cosmetics.put(4, Cosmetic.MUSICAL_ARROWS);
+        cosmetics.put(5, Cosmetic.CUPID_ARROWS);
+        cosmetics.put(6, Cosmetic.WATER_ARROWS);
+        cosmetics.put(7, Cosmetic.RAINBOW);
     }
 
     public static String getNewCase(Player player){
@@ -33,22 +40,22 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
         if(displayCase == null){
             newCase = new StringBuilder(starColors.get(0) + "0");
         }else{
-            if((DesertMain.resets + 1) % 5 == 0){
+            if((DesertMain.resets + 1) % 6 == 0){
                 int colorIndex = starColors.size();
                 try{
-                    colorIndex = Math.floorDiv(DesertMain.resets, 5);
+                    colorIndex = Math.floorDiv(DesertMain.resets + 1, 6);
                 }catch(IndexOutOfBoundsException ignored){}
                 ChatColor color = starColors.get(colorIndex);
                 newCase = new StringBuilder(color + "0");
             }else{
                 int colorIndex = starColors.size();
                 try{
-                    colorIndex = Math.floorDiv(DesertMain.resets, 5);
+                    colorIndex = Math.floorDiv(DesertMain.resets + 1, 6);
                 }catch(IndexOutOfBoundsException ignored){}
                 ChatColor color = starColors.get(colorIndex);
                 newCase = new StringBuilder(color + "");
 
-                for(int i = 0; i < DesertMain.resets; i++){
+                for(int i = 0; i < (DesertMain.resets + 1) % 6; i++){
                     newCase.append(STAR);
                 }
                 newCase.append(" 0");
@@ -78,10 +85,10 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
         confirming.put(player.getUniqueId(), newCase);
         new BukkitRunnable(){
             public void run(){
-                confirming.remove(player.getUniqueId());
-                player.sendMessage(ChatColor.RED + "EXP Milestones reset cancelled.");
+                if(confirming.remove(player.getUniqueId()) != null)
+                    player.sendMessage(ChatColor.RED + "EXP Milestones reset cancelled.");
             }
-        }.runTaskLater(pl, 600);
+        }.runTaskLater(pl, 1000);
     }
 
     private void confirmReset(Player p){

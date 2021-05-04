@@ -1,5 +1,6 @@
 package me.zach.DesertMC.Utils.RankUtils;
 
+import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.Utils.TitleUtils;
 import org.bukkit.Bukkit;
@@ -56,34 +57,31 @@ public class RankEvents implements Listener {
     Plugin pl;
     @EventHandler
     public void addChatFormatting(AsyncPlayerChatEvent e){
-        if(rankSession.containsKey(e.getPlayer().getUniqueId())){
-            Player p = e.getPlayer();
+        Player p = e.getPlayer();
+        if(rankSession.containsKey(p.getUniqueId())){
             Rank rank = rankSession.get(p.getUniqueId());
             e.setMessage(colorSupporterMessage(e.getMessage()));
-            if(rank.equals(Rank.COOWNER)) e.setFormat(rank.c + "" + ChatColor.BOLD + e.getPlayer().getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
-            else e.setFormat(rank.c + e.getPlayer().getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
+            if(rank.equals(Rank.COOWNER)) e.setFormat(rank.c + "" + ChatColor.BOLD + p.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
+            else e.setFormat(rank.c + p.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
         }else{
-            e.setFormat(ChatColor.GRAY + e.getPlayer().getName() + ": " + ChatColor.GRAY + e.getMessage());
+            e.setFormat(ChatColor.GRAY + p.getName() + ": " + ChatColor.GRAY + e.getMessage());
         }
+
         Prefix title = null;
-        String displayCase = null;
+        String displayCase = MilestonesUtil.getDisplayCase(p);
         try{
-            title = Prefix.valueOf(pl.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".title"));
-        }catch(Exception exc){
-            if(!(exc instanceof NullPointerException)){
-                exc.printStackTrace();
-            }
-        }
-        try{
-            displayCase = pl.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".displaycase");
+            title = Prefix.valueOf(pl.getConfig().getString("players." + p.getUniqueId() + ".title"));
         }catch(Exception exc){
             if(!(exc instanceof NullPointerException)){
                 exc.printStackTrace();
             }
         }
 
+        p.playSound(p.getLocation(), Sound.SHOOT_ARROW, 10, 1);
+
         if(displayCase != null) e.setFormat(displayCase + ChatColor.DARK_GRAY + " | " + ChatColor.RESET +  e.getFormat());
         if(title != null) e.setFormat(title + "" + ChatColor.DARK_GRAY + " | " + ChatColor.RESET + e.getFormat());
+
     }
 
     public String colorSupporterMessage(String msg){
