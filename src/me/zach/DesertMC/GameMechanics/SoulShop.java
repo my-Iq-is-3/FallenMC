@@ -330,9 +330,8 @@ public class SoulShop extends NPCSuper implements Listener{
                 }
             }else if(meta.getDisplayName().equals(ChatColor.YELLOW + "Weapon Details")){
                 NBTItem nbt = new NBTItem(item);
-                p.sendMessage("Weapon Details item nbt: " + nbt);
                 if(nbt.getCompound("CustomAttributes").getInteger("PRICE") > 0) {
-                    if (ConfigUtils.deductGems(p, nbt.getInteger("PRICE"))) {
+                    if (ConfigUtils.deductSouls(p, nbt.getInteger("PRICE"))) {
                         //if the player has enough gems, subtract the gems and remove the WPH from their weapon.
                         NBTItem weaponNBT = new NBTItem(inv.getItem(4));
                         weaponNBT.getCompound("CustomAttributes").setDouble("WEIGHT_ADD", weaponNBT.getCompound("CustomAttributes").getDouble("WEIGHT_ADD") - nbt.getCompound("CustomAttributes").getDouble("WPH_TO_REMOVE"));

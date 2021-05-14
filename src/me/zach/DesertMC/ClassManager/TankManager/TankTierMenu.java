@@ -128,21 +128,29 @@ public class TankTierMenu {
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Vengance");
 				glore.add(ChatColor.DARK_GRAY + " Slowness 1 and Weakness 4 to your killer for 2s on death.");
+				glore.add(ChatColor.GREEN + " - Traveller");
+				glore.add(ChatColor.GREEN + " For every unique (non-air) block you've traveled, take an extra");
+				glore.add(ChatColor.GREEN + " 0.02% less damage. Resets upon death.");
+
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+				ylore.add(ChatColor.YELLOW + " - Traveller");
+				ylore.add(ChatColor.YELLOW + " For every unique (non-air) block you've traveled, take an extra");
+				ylore.add(ChatColor.YELLOW + " 0.02% less damage. Resets upon death.");
 				ylore.add(ChatColor.YELLOW + " - Vengance");
 				ylore.add(ChatColor.DARK_GRAY + " Slowness 1 and Weakness 4 to your killer for 2s on death.");
+
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+				glore.add(ChatColor.GREEN + " - Traveller");
+				glore.add(ChatColor.GREEN + " For every unique block you've traveled, take an extra");
+				glore.add(ChatColor.GREEN + " 0.02% less damage. Resets upon death.");
 				rlore.add(ChatColor.RED + " - Vengance");
 				rlore.add(ChatColor.DARK_GRAY + " Slowness 1 and Weakness 4 to your killer for 2s on death.");
-				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Stubborn Boots");
 				glore.add(ChatColor.DARK_GRAY + "While wearing, you are immune to the effects of the Magic Wand.");
 
-				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- Stubborn Boots");
 				ylore.add(ChatColor.DARK_GRAY + "While wearing, you are immune to the effects of the Magic Wand.");
 
-				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- Stubborn Boots");
 				rlore.add(ChatColor.DARK_GRAY + "While wearing, you are immune to the effects of the Magic Wand.");
 				break;

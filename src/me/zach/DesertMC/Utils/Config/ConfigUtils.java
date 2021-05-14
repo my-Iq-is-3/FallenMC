@@ -1,19 +1,19 @@
 package me.zach.DesertMC.Utils.Config;
 
+import me.zach.DesertMC.ClassManager.TravellerEvents;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.Utils.MiscUtils;
-import net.jitse.npclib.NPCLib;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-
 import org.bukkit.ChatColor;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.map.MapView;
 import org.bukkit.plugin.Plugin;
+
+import java.util.Set;
+import java.util.UUID;
 
 import static me.zach.DesertMC.DesertMain.*;
 
@@ -58,10 +58,13 @@ public class ConfigUtils {
 			return true;
 		}else return false;
 	}
+	public static int getLevel(String playerClass, UUID uuid){
+		if(!config.contains("players." + uuid + ".classes." + playerClass + ".level")) return 0;
+		return config.getInt("players." + uuid + ".classes." + playerClass + ".level");
+	}
 
 	public static int getLevel(String playerclass, Player player) throws NullPointerException {
-		if(!config.contains("players." + player.getUniqueId() + ".classes." + playerclass + ".level")) return 0;
-		return config.getInt("players." + player.getUniqueId() + ".classes." + playerclass + ".level");
+		return getLevel(playerclass, player.getUniqueId());
 	}
 	
 	public static int getXpToNext(Player player, String playerclass) throws NullPointerException{
@@ -70,15 +73,17 @@ public class ConfigUtils {
 		}
 		return config.getInt("players." + player.getUniqueId() + ".classes." + playerclass + ".xptonext");
 	}
-	
-	public static String findClass(Player player) {
-		
-		if(config.getString("players." + player.getUniqueId() + ".classes.inuse") != null) {
-			return config.getString("players." + player.getUniqueId() + ".classes.inuse");
+
+	public static String findClass(UUID uuid){
+		if(config.getString("players." + uuid + ".classes.inuse") != null) {
+			return config.getString("players." + uuid + ".classes.inuse");
 		} else {
 			return "none";
 		}
-		
+	}
+	
+	public static String findClass(Player player) {
+		return findClass(player.getUniqueId());
 	}
 
 	public static Object getXP(Player player, String playerclass) throws NullPointerException {
@@ -163,7 +168,21 @@ public class ConfigUtils {
 	}
 
 	public static void setClass(Player player, String newclass){
+		TravellerEvents.resetTraveller(player);
 		config.set("players." + player.getUniqueId() + ".classes.inuse", newclass);
+		main.saveConfig();
+	}
+
+	public static void toggleBlockNotifications(Player player, boolean silent){
+		final String path = "players." + player.getUniqueId() + ".blocknotifs";
+		boolean notifications = main.getConfig().getBoolean(path);
+		main.getConfig().set(path, !notifications);
+		if(!silent)
+			player.sendMessage(notifications ? ChatColor.RED + "New block notifications have been toggled off." : ChatColor.GREEN + "Toggled on new block notifications!");
+		UUID uuid = player.getUniqueId();
+		if (notifications) TravellerEvents.blockNotifs.remove(uuid);
+		else TravellerEvents.blockNotifs.add(uuid);
+		main.saveConfig();
 	}
 
 	private static void gexp(Player player, int amount){

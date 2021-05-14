@@ -65,7 +65,7 @@ public class SPolice extends NPCSuper implements Listener {
                         inv.setItem(i, pane);
                     }
 
-                    inv.setItem(4, new ItemStack(Material.AIR));
+                    inv.clear(4);
                     inv.setItem(22, falseItem);
                     return inv;
                 },ChatColor.GRAY + "Click me to recover your seized items");
@@ -86,12 +86,8 @@ public class SPolice extends NPCSuper implements Listener {
                 }
                 String itemId = new NBTItem(p.getItemInHand()).getCompound("CustomAttributes").getString("UUID");
                 if(itemsandhits.containsKey(itemId)){
-                    p.sendMessage("Adding weight " + weight + " to itemsandhits");
-                    p.sendMessage("Adding item UUID " + itemId + "to itemsandhits with previous value " + itemsandhits.get(itemId));
                     itemsandhits.put(itemId, itemsandhits.get(itemId) + weight);
                 }else{
-                    p.sendMessage("Adding weight " + weight + " to itemsandhits");
-                    p.sendMessage("Adding item UUID " + itemId + "to itemsandhits");
                     itemsandhits.put(itemId, weight);
                     if(madeNew) weightQueue.put(p.getUniqueId(), itemsandhits);
                 }
@@ -233,7 +229,6 @@ public class SPolice extends NPCSuper implements Listener {
                             NBTItem nbt = new NBTItem(item);
                             NBTCompound compound = nbt.getCompound("CustomAttributes");
                             double weight = compound.getDouble("WEIGHT");
-                            Bukkit.getConsoleSender().sendMessage("It's a match! Adding weight " + itemsandhits.get(targetId) + " with previous weapon weight " + weight + "...");
                             compound.setDouble("WEIGHT", weight + itemsandhits.get(targetId));
                             toRemove.add(targetId);
                             Bukkit.getConsoleSender().sendMessage(toRemove.toString());

@@ -236,7 +236,7 @@ public enum Cosmetic implements CosmeticActivator{
 
     public void grant(Player player){
         List<String> cosmetics = pl.getConfig().getStringList("players." + player.getUniqueId() + ".cosmetics.acquired");
-        cosmetics.add(name());
+        if(!cosmetics.contains(name())) cosmetics.add(name());
         pl.getConfig().set("players." + player.getUniqueId() + ".cosmetics.acquired", cosmetics);
         pl.saveConfig();
         player.sendMessage(ChatColor.GREEN + "COSMETIC ACQUIRED! " + ChatColor.GREEN + "You got: " + this + "\n" + ChatColor.GRAY + "Select it with /cosmetics!");

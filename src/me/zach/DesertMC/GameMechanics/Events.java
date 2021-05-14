@@ -5,6 +5,7 @@ import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 
+import me.zach.DesertMC.ClassManager.TravellerEvents;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
@@ -16,15 +17,14 @@ import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
-import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.cosmetics.Cosmetic;
 import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.artifacts.gui.inv.ArtifactData;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -33,13 +33,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
+
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,8 +52,24 @@ public class Events implements Listener{
 	public static ArrayList<UUID> invincible = new ArrayList<>();
 	Plugin main = DesertMain.getInstance;
 	public static HashMap<UUID,Integer> ks = new HashMap<>();
+	public static HashMap<UUID, Integer> scoutTraveller = new HashMap<>();
 
 	public static HashMap<Arrow, ItemStack> arrowArray = new HashMap<>();
+
+//	public void initScoutTraveller(){
+//		new BukkitRunnable(){
+//			public void run(){
+//				TravellerEvents.travelled.forEach((uuid, blocks) -> {
+//					if(ConfigUtils.findClass(uuid).equalsIgnoreCase("scout") && ConfigUtils.getLevel("scout", uuid) > 5){
+//						Player player = Bukkit.getPlayer(uuid);
+//						float walkSpeed = player.getWalkSpeed();
+//						int newSpeed = walkSpeed +
+//						if(walkSpeed != )
+//					}
+//				});
+//			}
+//		}.runTaskTimer(main, 10, 77);
+//	}
 
 	@EventHandler
 	public void arrowShoot(ProjectileLaunchEvent event){
@@ -98,6 +116,31 @@ public class Events implements Listener{
 			event.getPlayer().sendMessage(ChatColor.RED + "You do not have permission to use this command.");
 		}
 	}
+
+	public void travellerTank(EntityDamageByEntityEvent e){
+		if(e.getEntity() instanceof Player) {
+			Player player = (Player) e.getEntity();
+			if(ConfigUtils.getLevel(ConfigUtils.findClass(player), player) > 5){
+				UUID uuid = e.getDamager().getUniqueId();
+				Set<Block> blockSet = TravellerEvents.travelled.get(uuid);
+				if (blockSet != null) {
+					double multiplier = 1 - (blockSet.size() * 0.0002);
+					e.setDamage(e.getDamage() * multiplier);
+				}
+			}
+		}
+	}
+
+	public void travellerCoru(EntityDamageByEntityEvent e){
+		UUID uuid = e.getDamager().getUniqueId();
+		Set<Block> blockSet = TravellerEvents.travelled.get(uuid);
+		if(blockSet != null){
+			double multiplier = 1 + blockSet.size() * 0.0002;
+			e.setDamage(e.getDamage() * multiplier);
+		}
+	}
+
+
 
 	@EventHandler
 	public void onHitInWhileInvincible(EntityDamageByEntityEvent event) {
@@ -186,6 +229,8 @@ public class Events implements Listener{
 					event.setDamage(event.getDamage() * 1.1);
 				}
 				SPolice.onHit(event);
+				EventsForCorruptor.INSTANCE.corruptedSword(event);
+
 				EventsForScout.getInstance().daggerHit(event);
 				EventsForCorruptor.INSTANCE.t8Event(event);
 				EventsForCorruptor.INSTANCE.noMercy(event);
@@ -208,10 +253,12 @@ public class Events implements Listener{
 				EventsForTank.getInstance().bludgeon(event);
 				EventsForScout.getInstance().scoutBlade((Player)event.getDamager(), (Player) event.getEntity());
 			}
+			travellerCoru(event);
+			travellerTank(event);
+
 			snackHit(event);
 			executeKill(event);
 		}
-
 	}
 
 	@EventHandler
@@ -348,11 +395,15 @@ public class Events implements Listener{
 				}
 			}catch(NullPointerException ignored){}
 		}
+
 		SPolice.onKill(killer);
 		Cosmetic kSelected = Cosmetic.getSelected(killer, Cosmetic.CosmeticType.KILL_EFFECT);
 		if(kSelected != null) kSelected.activateKill(player);
 		Cosmetic dSelected = Cosmetic.getSelected(player, Cosmetic.CosmeticType.DEATH_EFFECT);
 		if(dSelected != null) dSelected.activateDeath(player);
+
+		if(TravellerEvents.travelled.containsKey(player.getUniqueId()))
+			TravellerEvents.travelled.get(player.getUniqueId()).clear();
 	}
 	private Player getPlayer(Entity entity){
 		if(entity instanceof Player) return (Player) entity;
@@ -484,7 +535,6 @@ public class Events implements Listener{
 				}
 			}
 		}
-
 	}
 
 	@EventHandler
@@ -512,48 +562,59 @@ public class Events implements Listener{
 	
 	@EventHandler
 	public void onFirstJoin(PlayerJoinEvent e) {
+		Player p = e.getPlayer();
+		UUID uuid = p.getUniqueId();
+		String blockNotifPath = "players." + uuid + ".blocknotifications";
 		e.getPlayer().sendMessage("working");
-		if(!(main.getConfig().contains("players." + e.getPlayer().getUniqueId()))) {
-			main.getConfig().createSection("players." + e.getPlayer().getUniqueId());
+		if(!(main.getConfig().contains("players." + uuid))) {
+			main.getConfig().createSection("players." + uuid);
 			/* classes */
 			//in use
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.inuse", "none");
+			main.getConfig().set("players." + uuid + ".classes.inuse", "none");
 			
 			//level
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.tank.level", 1);
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.wizard.level", 1);
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.scout.level", 1);
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.corrupter.level", 1);
+			main.getConfig().set("players." + uuid + ".classes.tank.level", 1);
+			main.getConfig().set("players." + uuid + ".classes.wizard.level", 1);
+			main.getConfig().set("players." + uuid + ".classes.scout.level", 1);
+			main.getConfig().set("players." + uuid + ".classes.corrupter.level", 1);
 			//xp to next
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.tank.xptonext", 100);
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.scout.xptonext", 100);
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.wizard.xptonext", 100);
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.corrupter.xptonext", 100);
+			main.getConfig().set("players." + uuid + ".classes.tank.xptonext", 100);
+			main.getConfig().set("players." + uuid + ".classes.scout.xptonext", 100);
+			main.getConfig().set("players." + uuid + ".classes.wizard.xptonext", 100);
+			main.getConfig().set("players." + uuid + ".classes.corrupter.xptonext", 100);
 			//has xp
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.tank.hasxp", 0);
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.scout.hasxp", 0);
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.wizard.hasxp", 0);
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".classes.corrupter.hasxp", 0);
+			main.getConfig().set("players." + uuid + ".classes.tank.hasxp", 0);
+			main.getConfig().set("players." + uuid + ".classes.scout.hasxp", 0);
+			main.getConfig().set("players." + uuid + ".classes.wizard.hasxp", 0);
+			main.getConfig().set("players." + uuid + ".classes.corrupter.hasxp", 0);
 			//init titles
 			TitleUtils.initializeTitles(e.getPlayer());
 			//init displaycase
-			main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".displaycase", ChatColor.YELLOW + "" + 0);
+			main.getConfig().set("players." + uuid + ".displaycase", ChatColor.YELLOW + "" + 0);
+			//init block notifications
+			main.getConfig().set(blockNotifPath, true);
 			//save
 			main.saveConfig();
 			e.setJoinMessage(e.getPlayer().getName() + ChatColor.GOLD + " just joined for the first time, give them a warm welcome!");
 		}else{
-			if(main.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank") != null)e.setJoinMessage(Rank.valueOf(main.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank")).p + Rank.valueOf(main.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank")).c.toString() + " " + e.getPlayer().getName() + " just joined.");
+			if(main.getConfig().getString("players." + uuid + ".rank") != null)
+				e.setJoinMessage(Rank.valueOf(main.getConfig().getString("players." + uuid + ".rank")).p + Rank.valueOf(main.getConfig().getString("players." + uuid + ".rank")).c.toString() + " " + e.getPlayer().getName() + " just joined.");
 			else e.setJoinMessage("");
 		}
-		if(!main.getConfig().contains("players." + e.getPlayer().getUniqueId() + ".cosmetics")){
+		if(!main.getConfig().contains("players." + uuid + ".cosmetics")){
 			Bukkit.getLogger().warning(ChatColor.RED + "Initializing cosmetics for player " + e.getPlayer().getName());
 			//init cosmetics
 			Cosmetic.init(e.getPlayer());
 		}
-		if(!main.getConfig().contains("players." + e.getPlayer().getUniqueId() + ".displaycase")) main.getConfig().set("players." + e.getPlayer().getUniqueId() + ".displaycase", ChatColor.YELLOW + "" + 0);
-		Player p = e.getPlayer();
-		p.sendMessage(ChatColor.GREEN + "Welcome to the FallenMC pre-alpha testing server!\nUse /kot to select a class and see it's rewards." + ChatColor.YELLOW + " If you are not opped, press your designated op command block." + ChatColor.GREEN + " Use /item to grant any of the items from the classes. Items are tabcompleteable, press space then tab after typing out /item to see all of them." + ChatColor.YELLOW + " An items ability WILL NOT WORK if you don't have the right class selected and at the right level. To do this, select the class with /kot and level it using /classexp (your class here in lowercase) 99999." + ChatColor.GREEN + "\n To open the traits menu use /traits, and to give yourself more trait tokens use /traitsconfig set int (your uuid here) 99999. \n For the Enchant Refinery, use /testinv, but you will need a hammer and book first. To get a hammer, enter /givehammer (level 1-5). Each level is a different hammer. To give yourself a dummy book, use /givebookdummy. \nPLease scroll up to read this whole thing, and have fun testing!");
+		if(!main.getConfig().contains("players." + uuid + ".displaycase")) main.getConfig().set("players." + uuid + ".displaycase", ChatColor.YELLOW + "" + 0);
+
+
+		if(main.getConfig().getBoolean(blockNotifPath))
+			TravellerEvents.blockNotifs.add(p.getUniqueId());
 	}
+
+
+
 	/*
 	@EventHandler
 	public void removeTrail(EntityDamageByEntityEvent e){

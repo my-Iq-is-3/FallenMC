@@ -134,11 +134,17 @@ public class ScoutTierMenu{
 				break;
 			case 5:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - Permanent Strength 1 while in Hills area.");
+				glore.add(ChatColor.GREEN + " - Traveller");
+				glore.add(ChatColor.GREEN + " Every 20 unique blocks travelled, gain +1% speed.");
+				glore.add(ChatColor.GREEN + "Resets on death.");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - Permanent Strength 1 while in Hills area.");
+				ylore.add(ChatColor.YELLOW + " - Traveller");
+				ylore.add(ChatColor.YELLOW + " Every 20 unique blocks travelled, gain +1% speed.");
+				ylore.add(ChatColor.YELLOW + " Resets on death.");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - Permanent Strength 1 while in Hills area.");
+				rlore.add(ChatColor.RED + " - Traveller");
+				rlore.add(ChatColor.RED + " Every 20 unique blocks travelled, gain +1% speed.");
+				rlore.add(ChatColor.RED + " Resets on death.");
 				break;
 			case 6:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
@@ -166,7 +172,7 @@ public class ScoutTierMenu{
 				ylore.add(ChatColor.YELLOW + " - Deal +5% damage while sprinting.");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Deal +5% damage while sprinting.");
-				
+
 				break;
 			case 9:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
@@ -178,7 +184,7 @@ public class ScoutTierMenu{
 				break;
 
 			}
-			
+
 			ymeta.setLore(ylore);
 			gmeta.setLore(glore);
 			rmeta.setLore(rlore);

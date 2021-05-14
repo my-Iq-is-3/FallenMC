@@ -132,12 +132,18 @@ public class WizardTierMenu {
 			case 5:
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - Permanent strength 1 in the highlands biome.");
+				glore.add(ChatColor.GREEN + " - Traveller");
+				glore.add(ChatColor.GREEN + " Every 200 unique blocks travelled, gain +1 Max HP.");
+				glore.add(ChatColor.GREEN + " Resets upon death.");
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - Permanent strength 1 in the highlands biome.");
+				ylore.add(ChatColor.YELLOW + " - Traveller");
+				ylore.add(ChatColor.YELLOW + " Every 200 unique blocks travelled, gain +1 Max HP.");
+				ylore.add(ChatColor.YELLOW + " Resets upon death.");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - Permanent strength 1 in the highlands biome.");
+				rlore.add(ChatColor.RED + " - Traveller");
+				rlore.add(ChatColor.RED + " Every 200 unique blocks travelled, gain +1 Max HP.");
+				rlore.add(ChatColor.RED + " Resets upon death.");
 				break;
 			case 6:
 				

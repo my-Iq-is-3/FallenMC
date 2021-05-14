@@ -3,6 +3,7 @@ package me.zach.DesertMC;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
 import me.zach.DesertMC.ClassManager.TankManager.EventsForTank;
+import me.zach.DesertMC.ClassManager.TravellerEvents;
 import me.zach.DesertMC.CommandsPackage.Commands;
 import me.zach.DesertMC.CommandsPackage.ItemCommand;
 import me.zach.DesertMC.ClassManager.InvEvents;
@@ -31,26 +32,27 @@ import java.util.*;
 public class DesertMain extends JavaPlugin implements Listener {
 	public static DesertMain getInstance;
 	public static final Plugin getGeneric = Bukkit.getPluginManager().getPlugin("Fallen");
-	public static final ArrayList<UUID> crouchers = new ArrayList<>();
-	public static final ArrayList<UUID> ct1players = new ArrayList<UUID>();
+	public static final Set<UUID> crouchers = new HashSet<>();
+	public static final Set<UUID> ct1players = new HashSet<UUID>();
 	public static final HashMap<UUID,UUID> lastdmgers = new HashMap<UUID, UUID>();
-	public static final ArrayList<Player> laststandcd = new ArrayList<>();
-	public static final ArrayList<Player> mwcd = new ArrayList<>();
+	public static final Set<Player> laststandcd = new HashSet<>();
+	public static final Set<Player> mwcd = new HashSet<>();
 	public static final HashMap<UUID,List<UUID>> alertEnchantment	= new HashMap<>();
-	public static final List<UUID> slowed = new ArrayList<>();
-	public static final ArrayList<UUID> scoutBladeCD = new ArrayList<>();
+	public static final Set<UUID> slowed = new HashSet<>();
+	public static final Set<UUID> scoutBladeCD = new HashSet<>();
 	public static final HashMap<UUID, Block> stomperStage = new HashMap<>();
-	public static final ArrayList<UUID> stomperCD = new ArrayList<>();
+	public static final Set<UUID> stomperCD = new HashSet<>();
 	public static final HashMap<UUID, String> snack = new HashMap<>();
 	public static final Set<UUID> eating = new HashSet<>();
 	public static final HashMap<UUID, HashMap<String, Double>> weightQueue = new HashMap<>();
 	public static final HashMap<UUID, Float> booster = new HashMap<>();
+	public static final Set<UUID> blockNotifs = new HashSet<>();
 	private static NPCLib library;
 	public static int lv = 8;
 	public static int xpToNext = 100;
 	public static int currentProgress = 0;
 	public static int resets = 0;
-	public static ArrayList<UUID> claiming = new ArrayList<>();
+	public static Set<UUID> claiming = new HashSet<>();
 	public static final ArrayList<Integer> unclaimed = new ArrayList<>();
 	static{
 		unclaimed.add(1);
@@ -62,7 +64,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getConsoleSender().sendMessage("1");
 		library = new NPCLib(this);
 		getInstance = this;
-		String[] cmdsfile = {"enchantmentmod","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic"};
+		String[] cmdsfile = {"enchantmentmod","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
@@ -86,6 +88,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(SPolice.INSTANCE, this);
 		Bukkit.getPluginManager().registerEvents(SoulShop.INSTANCE, this);
 		Bukkit.getPluginManager().registerEvents(new MilestonesEvents(), this);
+		Bukkit.getPluginManager().registerEvents(new TravellerEvents(), this);
 	}
 
 	private void registerCommands(String[] commands, CommandExecutor file){

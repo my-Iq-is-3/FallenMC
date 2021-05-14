@@ -57,6 +57,12 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 				}
         	}
 
+        	if(command.getName().equalsIgnoreCase("blocknotifications")){
+        		if(ConfigUtils.getLevel(ConfigUtils.findClass(player), player.getUniqueId()) > 5){
+        			ConfigUtils.toggleBlockNotifications(player, false);
+				}else player.sendMessage(ChatColor.RED + "You have not unlocked the Traveller class tier yet!");
+			}
+
         	if(command.getName().equalsIgnoreCase("colors")){
         		if(RankEvents.rankSession.containsKey(player.getUniqueId())){
         			player.sendMessage(ChatColor.GREEN + "With your rank, you can"  + ChatColor.YELLOW + " include " + ChatColor.AQUA + "colors " + ChatColor.GREEN + "in your messages! Placing a color code in your messages will make any text after that color code your color!\n" + ChatColor.GRAY + "Colors:");
@@ -373,7 +379,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 		        				player.sendMessage(ChatColor.RED + "[SERVER] Set your walk speed to " + ChatColor.RED + args[0]);
 		        			}
 						} catch (IllegalArgumentException e) {
-							player.sendMessage(ChatColor.RED + "[SERVER] " + ChatColor.RED + "Invalid number \"" + args[0] + "\"! Must be from" + ChatColor.GREEN + " 1 through 10" + ChatColor.RED + "!");
+							player.sendMessage(ChatColor.RED + "[SERVER]" + ChatColor.RED + " Invalid number \"" + args[0] + "\"! Must be from" + ChatColor.GREEN + " 1 through 10" + ChatColor.RED + "!");
 						}
 	        		} else {
 	        			player.sendMessage(ChatColor.RED + "Only admins can use this command.");

@@ -35,7 +35,7 @@ public class CorrupterTierMenu {
 
 		ItemMeta nsm = nselected.getItemMeta();
 		nsm.setDisplayName(ChatColor.GREEN + "Corrupter Class");
-		ArrayList<String> nsml = new ArrayList<String>();
+		ArrayList<String> nsml = new ArrayList<>();
 
 		nsml.add("");
 		nsml.add(ChatColor.YELLOW + "Click " + ChatColor.DARK_GRAY + "to select the " + ChatColor.YELLOW + "Corrupter " + ChatColor.DARK_GRAY + "Class!");
@@ -133,14 +133,20 @@ public class CorrupterTierMenu {
 			case 5:
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - Permanent strength 1 in the nether biome.");
+				glore.add(ChatColor.GREEN + " - Traveller");
+				glore.add(ChatColor.GREEN + " For every unique block travelled, deal an extra");
+				glore.add(ChatColor.GREEN + "0.02% damage. Resets upon death.");
 				glore.add(ChatColor.BOLD + "" + ChatColor.GREEN + "SHOP UNLOCK " + ChatColor.GREEN + "- Corrupter Leggings");
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - Permanent strength 1 in the nether biome.");
+				ylore.add(ChatColor.YELLOW + " - Traveller");
+				ylore.add(ChatColor.YELLOW + " For every unique (non-air) block travelled, deal an extra");
+				ylore.add(ChatColor.YELLOW + "0.02% damage. Resets upon death");
 				ylore.add(ChatColor.BOLD + "" + ChatColor.YELLOW + "SHOP UNLOCK " + ChatColor.YELLOW + "- Corrupter Leggings");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - Permanent strength 1 in the nether biome.");
+				rlore.add(ChatColor.RED + " - Traveller");
+				rlore.add(ChatColor.RED + " For every unique (non-air) block travelled, deal an extra");
+				rlore.add(ChatColor.RED + "0.02Z% damage. Resets upon death.");
 				glore.add(ChatColor.BOLD + "" + ChatColor.RED + "SHOP UNLOCK " + ChatColor.RED + "- Corrupter Leggings");
 				break;
 			case 6:
@@ -148,7 +154,6 @@ public class CorrupterTierMenu {
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + "§lSHOP UNLOCK " + ChatColor.GREEN + "- Corrupted Sword");
-				glore.add(ChatColor.DARK_GRAY + "Has a chance to spawn " + ChatColor.GOLD + "Hellfire" + ChatColor.DARK_GRAY + " beneath the player you hit.");
 				/*glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
 				glore.add(ChatColor.DARK_GRAY + "With this enchantment, every other kill subtracts 0.5 Health from everyone");
 				glore.add(ChatColor.DARK_GRAY + "within 6 blocks.");
@@ -156,7 +161,6 @@ public class CorrupterTierMenu {
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + "§lSHOP UNLOCK " + ChatColor.YELLOW + "- Corrupted Sword");
-				ylore.add(ChatColor.DARK_GRAY + "Has a chance to spawn " + ChatColor.GOLD + "Hellfire" + ChatColor.DARK_GRAY + " beneath the player you hit.");
 				/*ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
 				ylore.add(ChatColor.DARK_GRAY + "With this enchantment, every other kill subtracts 0.5 Health from everyone");
 				ylore.add(ChatColor.DARK_GRAY + "within 6 blocks.");
@@ -164,7 +168,6 @@ public class CorrupterTierMenu {
 				
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + "§lSHOP UNLOCK " + ChatColor.RED + "- Corrupted Sword");
-				rlore.add(ChatColor.DARK_GRAY + "Has a chance to spawn " + ChatColor.GOLD + "Hellfire" + ChatColor.DARK_GRAY + " beneath the player you hit.");
 				/*rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
 				rlore.add(ChatColor.DARK_GRAY + "With this enchantment, every other kill subtracts 0.5 Health from everyone");
 				rlore.add(ChatColor.DARK_GRAY + "within 6 blocks.");

@@ -65,6 +65,9 @@ commands:
   usage: /<command>
   aliases:
    - cosmetics
+ blocknotifications:
+  description: Toggles block notifications for the Traveller class bonus
+  usage: /<command>
 
 permissions:
  admin:

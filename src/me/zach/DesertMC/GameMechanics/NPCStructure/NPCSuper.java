@@ -18,10 +18,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class NPCSuper implements Listener {
     String name;
@@ -30,7 +27,7 @@ public class NPCSuper implements Listener {
     Sound clickSnd;
     int clickwait;
     ArrayList<String> npctext = new ArrayList<>();
-    public ArrayList<UUID> cantClick = new ArrayList<>();
+    public Set<UUID> cantClick = new HashSet<>();
     NPCDataPasser passer;
     public NPCSuper(String npcName, int skinID, String clickMessage, Sound clickSound, int clickWaitTime, NPCDataPasser dataPasser, String... npcTextExcludingName){
         name = npcName;
@@ -58,7 +55,7 @@ public class NPCSuper implements Listener {
     @EventHandler
     public void moveOnInv(PlayerMoveEvent ev){
         try{
-            if(cantClick.contains(ev.getPlayer().getUniqueId())) ev.setCancelled(true);
+            if(cantClick.contains(ev.getPlayer().getUniqueId())) ev.setTo(ev.getFrom());
         }catch(NullPointerException ignored){}
     }
 

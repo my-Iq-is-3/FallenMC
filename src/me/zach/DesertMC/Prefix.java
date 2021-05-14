@@ -8,7 +8,7 @@ public enum Prefix {
     MYSTIC(ChatColor.LIGHT_PURPLE, "MYSTIC", true),
     PIONEER(ChatColor.DARK_PURPLE, "PIONEER", false),
     SUPPORTER(ChatColor.GREEN, "SUPPORTER", true),
-    SERVER(ChatColor.DARK_BLUE,"[SERVER]",false),
+    SERVER(ChatColor.BLUE,"[SERVER]",false),
     COOWNER(ChatColor.GOLD, "CO-OWNER", true),
     ADMIN(ChatColor.RED, "ADMIN", true),
     NPC(ChatColor.GRAY, "(" + ChatColor.GREEN + "NPC" + ChatColor.GRAY + ")", false);
