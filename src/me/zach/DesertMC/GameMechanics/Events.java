@@ -36,7 +36,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -51,7 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static me.zach.DesertMC.Utils.RankUtils.RankEvents.rankSession;
 
 public class Events implements Listener{
-	public static ArrayList<UUID> invincible = new ArrayList<>();
+	public static Set<UUID> invincible = new HashSet<>();
 	Plugin main = DesertMain.getInstance;
 	public static HashMap<UUID,Integer> ks = new HashMap<>();
 	public static HashMap<UUID, Integer> scoutTraveller = new HashMap<>();
@@ -116,6 +118,14 @@ public class Events implements Listener{
 			}
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+		}
+	}
+
+	public void cancelAnvil(InventoryOpenEvent event){
+		if(event.getInventory() instanceof AnvilInventory){
+			Player player = (Player) event.getPlayer();
+			event.setCancelled(true);
+			Bukkit.getLogger().warning("Uh-oh! Player " + player.getName() + " (" + player.getUniqueId() + ") just attempted to open an anvil inventory. Don't worry, I cancelled it.");
 		}
 	}
 

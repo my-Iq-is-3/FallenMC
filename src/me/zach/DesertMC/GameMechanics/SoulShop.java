@@ -30,10 +30,7 @@ import static org.bukkit.Note.Tone;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class SoulShop extends NPCSuper implements Listener{
     static Plugin pl = DesertMain.getInstance;
@@ -45,7 +42,7 @@ public class SoulShop extends NPCSuper implements Listener{
     static ItemStack decrease = new ItemStack(Material.REDSTONE_BLOCK);
     static ItemMeta increaseMeta = increase.getItemMeta();
     static ItemMeta decreaseMeta = decrease.getItemMeta();
-    static ArrayList<UUID> dontGiveItemOnClose = new ArrayList<>();
+    static Set<UUID> dontGiveItemOnClose = new HashSet<>();
     static{
         //creating some unchanging items statically to save on processing power and ram
         ItemMeta clearMeta = clear.getItemMeta();
