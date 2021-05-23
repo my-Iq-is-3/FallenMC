@@ -144,7 +144,7 @@ public class EventsForTank implements Listener {
             Player clicker = e.getPlayer();
             try{
                 if(!NBTUtil.INSTANCE.getCustomAttr(clicker.getItemInHand(), "ID").equals("STOMPER")) return;
-            }catch(NullPointerException ex){return;}
+            }catch(NullPointerException ignored){}
 
             if (ConfigUtils.getLevel("tank", clicker) > 6 && ConfigUtils.findClass(clicker).equals("tank") && !DesertMain.stomperCD.contains(clicker.getUniqueId())) {
                 if(!DesertMain.stomperStage.containsKey(clicker.getUniqueId())){
@@ -178,7 +178,7 @@ public class EventsForTank implements Listener {
                             public void run() {
                                 DesertMain.stomperCD.remove(clicker.getUniqueId());
                             }
-                        }.runTaskLater(DesertMain.getInstance, 140);
+                        }.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), 140);
                     }else{
                         clicker.sendMessage(ChatColor.RED + "No players nearby!");
                         clicker.playSound(clicker.getLocation(), Sound.GLASS, 10, 1);

@@ -2,6 +2,8 @@ package me.zach.DesertMC.ClassManager;
 
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.databank.saver.PlayerData;
+import me.zach.databank.saver.SaveManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -30,13 +32,10 @@ public class InvEvents implements Listener {
 		Inventory inv = event.getInventory();
 		Player player = (Player) event.getWhoClicked();
 		ItemStack[] updater = inv.getContents();
-		
-		
+		int balance = ConfigUtils.getGems(player);
+
 		ItemShop shop = new ItemShop(player);
-		
-		if (inv == null) {
-			return;
-		}
+
 		if (inv.getName().equals("Selector")) {
 			
 			event.setCancelled(true);
@@ -61,48 +60,37 @@ public class InvEvents implements Listener {
 			
 			
 			if(item.getType().equals(Material.BOW)) {
-				if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 3){
+				if(ConfigUtils.deductGems(player,100)){
 					player.getInventory().addItem(new ItemStack(Material.BOW));
-					economyConfig.set("players." + player.getUniqueId() + ".balance", economyConfig.getInt("players." + player.getUniqueId() + ".balance") - 3);
-					DesertMain.getInstance.saveConfig();
 					shop.updateInventory();
 				}
 			}
 				
 			if(item.getType().equals(Material.ARROW)) {
-				if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 10){
+				if(ConfigUtils.deductGems(player,30)){
 					player.getInventory().addItem(new ItemStack(Material.ARROW,10));
-					economyConfig.set("players." + player.getUniqueId() + ".balance", economyConfig.getInt("players." + player.getUniqueId() + ".balance") - 10);
-					DesertMain.getInstance.saveConfig();
 					shop.updateInventory();
 				}
 			}
 				
 			if(item.getType().equals(Material.FISHING_ROD)) {
-				if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 5){
+				if(ConfigUtils.deductGems(player,500)){
 					player.getInventory().addItem(new ItemStack(Material.FISHING_ROD));
-					economyConfig.set("players." + player.getUniqueId() + ".balance", economyConfig.getInt("players." + player.getUniqueId() + ".balance") - 5);
-					DesertMain.getInstance.saveConfig();
 					shop.updateInventory();
 				}
 			}
 				
 			if(item.getType().equals(Material.GOLDEN_APPLE)) {
-				if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 20){
+				if(ConfigUtils.deductGems(player,250)){
 					player.getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE));
-					economyConfig.set("players." + player.getUniqueId() + ".balance", economyConfig.getInt("players." + player.getUniqueId() + ".balance") - 20);
-					DesertMain.getInstance.saveConfig();
 					shop.updateInventory();
 				}
 			}
 				
 			if(item.getType().equals(Material.IRON_BLOCK)) {
-				if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 60){
+				if(ConfigUtils.deductGems(player,600)){
 					player.getInventory().addItem(new ItemStack(Material.IRON_CHESTPLATE));
 					player.getInventory().addItem(new ItemStack(Material.IRON_HELMET));
-					
-					economyConfig.set("players." + player.getUniqueId() + ".balance", economyConfig.getInt("players." + player.getUniqueId() + ".balance") - 60);
-					DesertMain.getInstance.saveConfig();
 					shop.updateInventory();
 				}
 			}
@@ -110,11 +98,8 @@ public class InvEvents implements Listener {
 				
 				
 				if(item.getType().equals(Material.IRON_SWORD)) {
-						if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 15){
+						if(ConfigUtils.deductGems(player,150)){
 						player.getInventory().addItem(new ItemStack(Material.IRON_SWORD));
-						
-						economyConfig.set("players." + player.getUniqueId() + ".balance", economyConfig.getInt("players." + player.getUniqueId() + ".balance") - 100);
-						DesertMain.getInstance.saveConfig();
 						shop.updateInventory();
 					}
 				}

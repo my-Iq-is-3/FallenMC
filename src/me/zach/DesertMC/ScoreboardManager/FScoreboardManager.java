@@ -1,5 +1,10 @@
 package me.zach.DesertMC.ScoreboardManager;
 
+import me.zach.DesertMC.GameMechanics.Events;
+import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.PlayerUtils;
+import me.zach.databank.saver.Key;
+import me.zach.databank.saver.SaveManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,7 +21,6 @@ import me.zach.DesertMC.GameMechanics.Events;
 
 
 public class FScoreboardManager {
-	private static final FileConfiguration economyConfig = DesertMain.getInstance.getConfig();
 
 	public static void initialize(Player player) {
 			ScoreboardManager smanager = Bukkit.getScoreboardManager();
@@ -29,55 +33,92 @@ public class FScoreboardManager {
 //			System.out.println("Class: " + ConfigUtils.INSTANCE.findClass(player));
 
 
-			Score gems = objective.getScore("Gems" + ChatColor.DARK_GRAY + ": " + ChatColor.GREEN + economyConfig.getInt("players." + player.getUniqueId() + ".balance"));
-			Score level = objective.getScore("Level" + ChatColor.DARK_GRAY + ": " + ChatColor.AQUA + ConfigUtils.getLevel(ConfigUtils.findClass(player), player));
-			Score souls = objective.getScore("Souls" + ChatColor.DARK_GRAY + ": " + ChatColor.LIGHT_PURPLE + DesertMain.getInstance.getConfig().getInt("players." + player.getUniqueId() + ".souls"));
+			Score gems = objective.getScore(ChatColor.GRAY + "Gems: " + ChatColor.GREEN + SaveManager.getData(player).getGems());
+			Score level = objective.getScore(ChatColor.GRAY + "Level: " + ChatColor.AQUA + ConfigUtils.getLevel(ConfigUtils.findClass(player), player));
+			Score souls = objective.getScore(ChatColor.GRAY + "Souls: " + ChatColor.LIGHT_PURPLE + SaveManager.getData(player).getSouls());
+
 			Score xp;
 			//set experience element
 
-
-			if(ConfigUtils.getXP(player, ConfigUtils.findClass(player)).equals("MAX")) {
-				xp = objective.getScore("XP" + ChatColor.DARK_GRAY + ": " + ChatColor.AQUA + "MAX");
+			if(ConfigUtils.getXP(player, ConfigUtils.findClass(player)) == Key.MAX_XP) {
+				xp = objective.getScore(ChatColor.GRAY + "XP: " + ChatColor.AQUA + "MAX");
 
 			}else {
 
-				int totalxp = ConfigUtils.getXpToNext(player, ConfigUtils.findClass(player)) + (Integer)ConfigUtils.getXP(player,ConfigUtils.findClass(player));
-				xp = objective.getScore("XP" + ChatColor.DARK_GRAY + ": " + ChatColor.GREEN + ConfigUtils.getXP(player, ConfigUtils.findClass(player)) + ChatColor.WHITE + "/" + ChatColor.DARK_GRAY + totalxp);
+				int totalxp = ConfigUtils.getXpToNext(player, ConfigUtils.findClass(player)) + ConfigUtils.getXP(player,ConfigUtils.findClass(player));
+				xp = objective.getScore(ChatColor.GRAY + "XP: " + ChatColor.GREEN + ConfigUtils.getXP(player, ConfigUtils.findClass(player)) + ChatColor.WHITE + "/" + ChatColor.DARK_GRAY + totalxp);
 			}
 
 			//Now we have to make the first letter uppercase for the player classes
 			String betterclass = ConfigUtils.findClass(player);
 			char[] betterclassarr = betterclass.toCharArray();
 			betterclassarr[0] = Character.toUpperCase(betterclassarr[0]);
-			Score playerclass = objective.getScore("Class" + ChatColor.DARK_GRAY + ": " + ChatColor.GREEN + new String(betterclassarr));
+			Score playerclass = objective.getScore(ChatColor.GRAY + "Class: " + ChatColor.GREEN + new String(betterclassarr));
 
 			Events.ks.putIfAbsent(player.getUniqueId(), 0);
 
 			//killstreaks
-			Score killstreak = objective.getScore("Killstreak" + ChatColor.DARK_GRAY + ": " + ChatColor.RED + Events.ks.get(player.getUniqueId()));
+			Score killstreak = objective.getScore(ChatColor.GRAY + "Killstreak: " + ChatColor.RED + Events.ks.get(player.getUniqueId()));
+			Score inCombat = objective.getScore(ChatColor.GRAY + "Status: " + ChatColor.GREEN + "???");
+			if(PlayerUtils.fighting.containsKey(player.getUniqueId())) {
+				int timeleft = PlayerUtils.fighting.get(player.getUniqueId());
+				if(timeleft == 0)
+					inCombat = objective.getScore(ChatColor.GRAY + "Status: " + ChatColor.GREEN + "Idle");
+				else
+					inCombat = objective.getScore(ChatColor.GRAY + "Status: " + ChatColor.RED + "Combat " + ChatColor.DARK_GRAY + "(" + PlayerUtils.fighting.get(player.getUniqueId()) + ")");
+			}
+
 
 			//ip
-			Score ip = objective.getScore(ChatColor.YELLOW + "Make sure to view our shop!");
+			Score ip = objective.getScore(ChatColor.YELLOW + (Bukkit.getServer().getIp().equals("") ? "localhost" : Bukkit.getServer().getIp()));
 
 			//blanks
-			Score blank1 = objective.getScore("    ");
-			Score blank2 = objective.getScore("   ");
-			Score blank3 = objective.getScore("  ");
-			Score blank4 = objective.getScore(" ");
+			Score blank1 = objective.getScore("   ");
+			Score blank2 = objective.getScore("  ");
+			Score blank3 = objective.getScore(" ");
+			Score blank4 = objective.getScore("");
 
 			//now set them to their respective value
-			blank1.setScore(1);
-			killstreak.setScore(2);
-			blank2.setScore(3);
-			gems.setScore(4);
-			souls.setScore(5);
-			blank3.setScore(6);
-			playerclass.setScore(7);
-			xp.setScore(8);
 			ip.setScore(0);
-			level.setScore(9);
-			blank4.setScore(10);
+
+			blank1.setScore(1);
+			inCombat.setScore(2);
+			killstreak.setScore(3);
+			blank2.setScore(4); //
+			gems.setScore(5);
+			souls.setScore(6);
+			blank3.setScore(7); //
+			playerclass.setScore(8);
+			xp.setScore(9);
+			level.setScore(10);
+
+			blank4.setScore(11);
+
 			player.setScoreboard(mains);
+
+
+			/*
+				FALLENMC
+
+				Level: 10
+				XP: MAX
+				Class: Scout
+
+				Souls: 100
+				Gems: 409
+
+				Killstreak: 100
+				Status: Combat (10)
+
+				play.fallenmc.xyz
+			 */
+
+
+
+
+
+
+
 	}
 
 }

@@ -1,14 +1,31 @@
 package me.zach.DesertMC.Utils;
 
+import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.artifacts.gui.helpers.ArtifactUtils;
+import me.zach.artifacts.gui.inv.ArtifactData;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import me.zach.artifacts.gui.inv.ArtifactData;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class PlayerUtils {
+    public static HashMap<UUID,Integer> fighting = new HashMap<>();
+
+
+    public static void setFighting(Player p){
+        if(isIdle(p)) ArtifactEvents.enterCombat(p);
+        fighting.put(p.getUniqueId(),10);
+    }
+
+    public static void setIdle(Player p){fighting.put(p.getUniqueId(),0);}
+
+    public static boolean isIdle(Player p){
+        if(!fighting.containsKey(p.getUniqueId())) return true;
+        else return fighting.get(p.getUniqueId()) == 0;
+    }
 
     public static ItemStack[] getArmor(Player player){
         ItemStack helmet = null;
@@ -27,7 +44,7 @@ public class PlayerUtils {
     public static void addAbsorption(Player player, float amount){
         CraftPlayer craftPlayer = (CraftPlayer) player;
         EntityLiving playerLiving = craftPlayer.getHandle();
-        playerLiving.setAbsorptionHearts(amount);
+        playerLiving.setAbsorptionHearts(playerLiving.getAbsorptionHearts() + amount);
     }
 
     public static void trueDamage(Player victim, double dmg, Player damager){

@@ -16,12 +16,14 @@ import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
+import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.cosmetics.Cosmetic;
 import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.artifacts.gui.inv.ArtifactData;
+import me.zach.artifacts.gui.inv.items.CreeperTrove;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -177,6 +179,14 @@ public class Events implements Listener{
 					p.setFoodLevel(20);
 					Location location = p.getLocation();
 					Location locbefore = location.clone();
+
+
+					if (!PlayerUtils.fighting.containsKey(p.getUniqueId()))
+						PlayerUtils.fighting.put(p.getUniqueId(), 11);
+					int incombat = PlayerUtils.fighting.get(p.getUniqueId());
+					if (incombat > 0) PlayerUtils.fighting.put(p.getUniqueId(), incombat - 1);
+
+
 					if(locbefore.getBlock().getType().equals(Material.LAVA) || locbefore.getBlock().getType().equals(Material.STATIONARY_LAVA)){
 						p.sendMessage(Prefix.DEBUG + "1");
 						if(ConfigUtils.findClass(p).equals("corrupter") && ConfigUtils.getLevel("corrupter",p) > 7){
@@ -203,22 +213,66 @@ public class Events implements Listener{
 	}
 
 	@EventHandler
-	public void onKill(EntityDamageByEntityEvent event) throws Exception {
+	public void eating(PlayerInteractEvent e) {
+		try {
+			if (e.getPlayer().getItemInHand().getType().equals(Material.COOKIE)) {
+				if (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+					e.getPlayer().setFoodLevel(19);
+					DesertMain.eating.add(e.getPlayer().getUniqueId());
+					new BukkitRunnable() {
+						public void run() {
+
+							e.getPlayer().setFoodLevel(20);
+							new BukkitRunnable() {
+								public void run() {
+									DesertMain.eating.remove(e.getPlayer().getUniqueId());
+								}
+							}.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), 10);
+						}
+					}.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), 60);
+				}
+			}
+		} catch (NullPointerException ignored) {
+		}
+
+	}
+
+
+	private Player getPlayer(Entity entity) {
+
+		if (entity instanceof Player) return (Player) entity;
+		else return (Player) ((Arrow) entity).getShooter();
+	}
+	// ---------------------------------------------------------------------------
+
+
+	@EventHandler
+	public void onKill(EntityDamageByEntityEvent event) {
+
 		ArtifactEvents.hitEvent(event);
-		if(event.isCancelled()) return;
+		CreeperTrove.executeTrove(event);
 		if(event.getDamage() == 0) return;
 		if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
 			Player damager = (Player) event.getDamager();
-			DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), damager.getUniqueId());
+			PlayerUtils.setFighting(damager);
+			if (event.getEntity() instanceof Player)
+				if (!event.getEntity().getUniqueId().equals(event.getDamager().getUniqueId()))
+					DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), damager.getUniqueId());
 		}else if(event.getDamager() instanceof Arrow){
 			Arrow damager = (Arrow) event.getDamager();
 			if(damager.getShooter() instanceof Player){
 				Player shooter = (Player) damager.getShooter();
-				DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
+				PlayerUtils.setFighting(shooter);
+				if (event.getEntity() instanceof Player)
+					if (!shooter.getUniqueId().equals(event.getEntity().getUniqueId()))
+						DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
 			}
 		}
+		if (event.getEntity() instanceof Player) {
 
-		if(event.getDamager() instanceof Player){
+			PlayerUtils.setFighting((Player) event.getEntity());
+		}
+		if (event.getDamager() instanceof Player) {
 
 			if(((Player)event.getDamager()).getItemInHand().getType().equals(Material.DOUBLE_PLANT)){
 				event.setCancelled(true);
@@ -261,113 +315,90 @@ public class Events implements Listener{
 		}
 	}
 
-	@EventHandler
-	public void eating(PlayerInteractEvent e){
-		try {
-			if (e.getPlayer().getItemInHand().getType().equals(Material.COOKIE)) {
-				if(e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
-					e.getPlayer().setFoodLevel(19);
-					DesertMain.eating.add(e.getPlayer().getUniqueId());
-					new BukkitRunnable(){
-						public void run(){
+	public void executeKill(EntityDamageByEntityEvent event) {
+		if (event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Arrow)) {
+			Player player = (Player) event.getEntity();
+			Player killer = getPlayer(event.getDamager());
 
-							e.getPlayer().setFoodLevel(20);
-							new BukkitRunnable(){
-								public void run(){
-									DesertMain.eating.remove(e.getPlayer().getUniqueId());
-								}
-							}.runTaskLater(DesertMain.getInstance, 10);
-						}
-					}.runTaskLater(DesertMain.getInstance, 60);
+			executeKill(player, killer);
+
+
+		}
+
+	}
+
+
+	public static void executeKill(Player player, Player killer) {
+		try {
+			callOnKill(player, killer);
+			EventsForWizard.INSTANCE.wizardt1(killer);
+			Location spawn = (Location) DesertMain.getInstance.getConfig().get("server.lobbyspawn");
+			player.setHealth(player.getMaxHealth());
+
+			player.teleport(spawn);
+			if (player.getFireTicks() > 0)
+				player.setFireTicks(0);
+
+
+			double random = (Math.random() * 5) + 1;
+			int soulsgained = 0;
+			int randomCompare = 2;
+			if (random < randomCompare) {
+				try {
+					if (new NBTItem(killer.getInventory().getChestplate()).getCompound("CustomAttributes").getString("ID").equals("LUCKY_CHESTPLATE"))
+						soulsgained = 2;
+					else {
+						soulsgained = 1;
+					}
+				} catch (Exception ex) {
+					soulsgained = 1;
+					if (!(ex instanceof NullPointerException)) {
+
+						Bukkit.getConsoleSender().sendMessage("Error managing souls. Error:\n" + Arrays.toString(ex.getStackTrace()));
+					}
 				}
 			}
-		}catch(NullPointerException ignored){}
-	}
+			int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
 
-	@EventHandler
-	public void onHit(EntityDamageEvent event) {
-		if(event instanceof EntityDamageByEntityEvent) return;
-		executeUnexpectedKill(event);
-	}
-	/*
-	@EventHandler
-	public void cancelTrail(ProjectileHitEvent e){
-		if(e.getEntity() instanceof Arrow){
-			try {
-				Bukkit.getScheduler().cancelTask(Cosmetic.trails.get(e.getEntity().getUniqueId()));
-				Cosmetic.trails.remove(e.getEntity().getUniqueId());
-			}catch(Exception ignored){}
+			int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
+
+			killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
+			ks.putIfAbsent(killer.getUniqueId(), 0);
+			ks.put(killer.getUniqueId(), ks.get(killer.getUniqueId()) + 1);
+
+			DesertMain.snack.remove(player.getUniqueId());
+			ks.put(player.getUniqueId(), 0);
+			player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
+			killer.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 4);
+			killer.playSound(player.getLocation(), Sound.BURP, 6, 1.3f);
+			killer.playSound(player.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
+			ConfigUtils.addGems(killer, gemsgained);
+			ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
+			ConfigUtils.addSouls(killer, soulsgained);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
-	 */
 
 	private void executeUnexpectedKill(EntityDamageEvent event) throws NullPointerException {
 		UUID uuid = DesertMain.lastdmgers.get(event.getEntity().getUniqueId());
 		Player killer = Bukkit.getPlayer(uuid);
-
 		if (event.getEntity() instanceof Player) {
-			Player player = (Player) event.getEntity();
-			if (player.getHealth() - event.getDamage() < 0.1) {
-				event.setCancelled(true);
-				if(dd(player)) return;
-				callOnKill(player, killer);
-				Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
-				if (spawn == null) {
-					player.teleport(player.getWorld().getSpawnLocation());
-				} else player.teleport(spawn);
-				new BukkitRunnable() {
-					@Override
-					public void run() {
-						player.setFireTicks(0);
-					}
-				}.runTaskLater(DesertMain.getInstance, 10);
-
-
-				int randomCompare = 2;
-				double random = (Math.random() * 5) + 1;
-				int soulsgained = 0;
-				if (random < randomCompare) {
-					try {
-						
-							if (killer.getInventory().getChestplate().getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Lucky Chestplate")) {
-								soulsgained = 2;
-							} else soulsgained = 1;
-					} catch (Exception ex) {
-						soulsgained = 1;
-						if (!(ex instanceof NullPointerException)) {
-							Bukkit.getConsoleSender().sendMessage("Error occurred checking for lucky chestplate. Error:\n" + Arrays.toString(ex.getStackTrace()));
-						}
-					}
-					
-						if (main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
-							main.getConfig().set("players." + killer.getUniqueId() + ".souls", main.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + soulsgained);
-						} else {
-							main.getConfig().set("players." + killer.getUniqueId() + ".souls", soulsgained);
-						}
-				}
-				int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
-
-				int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
-				 if (!ks.containsKey(killer.getUniqueId())) {
-					ks.put(killer.getUniqueId(), 1);
-				} else {
-					ks.put(killer.getUniqueId(), ks.get(killer.getUniqueId()) + 1);
-				}
-				
-					killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
-				ks.put(event.getEntity().getUniqueId(), 0);
-				DesertMain.snack.remove(player.getUniqueId());
-
-				player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
-				 killer.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 4);
-				
-					economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
-				 ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
-			}
+			executeKill((Player) event.getEntity(), killer);
 		}
 	}
 
-	private static void callOnKill(Player player, Player killer){
+	@EventHandler
+	public void onDamage(EntityDamageEvent event) throws Exception {
+		if (event instanceof EntityDamageByEntityEvent) return;
+		removeFallDMG(event);
+		executeUnexpectedKill(event);
+
+	}
+
+	private static void callOnKill(Player player, Player killer) {
+		PlayerUtils.setIdle(player);
+		PlayerUtils.setFighting(killer);
 		EventsForWizard.INSTANCE.wizardt1(killer);
 		try{
 			if(new NBTItem(killer.getItemInHand()).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE")) EventsForWizard.addBladeCharge(killer);
@@ -404,71 +435,6 @@ public class Events implements Listener{
 
 		if(TravellerEvents.travelled.containsKey(player.getUniqueId()))
 			TravellerEvents.travelled.get(player.getUniqueId()).clear();
-	}
-	private Player getPlayer(Entity entity){
-		if(entity instanceof Player) return (Player) entity;
-		else return (Player) ((Arrow)entity).getShooter();
-	}
-	public void executeKill(EntityDamageByEntityEvent event){
-		if (event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Arrow)) {
-			Player player = (Player) event.getEntity();
-			Player killer = getPlayer(event.getDamager());
-
-			try {
-				if (player.getHealth() - event.getDamage() < 0.1) {
-					event.setCancelled(true);
-					if(dd(player)) return;
-					callOnKill(player, killer);
-					Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
-					player.setHealth(player.getMaxHealth());
-					player.teleport(spawn);
-					if(player.getFireTicks() > 0)
-						player.setFireTicks(0);
-					int random = new Random().nextInt(4);
-					int soulsgained = 0;
-					if (random == 0) {
-						Bukkit.getConsoleSender().sendMessage("Souls gained should be 1");
-						try {
-							if(killer.getInventory().getChestplate().getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "Lucky Chestplate")){
-								soulsgained = 2;
-							}else soulsgained = 1;
-						}catch(Exception ex){
-							soulsgained = 1;
-							if( !(ex instanceof NullPointerException)){
-								Bukkit.getConsoleSender().sendMessage("Error occurred checking for lucky chestplate. Error:\n" + ex);
-							}
-						}
-						if (main.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
-							main.getConfig().set("players." + killer.getUniqueId() + ".souls", main.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + soulsgained);
-						} else {
-							main.getConfig().set("players." + killer.getUniqueId() + ".souls", soulsgained);
-						}
-					}
-					int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + (ks.get(event.getDamager().getUniqueId()) * 5);
-					int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + (ks.get(event.getDamager().getUniqueId()) * 3);
-					DesertMain.snack.remove(player.getUniqueId());
-					event.getDamager().sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
-					if (!ks.containsKey(event.getDamager().getUniqueId())) {
-						ks.put(event.getDamager().getUniqueId(), 1);
-					} else {
-						ks.put(event.getDamager().getUniqueId(), ks.get(event.getDamager().getUniqueId()) + 1);
-					}
-					ks.put(event.getEntity().getUniqueId(), 0);
-					player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
-					killer.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 4);
-					killer.playSound(player.getLocation(), Sound.BURP, 6, 1.3f);
-					killer.playSound(player.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
-					economyConfig.set("players." + killer.getUniqueId() + ".balance", economyConfig.getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
-					ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
-					main.saveConfig();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-
-
-		}
 	}
 
 	@EventHandler
@@ -549,17 +515,18 @@ public class Events implements Listener{
 
 			@Override
 			public void run() {
-				
+
 				FScoreboardManager.initialize(p);
 			}
-			
+
 		}.runTaskTimer(DesertMain.getPlugin(DesertMain.class), 0, 5);
 	}
 	@EventHandler
 	public void forKs(PlayerJoinEvent event){
-		if(!ks.containsKey(event.getPlayer().getUniqueId())) ks.put(event.getPlayer().getUniqueId(), 0);
+
+		ks.putIfAbsent(event.getPlayer().getUniqueId(), 0);
 	}
-	
+
 	@EventHandler
 	public void onFirstJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
@@ -570,23 +537,7 @@ public class Events implements Listener{
 			main.getConfig().createSection("players." + uuid);
 			/* classes */
 			//in use
-			main.getConfig().set("players." + uuid + ".classes.inuse", "none");
-			
-			//level
-			main.getConfig().set("players." + uuid + ".classes.tank.level", 1);
-			main.getConfig().set("players." + uuid + ".classes.wizard.level", 1);
-			main.getConfig().set("players." + uuid + ".classes.scout.level", 1);
-			main.getConfig().set("players." + uuid + ".classes.corrupter.level", 1);
-			//xp to next
-			main.getConfig().set("players." + uuid + ".classes.tank.xptonext", 100);
-			main.getConfig().set("players." + uuid + ".classes.scout.xptonext", 100);
-			main.getConfig().set("players." + uuid + ".classes.wizard.xptonext", 100);
-			main.getConfig().set("players." + uuid + ".classes.corrupter.xptonext", 100);
-			//has xp
-			main.getConfig().set("players." + uuid + ".classes.tank.hasxp", 0);
-			main.getConfig().set("players." + uuid + ".classes.scout.hasxp", 0);
-			main.getConfig().set("players." + uuid + ".classes.wizard.hasxp", 0);
-			main.getConfig().set("players." + uuid + ".classes.corrupter.hasxp", 0);
+
 			//init titles
 			TitleUtils.initializeTitles(e.getPlayer());
 			//init displaycase
@@ -628,66 +579,8 @@ public class Events implements Listener{
 	}
 	 */
 
-	public static void executeKill(Player player, Player killer){
-		try {
-			if(dd(player)) return;
-				callOnKill(player, killer);
-				EventsForWizard.INSTANCE.wizardt1(killer);
-				Location spawn = (Location) DesertMain.getInstance.getConfig().get("server.lobbyspawn");
-				player.setHealth(player.getMaxHealth());
-
-				player.teleport(spawn);
-				if(player.getFireTicks() > 0)
-					player.setFireTicks(0);
 
 
-				double random = (Math.random() * 5) + 1;
-				int soulsgained = 0;
-				int randomCompare = 2;
-				if (random < randomCompare) {
-					try {
-						if(new NBTItem(killer.getInventory().getChestplate()).getCompound("CustomAttributes").getString("ID").equals("LUCKY_CHESTPLATE")) soulsgained = 2;
-						else{
-							soulsgained = 1;
-						}
-					}catch(Exception ex){
-						soulsgained = 1;
-						if( !(ex instanceof NullPointerException)){
-
-							Bukkit.getConsoleSender().sendMessage("Error managing souls. Error:\n" + Arrays.toString(ex.getStackTrace()));
-						}
-					}
-					if (DesertMain.getInstance.getConfig().get("players." + killer.getUniqueId() + ".souls") != null) {
-						DesertMain.getInstance.getConfig().set("players." + killer.getUniqueId() + ".souls", DesertMain.getInstance.getConfig().getInt("players." + killer.getUniqueId() + ".souls") + soulsgained);
-					} else {
-						DesertMain.getInstance.getConfig().set("players." + killer.getUniqueId() + ".souls", soulsgained);
-					}
-
-				}
-				int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
-
-				int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
-
-				killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
-				if (!ks.containsKey(killer.getUniqueId())) {
-					ks.put(killer.getUniqueId(), 1);
-				} else {
-					ks.put(killer.getUniqueId(), ks.get(killer.getUniqueId()) + 1);
-				}
-				DesertMain.snack.remove(player.getUniqueId());
-				ks.put(player.getUniqueId(), 0);
-				player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
-				((Player) killer).playSound(player.getLocation(), Sound.LEVEL_UP, 1, 4);
-				killer.playSound(player.getLocation(), Sound.BURP, 6, 1.3f);
-				killer.playSound(player.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
-				DesertMain.getInstance.getConfig().set("players." + killer.getUniqueId() + ".balance", DesertMain.getInstance.getConfig().getInt("players." + killer.getUniqueId() + ".balance") + gemsgained);
-				ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
-				DesertMain.getInstance.saveConfig();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 	@EventHandler
 	public void snackEat(PlayerItemConsumeEvent event){
 		Player player = event.getPlayer();

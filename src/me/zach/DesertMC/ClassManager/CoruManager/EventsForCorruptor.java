@@ -118,11 +118,11 @@ public class EventsForCorruptor implements Listener {
                                 if ((Events.ks.get(damager.getUniqueId()) + 1) % 2 == 0) {
                                     for (Player player : Bukkit.getOnlinePlayers()) {
                                         if (!player.equals(damager)) {
-                                            ParticleEffect.SMOKE_NORMAL.display(0,0,0,0,10,player.getLocation().clone().add(0,2,0));
                                             new BukkitRunnable(){
                                                 @Override
                                                 public void run(){
                                                     if (player.getLocation().distance(damager.getLocation()) <= 6) {
+                                                        ParticleEffect.SMOKE_NORMAL.display(0,0,0,0,10,player.getLocation().clone().add(0,2,0));
 
                                                         player.damage(nomercylvl * 0.5, damager);
                                                         ParticleEffect.SMOKE_NORMAL.display(0.3f,0.3f,0.3f,0.3f,30,player.getLocation().clone().add(0,2,0));

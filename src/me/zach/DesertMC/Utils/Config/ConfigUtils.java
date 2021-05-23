@@ -6,6 +6,12 @@ import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.Utils.MiscUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import me.zach.databank.DB;
+import me.zach.databank.Databank;
+import me.zach.databank.saver.Key;
+import me.zach.databank.saver.PlayerData;
+import me.zach.databank.saver.SaveManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -28,149 +34,98 @@ public class ConfigUtils {
 
 
 	public static boolean deductSouls(Player player, int amount){
-		int souls = config.getInt("players." + player.getUniqueId() + ".souls");
+		PlayerData data = SaveManager.getData(player);
+		int souls = data.getSouls();
 		if(souls >= amount){
-			config.set("players." + player.getUniqueId() + ".souls", souls - amount);
-			main.saveConfig();
+			data.setSouls(souls-amount);
 			return true;
 		}else return false;
 	}
 
-	public static void addGems(Player player, int amount){
-		config.set("players." + player.getUniqueId() + ".balance", getGems(player) + amount);
-		main.saveConfig();
-	}
-
-	public static void addSouls(Player player, int amount){
-		config.set("players." + player.getUniqueId() + ".souls", getSouls(player) + amount);
-		main.saveConfig();
+	public static void addGems(Player player,int amount){
+		PlayerData data = SaveManager.getData(player);
+		data.setGems(data.getGems()+amount);
 	}
 
 	public static int getSouls(Player player){
-		return config.getInt("players." + player.getUniqueId() + ".souls");
+
+		return SaveManager.getData(player).getSouls();
+	}
+
+	public static void addSouls(Player player, int amount){
+		PlayerData data = SaveManager.getData(player);
+		data.setSouls(data.getSouls()+amount);
 	}
 
 	public static boolean deductGems(Player player, int amount){
-		int gems = config.getInt("players." + player.getUniqueId() + ".balance");
+		PlayerData data = SaveManager.getData(player);
+		int gems = data.getGems();
 		if(gems >= amount){
-			config.set("players." + player.getUniqueId() + ".balance", gems - amount);
-			main.saveConfig();
+			data.setGems(gems - amount);
 			return true;
 		}else return false;
 	}
-	public static int getLevel(String playerClass, UUID uuid){
-		if(!config.contains("players." + uuid + ".classes." + playerClass + ".level")) return 0;
-		return config.getInt("players." + uuid + ".classes." + playerClass + ".level");
+
+	public static int getLevel(String playerclass, UUID uuid){
+		return getLevel(playerclass, Bukkit.getPlayer(uuid));
 	}
 
 	public static int getLevel(String playerclass, Player player) throws NullPointerException {
-		return getLevel(playerclass, player.getUniqueId());
+		PlayerData data = SaveManager.getData(player);
+		return data.getClassLevel(playerclass);
 	}
 	
 	public static int getXpToNext(Player player, String playerclass) throws NullPointerException{
-		if(!config.contains("players." + player.getUniqueId() + ".classes." + playerclass + ".xptonext")){
-			return 0;
-		}
-		return config.getInt("players." + player.getUniqueId() + ".classes." + playerclass + ".xptonext");
-	}
-
-	public static String findClass(UUID uuid){
-		if(config.getString("players." + uuid + ".classes.inuse") != null) {
-			return config.getString("players." + uuid + ".classes.inuse");
-		} else {
-			return "none";
-		}
+		PlayerData data = SaveManager.getData(player);
+		return data.getClassXPR(playerclass);
 	}
 	
 	public static String findClass(Player player) {
-		return findClass(player.getUniqueId());
+		String cClass = SaveManager.getData(player).getCurrentClass();
+		return !cClass.equals("") ?  cClass : "none";
+		
 	}
 
-	public static Object getXP(Player player, String playerclass) throws NullPointerException {
-
-
-			return config.getInt("players." + player.getUniqueId() + ".classes." + playerclass + ".hasxp");
-
-
+	public static int getXP(Player player, String playerclass) throws NullPointerException {
+		return SaveManager.getData(player).getClassXP(playerclass);
 	}
 
 	public static int getGems(Player p){
-		return config.getInt("players." + p.getUniqueId() + ".balance");
+		return SaveManager.getData(p).getGems();
 	}
 
 	public static void resetclass(Player player, String playerclass){
-		// 100 xp to next level
-		config.set("players." + player.getUniqueId() + ".classes." + playerclass + ".xptonext", 100);
-		config.set("players." + player.getUniqueId() + ".classes." + playerclass + ".hasxp", 0);
-		config.set("players." + player.getUniqueId() + ".classes." + playerclass + ".level", 1);
-		main.saveConfig();
+		PlayerData data = SaveManager.getData(player);
+		data.setClassXP(playerclass,0);
+		data.setClassLevel(playerclass,0);
+		data.setClassXPR(playerclass,100);
 	}
 
 
 
 	private static void cexp(Player player, String classtoaddto, int amount){
-		if(getLevel(classtoaddto, player) >= 10) {
-			return;
-		}
-		int xptonext = getXpToNext(player, classtoaddto);
-		if(xptonext <= amount) {
-			int pastlevel = config.getInt("players." + player.getUniqueId() + ".classes." + classtoaddto + ".level");
-			if(pastlevel == 10) return;
-			switch (pastlevel) {
-				case 1:
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 500);
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
-					break;
-				case 2:
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 1000);
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
-					break;
-				case 3:
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 2500);
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
-					break;
-				case 4:
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 4000);
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
-					break;
-				case 5:
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 7000);
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
-					break;
-				case 6:
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 8500);
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
-					break;
-				case 7:
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 10000);
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
-					break;
-				case 8:
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", 20000);
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", 0);
-					break;
-				case 9:
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", "MAX");
-					config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", "MAX");
-					break;
-			}
-			config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".level", getLevel(classtoaddto, player) + 1);
-			player.sendTitle(ChatColor.BLUE + "You leveled up!", ChatColor.DARK_GRAY + "You are now level " + ChatColor.AQUA + (pastlevel + 1));
-			main.saveConfig();
-			cexp(player, classtoaddto, amount - xptonext);
-		}else {
-			if(!getXP(player,classtoaddto).equals("MAX")) {
-				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".hasxp", (Integer)getXP(player, classtoaddto) + amount);
-				config.set("players." + player.getUniqueId() + ".classes." + classtoaddto + ".xptonext", getXpToNext(player, classtoaddto) - amount);
-			}
-			main.saveConfig();
+
+		PlayerData data = SaveManager.getData(player);
+		int level = data.getClassLevel(classtoaddto); // 1
+
+		int[] xprTiers = {500,1000,2500,4000,7000,8500,10000,20000};
+
+		if(data.getClassXPR(classtoaddto) <= amount && level < 10){ // player levels up
+			data.setClassXP(classtoaddto,0);
+			data.setClassXPR(classtoaddto,xprTiers[level-1]); // at level 3, it would pull level[2], therefore
+			data.setClassLevel(classtoaddto,0);
+			player.sendMessage("levelup");
+		}else{ // doesn't level up
+			data.setClassXP(classtoaddto,data.getClassXP(classtoaddto)+amount);
+			if(level == 10) data.setClassXP(classtoaddto,Key.MAX_XP);
+
+
 		}
 	}
 
 	public static void setClass(Player player, String newclass){
 		TravellerEvents.resetTraveller(player);
-		config.set("players." + player.getUniqueId() + ".classes.inuse", newclass);
-		main.saveConfig();
+		SaveManager.getData(player).setCurrentClass(newclass);
 	}
 
 	public static void toggleBlockNotifications(Player player, boolean silent){

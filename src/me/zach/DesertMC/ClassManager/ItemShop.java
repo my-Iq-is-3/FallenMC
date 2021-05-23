@@ -2,6 +2,7 @@ package me.zach.DesertMC.ClassManager;
 
 import java.util.ArrayList;
 
+import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,7 +18,6 @@ import net.md_5.bungee.api.ChatColor;
 public class ItemShop {
 	Plugin main = DesertMain.getPlugin(DesertMain.class);
 	public Inventory shop = main.getServer().createInventory(null, 36, "Shop");
-	FileConfiguration economyConfig = DesertMain.getInstance.getConfig();
 	Player player = null;
 	public ItemShop(Player player) {
 		this.player = player;
@@ -26,7 +26,7 @@ public class ItemShop {
 	
 	
 	public void updateInventory() {
-		
+		int balance = ConfigUtils.getGems(player);
 		for(int i=0;i<36;i++) {
 			ItemStack empty = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 15);
 			ItemMeta em = empty.getItemMeta();
@@ -36,10 +36,10 @@ public class ItemShop {
 		}
 		ItemStack gemCount = new ItemStack(Material.EMERALD,1);
 		ItemMeta gemM = gemCount.getItemMeta();
-		if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") == 1) {
+		if(balance == 1) {
 			gemM.setDisplayName(ChatColor.WHITE + "You have " + ChatColor.GREEN + "1 Gem");
 		} else {
-			gemM.setDisplayName(ChatColor.WHITE + "You have " + ChatColor.GREEN + economyConfig.getInt("players." + player.getUniqueId() + ".balance") + ChatColor.GREEN + " Gems");
+			gemM.setDisplayName(ChatColor.WHITE + "You have " + ChatColor.GREEN + balance + ChatColor.GREEN + " Gems");
 			
 		}
 		gemCount.setItemMeta(gemM);
@@ -52,8 +52,8 @@ public class ItemShop {
 		ArrayList<String> bowLore = new ArrayList<String>();
 		bowLore.add(ChatColor.DARK_GRAY + "Click to buy a bow that lasts " + ChatColor.RED + "1" + ChatColor.DARK_GRAY + " life");
 		bowLore.add("");
-		bowLore.add(ChatColor.WHITE + "Cost:" + ChatColor.GREEN + " 3 Gems");
-		if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 3) {
+		bowLore.add(ChatColor.WHITE + "Cost:" + ChatColor.GREEN + " 100 Gems");
+		if(balance >= 100) {
 			bowLore.add(ChatColor.GREEN + "Click to buy!");
 		} else {
 			bowLore.add(ChatColor.RED + "You cannot afford this item!");
@@ -69,10 +69,10 @@ public class ItemShop {
 		ItemMeta fmeta = frod.getItemMeta();
 		fmeta.setDisplayName(ChatColor.WHITE + "Fishing Rod");
 		ArrayList<String> flore = new ArrayList<String>();
-		flore.add(ChatColor.DARK_GRAY + "Click to buy a fishing rod that lasts " + ChatColor.RED + "1" + ChatColor.DARK_GRAY + " life");
+		flore.add(ChatColor.DARK_GRAY + "Click to buy a fishing rod that lasts " + ChatColor.RED + "500" + ChatColor.DARK_GRAY + " life");
 		flore.add("");
 		flore.add(ChatColor.WHITE + "Cost:" + ChatColor.GREEN + " 5 Gems");
-		if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 5) {
+		if(balance >= 500) {
 			flore.add(ChatColor.GREEN + "Click to buy!");
 		} else {
 			flore.add(ChatColor.RED + "You cannot afford this item!");
@@ -93,8 +93,8 @@ public class ItemShop {
 		glore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " Regen II for 5 seconds");
 		glore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " Absorption I for 2 minutes (" + ChatColor.YELLOW + "❤❤" + ChatColor.DARK_GRAY + ")");
 		glore.add("");
-		glore.add(ChatColor.WHITE + "Cost: " + ChatColor.GREEN + "20 Gems");
-		if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= 20) {
+		glore.add(ChatColor.WHITE + "Cost: " + ChatColor.GREEN + "250 Gems");
+		if(balance >= 250) {
 			glore.add(ChatColor.GREEN + "Click to buy!");
 		} else {
 			glore.add(ChatColor.RED + "You cannot afford this item!");
@@ -110,7 +110,7 @@ public class ItemShop {
 		ArrayList<String> aLore = new ArrayList<String>();
 		arrowMeta.setDisplayName(ChatColor.WHITE + "Arrow " + ChatColor.DARK_GRAY + "x10");
 		arrow.setItemMeta(arrowMeta);
-		addLore(arrow, 10, aLore, player);
+		addLore(arrow, 30, aLore, player);
 		shop.setItem(19, arrow);
 		
 		//----------------------------------------------------------
@@ -124,7 +124,7 @@ public class ItemShop {
 		packLore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " x1 Iron Chestplate");
 		ipackMeta.setLore(packLore);
 		itemPackage.setItemMeta(ipackMeta);
-		addLore(itemPackage, 60, packLore, player);
+		addLore(itemPackage, 600, packLore, player);
 		shop.setItem(16, itemPackage);
 		
 		
@@ -154,7 +154,7 @@ public class ItemShop {
 
 		swordMeta.setLore(swordlore);
 		sword.setItemMeta(swordMeta);
-		addLore(sword, 15, swordlore, player);
+		addLore(sword, 150, swordlore, player);
 		shop.setItem(25, sword);
 		
 		
@@ -164,12 +164,9 @@ public class ItemShop {
 	
 	
 	public void addLore(ItemStack item, int cost, ArrayList<String> lore, Player player) {
-		/*
-		 * @param item the item
-		 */
 		lore.add("");
 		lore.add(ChatColor.WHITE + "Cost: " + ChatColor.GREEN + cost + ChatColor.GREEN + " Gems");
-		if(economyConfig.getInt("players." + player.getUniqueId() + ".balance") >= cost) {
+		if(ConfigUtils.getGems(player) >= cost) {
 			lore.add(ChatColor.GREEN + "Click to buy!");
 		} else {
 			lore.add(ChatColor.RED + "You cannot afford this item!");
