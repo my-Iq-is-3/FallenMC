@@ -215,8 +215,10 @@ public class EventsForWizard implements Listener {
                     if(ConfigUtils.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.getLevel("wizard",killed) > 4){
                         double random = (Math.random() * 100) + 1;
                         if(random <= 10){
-                            double walkspeedbefore = killer.getWalkSpeed();
+                            float walkspeedbefore = killer.getWalkSpeed();
+                            float flySpeedBefore = killer.getFlySpeed();
                             killer.setWalkSpeed(0);
+                            killer.setFlySpeed(0);
                             killer.playSound(killer.getLocation(), Sound.ANVIL_BREAK,1f,2f);
                             PotionEffect poison = new PotionEffect(PotionEffectType.POISON, 60, 1, false, false);
                             killer.addPotionEffect(poison);
@@ -224,10 +226,11 @@ public class EventsForWizard implements Listener {
 
                                 @Override
                                 public void run() {
-                                    killer.setWalkSpeed((float) walkspeedbefore);
+                                    killer.setWalkSpeed(walkspeedbefore);
+                                    killer.setFlySpeed(flySpeedBefore);
                                 }
 
-                            }.runTaskLater(DesertMain.getPlugin(DesertMain.class), 60);
+                            }.runTaskLater(DesertMain.getPlugin(DesertMain.class), 100);
                         }
                     }
                 }
