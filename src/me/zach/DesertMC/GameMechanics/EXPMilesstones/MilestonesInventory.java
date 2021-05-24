@@ -170,7 +170,9 @@ public class MilestonesInventory implements Listener {
                                         player.sendMessage(ChatColor.RED + "Full Inventory!");
                                         return false;
                                     } else {
+
                                         player.getInventory().addItem(Items.getWoodHammer());
+
                                         return true;
                                     }
                                 };

@@ -23,7 +23,6 @@ import me.zach.DesertMC.ClassManager.WizardManager.WizardTierMenu;
 
 
 public class InvEvents implements Listener {
-	FileConfiguration economyConfig = DesertMain.getInstance.getConfig();
 
 	@SuppressWarnings("unused")
 	@EventHandler
