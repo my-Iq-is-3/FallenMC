@@ -177,7 +177,6 @@ public class Events implements Listener{
 		}
 	}
 
-	FileConfiguration economyConfig = DesertMain.getInstance.getConfig();
 
 
 	public static void check(DesertMain main){
@@ -329,8 +328,8 @@ public class Events implements Listener{
 		if (event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Arrow)) {
 			Player player = (Player) event.getEntity();
 			Player killer = getPlayer(event.getDamager());
-
-			executeKill(player, killer);
+			if(player.getHealth() - event.getDamage() < 0.1)
+				executeKill(player, killer);
 
 
 		}

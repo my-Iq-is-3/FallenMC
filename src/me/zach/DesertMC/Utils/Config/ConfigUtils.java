@@ -26,7 +26,6 @@ import static me.zach.DesertMC.DesertMain.*;
 public class ConfigUtils {
 
 	private static final Plugin main = DesertMain.getInstance;
-	private static final FileConfiguration config = main.getConfig();
 
 	private ConfigUtils() {
 
@@ -84,6 +83,11 @@ public class ConfigUtils {
 		String cClass = SaveManager.getData(player).getCurrentClass();
 		return !cClass.equals("") ?  cClass : "none";
 		
+	}
+
+	public static String findClass(UUID uuid){
+		String cClass = SaveManager.getData(uuid).getCurrentClass();
+		return !cClass.equals("") ?  cClass : "none";
 	}
 
 	public static int getXP(Player player, String playerclass) throws NullPointerException {
