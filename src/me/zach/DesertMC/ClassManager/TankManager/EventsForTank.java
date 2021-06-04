@@ -121,7 +121,7 @@ public class EventsForTank implements Listener {
             Player damager = (Player) e.getDamager();
             Player damaged = (Player) e.getEntity();
             try{
-                if(!NBTUtil.INSTANCE.getCustomAttr(damager.getItemInHand(), "ID").equals("BLUDGEON")) return;
+                if(!NBTUtil.getCustomAttr(damager.getItemInHand(), "ID").equals("BLUDGEON")) return;
             }catch(NullPointerException ignored){}
             int extradamage = 0;
             if(damager.getFallDistance() > 0.0f) {
@@ -143,7 +143,7 @@ public class EventsForTank implements Listener {
         if(e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
             Player clicker = e.getPlayer();
             try{
-                if(!NBTUtil.INSTANCE.getCustomAttr(clicker.getItemInHand(), "ID").equals("STOMPER")) return;
+                if(!NBTUtil.getCustomAttr(clicker.getItemInHand(), "ID").equals("STOMPER")) return;
             }catch(NullPointerException ignored){}
 
             if (ConfigUtils.getLevel("tank", clicker) > 6 && ConfigUtils.findClass(clicker).equals("tank") && !DesertMain.stomperCD.contains(clicker.getUniqueId())) {

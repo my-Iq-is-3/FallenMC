@@ -77,7 +77,7 @@ public class EventsForCorruptor implements Listener {
             if (killed.getHealth() - event.getDamage() < 0.1) {
                 if (!killer.getInventory().getItemInHand().getType().equals(Material.AIR)) {
                     ItemStack item = killer.getInventory().getItemInHand();
-                    if (NBTUtil.INSTANCE.getCustomAttr(item, "ID").equals("VOLCANIC_SWORD")) {
+                    if (NBTUtil.getCustomAttr(item, "ID").equals("VOLCANIC_SWORD")) {
                         if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
                             if (((Events.ks.get(killer.getUniqueId()) + 1) % 5) == 0) {
                                 for (Entity near : Bukkit.getOnlinePlayers()) {
@@ -173,7 +173,7 @@ public class EventsForCorruptor implements Listener {
         if(event.getDamager() instanceof Player){
             Player hitter = (Player) event.getDamager();
             if(hitter.getInventory().getItemInHand() != null){
-                if(NBTUtil.INSTANCE.getCustomAttr(hitter.getInventory().getItemInHand(),"ID").equals("CORRUPTED_SWORD")){
+                if(NBTUtil.getCustomAttr(hitter.getInventory().getItemInHand(),"ID").equals("CORRUPTED_SWORD")){
                     UUID uuid = hitter.getUniqueId();
                     if(combo.containsKey(uuid)) {
                         event.setDamage(event.getDamage() * (1 + combo.get(uuid)));

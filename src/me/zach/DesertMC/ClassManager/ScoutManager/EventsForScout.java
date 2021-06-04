@@ -32,7 +32,7 @@ public class EventsForScout implements Listener {
         Player player = event.getPlayer();
         if(player.getInventory().getItemInHand() != null){
             ItemStack handItem = player.getInventory().getItemInHand();
-            if(NBTUtil.INSTANCE.getCustomAttr(handItem,"ID").equals("FIRST_AID_KIT")){
+            if(NBTUtil.getCustomAttr(handItem,"ID").equals("FIRST_AID_KIT")){
                 if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK){
                     if(ConfigUtils.findClass(player).equals("scout")){
                         List<String> lore = handItem.getItemMeta().getLore();
@@ -94,7 +94,7 @@ public class EventsForScout implements Listener {
             LivingEntity damaged = (LivingEntity) event.getEntity();
 
             if(ConfigUtils.getLevel("scout",damager) > 4 && ConfigUtils.findClass(damager).equals("scout")){
-                if(NBTUtil.INSTANCE.getCustomAttr(damager.getInventory().getItemInHand(),"ID").equals("SCOUT_DAGGER")){
+                if(NBTUtil.getCustomAttr(damager.getInventory().getItemInHand(),"ID").equals("SCOUT_DAGGER")){
                     if(damager.getLocation().distance(damaged.getLocation()) > 1){
                         event.setCancelled(true);
                         event.setDamage(8.5);
@@ -115,7 +115,7 @@ public class EventsForScout implements Listener {
 
     public void scoutBlade(Player hitter, Player hit){
         try{
-            if(!NBTUtil.INSTANCE.getCustomAttr(hitter.getItemInHand(), "ID").equals("SCOUT_BLADE")) return;
+            if(!NBTUtil.getCustomAttr(hitter.getItemInHand(), "ID").equals("SCOUT_BLADE")) return;
         }catch(NullPointerException ignored){}
         if(ConfigUtils.getLevel("scout", hitter) > 6 && ConfigUtils.findClass(hitter).equals("scout")) {
             if (hit.canSee(hitter) && !(DesertMain.scoutBladeCD.contains(hitter.getUniqueId()))) {

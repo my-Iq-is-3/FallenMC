@@ -120,7 +120,7 @@ public class Events implements Listener{
 			event.getPlayer().sendMessage(ChatColor.RED + "You do not have permission to use this command.");
 		}
 	}
-
+		@EventHandler
 	public void cancelAnvil(InventoryOpenEvent event){
 		if(event.getInventory() instanceof AnvilInventory){
 			Player player = (Player) event.getPlayer();
@@ -257,7 +257,7 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent event) {
-
+		if(event.isCancelled()) return;
 		ArtifactEvents.hitEvent(event);
 		CreeperTrove.executeTrove(event);
 		if(event.getDamage() == 0) return;
@@ -278,7 +278,6 @@ public class Events implements Listener{
 			}
 		}
 		if (event.getEntity() instanceof Player) {
-
 			PlayerUtils.setFighting((Player) event.getEntity());
 		}
 		if (event.getDamager() instanceof Player) {
@@ -328,14 +327,9 @@ public class Events implements Listener{
 		if (event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Arrow)) {
 			Player player = (Player) event.getEntity();
 			Player killer = getPlayer(event.getDamager());
-			if(player.getHealth() - event.getDamage() < 0.1)
-				executeKill(player, killer);
-
-
+			if(player.getHealth() - event.getDamage() < 0.1) executeKill(player, killer);
 		}
-
 	}
-
 
 	public static void executeKill(Player player, Player killer) {
 		try {
@@ -464,34 +458,33 @@ public class Events implements Listener{
 		AtomicBoolean dd = new AtomicBoolean(false);
 		player.getInventory().forEach(item -> {
 			if(!dd.get()){
-				try {
-					if(NBTUtil.INSTANCE.getCustomAttr(item, "ID").equals("DEATH_DEFIANCE")) {
-						dd.set(true);
-						player.getInventory().remove(item);
-						player.playSound(player.getLocation(), Sound.DIG_STONE, 10, 1);
-						player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 10, 0.9f);
-						new BukkitRunnable() {
-							float tone = 0;
-							@Override
-							public void run() {
-								if (tone >= 2) cancel();
-								else {
-									player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100, tone);
-									tone += 0.1f;
-								}
+				if(NBTUtil.getCustomAttr(item, "ID").equals("DEATH_DEFIANCE")) {
+					dd.set(true);
+					Location location = player.getLocation();
+					player.getInventory().remove(item);
+					player.playSound(player.getLocation(), Sound.DIG_STONE, 10, 1);
+					player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 10, 0.9f);
+					new BukkitRunnable() {
+						float tone = 0;
+						@Override
+						public void run() {
+							if (tone >= 2) cancel();
+							else {
+								player.getLocation().getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 10, tone);
+								tone += 0.1f;
 							}
-						}.runTaskTimer(DesertMain.getInstance, 0, 2);
-						player.sendMessage(ChatColor.YELLOW + "You rise from the ashes!\n" + ChatColor.DARK_GRAY + "Consumed 1 Death Defiance");
-						ParticleEffect.FLAME.display(1, 10, 1, 0, 200, player.getLocation(), 15);
-						player.setHealth(player.getMaxHealth() * 0.2);
-						invincible.add(player.getUniqueId());
-						new BukkitRunnable() {
-							public void run() {
-								invincible.remove(player.getUniqueId());
-							}
-						}.runTaskLater(DesertMain.getInstance, 50);
-					}
-				}catch(NullPointerException ignored){}
+						}
+					}.runTaskTimer(DesertMain.getInstance, 0, 2);
+					player.sendMessage(ChatColor.YELLOW + "You rise from the ashes!\n" + ChatColor.DARK_GRAY + "Consumed 1 Death Defiance");
+					ParticleEffect.FLAME.display(1, 10, 1, 0, 200, player.getLocation(), 15);
+					player.setHealth(player.getMaxHealth() * 0.2);
+					invincible.add(player.getUniqueId());
+					new BukkitRunnable() {
+						public void run() {
+							invincible.remove(player.getUniqueId());
+						}
+					}.runTaskLater(DesertMain.getInstance, 50);
+				}
 			}
 		});
 		return dd.get();
@@ -499,7 +492,7 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void healthRegen(EntityRegainHealthEvent e){
-		if(e.getEntity() instanceof Player && (e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED) || e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.REGEN))){
+		if(e.getEntity() instanceof Player && (e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED) || e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.REGEN) || e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.EATING))){
 			if(!DesertMain.eating.contains(e.getEntity().getUniqueId())){
 				DesertMain.eating.remove(e.getEntity().getUniqueId());
 				e.setCancelled(true);
@@ -594,7 +587,7 @@ public class Events implements Listener{
 	public void snackEat(PlayerItemConsumeEvent event){
 		Player player = event.getPlayer();
 		try {
-			if (NBTUtil.INSTANCE.getCustomAttr(event.getItem(), "ID").equals("LAVA_CAKE")){
+			if (NBTUtil.getCustomAttr(event.getItem(), "ID").equals("LAVA_CAKE")){
 				if(ConfigUtils.findClass(player).equals("corrupter") && ConfigUtils.getLevel("corrupter", player) > 2){
 					if(!DesertMain.snack.containsKey(player.getUniqueId())) {
 						player.sendMessage(ChatColor.GREEN + "Powered up your next shot for 3 extra damage!");
@@ -611,7 +604,7 @@ public class Events implements Listener{
 			}
 		}catch(NullPointerException ignored){}
 		try {
-			if (NBTUtil.INSTANCE.getCustomAttr(event.getItem(), "ID").equals("PROTEIN_SNACK")){
+			if (NBTUtil.getCustomAttr(event.getItem(), "ID").equals("PROTEIN_SNACK")){
 				if(ConfigUtils.findClass(player).equals("tank") && ConfigUtils.getLevel("tank", player) > 2){
 					if(!DesertMain.snack.containsKey(player.getUniqueId())) {
 						player.sendMessage(ChatColor.GREEN + "Powered up your next shot for +20% knockback!");
@@ -628,7 +621,7 @@ public class Events implements Listener{
 			}
 		}catch(NullPointerException ignored){}
 		try {
-			if (NBTUtil.INSTANCE.getCustomAttr(event.getItem(), "ID").equals("MAGIC_SNACK")){
+			if (NBTUtil.getCustomAttr(event.getItem(), "ID").equals("MAGIC_SNACK")){
 				if(ConfigUtils.findClass(player).equals("wizard") && ConfigUtils.getLevel("wizard", player) > 2){
 					if(!DesertMain.snack.containsKey(player.getUniqueId())) {
 						player.sendMessage(ChatColor.GREEN + "Powered up your next shot to give your opponent speed 1 and weakness 1 for 2 seconds!");
@@ -645,7 +638,7 @@ public class Events implements Listener{
 			}
 		}catch(NullPointerException ignored){}
 		try {
-			if (NBTUtil.INSTANCE.getCustomAttr(event.getItem(), "ID").equals("ENERGY_SNACK")){
+			if (NBTUtil.getCustomAttr(event.getItem(), "ID").equals("ENERGY_SNACK")){
 				if(ConfigUtils.findClass(player).equals("scout") && ConfigUtils.getLevel("scout", player) > 2){
 					if(!DesertMain.snack.containsKey(player.getUniqueId())) {
 						player.sendMessage(ChatColor.GREEN + "Powered up your next shot grant you you speed 2 for 2 seconds!");

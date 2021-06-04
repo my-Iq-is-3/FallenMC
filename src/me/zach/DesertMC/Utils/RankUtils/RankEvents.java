@@ -49,7 +49,7 @@ public class RankEvents implements Listener {
         for(ChatColor color : ccList){
             if(!colorShortcuts.containsKey(color) && !color.equals(ChatColor.BOLD) && !color.equals(ChatColor.GOLD) && !color.equals(ChatColor.BLACK) && !color.equals(ChatColor.GRAY)) colorShortcuts.put(color, color.name().charAt(0) + "");
         }
-        Bukkit.getConsoleSender().sendMessage("Finished generating color shortcuts menu, colorShortcuts: " + new ArrayList<>(colorShortcuts.values()));
+        Bukkit.getConsoleSender().sendMessage("Finished generating color shortcuts map, colorShortcuts: " + colorShortcuts.values());
     }
     public RankEvents(Plugin plugin){
         pl = plugin;
@@ -69,13 +69,8 @@ public class RankEvents implements Listener {
 
         Prefix title = null;
         String displayCase = MilestonesUtil.getDisplayCase(p);
-        try{
-            title = Prefix.valueOf(pl.getConfig().getString("players." + p.getUniqueId() + ".title"));
-        }catch(Exception exc){
-            if(!(exc instanceof NullPointerException)){
-                exc.printStackTrace();
-            }
-        }
+        String unparsedTitle = pl.getConfig().getString("players." + p.getUniqueId() + ".title");
+        if(unparsedTitle != null) title = Prefix.valueOf(unparsedTitle);
 
         p.playSound(p.getLocation(), Sound.SHOOT_ARROW, 10, 1);
 
@@ -107,9 +102,10 @@ public class RankEvents implements Listener {
         if(pl.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank") != null) {
             if (!pl.getConfig().getStringList("players." + e.getPlayer().getUniqueId() + ".titles").contains(Rank.valueOf(pl.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank")).p.name())){
                 Player p = e.getPlayer();
-                p.sendMessage(Prefix.SERVER + ":" +  Rank.valueOf(pl.getConfig().getString("players." + p.getUniqueId() + ".rank")).c + " Wow, thank you so much for buying one of our ranks!! It helps support the server so much. You have our greatest gratitude, " + ChatColor.RED + p.getName() + "!");
+                Rank rank = Rank.valueOf(pl.getConfig().getString("players." + p.getUniqueId() + ".rank"));
+                p.sendMessage(Prefix.SERVER + ":" +  rank.c + " Wow, thank you so much for buying one of our ranks!! It helps support the server so much. You have our greatest gratitude, " + rank.c + p.getName() + "!");
                 p.playSound(p.getLocation(), Sound.ENDERDRAGON_DEATH, 8, 1);
-                p.sendTitle(Rank.valueOf(pl.getConfig().getString("players." + p.getUniqueId() + ".rank")).c + "Thank you!", ChatColor.DARK_RED + "<3");
+                p.sendTitle(rank.c + "Thank you!", ChatColor.DARK_RED + "<3");
                 TitleUtils.addTitle(p, Rank.valueOf(pl.getConfig().getString("players." + p.getUniqueId() + ".rank")).p);
             }
         }

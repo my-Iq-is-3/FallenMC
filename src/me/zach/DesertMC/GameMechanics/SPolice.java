@@ -220,30 +220,24 @@ public class SPolice extends NPCSuper implements Listener {
             List<String> keyList = new ArrayList<>(itemsandhits.keySet());
             for(String targetId : keyList){
                 getItem: for(int a = 0; a<player.getInventory().getContents().length; a++){
-                    try{
-
-                        ItemStack item = player.getInventory().getContents()[a];
-                        Bukkit.getConsoleSender().sendMessage("Checking if item " + item.getItemMeta().getDisplayName() + " matches item uuid " + targetId);
-
-                        if(new NBTItem(item).getCompound("CustomAttributes").getString("UUID").equals(targetId)){
-                            NBTItem nbt = new NBTItem(item);
-                            NBTCompound compound = nbt.getCompound("CustomAttributes");
-                            double weight = compound.getDouble("WEIGHT");
-                            compound.setDouble("WEIGHT", weight + itemsandhits.get(targetId));
-                            toRemove.add(targetId);
-                            Bukkit.getConsoleSender().sendMessage(toRemove.toString());
-                            player.getInventory().setItem(a, nbt.getItem());
-                            if(roll(item)) {
-                                player.getInventory().setItem(a, seize(item));
-                                player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 7, 1);
-                                player.playSound(player.getLocation(), Sound.ANVIL_LAND, 10, 1);
-                                player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "YOUR ITEM HAS BEEN SEIZED! " + ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back. It was replaced with a token you can use to recover it. Item: " + ChatColor.YELLOW + item.getItemMeta().getDisplayName());
-                                Bukkit.getConsoleSender().sendMessage(item.getItemMeta().getDisplayName() + ChatColor.RESET + " seized with weight " + weight);
-                            }
-                            break getItem;
+                    ItemStack item = player.getInventory().getContents()[a];
+                    if(new NBTItem(item).getCompound("CustomAttributes").getString("UUID").equals(targetId)){
+                        NBTItem nbt = new NBTItem(item);
+                        NBTCompound compound = nbt.getCompound("CustomAttributes");
+                        double weight = compound.getDouble("WEIGHT");
+                        compound.setDouble("WEIGHT", weight + itemsandhits.get(targetId));
+                        toRemove.add(targetId);
+                        Bukkit.getConsoleSender().sendMessage(toRemove.toString());
+                        player.getInventory().setItem(a, nbt.getItem());
+                        if(roll(item)){
+                            player.getInventory().setItem(a, seize(item));
+                            player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 7, 1);
+                            player.playSound(player.getLocation(), Sound.ANVIL_LAND, 10, 1);
+                            player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "YOUR ITEM HAS BEEN SEIZED! " + ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back. It was replaced with a token you can use to recover it. Item: " + ChatColor.YELLOW + item.getItemMeta().getDisplayName());
+                            Bukkit.getConsoleSender().sendMessage(item.getItemMeta().getDisplayName() + ChatColor.RESET + " seized with weight " + weight);
                         }
-
-                    }catch(NullPointerException ignored){Bukkit.getConsoleSender().sendMessage("occurred in onKill catch");}
+                        break getItem;
+                    }
                 }
             }
             for(String uuid : toRemove){

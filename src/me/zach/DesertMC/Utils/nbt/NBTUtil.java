@@ -5,22 +5,14 @@ import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.inventory.ItemStack;
 
 public class NBTUtil {
-    public static NBTUtil INSTANCE = new NBTUtil();
+    public static String getCustomAttr(ItemStack item, String key){
+        if(item == null) return "null";
+        NBTItem nbt = new NBTItem(item);
+        NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
+        if (customAttributes == null) return "null";
 
-    private NBTUtil(){
-
-    }
-
-    public String getCustomAttr(ItemStack item, String key) throws NullPointerException{
-        try {
-            NBTItem nbti = new NBTItem(item);
-            if (nbti.getCompound("CustomAttributes") == null) return "null";
-
-
-            NBTCompound nbtCompound = nbti.getCompound("CustomAttributes");
-            if (nbtCompound.getString(key) != null) return nbtCompound.getString(key);
-            else return "null";
-        }catch(NullPointerException ex){return "null";}
+        if (customAttributes.getString(key) != null) return customAttributes.getString(key);
+        else return "null";
     }
 
 }

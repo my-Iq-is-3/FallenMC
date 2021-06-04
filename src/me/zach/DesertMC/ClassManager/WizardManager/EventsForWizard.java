@@ -60,7 +60,7 @@ public class EventsForWizard implements Listener {
 
                         if (player.getInventory().getHelmet() != null) {
                             NBTItem helmet = new NBTItem(player.getInventory().getHelmet());
-                            if (NBTUtil.INSTANCE.getCustomAttr(helmet.getItem(), "ID").equalsIgnoreCase("SCOUT_GOGGLES")) {
+                            if (NBTUtil.getCustomAttr(helmet.getItem(), "ID").equalsIgnoreCase("SCOUT_GOGGLES")) {
                                 player.hidePlayer(killer);
                             }
                         } else {
@@ -87,11 +87,11 @@ public class EventsForWizard implements Listener {
 //  MW Hit
     public void magicWandHit(Player damaged, Player damager) {
         if (!damager.getInventory().getItemInHand().getType().equals(Material.AIR)) {
-            if (NBTUtil.INSTANCE.getCustomAttr(damager.getInventory().getItemInHand(), "ID").equals("MAGIC_WAND")) {
+            if (NBTUtil.getCustomAttr(damager.getInventory().getItemInHand(), "ID").equals("MAGIC_WAND")) {
 
                 ItemStack boots = damaged.getInventory().getBoots();
                 if(boots != null){
-                    if(NBTUtil.INSTANCE.getCustomAttr(boots,"ID").equals("STUBBORN_BOOTS") && ConfigUtils.getLevel("tank", damaged) > 5){
+                    if(NBTUtil.getCustomAttr(boots,"ID").equals("STUBBORN_BOOTS") && ConfigUtils.getLevel("tank", damaged) > 5){
                         return;
                     }
                 }
