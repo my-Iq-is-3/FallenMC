@@ -13,6 +13,7 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
+import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.EnchantmentUtil;
 import me.zach.DesertMC.cosmetics.Cosmetic;
@@ -101,14 +102,15 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 					}
 				}else if(args.length >= 1){
 					if(args[0].equalsIgnoreCase("list")){
-						StringBuilder cList = new StringBuilder(ChatColor.GRAY + "Selected Cosmetics:");
+						ArrayList<String> cList = new ArrayList<>();
 						for (Cosmetic.CosmeticType type : Cosmetic.CosmeticType.values()) {
 							Cosmetic selected = Cosmetic.getSelected(player, type);
 							String name = ChatColor.DARK_GRAY + "None";
 							if (selected != null) name = selected.displayName;
-							cList.append("\n" + ChatColor.GRAY + "Selected " + ChatColor.AQUA).append(type.displayName).append(ChatColor.GRAY).append(": ").append(ChatColor.GOLD).append(name);
+							cList.add(ChatColor.AQUA + "  Selected " + type.displayName + ": " + ChatColor.GOLD + name);
 						}
-						player.sendMessage(cList + "");
+						StringUtil.ChatWrapper wrapper = new StringUtil.ChatWrapper('=', ChatColor.GOLD, true, true);
+						StringUtil.sendUncenteredWrappedMessage(player, wrapper, String.join("\n", cList));
 					}
 				}else{
 					player.sendMessage(ChatColor.RED + "Invalid Usage! " + ChatColor.YELLOW + "Type /cosmetic to open the menu." + ChatColor.DARK_GRAY + "\nAdditionally, you can use the non-menu command: /cosmetic <set|list> <cosmetic to set>");
@@ -117,12 +119,12 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 			}
         	if(command.getName().equalsIgnoreCase("rank")){
         		if(player.hasPermission("admin")){
-        			if(args[0] != null && args[1] != null){
+        			if(args.length == 2){
         				try{
         					if(Rank.valueOf(args[1]).equals(Rank.COOWNER) || Rank.valueOf(args[1]).equals(Rank.ADMIN)){
 								if (!player.getUniqueId().toString().equals("7f9ad03e-23ec-4648-91c8-2e0820318a8b")){
 									player.sendMessage(ChatColor.RED + "Nice try. You can't give other people COOWNER or ADMIN.");
-									return false;
+									return true;
 								}
 							}
         					mainpl.getConfig().set("players." + Bukkit.getPlayer(args[0]).getUniqueId() + ".rank", Rank.valueOf(args[1]).name());
@@ -130,9 +132,11 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         					player.sendMessage(ChatColor.GREEN + "Rank set successfully.");
 						}catch(IllegalArgumentException noRankFound){
         					player.sendMessage(ChatColor.RED + "Rank not found! Usage: /rank <player> <rank>");
+        					return true;
 						}
 					}else{
         				player.sendMessage(ChatColor.RED + "Invalid usage! Usage: /rank <player> <rank>");
+        				return true;
 					}
 				}
 			}
@@ -410,7 +414,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
     }
 	@Override
 	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<	>();
 		if (strings.length == 1) {
 
 			if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("spawnnpc")) {
