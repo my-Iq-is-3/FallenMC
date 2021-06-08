@@ -5,6 +5,8 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.Prefix;
+import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -127,7 +129,7 @@ public class SPolice extends NPCSuper implements Listener {
                 e.setCancelled(true);
                 if(e.getClick().equals(ClickType.LEFT) || e.getClick().equals(ClickType.RIGHT)) {
                     try {
-                        if (new NBTItem(e.getCurrentItem()).getCompound("CustomAttributes").getString("ID").equals("TOKEN")) {
+                        if (NBTUtil.getCustomAttr(e.getCurrentItem(), "ID").equals("TOKEN")) {
                             if (e.getClickedInventory().getName().equals("Recover Seized Items")) {
                                 p.getInventory().addItem(e.getCurrentItem());
                                 e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));
@@ -143,14 +145,14 @@ public class SPolice extends NPCSuper implements Listener {
                                 p.getOpenInventory().getTopInventory().setItem(22, trueItem);
                             }
                         }
-                    } catch (NullPointerException ignored) {
-                    }
+                    }catch(NullPointerException ignored){}
                     if (e.getCurrentItem().isSimilar(falseItem)) {
                         p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
                     } else if (e.getCurrentItem().isSimilar(trueItem)) {
                         Plugin pl = DesertMain.getInstance;
-                        if (pl.getConfig().getInt("players." + p.getUniqueId() + ".balance") >= 200) {
-                            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Player " + p.getName() + " recovered a seized item with " + pl.getConfig().getInt("players." + p.getUniqueId() + ".balance") + "gems.");
+                        int gems = ConfigUtils.getGems(p);
+                        if(ConfigUtils.getGems(p) >= 200) {
+                            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Player " + p.getName() + " recovered a seized item with " + gems + "gems.");
                             if (p.getInventory().firstEmpty() == -1) {
                                 p.getInventory().addItem(e.getClickedInventory().getItem(4));
                                 e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));

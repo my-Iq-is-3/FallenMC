@@ -36,7 +36,7 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
 
     public static String getNewCase(Player player){
         String displayCase = getDisplayCase(player);
-        StringBuilder newCase = new StringBuilder();
+        StringBuilder newCase;
         if(displayCase == null){
             newCase = new StringBuilder(starColors.get(0) + "0");
         }else{

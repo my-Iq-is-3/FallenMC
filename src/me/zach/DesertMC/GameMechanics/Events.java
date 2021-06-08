@@ -89,6 +89,12 @@ public class Events implements Listener{
 	}
 
 	@EventHandler
+	public void preventPickup(PlayerPickupItemEvent event){
+		ItemStack item = event.getItem().getItemStack();
+		if(NBTUtil.hasCustomKey(item, "NO_PICKUP")) event.setCancelled(true);
+	}
+
+	@EventHandler
 	public void illegalCommandSend(PlayerCommandPreprocessEvent event){
 
 			boolean plugins = event.getMessage().startsWith("/plugins");

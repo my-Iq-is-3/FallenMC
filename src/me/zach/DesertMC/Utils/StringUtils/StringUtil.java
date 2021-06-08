@@ -11,7 +11,7 @@ public class StringUtil{
     public static List<String> wrapLore(String string){
         StringBuilder sb = new StringBuilder(string);
         int i = 0;
-        while (i + 35 < sb.length() && (i = sb.lastIndexOf(" ", i + 35)) != -1){
+        while(i + 35 < sb.length() &&(i = sb.lastIndexOf(" ", i + 35)) != -1){
             sb.replace(i, i + 1, "\n");
         }
         return Arrays.asList(sb.toString().split("\n"));
@@ -27,17 +27,20 @@ public class StringUtil{
     private static String getCenteredMessage(boolean wrap, ChatWrapper wrapper, String... lines){
         ArrayList<String> messageBuilder = new ArrayList<>();
         for(String message : lines){
-            if (message == null || message.equals("")) return "";
+            if(message == null || message.equals("")){
+                messageBuilder.add("");
+                continue;
+            }
             message = ChatColor.translateAlternateColorCodes('&', message);
 
             int messagePxSize = 0;
             boolean previousCode = false;
             boolean isBold = false;
 
-            for (char c : message.toCharArray()){
-                if (c == '§'){
+            for(char c : message.toCharArray()){
+                if(c == '§'){
                     previousCode = true;
-                }else if (previousCode){
+                }else if(previousCode){
                     previousCode = false;
                     isBold = c == 'l' || c == 'L';
                 }else{
@@ -52,19 +55,14 @@ public class StringUtil{
             int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
             int compensated = 0;
             StringBuilder sb = new StringBuilder();
-            while (compensated < toCompensate){
+            while(compensated < toCompensate){
                 sb.append(" ");
                 compensated += spaceLength;
             }
             messageBuilder.add(sb + message);
         }
-        if(wrap){
-            String wrapperString = wrapper.toString();
-            messageBuilder.add(0, wrapperString);
-            messageBuilder.add(messageBuilder.size() - 1, wrapperString);
-        }
-
-        return String.join("\n", messageBuilder);
+        String centeredMessage = String.join("\n", messageBuilder);
+        return wrap ? wrapper.wrap(centeredMessage) : centeredMessage;
     }
 
     public static void sendCenteredMessage(Player player, String... lines){
@@ -96,7 +94,7 @@ public class StringUtil{
 
         public final char character;
         public final ChatColor color;
-        private final String wrap;
+        private final String wrapper;
 
         public ChatWrapper(char character, ChatColor color, boolean strikethrough, boolean bold){
             this.character = character;
@@ -108,11 +106,15 @@ public class StringUtil{
             for(int i = 0; i<Math.floorDiv(MAX_CHAT_LENGTH, bold ? fontInfo.getBoldLength() : fontInfo.getLength()); i++){
                 wrapBuilder.append(character);
             }
-            wrap = wrapBuilder.toString();
+            wrapper = wrapBuilder.toString();
+        }
+        
+        public String wrap(String text){
+            return wrapper + "\n" + text + "\n" + wrapper;
         }
 
         public String toString(){
-            return wrap;
+            return wrapper;
         }
     }
 }

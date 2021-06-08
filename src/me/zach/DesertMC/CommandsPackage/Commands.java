@@ -39,9 +39,20 @@ import java.util.List;
 
 public class Commands extends CommandExecute implements Listener, CommandExecutor, TabCompleter {
 	public static HashMap<String, NPCSuper> npcsAndName = new HashMap<>();
+	private static final String colorsMessage;
 	static{
 		npcsAndName.put("STREAK_POLICE", SPolice.INSTANCE);
 		npcsAndName.put("SOUL_BROKER", SoulShop.INSTANCE);
+		ArrayList<String> colorsList = new ArrayList<>();
+		colorsList.add(ChatColor.GREEN + "With your rank, you can"  + ChatColor.YELLOW + " include " + ChatColor.AQUA + "colors " + ChatColor.GREEN + "in your messages!");
+		colorsList.add("Placing a color code in your messages will make any text after that color code your color!");
+		colorsList.add(ChatColor.GRAY + "Colors:");
+		for(String name : RankEvents.friendlyCC.keySet()){
+			ChatColor color = RankEvents.friendlyCC.get(name);
+			String colorName = color.name();
+			colorsList.add(name + ChatColor.DARK_GRAY + " - " + ChatColor.WHITE + colorName + " or !" + RankEvents.colorShortcuts.get(color));
+		}
+		colorsMessage = StringUtil.getCenteredWrappedMessage(new StringUtil.ChatWrapper('-', ChatColor.WHITE, true, true), colorsList.toArray(new String[0]));
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -66,12 +77,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 
         	if(command.getName().equalsIgnoreCase("colors")){
         		if(RankEvents.rankSession.containsKey(player.getUniqueId())){
-        			player.sendMessage(ChatColor.GREEN + "With your rank, you can"  + ChatColor.YELLOW + " include " + ChatColor.AQUA + "colors " + ChatColor.GREEN + "in your messages! Placing a color code in your messages will make any text after that color code your color!\n" + ChatColor.GRAY + "Colors:");
-        			for(String name : RankEvents.friendlyCC.keySet()){
-        				ChatColor color = RankEvents.friendlyCC.get(name);
-        				String colorName = color.name();
-        				player.sendMessage(name + ChatColor.DARK_GRAY + " - " + ChatColor.WHITE + colorName + " or !" + RankEvents.colorShortcuts.get(color));
-					}
+					player.sendMessage(colorsMessage);
         			return true;
 				}else{
         			player.sendMessage(ChatColor.RED + "You must have a rank to use this command!");
@@ -92,7 +98,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 							}else{
 								player.sendMessage(ChatColor.RED + "You haven't unlocked that cosmetic yet! To see your unlocked cosmetics and more, type /cosmetic to open the menu!");
 							}
-						}
+						}else player.sendMessage(ChatColor.RED + "That cosmetic doesn't exist!");
 					}else if(args[0].equalsIgnoreCase("grant")){
 						if(player.hasPermission("admin")){
 							Cosmetic toSet = Cosmetic.getFromName(String.join(" ", args).replace("grant ", ""));
@@ -408,13 +414,12 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         		}
         		
         	}
-            
         }
 		return true;
     }
 	@Override
 	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-		List<String> args = new ArrayList<	>();
+		List<String> args = new ArrayList<>();
 		if (strings.length == 1) {
 
 			if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("spawnnpc")) {

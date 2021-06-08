@@ -15,4 +15,11 @@ public class NBTUtil {
         else return "null";
     }
 
+    public static boolean hasCustomKey(ItemStack item, String key){
+        if(item == null ) return false;
+        NBTItem nbt = new NBTItem(item);
+        NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
+        if(customAttributes == null) return false;
+        return customAttributes.hasKey(key);
+    }
 }

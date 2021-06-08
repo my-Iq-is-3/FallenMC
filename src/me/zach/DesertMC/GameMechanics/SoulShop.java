@@ -91,7 +91,8 @@ public class SoulShop extends NPCSuper implements Listener{
                     startInv.clear(13);
                     ItemStack soulsItem = new ItemStack(Material.INK_SACK, 1, (short) 9);
                     ItemMeta soulsMeta = soulsItem.getItemMeta();
-                    soulsMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + pl.getConfig().getInt("players." + event.getWhoClicked().getUniqueId() + ".souls") + " Soul(s)");
+                    int souls = ConfigUtils.getSouls(event.getWhoClicked());
+                    soulsMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + souls + (souls == 1 ? " Souls" : " Soul"));
                     soulsItem.setItemMeta(soulsMeta);
                     startInv.setItem(15, reduce);
                     startInv.setItem(35, soulsItem);

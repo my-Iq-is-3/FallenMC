@@ -4,7 +4,10 @@ import me.zach.DesertMC.ClassManager.TravellerEvents;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.Utils.MiscUtils;
+import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import me.zach.databank.DB;
 import me.zach.databank.Databank;
@@ -15,6 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -148,11 +152,14 @@ public class ConfigUtils {
 		if(amount == 0) return;
 		if(lv >= 59) return;
 		if(DesertMain.xpToNext <= currentProgress + amount){
-			player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "EXP MILESTONE!" + ChatColor.GREEN + " You just reached EXP milestone " + lv + "!");
-			TextComponent component = new TextComponent(TextComponent.fromLegacyText("Click here to view your milestones progression and claim rewards!"));
+			String levelUp = StringUtil.getCenteredMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "EXP MILESTONE!" + ChatColor.GREEN + "(" + ChatColor.WHITE + "4 ➞ " + ChatColor.GREEN + ChatColor.BOLD + (DesertMain.lv - 1) + ChatColor.GREEN + ")", ChatColor.GREEN + "You reached level" + ChatColor.BOLD + " " + (DesertMain.lv - 1) + ChatColor.GREEN + "!");
+			TextComponent component = new TextComponent(TextComponent.fromLegacyText(StringUtil.getCenteredMessage("Click here to view your milestones progression", "and claim rewards!")));
 			component.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
+			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GOLD + "Click to use /expmilestones").create()));
 			component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/expmilestones"));
+			player.sendMessage(StringUtil.ChatWrapper.THICK_HORIZONTAL_LINE.toString() + "\n" + levelUp);
 			player.spigot().sendMessage(component);
+			player.sendMessage("\n" + StringUtil.ChatWrapper.THICK_HORIZONTAL_LINE);
 			MiscUtils.ootChestFanfare(player);
 			lv++;
 			int prevProgress = currentProgress;
@@ -163,6 +170,7 @@ public class ConfigUtils {
 			if(lv == 59) player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "MILESTONES MAXED!" + ChatColor.GREEN + " Open the EXP Milestones inventory using /expmilestones and reset your milestones to gain a STAR, and a potential cosmetic!");
 			unclaimed.add(lv - 1);
 			MilestonesUtil.setDisplayCase(MilestonesUtil.getDisplayCase(player).replaceAll("\\d+", DesertMain.lv + ""), player);
+
 			gexp(player, amount - (prevNext - prevProgress));
 		}else{
 			currentProgress += amount;

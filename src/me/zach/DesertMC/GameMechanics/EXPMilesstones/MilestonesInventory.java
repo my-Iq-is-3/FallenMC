@@ -4,6 +4,7 @@ import itempackage.Items;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.MiscUtils;
+import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -225,18 +226,11 @@ public class MilestonesInventory implements Listener {
             if(level == 58){
                 MilestonesUtil.resetMilestones(player);
             }else{
-                if (granter.grant(player, level)) {
-                    String confirmationMsg = ChatColor.GREEN + "------------- " + ChatColor.BOLD + "REWARD CLAIMED!" + ChatColor.GREEN + " -------------\n\n" + ChatColor.GRAY + "\u25CF Reward:\n     " + reward;
+                if(granter.grant(player, level)) {
                     unclaimed.remove(level);
-                    player.sendMessage(confirmationMsg);
-                    StringBuilder dashBuilder = new StringBuilder(ChatColor.GREEN + "");
-                    for (int i = 0; i < confirmationMsg.length(); i++) {
-                        if (confirmationMsg.charAt(i) == '\n') break;
-                        dashBuilder.append("-");
-                    }
-                    player.sendMessage(dashBuilder.substring(0, dashBuilder.length() - 5) + "");
+                    StringUtil.sendCenteredWrappedMessage(player, StringUtil.ChatWrapper.HORIZONTAL_LINE, ChatColor.GREEN.toString() + ChatColor.BOLD + "REWARD CLAIMED!", ChatColor.GREEN + "You got: " + ChatColor.YELLOW + reward);
                     confirmationSound(player);
-                } else {
+                }else{
                     player.playSound(player.getLocation(), Sound.NOTE_BASS, 10, 1);
                 }
             }
