@@ -121,7 +121,7 @@ public class ConfigUtils {
 		if(data.getClassXPR(classtoaddto) <= amount && level < 10){ // player levels up
 			data.setClassXP(classtoaddto,0);
 			data.setClassXPR(classtoaddto,xprTiers[level-1]); // at level 3, it would pull level[2], therefore
-			data.setClassLevel(classtoaddto,0);
+			data.setClassLevel(classtoaddto,data.getClassLevel(classtoaddto)+1);
 			player.sendMessage("levelup");
 		}else{ // doesn't level up
 			data.setClassXP(classtoaddto,data.getClassXP(classtoaddto)+amount);

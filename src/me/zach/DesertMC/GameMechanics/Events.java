@@ -89,12 +89,6 @@ public class Events implements Listener{
 	}
 
 	@EventHandler
-	public void preventPickup(PlayerPickupItemEvent event){
-		ItemStack item = event.getItem().getItemStack();
-		if(NBTUtil.hasCustomKey(item, "NO_PICKUP")) event.setCancelled(true);
-	}
-
-	@EventHandler
 	public void illegalCommandSend(PlayerCommandPreprocessEvent event){
 
 			boolean plugins = event.getMessage().startsWith("/plugins");
@@ -263,71 +257,74 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent event) {
-		if(event.isCancelled()) return;
-		ArtifactEvents.hitEvent(event);
-		CreeperTrove.executeTrove(event);
-		if(event.getDamage() == 0) return;
-		if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
-			Player damager = (Player) event.getDamager();
-			PlayerUtils.setFighting(damager);
-			if (event.getEntity() instanceof Player)
-				if (!event.getEntity().getUniqueId().equals(event.getDamager().getUniqueId()))
-					DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), damager.getUniqueId());
-		}else if(event.getDamager() instanceof Arrow){
-			Arrow damager = (Arrow) event.getDamager();
-			if(damager.getShooter() instanceof Player){
-				Player shooter = (Player) damager.getShooter();
-				PlayerUtils.setFighting(shooter);
+		try{
+			if(event.isCancelled()) return;
+			ArtifactEvents.hitEvent(event);
+			CreeperTrove.executeTrove(event);
+			if(event.getDamage() == 0) return;
+			if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
+				Player damager = (Player) event.getDamager();
+				PlayerUtils.setFighting(damager);
 				if (event.getEntity() instanceof Player)
-					if (!shooter.getUniqueId().equals(event.getEntity().getUniqueId()))
-						DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
-			}
-		}
-		if (event.getEntity() instanceof Player) {
-			PlayerUtils.setFighting((Player) event.getEntity());
-		}
-		if (event.getDamager() instanceof Player) {
-
-			if(((Player)event.getDamager()).getItemInHand().getType().equals(Material.DOUBLE_PLANT)){
-				event.setCancelled(true);
-				return;
-			}
-			if(event.getEntity() instanceof Player){
-				if(DesertMain.ct1players.contains(event.getDamager().getUniqueId())){
-					event.setDamage(event.getDamage() * 1.1);
+					if (!event.getEntity().getUniqueId().equals(event.getDamager().getUniqueId()))
+						DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), damager.getUniqueId());
+			}else if(event.getDamager() instanceof Arrow){
+				Arrow damager = (Arrow) event.getDamager();
+				if(damager.getShooter() instanceof Player){
+					Player shooter = (Player) damager.getShooter();
+					PlayerUtils.setFighting(shooter);
+					if (event.getEntity() instanceof Player)
+						if (!shooter.getUniqueId().equals(event.getEntity().getUniqueId()))
+							DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
 				}
-				SPolice.onHit(event);
-				EventsForCorruptor.INSTANCE.corruptedSword(event);
-
-				EventsForScout.getInstance().daggerHit(event);
-				EventsForCorruptor.INSTANCE.t8Event(event);
-				EventsForCorruptor.INSTANCE.noMercy(event);
-				EventsForCorruptor.INSTANCE.t1Event(event);
-				EventsForWizard.INSTANCE.wizardt4(event);
-
-				EventsForWizard.INSTANCE.wizardt8(event);
-				EventsForScout.getInstance().t1Event(event);
-				EventsForScout.getInstance().t4Event(event);
-
-				EventsForScout.getInstance().t8Event(event);
-				EventsForCorruptor.INSTANCE.volcanicSword(event);
-				EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
-				EventsForCorruptor.INSTANCE.corruptedSword(event);
-				EventsForTank.getInstance().t1Event(event);
-				EventsForTank.getInstance().t5Event(event);
-				EventsForTank.getInstance().t8Event(event);
-				EventsForTank.getInstance().fortify(event);
-				EventsForScout.getInstance().alert(event);
-				EventsForTank.getInstance().bludgeon(event);
-				EventsForScout.getInstance().scoutBlade((Player)event.getDamager(), (Player) event.getEntity());
 			}
-			travellerCoru(event);
-			travellerTank(event);
+			if (event.getEntity() instanceof Player) {
+				PlayerUtils.setFighting((Player) event.getEntity());
+			}
+			if (event.getDamager() instanceof Player) {
 
-			snackHit(event);
-			executeKill(event);
-		}
+					if (((Player) event.getDamager()).getItemInHand().getType().equals(Material.DOUBLE_PLANT)) {
+						event.setCancelled(true);
+						return;
+					}
+					if (event.getEntity() instanceof Player) {
+						if (DesertMain.ct1players.contains(event.getDamager().getUniqueId())) {
+							event.setDamage(event.getDamage() * 1.1);
+						}
+						SPolice.onHit(event);
+						EventsForCorruptor.INSTANCE.corruptedSword(event);
+
+					EventsForScout.getInstance().daggerHit(event);
+					EventsForCorruptor.INSTANCE.t8Event(event);
+					EventsForCorruptor.INSTANCE.noMercy(event);
+					EventsForCorruptor.INSTANCE.t1Event(event);
+					EventsForWizard.INSTANCE.wizardt4(event);
+
+					EventsForWizard.INSTANCE.wizardt8(event);
+					EventsForScout.getInstance().t1Event(event);
+					EventsForScout.getInstance().t4Event(event);
+
+					EventsForScout.getInstance().t8Event(event);
+					EventsForCorruptor.INSTANCE.volcanicSword(event);
+					EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
+					EventsForCorruptor.INSTANCE.corruptedSword(event);
+					EventsForTank.getInstance().t1Event(event);
+					EventsForTank.getInstance().t5Event(event);
+					EventsForTank.getInstance().t8Event(event);
+					EventsForTank.getInstance().fortify(event);
+					EventsForScout.getInstance().alert(event);
+					EventsForTank.getInstance().bludgeon(event);
+					EventsForScout.getInstance().scoutBlade((Player)event.getDamager(), (Player) event.getEntity());
+				}
+				travellerCoru(event);
+				travellerTank(event);
+
+					snackHit(event);
+			}
+		} catch (NullPointerException ex){}
+		executeKill(event);
 	}
+
 
 	public void executeKill(EntityDamageByEntityEvent event) {
 		if (event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Arrow)) {
