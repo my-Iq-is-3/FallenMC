@@ -111,28 +111,12 @@ public class EventsForCorruptor implements Listener {
                     if (ConfigUtils.getLevel("corrupter", damager) > 6 && ConfigUtils.findClass(damager).equals("corrupter")) {
                         ItemStack heldItemStack = damager.getInventory().getItemInHand();
                         NBTItem hnbt = new NBTItem(heldItemStack);
+
                         if (hnbt.getCompound("CustomAttributes").getCompound("enchantments") != null) {
                             NBTCompound hnbtc = hnbt.getCompound("CustomAttributes").getCompound("enchantments");
                             int nomercylvl = hnbtc.getInteger("no_mercy");
                             if (nomercylvl > 0) {
-                                if ((Events.ks.get(damager.getUniqueId()) + 1) % 2 == 0) {
-                                    for (Player player : Bukkit.getOnlinePlayers()) {
-                                        if (!player.equals(damager)) {
-                                            new BukkitRunnable(){
-                                                @Override
-                                                public void run(){
-                                                    if (player.getLocation().distance(damager.getLocation()) <= 6) {
-                                                        ParticleEffect.SMOKE_NORMAL.display(0,0,0,0,10,player.getLocation().clone().add(0,2,0));
-
-                                                        player.damage(nomercylvl * 0.5, damager);
-                                                        ParticleEffect.SMOKE_NORMAL.display(0.3f,0.3f,0.3f,0.3f,30,player.getLocation().clone().add(0,2,0));
-                                                    }
-                                                }
-                                            }.runTaskLater(DesertMain.getInstance,10);
-
-                                        }
-                                    }
-                                }
+                                event.setDamage(damaged.getHealth()/damaged.getMaxHealth()<=0.5 ? ((2*nomercylvl)/100f)*event.getDamage() : event.getDamage());
                             }
                         }
                     }

@@ -33,39 +33,39 @@ public class FScoreboardManager {
 //			System.out.println("Class: " + ConfigUtils.INSTANCE.findClass(player));
 
 
-			Score gems = objective.getScore(ChatColor.GRAY + "Gems: " + ChatColor.GREEN + SaveManager.getData(player).getGems());
-			Score level = objective.getScore(ChatColor.GRAY + "Level: " + ChatColor.AQUA + ConfigUtils.getLevel(ConfigUtils.findClass(player), player));
-			Score souls = objective.getScore(ChatColor.GRAY + "Souls: " + ChatColor.LIGHT_PURPLE + SaveManager.getData(player).getSouls());
+			Score gems = objective.getScore(ChatColor.WHITE + "Gems: " + ChatColor.GREEN + ConfigUtils.getGems(player));
+			Score level = objective.getScore(ChatColor.WHITE + "Level: " + ChatColor.AQUA + ConfigUtils.getLevel(ConfigUtils.findClass(player), player));
+			Score souls = objective.getScore(ChatColor.WHITE + "Souls: " + ChatColor.LIGHT_PURPLE + ConfigUtils.getSouls(player));
 
 			Score xp;
 			//set experience element
 
 			if(ConfigUtils.getXP(player, ConfigUtils.findClass(player)) == Key.MAX_XP) {
-				xp = objective.getScore(ChatColor.GRAY + "XP: " + ChatColor.AQUA + "MAX");
+				xp = objective.getScore(ChatColor.WHITE + "XP: " + ChatColor.AQUA + "MAX");
 
 			}else {
 
 				int totalxp = ConfigUtils.getXpToNext(player, ConfigUtils.findClass(player)) + ConfigUtils.getXP(player,ConfigUtils.findClass(player));
-				xp = objective.getScore(ChatColor.GRAY + "XP: " + ChatColor.GREEN + ConfigUtils.getXP(player, ConfigUtils.findClass(player)) + ChatColor.WHITE + "/" + ChatColor.DARK_GRAY + totalxp);
+				xp = objective.getScore(ChatColor.WHITE + "XP: " + ChatColor.GREEN + ConfigUtils.getXP(player, ConfigUtils.findClass(player)) + ChatColor.WHITE + "/" + ChatColor.DARK_GRAY + totalxp);
 			}
 
 			//Now we have to make the first letter uppercase for the player classes
 			String betterclass = ConfigUtils.findClass(player);
 			char[] betterclassarr = betterclass.toCharArray();
 			betterclassarr[0] = Character.toUpperCase(betterclassarr[0]);
-			Score playerclass = objective.getScore(ChatColor.GRAY + "Class: " + ChatColor.GREEN + new String(betterclassarr));
+			Score playerclass = objective.getScore(ChatColor.WHITE + "Class: " + ChatColor.GREEN + new String(betterclassarr));
 
 			Events.ks.putIfAbsent(player.getUniqueId(), 0);
 
 			//killstreaks
-			Score killstreak = objective.getScore(ChatColor.GRAY + "Killstreak: " + ChatColor.RED + Events.ks.get(player.getUniqueId()));
-			Score inCombat = objective.getScore(ChatColor.GRAY + "Status: " + ChatColor.GREEN + "???");
+			Score killstreak = objective.getScore(ChatColor.WHITE + "Killstreak: " + ChatColor.RED + Events.ks.get(player.getUniqueId()));
+			Score inCombat = objective.getScore(ChatColor.WHITE + "Status: " + ChatColor.GREEN + "???");
 			if(PlayerUtils.fighting.containsKey(player.getUniqueId())) {
 				int timeleft = PlayerUtils.fighting.get(player.getUniqueId());
 				if(timeleft == 0)
-					inCombat = objective.getScore(ChatColor.GRAY + "Status: " + ChatColor.GREEN + "Idle");
+					inCombat = objective.getScore(ChatColor.WHITE + "Status: " + ChatColor.GREEN + "Idle");
 				else
-					inCombat = objective.getScore(ChatColor.GRAY + "Status: " + ChatColor.RED + "Combat " + ChatColor.DARK_GRAY + "(" + PlayerUtils.fighting.get(player.getUniqueId()) + ")");
+					inCombat = objective.getScore(ChatColor.WHITE + "Status: " + ChatColor.RED + "Combat " + ChatColor.DARK_GRAY + "(" + PlayerUtils.fighting.get(player.getUniqueId()) + ")");
 			}
 
 
