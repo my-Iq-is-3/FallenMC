@@ -2,15 +2,13 @@ package me.zach.DesertMC.GameMechanics;
 
 
 import de.tr7zw.nbtapi.NBTCompound;
-import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
-
-import me.zach.DesertMC.ClassManager.TravellerEvents;
-import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
 import me.zach.DesertMC.ClassManager.TankManager.EventsForTank;
+import me.zach.DesertMC.ClassManager.TravellerEvents;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
+import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
@@ -26,7 +24,6 @@ import me.zach.artifacts.gui.inv.ArtifactData;
 import me.zach.artifacts.gui.inv.items.CreeperTrove;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -34,21 +31,23 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.*;
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.AnvilInventory;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 
 import static me.zach.DesertMC.Utils.RankUtils.RankEvents.rankSession;
 
@@ -120,7 +119,7 @@ public class Events implements Listener{
 			event.getPlayer().sendMessage(ChatColor.RED + "You do not have permission to use this command.");
 		}
 	}
-		@EventHandler
+	@EventHandler
 	public void cancelAnvil(InventoryOpenEvent event){
 		if(event.getInventory() instanceof AnvilInventory){
 			Player player = (Player) event.getPlayer();
@@ -294,34 +293,33 @@ public class Events implements Listener{
 						SPolice.onHit(event);
 						EventsForCorruptor.INSTANCE.corruptedSword(event);
 
-					EventsForScout.getInstance().daggerHit(event);
-					EventsForCorruptor.INSTANCE.t8Event(event);
-					EventsForCorruptor.INSTANCE.noMercy(event);
-					EventsForCorruptor.INSTANCE.t1Event(event);
-					EventsForWizard.INSTANCE.wizardt4(event);
+						EventsForScout.getInstance().daggerHit(event);
+						EventsForCorruptor.INSTANCE.t8Event(event);
+						EventsForCorruptor.INSTANCE.noMercy(event);
+						EventsForCorruptor.INSTANCE.t1Event(event);
+						EventsForWizard.INSTANCE.wizardt4(event);
 
-					EventsForWizard.INSTANCE.wizardt8(event);
-					EventsForScout.getInstance().t1Event(event);
-					EventsForScout.getInstance().t4Event(event);
+						EventsForWizard.INSTANCE.wizardt8(event);
+						EventsForScout.getInstance().t1Event(event);
+						EventsForScout.getInstance().t4Event(event);
 
-					EventsForScout.getInstance().t8Event(event);
-					EventsForCorruptor.INSTANCE.volcanicSword(event);
-					EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
-					EventsForCorruptor.INSTANCE.corruptedSword(event);
-					EventsForTank.getInstance().t1Event(event);
-					EventsForTank.getInstance().t5Event(event);
-					EventsForTank.getInstance().t8Event(event);
-					EventsForTank.getInstance().fortify(event);
-					EventsForScout.getInstance().alert(event);
-					EventsForTank.getInstance().bludgeon(event);
-					EventsForScout.getInstance().scoutBlade((Player)event.getDamager(), (Player) event.getEntity());
-				}
+						EventsForScout.getInstance().t8Event(event);
+						EventsForCorruptor.INSTANCE.volcanicSword(event);
+						EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
+						EventsForCorruptor.INSTANCE.corruptedSword(event);
+						EventsForTank.getInstance().t1Event(event);
+						EventsForTank.getInstance().t5Event(event);
+						EventsForTank.getInstance().t8Event(event);
+						EventsForTank.getInstance().fortify(event);
+						EventsForScout.getInstance().alert(event);
+						EventsForTank.getInstance().bludgeon(event);
+						EventsForScout.getInstance().scoutBlade((Player)event.getDamager(), (Player) event.getEntity());
+					}
 				travellerCoru(event);
 				travellerTank(event);
-
-					snackHit(event);
+				snackHit(event);
 			}
-		} catch (NullPointerException ex){}
+		}catch(NullPointerException ignored){}
 		executeKill(event);
 	}
 
@@ -338,7 +336,7 @@ public class Events implements Listener{
 		try {
 			callOnKill(player, killer);
 			EventsForWizard.INSTANCE.wizardt1(killer);
-			Location spawn = (Location) DesertMain.getInstance.getConfig().get("server.lobbyspawn");
+			Location spawn = ConfigUtils.getSpawn("lobby");
 			player.setHealth(player.getMaxHealth());
 
 			player.teleport(spawn);
@@ -346,21 +344,20 @@ public class Events implements Listener{
 				player.setFireTicks(0);
 
 
-			double random = (Math.random() * 5) + 1;
+			Random random = ThreadLocalRandom.current();
 			int soulsgained = 0;
-			int randomCompare = 2;
-			if (random < randomCompare) {
+			int randomCompare = 4;
+			if (random.nextInt(randomCompare) == 0){
 				try {
-					if (new NBTItem(killer.getInventory().getChestplate()).getCompound("CustomAttributes").getString("ID").equals("LUCKY_CHESTPLATE"))
+					if(NBTUtil.getCustomAttr(killer.getInventory().getChestplate(), "ID").equals("LUCKY_CHESTPLATE"))
 						soulsgained = 2;
-					else {
+					else{
 						soulsgained = 1;
 					}
 				} catch (Exception ex) {
 					soulsgained = 1;
 					if (!(ex instanceof NullPointerException)) {
-
-						Bukkit.getConsoleSender().sendMessage("Error managing souls. Error:\n" + Arrays.toString(ex.getStackTrace()));
+						Bukkit.getConsoleSender().sendMessage("Error managing souls. Error:\n" + ex);
 					}
 				}
 			}
@@ -445,15 +442,25 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void resetConfirmRemove(PlayerQuitEvent e){
-		MilestonesUtil.confirming.remove(e.getPlayer().getUniqueId());}
+		MilestonesUtil.confirming.remove(e.getPlayer().getUniqueId());
+	}
+
+	@EventHandler
+	public void rankSessionRemove(PlayerQuitEvent e){
+		rankSession.remove(e.getPlayer().getUniqueId());
+	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void rankSession(PlayerJoinEvent e){
 		try {
-			UUID uuid = e.getPlayer().getUniqueId();
-			Rank rank = Rank.valueOf(main.getConfig().getString("players." + uuid + ".rank"));
-			rankSession.put(uuid, rank);
-			Bukkit.getConsoleSender().sendMessage("Updated rank session for player " + e.getPlayer().getName() + ", rankSession:\n" + rankSession + "\nAdded rank " + rank);
+			Player player = e.getPlayer();
+			UUID uuid = player.getUniqueId();
+			String rankRaw = main.getConfig().getString("players." + uuid + ".rank");
+			if(rankRaw != null) {
+				Rank rank = Rank.valueOf(rankRaw);
+				rankSession.put(uuid, rank);
+				Bukkit.getLogger().log(Level.INFO, "Updated rank session for player " + player.getName() + " (" + uuid + ")" + "\nAdded rank " + rank);
+			}
 		}catch(IllegalArgumentException | NullPointerException ignored){}
 	}
 
@@ -479,7 +486,7 @@ public class Events implements Listener{
 						}
 					}.runTaskTimer(DesertMain.getInstance, 0, 2);
 					player.sendMessage(ChatColor.YELLOW + "You rise from the ashes!\n" + ChatColor.DARK_GRAY + "Consumed 1 Death Defiance");
-					ParticleEffect.FLAME.display(1, 10, 1, 0, 200, player.getLocation(), 15);
+					ParticleEffect.FLAME.display(1, 10, 1, 0.2f, 200, player.getLocation(), 15);
 					player.setHealth(player.getMaxHealth() * 0.2);
 					invincible.add(player.getUniqueId());
 					new BukkitRunnable() {

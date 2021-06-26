@@ -217,7 +217,7 @@ public class Events implements Listener {
 		if(event.getEntity() instanceof Player){
 			Player player = (Player) event.getEntity();
 			if (player.getHealth() - event.getDamage() < 0.1) {
-				Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
+				Location spawn = (Location) main.getConfig().get("server.spawn.lobby");
 				player.setHealth(player.getMaxHealth());
 				player.teleport(spawn);
 
@@ -279,7 +279,7 @@ public class Events implements Listener {
 								ex.printStackTrace();
 							}
 						}
-						Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
+						Location spawn = (Location) main.getConfig().get("server.spawn.lobby");
 						player.setHealth(player.getMaxHealth());
 
 						player.teleport(spawn);
@@ -338,7 +338,7 @@ public class Events implements Listener {
 //					event.setDamage(nbti.getDouble("DAMAGE"));
 //				}
 				if (player.getHealth() - event.getDamage() < 0.1) {
-					Location spawn = (Location) main.getConfig().get("server.lobbyspawn");
+					Location spawn = (Location) main.getConfig().get("server.spawn.lobby");
 					player.setHealth(player.getMaxHealth());
 					if(player.getFireTicks() > 0)
 						player.setFireTicks(0);
@@ -465,7 +465,7 @@ public class Events implements Listener {
 		try {
 
 
-				Location spawn = (Location) DesertMain.getInstance.getConfig().get("server.lobbyspawn");
+				Location spawn = (Location) DesertMain.getInstance.getConfig().get("server.spawn.lobby");
 				player.setHealth(player.getMaxHealth());
 
 				player.teleport(spawn);

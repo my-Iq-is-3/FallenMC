@@ -1,9 +1,11 @@
 package me.zach.DesertMC.Utils;
 
 import me.zach.DesertMC.DesertMain;
-import org.bukkit.Bukkit;
-import org.bukkit.Instrument;
+import org.bukkit.*;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import static org.bukkit.Note.natural;
@@ -36,6 +38,16 @@ public class MiscUtils {
                 player.playNote(player.getLocation(), Instrument.PIANO, natural(1, Tone.B));
             }
         }.runTaskLater(pl, 12);
+    }
+
+    public static Firework spawnFirework(Location location, int power, boolean flicker, boolean trail, FireworkEffect.Type type, Color... colors){
+        Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK);
+        FireworkMeta fireworkMeta = firework.getFireworkMeta();
+        FireworkEffect fireworkEffect = FireworkEffect.builder().with(type).flicker(flicker).trail(trail).build();
+        fireworkMeta.addEffect(fireworkEffect);
+        fireworkMeta.setPower(power);
+        firework.setFireworkMeta(fireworkMeta);
+        return firework;
     }
 
     public static String getOrdinalSuffix(int num){

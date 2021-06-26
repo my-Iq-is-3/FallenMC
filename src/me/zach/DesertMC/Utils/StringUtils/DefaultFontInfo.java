@@ -101,7 +101,8 @@ public enum DefaultFontInfo {
     PERIOD('.', 1),
     COMMA(',', 1),
     SPACE(' ', 3),
-    DEFAULT('a', 4);
+    DEFAULT('a', 4),
+    ARROW('➞', 5);
 
     private final char character;
     private final int length;

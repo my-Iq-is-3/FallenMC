@@ -137,7 +137,7 @@ public class EventsForScout implements Listener {
             int level = 0;
             Player damager = (Player) event.getDamager();
             Player damaged = (Player) event.getEntity();
-            ItemStack[] armor = PlayerUtils.getArmor(damaged);
+            ItemStack[] armor = damaged.getInventory().getArmorContents();
 
             for(ItemStack armorA : armor){
                 if(armorA != null){

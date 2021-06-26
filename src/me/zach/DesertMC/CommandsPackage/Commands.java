@@ -25,6 +25,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -57,12 +58,15 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player) {
-        	Player player = ((Player) sender).getPlayer();
+        	Player player = ((Player) sender);
         	Plugin mainpl = DesertMain.getInstance;
         	if(command.getName().equalsIgnoreCase("setspawn")) {
         		if(player.hasPermission("admin")){
-        			mainpl.getConfig().set("server.lobbyspawn", player.getLocation());
-        			player.sendMessage(ChatColor.BLUE + "Spawn > "+ ChatColor.DARK_GRAY + "Set the spawn for Lobby");
+        			String type;
+        			if(args.length == 0) type = "lobby";
+        			else type = args[0];
+        			mainpl.getConfig().set("server.spawn." + type, player.getLocation());
+        			player.sendMessage(Prefix.SERVER + ChatColor.GRAY.toString() + ": Set the spawn for " + StringUtil.capitilizeFirst(type));
         			mainpl.saveConfig();
         		}else{
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
@@ -209,7 +213,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         	if(command.getName().equalsIgnoreCase("hideplayer")){
         		if(player.hasPermission("admin")){
         			try{
-        				player.hidePlayer(Bukkit.getPlayerExact(args[0]));
+        				player.hidePlayer(Bukkit.getPlayer(args[0]));
         				player.sendMessage(ChatColor.GREEN + "Hid " + args[0] + " from your view.");
 					}catch (Exception e){
         				player.sendMessage(ChatColor.RED + "There was an error fetching that player.");
@@ -232,28 +236,28 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 			}
         	if(command.getName().equalsIgnoreCase("selecttitle")){
         		try{
-        			Prefix p = Prefix.valueOf(args[0].toUpperCase());
-					if(TitleUtils.setTitle(player, p)){
-						player.sendMessage(ChatColor.GREEN + "Prefix successfully set to \"" + p.toString() + ChatColor.GREEN + "\"");
-						return true;
-					}else{
-						if(player.hasPermission("admin")){
-							TitleUtils.addTitle(player, p);
-							TitleUtils.setTitle(player, p);
-							player.sendMessage(ChatColor.YELLOW + "You didn't have that title so I added it for you and selected it.");
+        			if(args.length != 0) {
+						Prefix p = Prefix.valueOf(args[0].toUpperCase());
+						if (TitleUtils.setTitle(player, p)) {
+							player.sendMessage(ChatColor.GREEN + "Prefix successfully set to \"" + p.toString() + ChatColor.GREEN + "\"");
 							return true;
-						}else player.sendMessage(ChatColor.RED + "Sorry, it seems you don't own that title.");
-
-						return false;
+						} else {
+							if (player.hasPermission("admin")) {
+								TitleUtils.addTitle(player, p);
+								TitleUtils.setTitle(player, p);
+								player.sendMessage(ChatColor.YELLOW + "You didn't have that title so I added it for you and selected it.");
+								return true;
+							} else player.sendMessage(ChatColor.RED + "Sorry, it seems you don't own that title.");
+							return true;
+						}
+					}else{
+						player.sendMessage(ChatColor.RED + "Usage: /title <titletoequip>");
+						return true;
 					}
 				}catch(Exception e){
         			if(e instanceof IllegalArgumentException){
         				player.sendMessage(ChatColor.RED + "It appears that title doesn't exist.");
-        				return false;
-        			}
-        			else if(e instanceof ArrayIndexOutOfBoundsException){
-        				player.sendMessage(ChatColor.RED + "Usage: /title <titletoequip>");
-        				return false;
+        				return true;
         			}else{
         				e.printStackTrace();
         				return false;
@@ -265,7 +269,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         	if(command.getName().equalsIgnoreCase("showplayer")){
 				if(player.hasPermission("admin")){
 					try{
-						player.showPlayer(Bukkit.getPlayerExact(args[0]));
+						player.showPlayer(Bukkit.getPlayer(args[0]));
 						player.sendMessage(ChatColor.GREEN + "Showed " + args[0]);
 					}catch (Exception e){
 						player.sendMessage(ChatColor.RED + "There was an error fetching that player.");

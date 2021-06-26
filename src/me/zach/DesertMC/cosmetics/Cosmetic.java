@@ -5,17 +5,14 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
-import me.zach.artifacts.gui.inv.ArtifactData;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftArmorStand;
 import org.bukkit.entity.*;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.util.Vector;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 
@@ -32,7 +29,7 @@ public enum Cosmetic implements CosmeticActivator{
                 @Override
                 public void run() {
                     if(arrow.isOnGround() || arrow.isDead()) cancel();
-                    else Cosmetic.arrowTrail(arrow, fast, ParticleEffect.VILLAGER_HAPPY);
+                    else Cosmetic.standardArrowTrail(arrow, fast, ParticleEffect.VILLAGER_HAPPY);
                 }
             }.runTaskTimerAsynchronously(DesertMain.getInstance, 0, 1);
             //trails.put(arrow.getUniqueId(), trail.getTaskId());
@@ -44,7 +41,7 @@ public enum Cosmetic implements CosmeticActivator{
                 @Override
                 public void run(){
                     if(arrow.isOnGround() || arrow.isDead()) cancel();
-                    else Cosmetic.arrowTrail(arrow, fast, ParticleEffect.FLAME);
+                    else Cosmetic.standardArrowTrail(arrow, fast, ParticleEffect.FLAME);
                 }
             }.runTaskTimerAsynchronously(DesertMain.getInstance, 0, 1);
             //trails.put(arrow.getUniqueId(), trail.getTaskId());
@@ -65,7 +62,7 @@ public enum Cosmetic implements CosmeticActivator{
                             color = 0;
                             pColor = noteColors.get(0);
                         }
-                        Cosmetic.arrowTrail(arrow, fast, ParticleEffect.NOTE, pColor);
+                        Cosmetic.standardArrowTrail(arrow, fast, ParticleEffect.NOTE, pColor);
                         if(arrow.getShooter() instanceof Player){
                             ((Player) arrow.getShooter()).playNote(arrow.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
                         }
@@ -81,7 +78,7 @@ public enum Cosmetic implements CosmeticActivator{
                 @Override
                 public void run(){
                     if(arrow.isOnGround() || arrow.isDead()) cancel();
-                    else Cosmetic.arrowTrail(arrow, fast, ParticleEffect.HEART);
+                    else Cosmetic.standardArrowTrail(arrow, fast, ParticleEffect.HEART);
                 }
             }.runTaskTimer(DesertMain.getInstance, 0, 1);
         }
@@ -100,7 +97,7 @@ public enum Cosmetic implements CosmeticActivator{
                             colorIndex = 0;
                             pColor = rColors.get(0);
                         }
-                        Cosmetic.arrowTrail(arrow, fast, ParticleEffect.REDSTONE, pColor);
+                        Cosmetic.standardArrowTrail(arrow, fast, ParticleEffect.REDSTONE, pColor);
                         colorIndex++;
                     }
                 }
@@ -128,7 +125,7 @@ public enum Cosmetic implements CosmeticActivator{
                 @Override
                 public void run() {
                     if(arrow.isDead() || arrow.isOnGround()) cancel();
-                    else Cosmetic.arrowTrail(arrow, fast, ParticleEffect.DRIP_WATER);
+                    else Cosmetic.standardArrowTrail(arrow, fast, ParticleEffect.DRIP_WATER);
                 }
             }.runTaskTimerAsynchronously(pl, 0, 1);
         }
@@ -139,33 +136,20 @@ public enum Cosmetic implements CosmeticActivator{
                 @Override
                 public void run() {
                     if(arrow.isDead() || arrow.isOnGround()) cancel();
-                    else Cosmetic.arrowTrail(arrow, fast, ParticleEffect.DRIP_LAVA);
+                    else Cosmetic.standardArrowTrail(arrow, fast, ParticleEffect.DRIP_LAVA);
                 }
             }.runTaskTimerAsynchronously(pl, 0, 1);
         }
     },
     EMERALD_DESTRUCTION("Emerald Destruction", Material.EMERALD_BLOCK, ChatColor.YELLOW + "Eliminate your foes with flair, and all sorts of stylish emerald things popping out of them.", CosmeticType.KILL_EFFECT, ChatColor.WHITE + "Unlocked with the purchase of " + ChatColor.GREEN + "SUPPORTER" + ChatColor.WHITE + " rank"){
         public void activateKill(Player player){
-            Location location = player.getLocation();
-            ItemStack emerald = new ItemStack(Material.EMERALD);
-            NBTItem nbt = new NBTItem(emerald);
-            NBTCompound customAttributes = nbt.addCompound("CustomAttributes");
-            customAttributes.setBoolean("NO_PICKUP", true);
-            emerald = nbt.getItem();
-
-            ItemStack emeraldBlock = emerald.clone();
-            emeraldBlock.setType(Material.EMERALD_BLOCK);
-            int j = 0;
-            for(int i = 0; i<10; i++){
-                location.getWorld().dropItemNaturally(location, j == 0 ? emeraldBlock : emerald);
-                j = Math.abs(j) - 1; //lol
-            }
+            standardKillEffect(player.getLocation(), 10, Material.EMERALD, Material.EMERALD_BLOCK);
         }
     };
 
 
 
-    private static Plugin pl = DesertMain.getInstance;
+    private static final Plugin pl = DesertMain.getInstance;
 
     public final String displayName;
     public final ItemStack icon;
@@ -239,7 +223,7 @@ public enum Cosmetic implements CosmeticActivator{
 
 
     static class CosmeticActivationException extends IllegalArgumentException{
-        private CosmeticActivationException(){this("Error activating cosmetic");}
+        CosmeticActivationException(){this("Error activating cosmetic");}
         CosmeticActivationException(String message){super(message);}
     }
 
@@ -298,7 +282,7 @@ public enum Cosmetic implements CosmeticActivator{
         return null;
     }
 
-    private static void arrowTrail(Arrow arrow, boolean fast, ParticleEffect particle, ParticleEffect.ParticleColor color){
+    private static void standardArrowTrail(Arrow arrow, boolean fast, ParticleEffect particle, ParticleEffect.ParticleColor color){
         if(!fast){
             particle.display(0, 0, 0, 0, 1, arrow.getLocation());
         }else{
@@ -318,8 +302,36 @@ public enum Cosmetic implements CosmeticActivator{
         }
     }
 
-    private static void arrowTrail(Arrow arrow, boolean fast, ParticleEffect particle){
-        arrowTrail(arrow, fast, particle, null);
+    private static void standardArrowTrail(Arrow arrow, boolean fast, ParticleEffect particle){
+        standardArrowTrail(arrow, fast, particle, null);
+    }
+
+    private static void standardKillEffect(Location location, int amount, Material... materials){
+        ItemStack base = new ItemStack(materials[0]);
+        NBTItem nbt = new NBTItem(base);
+        NBTCompound customAttributes = nbt.addCompound("CustomAttributes");
+        customAttributes.setBoolean("NO_PICKUP", true);
+        base = nbt.getItem();
+        ItemStack[] itemStacks = new ItemStack[materials.length];
+
+        for(int i = 1; i< materials.length; i++) {
+            ItemStack itemStack = base.clone();
+            itemStack.setType(Material.EMERALD_BLOCK);
+            itemStacks[i] = itemStack;
+        }
+
+        int j = 0;
+        Item[] items = new Item[amount];
+        for(int i = 0; i<amount; i++){
+            Item dropped = location.getWorld().dropItemNaturally(location, itemStacks[j]);
+            items[i] = dropped;
+            if(j + 1 < itemStacks.length) j++;
+            else j = 0;
+        }
+
+        for(Item item : items){
+            item.remove();
+        }
     }
 
     public String toString(){

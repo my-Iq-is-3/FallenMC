@@ -10,6 +10,7 @@ import java.util.List;
 public class StringUtil{
     public static List<String> wrapLore(String string){
         StringBuilder sb = new StringBuilder(string);
+
         int i = 0;
         while(i + 35 < sb.length() &&(i = sb.lastIndexOf(" ", i + 35)) != -1){
             sb.replace(i, i + 1, "\n");
@@ -17,8 +18,8 @@ public class StringUtil{
         return Arrays.asList(sb.toString().split("\n"));
     }
 
-    private final static int CENTER_PX = 154;
-    private static final int MAX_CHAT_LENGTH = 310;
+    private static final int CENTER_PX = 154;
+    private static final int MAX_CHAT_LENGTH = 290;
 
     /**
      * <p>Spigot Thread Link: https://www.spigotmc.org/threads/free-code-sending-perfectly-centered-chat-message.95872/</p>
@@ -86,6 +87,14 @@ public class StringUtil{
     public static void sendUncenteredWrappedMessage(Player player, ChatWrapper wrapper, String text){
         player.sendMessage(getUncenteredWrappedMessage(wrapper, text));
     }
+
+    public static String capitilizeFirst(String str){
+        StringBuilder builder = new StringBuilder(str);
+        char upperChar = builder.substring(0, 1).toUpperCase().charAt(0);
+        builder.setCharAt(0, upperChar);
+        return builder.toString();
+    }
+
 
     public static class ChatWrapper {
         public static final ChatWrapper HORIZONTAL_LINE = new ChatWrapper('-', ChatColor.GREEN, true, false);

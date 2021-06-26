@@ -5,24 +5,19 @@ import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
+import me.zach.databank.saver.Key;
+import me.zach.databank.saver.PlayerData;
+import me.zach.databank.saver.SaveManager;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import me.zach.databank.DB;
-import me.zach.databank.Databank;
-import me.zach.databank.saver.Key;
-import me.zach.databank.saver.PlayerData;
-import me.zach.databank.saver.SaveManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Set;
 import java.util.UUID;
 
 import static me.zach.DesertMC.DesertMain.*;
@@ -109,7 +104,10 @@ public class ConfigUtils {
 		data.setClassXPR(playerclass,100);
 	}
 
-
+	public static Location getSpawn(String type){
+		Object spawn = main.getConfig().get("server.spawn." + type);
+		return spawn instanceof Location ? (Location) spawn : null;
+	}
 
 	private static void cexp(Player player, String classtoaddto, int amount){
 
