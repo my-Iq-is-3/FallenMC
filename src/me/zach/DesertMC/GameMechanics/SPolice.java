@@ -23,7 +23,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.map.MapView;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -119,7 +118,7 @@ public class SPolice extends NPCSuper implements Listener {
                 e.setCancelled(true);
                 if(e.getClick().equals(ClickType.LEFT) || e.getClick().equals(ClickType.RIGHT)) {
                     try {
-                        if (NBTUtil.getCustomAttr(e.getCurrentItem(), "ID").equals("TOKEN")) {
+                        if (NBTUtil.getCustomAttrString(e.getCurrentItem(), "ID").equals("TOKEN")) {
                             if (e.getClickedInventory().getName().equals("Recover Seized Items")) {
                                 p.getInventory().addItem(e.getCurrentItem());
                                 e.getClickedInventory().setItem(4, new ItemStack(Material.AIR));

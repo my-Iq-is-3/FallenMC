@@ -2,7 +2,6 @@ package me.zach.DesertMC.cosmetics;
 
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
 public interface CosmeticActivator{
 

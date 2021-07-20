@@ -5,7 +5,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.inventory.ItemStack;
 
 public class NBTUtil {
-    public static String getCustomAttr(ItemStack item, String key){
+    public static String getCustomAttrString(ItemStack item, String key){
         if(item == null) return "null";
         NBTItem nbt = new NBTItem(item);
         NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
@@ -16,10 +16,18 @@ public class NBTUtil {
     }
 
     public static boolean hasCustomKey(ItemStack item, String key){
-        if(item == null ) return false;
+        if(item == null) return false;
         NBTItem nbt = new NBTItem(item);
         NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
         if(customAttributes == null) return false;
         return customAttributes.hasKey(key);
+    }
+
+    public static <T> T getCustomAttr(ItemStack item, String key, Class<T> type){
+        if(item == null) return null;
+        NBTItem nbt = new NBTItem(item);
+        NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
+        if(customAttributes == null) return null;
+        return customAttributes.getObject(key, type);
     }
 }

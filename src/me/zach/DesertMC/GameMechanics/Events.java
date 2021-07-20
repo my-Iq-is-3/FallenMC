@@ -31,6 +31,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -74,6 +75,12 @@ public class Events implements Listener{
 //		}.runTaskTimer(main, 10, 77);
 //	}
 
+
+	@EventHandler
+	public void cancelBlockFlow(BlockFromToEvent event){
+		event.setCancelled(true);
+	}
+
 	@EventHandler
 	public void arrowShoot(ProjectileLaunchEvent event){
 		if(event.getEntity().getShooter() instanceof Player && event.getEntity() instanceof Arrow){
@@ -81,7 +88,6 @@ public class Events implements Listener{
 			Player player = (Player) event.getEntity().getShooter();
 			arrowArray.put(arrow, player.getInventory().getItemInHand());
 			ArtifactEvents.shootEvent(event);
-
 			Cosmetic cosmetic = Cosmetic.getSelected(player, Cosmetic.CosmeticType.ARROW_TRAIL);
 			if(cosmetic != null) cosmetic.activateArrow(arrow, new ArtifactData(player).bowS());
 		}
@@ -349,7 +355,7 @@ public class Events implements Listener{
 			int randomCompare = 4;
 			if (random.nextInt(randomCompare) == 0){
 				try {
-					if(NBTUtil.getCustomAttr(killer.getInventory().getChestplate(), "ID").equals("LUCKY_CHESTPLATE"))
+					if(NBTUtil.getCustomAttrString(killer.getInventory().getChestplate(), "ID").equals("LUCKY_CHESTPLATE"))
 						soulsgained = 2;
 					else{
 						soulsgained = 1;
@@ -468,7 +474,7 @@ public class Events implements Listener{
 		AtomicBoolean dd = new AtomicBoolean(false);
 		player.getInventory().forEach(item -> {
 			if(!dd.get()){
-				if(NBTUtil.getCustomAttr(item, "ID").equals("DEATH_DEFIANCE")) {
+				if(NBTUtil.getCustomAttrString(item, "ID").equals("DEATH_DEFIANCE")) {
 					dd.set(true);
 					Location location = player.getLocation();
 					player.getInventory().remove(item);
@@ -597,7 +603,7 @@ public class Events implements Listener{
 	public void snackEat(PlayerItemConsumeEvent event){
 		Player player = event.getPlayer();
 		try {
-			if (NBTUtil.getCustomAttr(event.getItem(), "ID").equals("LAVA_CAKE")){
+			if (NBTUtil.getCustomAttrString(event.getItem(), "ID").equals("LAVA_CAKE")){
 				if(ConfigUtils.findClass(player).equals("corrupter") && ConfigUtils.getLevel("corrupter", player) > 2){
 					if(!DesertMain.snack.containsKey(player.getUniqueId())) {
 						player.sendMessage(ChatColor.GREEN + "Powered up your next shot for 3 extra damage!");
@@ -614,7 +620,7 @@ public class Events implements Listener{
 			}
 		}catch(NullPointerException ignored){}
 		try {
-			if (NBTUtil.getCustomAttr(event.getItem(), "ID").equals("PROTEIN_SNACK")){
+			if (NBTUtil.getCustomAttrString(event.getItem(), "ID").equals("PROTEIN_SNACK")){
 				if(ConfigUtils.findClass(player).equals("tank") && ConfigUtils.getLevel("tank", player) > 2){
 					if(!DesertMain.snack.containsKey(player.getUniqueId())) {
 						player.sendMessage(ChatColor.GREEN + "Powered up your next shot for +20% knockback!");
@@ -631,7 +637,7 @@ public class Events implements Listener{
 			}
 		}catch(NullPointerException ignored){}
 		try {
-			if (NBTUtil.getCustomAttr(event.getItem(), "ID").equals("MAGIC_SNACK")){
+			if (NBTUtil.getCustomAttrString(event.getItem(), "ID").equals("MAGIC_SNACK")){
 				if(ConfigUtils.findClass(player).equals("wizard") && ConfigUtils.getLevel("wizard", player) > 2){
 					if(!DesertMain.snack.containsKey(player.getUniqueId())) {
 						player.sendMessage(ChatColor.GREEN + "Powered up your next shot to give your opponent speed 1 and weakness 1 for 2 seconds!");
@@ -648,7 +654,7 @@ public class Events implements Listener{
 			}
 		}catch(NullPointerException ignored){}
 		try {
-			if (NBTUtil.getCustomAttr(event.getItem(), "ID").equals("ENERGY_SNACK")){
+			if (NBTUtil.getCustomAttrString(event.getItem(), "ID").equals("ENERGY_SNACK")){
 				if(ConfigUtils.findClass(player).equals("scout") && ConfigUtils.getLevel("scout", player) > 2){
 					if(!DesertMain.snack.containsKey(player.getUniqueId())) {
 						player.sendMessage(ChatColor.GREEN + "Powered up your next shot grant you you speed 2 for 2 seconds!");

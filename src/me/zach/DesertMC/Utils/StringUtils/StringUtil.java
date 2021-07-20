@@ -19,7 +19,7 @@ public class StringUtil{
     }
 
     private static final int CENTER_PX = 154;
-    private static final int MAX_CHAT_LENGTH = 290;
+    private static final int MAX_CHAT_LENGTH = 270;
 
     /**
      * <p>Spigot Thread Link: https://www.spigotmc.org/threads/free-code-sending-perfectly-centered-chat-message.95872/</p>
@@ -94,7 +94,6 @@ public class StringUtil{
         builder.setCharAt(0, upperChar);
         return builder.toString();
     }
-
 
     public static class ChatWrapper {
         public static final ChatWrapper HORIZONTAL_LINE = new ChatWrapper('-', ChatColor.GREEN, true, false);

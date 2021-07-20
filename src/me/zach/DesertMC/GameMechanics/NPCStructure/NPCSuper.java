@@ -44,11 +44,9 @@ public abstract class NPCSuper implements Listener {
 
     @EventHandler
     public final void pickupOnInv(PlayerPickupItemEvent e){
-        try {
-            if (cantClick.contains(e.getPlayer().getUniqueId())) {
-                e.setCancelled(true);
-            }
-        }catch(NullPointerException ignored){ }
+        if(cantClick.contains(e.getPlayer().getUniqueId())) {
+            e.setCancelled(true);
+        }
     }
 
     @EventHandler
@@ -83,7 +81,7 @@ public abstract class NPCSuper implements Listener {
     @EventHandler
     public final void NPCClick(NPCInteractEvent event){
         try {
-            if (event.getNPC().getText().get(0).equals(name) && !cantClick.contains(event.getWhoClicked().getUniqueId())){
+            if (event.getNPC().getUniqueId().equals(name) && !cantClick.contains(event.getWhoClicked().getUniqueId())){
                 Bukkit.getConsoleSender().sendMessage("NPC click registered. Player: " + event.getWhoClicked().getName() + ", NPC: " + name);
                 npcMessage(event.getWhoClicked(), clickMsg);
                 event.getWhoClicked().playSound(event.getWhoClicked().getLocation(), clickSnd, 10, 1);

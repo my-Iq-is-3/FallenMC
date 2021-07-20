@@ -1,9 +1,11 @@
 package me.zach.DesertMC.cosmetics;
 
 import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
+import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -15,6 +17,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public enum Cosmetic implements CosmeticActivator{
     EXPLOSION("Explosion Kill Effect", Material.TNT,  ChatColor.YELLOW + "Explode your enemies for the ultimate revenge!", CosmeticType.KILL_EFFECT){
@@ -110,7 +113,7 @@ public enum Cosmetic implements CosmeticActivator{
             ArmorStand stand = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
             stand.setVisible(true);
             stand.setMarker(true);
-            stand.setCustomName(deathMessages.get(new Random().nextInt(deathMessages.size())));
+            stand.setCustomName(deathMessages.get(ThreadLocalRandom.current().nextInt(deathMessages.size())));
             new BukkitRunnable(){
                 @Override
                 public void run() {
@@ -144,6 +147,23 @@ public enum Cosmetic implements CosmeticActivator{
     EMERALD_DESTRUCTION("Emerald Destruction", Material.EMERALD_BLOCK, ChatColor.YELLOW + "Eliminate your foes with flair, and all sorts of stylish emerald things popping out of them.", CosmeticType.KILL_EFFECT, ChatColor.WHITE + "Unlocked with the purchase of " + ChatColor.GREEN + "SUPPORTER" + ChatColor.WHITE + " rank"){
         public void activateKill(Player player){
             standardKillEffect(player.getLocation(), 10, Material.EMERALD, Material.EMERALD_BLOCK);
+        }
+    },
+    EVERYTHING("Diverse Destruction", Material.STAINED_CLAY, ChatColor.YELLOW + "When you defeat an enemy, everything comes out of them...?", CosmeticType.KILL_EFFECT){
+        public void activateKill(Player player) {
+            List<Material> materialsList = new ArrayList<>(Arrays.asList(Material.values()));
+            Collections.shuffle(materialsList);
+            standardKillEffect(player.getLocation(), 15, materialsList.toArray(new Material[0]));
+        }
+    },
+    SKULL_DESTRUCTION("Skull Destruction", Material.GHAST_TEAR, "As if slaying them wasn't enough, this kill effect lifts your enemy's skull from where they previously stood and pulls it into the air, only to destroy it afterward. Talk about overkill, jeez.", CosmeticType.KILL_EFFECT){
+        public void activateKill(Player player){
+            ArmorStand armorStand = player.getWorld().spawn(player.getLocation(), ArmorStand.class);
+            armorStand.setVisible(false);
+            new NBTEntity(armorStand).setBoolean("Invulnerable", true);
+            armorStand.setCustomName(RankEvents.rankSession.get(player.getUniqueId()).c + player.getName());
+            armorStand.setGravity(false);
+            armorStand.setCustomNameVisible(true);
         }
     };
 
@@ -269,7 +289,7 @@ public enum Cosmetic implements CosmeticActivator{
         return pl.getConfig().getStringList("players." + player.getUniqueId() + ".cosmetics.acquired").contains(name());
     }
 
-    public final static Cosmetic getSelected(Player player, CosmeticType type){
+    public static Cosmetic getSelected(Player player, CosmeticType type){
         String selectedRaw = pl.getConfig().getString("players." + player.getUniqueId() + ".cosmetics." + type.name() + ".selected");
         if(selectedRaw.equals("NONE")) return null;
         else return Cosmetic.valueOf(selectedRaw);
@@ -312,11 +332,11 @@ public enum Cosmetic implements CosmeticActivator{
         NBTCompound customAttributes = nbt.addCompound("CustomAttributes");
         customAttributes.setBoolean("NO_PICKUP", true);
         base = nbt.getItem();
-        ItemStack[] itemStacks = new ItemStack[materials.length];
+        ItemStack[] itemStacks = new ItemStack[amount];
 
-        for(int i = 1; i< materials.length; i++) {
+        for(int i = 1; i<materials.length; i++) {
             ItemStack itemStack = base.clone();
-            itemStack.setType(Material.EMERALD_BLOCK);
+            itemStack.setType(materials[i]);
             itemStacks[i] = itemStack;
         }
 
@@ -328,10 +348,11 @@ public enum Cosmetic implements CosmeticActivator{
             if(j + 1 < itemStacks.length) j++;
             else j = 0;
         }
-
-        for(Item item : items){
-            item.remove();
-        }
+        Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, () -> {
+            for(Item item : items){
+                item.remove();
+            }
+        }, 40);
     }
 
     public String toString(){

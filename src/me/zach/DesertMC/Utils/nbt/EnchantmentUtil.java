@@ -13,7 +13,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 
 public class EnchantmentUtil {
-
     public static EnchantmentUtil getInstance(){
         return new EnchantmentUtil();
     }
@@ -72,11 +71,11 @@ public class EnchantmentUtil {
 
                 }
 
-            }else{
+            }else {
                 NBTCompound ench = nbti.getCompound("CustomAttributes").addCompound("enchantments"); // create because it doesn't exist
 //              yet
 
-                ench.setInteger(enchantment,lvl); // set the enchantment
+                ench.setInteger(enchantment, lvl); // set the enchantment
 
 
                 ItemStack ritem = nbti.getItem(); // get the finished nbt item
@@ -90,16 +89,12 @@ public class EnchantmentUtil {
                 lore.add(ItemCommand.enchs.get(enchantment) + " " + lvl);
 
 
-
                 ritemMeta.setLore(lore); // set all the stuff
                 ritem.setItemMeta(ritemMeta);
 
 
                 return ritem;
             }
-
-
-
         }else{
 
             return null;
