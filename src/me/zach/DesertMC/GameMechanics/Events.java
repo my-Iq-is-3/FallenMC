@@ -24,6 +24,7 @@ import me.zach.DesertMC.cosmetics.Cosmetic;
 import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.artifacts.gui.inv.ArtifactData;
 import me.zach.artifacts.gui.inv.items.CreeperTrove;
+import me.zach.databank.saver.SaveManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -84,7 +85,7 @@ public class Events implements Listener{
 			ArtifactEvents.shootEvent(event);
 
 			Cosmetic cosmetic = Cosmetic.getSelected(player, Cosmetic.CosmeticType.ARROW_TRAIL);
-			if(cosmetic != null) cosmetic.activateArrow(arrow, new ArtifactData(player).bowS());
+			if(cosmetic != null) cosmetic.activateArrow(arrow, SaveManager.getData(player).getAD().bowS());
 		}
 	}
 
@@ -341,14 +342,14 @@ public class Events implements Listener{
 
 	public static void executeKill(Player player, Player killer) {
 		try {
-			callOnKill(player, killer);
-			EventsForWizard.INSTANCE.wizardt1(killer);
 			Location spawn = (Location) DesertMain.getInstance.getConfig().get("server.lobbyspawn");
 			player.setHealth(player.getMaxHealth());
-
 			player.teleport(spawn);
 			if (player.getFireTicks() > 0)
 				player.setFireTicks(0);
+			ArtifactEvents.kill(player, killer);
+			callOnKill(player, killer);
+
 
 
 			double random = (Math.random() * 5) + 1;
@@ -523,14 +524,15 @@ public class Events implements Listener{
 	public void forScoreboard(PlayerJoinEvent e) {
 		final Player p = e.getPlayer();
 		new BukkitRunnable() {
-
 			@Override
 			public void run() {
-
+				if(!p.isOnline()) {
+					this.cancel();
+					return;
+				}
 				FScoreboardManager.initialize(p);
 			}
-
-		}.runTaskTimer(DesertMain.getPlugin(DesertMain.class), 0, 5);
+		}.runTaskTimer(DesertMain.getPlugin(DesertMain.class), 0, 20);
 	}
 	@EventHandler
 	public void forKs(PlayerJoinEvent event){
