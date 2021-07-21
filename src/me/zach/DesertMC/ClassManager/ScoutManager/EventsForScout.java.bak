@@ -55,7 +55,7 @@ public class EventsForScout {
             Player damager = (Player) event.getDamager();
             LivingEntity damaged = (LivingEntity) event.getEntity();
             if(ConfigUtils.getLevel("scout",damager) > 6 && ConfigUtils.findClass(damager).equals("scout")){
-                if(NBTUtil.INSTANCE.getCustomAttr(damager.getInventory().getItemInHand(),"ID").equals("SCOUT_DAGGER")){
+                if(NBTUtil.getCustomAttr(damager.getInventory().getItemInHand(),"ID").equals("SCOUT_DAGGER")){
                     if(damager.getLocation().distance(damaged.getLocation()) > 2){
                         event.setCancelled(true);
                     }

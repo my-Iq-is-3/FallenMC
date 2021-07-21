@@ -70,7 +70,7 @@ public class FScoreboardManager {
 
 
 			//ip
-			Score ip = objective.getScore(ChatColor.YELLOW + (Bukkit.getServer().getIp().equals("") ? "localhost" : Bukkit.getServer().getIp()));
+			Score ip = objective.getScore(ChatColor.YELLOW + "play.fallenmc.xyz");
 
 			//blanks
 			Score blank1 = objective.getScore("   ");

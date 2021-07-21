@@ -10,21 +10,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import sun.security.krb5.Config;
 
 public class EventsForTank implements Listener {
     public static EventsForTank getInstance(){
@@ -121,7 +116,7 @@ public class EventsForTank implements Listener {
             Player damager = (Player) e.getDamager();
             Player damaged = (Player) e.getEntity();
             try{
-                if(!NBTUtil.INSTANCE.getCustomAttr(damager.getItemInHand(), "ID").equals("BLUDGEON")) return;
+                if(!NBTUtil.getCustomAttrString(damager.getItemInHand(), "ID").equals("BLUDGEON")) return;
             }catch(NullPointerException ignored){}
             int extradamage = 0;
             if(damager.getFallDistance() > 0.0f) {
@@ -143,7 +138,7 @@ public class EventsForTank implements Listener {
         if(e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
             Player clicker = e.getPlayer();
             try{
-                if(!NBTUtil.INSTANCE.getCustomAttr(clicker.getItemInHand(), "ID").equals("STOMPER")) return;
+                if(!NBTUtil.getCustomAttrString(clicker.getItemInHand(), "ID").equals("STOMPER")) return;
             }catch(NullPointerException ignored){}
 
             if (ConfigUtils.getLevel("tank", clicker) > 6 && ConfigUtils.findClass(clicker).equals("tank") && !DesertMain.stomperCD.contains(clicker.getUniqueId())) {

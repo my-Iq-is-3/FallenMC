@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.UUID;
 
+
 public class PlayerUtils {
     public static HashMap<UUID,Integer> fighting = new HashMap<>();
 
@@ -27,12 +28,15 @@ public class PlayerUtils {
         if(!fighting.containsKey(p.getUniqueId())) return true;
         else return fighting.get(p.getUniqueId()) == 0;
     }
-
+    /**
+     * @deprecated because <code>Player#getArmorContents()</code> can be used to retrieve a player's armor in the form of an <code>ItemStack[]</code>.
+     */
+    @Deprecated
     public static ItemStack[] getArmor(Player player){
-        ItemStack helmet = null;
-        ItemStack chest = null;
-        ItemStack legs = null;
-        ItemStack boots = null;
+        ItemStack helmet;
+        ItemStack chest;
+        ItemStack legs;
+        ItemStack boots;
         helmet = player.getInventory().getHelmet();
         chest = player.getInventory().getChestplate();
         legs = player.getInventory().getLeggings();
@@ -51,15 +55,14 @@ public class PlayerUtils {
     public static void trueDamage(Player victim, double dmg, Player damager){
         ArtifactData vad = SaveManager.getData(victim).getAD();;
         if(ArtifactUtils.contains(vad.getSelected(), (byte) 10)){
-            double dmgsub = 15*vad.rarities()[9].mult*5; // 30
-            dmgsub/=100; // 0.3
-            dmgsub++; // 1.3
-            dmg/=dmgsub; // if its 10 its ~7
+            double dmgsub = 15 * vad.rarities()[9].mult * 5; // 30
+            dmgsub /= 100; // 0.3
+            dmg -= dmgsub * dmg; // if its 10 its ~7
         }
         if(victim.getHealth() <= dmg){
-            victim.damage(999,damager);
+            victim.damage(999, damager);
         }else{
-            victim.damage(0,damager);
+            victim.damage(0, damager);
             victim.setHealth(victim.getHealth()-dmg);
         }
     }

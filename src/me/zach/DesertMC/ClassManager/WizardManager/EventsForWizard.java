@@ -24,8 +24,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 
-import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class EventsForWizard implements Listener {
@@ -60,7 +60,7 @@ public class EventsForWizard implements Listener {
 
                         if (player.getInventory().getHelmet() != null) {
                             NBTItem helmet = new NBTItem(player.getInventory().getHelmet());
-                            if (NBTUtil.INSTANCE.getCustomAttr(helmet.getItem(), "ID").equalsIgnoreCase("SCOUT_GOGGLES")) {
+                            if (NBTUtil.getCustomAttrString(helmet.getItem(), "ID").equalsIgnoreCase("SCOUT_GOGGLES")) {
                                 player.hidePlayer(killer);
                             }
                         } else {
@@ -87,11 +87,11 @@ public class EventsForWizard implements Listener {
 //  MW Hit
     public void magicWandHit(Player damaged, Player damager) {
         if (!damager.getInventory().getItemInHand().getType().equals(Material.AIR)) {
-            if (NBTUtil.INSTANCE.getCustomAttr(damager.getInventory().getItemInHand(), "ID").equals("MAGIC_WAND")) {
+            if (NBTUtil.getCustomAttrString(damager.getInventory().getItemInHand(), "ID").equals("MAGIC_WAND")) {
 
                 ItemStack boots = damaged.getInventory().getBoots();
                 if(boots != null){
-                    if(NBTUtil.INSTANCE.getCustomAttr(boots,"ID").equals("STUBBORN_BOOTS") && ConfigUtils.getLevel("tank", damaged) > 5){
+                    if(NBTUtil.getCustomAttrString(boots,"ID").equals("STUBBORN_BOOTS") && ConfigUtils.getLevel("tank", damaged) > 5){
                         return;
                     }
                 }
@@ -110,7 +110,7 @@ public class EventsForWizard implements Listener {
                 PotionEffect blind = new PotionEffect(PotionEffectType.BLINDNESS, 100,0);
                 PotionEffect wither = new PotionEffect(PotionEffectType.WITHER, 50,0);
 
-                Random rgen = new Random();
+                Random rgen = ThreadLocalRandom.current();
 
                 PotionEffect[] allpotionEffects = {strength,res,speed,instantheal,instdmg,slow,weakness,poison,blind,wither};
                 PotionEffect[] badpoteff = {instdmg,slow,weakness,poison,blind,wither};

@@ -1,20 +1,16 @@
 package me.zach.DesertMC.GameMechanics;
 
-import com.sun.org.apache.bcel.internal.generic.ArrayInstruction;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
-import jdk.nashorn.internal.runtime.arrays.ArrayIndex;
 import me.zach.DesertMC.DesertMain;
-import me.zach.DesertMC.GameMechanics.NPCStructure.NPCDataPasser;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import net.jitse.npclib.api.events.NPCInteractEvent;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftInventory;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -26,13 +22,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import static org.bukkit.Note.Tone;
-
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import static org.bukkit.Note.Tone;
+
 public class SoulShop extends NPCSuper implements Listener{
+    public static final int SKIN_ID = 1646375186;
     static Plugin pl = DesertMain.getInstance;
     static ItemStack clear = new ItemStack(Material.GLASS);
     static ItemStack reduce = new ItemStack(Material.GOLD_NUGGET);
@@ -44,7 +41,7 @@ public class SoulShop extends NPCSuper implements Listener{
     static ItemMeta decreaseMeta = decrease.getItemMeta();
     static Set<UUID> dontGiveItemOnClose = new HashSet<>();
     static{
-        //creating some unchanging items statically to save on processing power and ram
+        //creating some unchanging items statically to save on processing power
         ItemMeta clearMeta = clear.getItemMeta();
         paneMeta.setDisplayName(" ");
         pane.setItemMeta(paneMeta);
@@ -79,25 +76,10 @@ public class SoulShop extends NPCSuper implements Listener{
     public static SoulShop INSTANCE = new SoulShop();
     public SoulShop(){
         super(ChatColor.LIGHT_PURPLE + "Soul Broker",
-                1646375186,
+                SKIN_ID,
                 ChatColor.WHITE + "I can wipe an items weight, or decrease its Weight Per Hit, but only in exchange for a few souls.",
                 Sound.WITHER_IDLE,
                 90,
-                event -> {
-                    Inventory startInv = pl.getServer().createInventory(null, 36, "Soul Shop");
-                    for(int i = 0; i<36; i++){
-                        startInv.setItem(i, pane);
-                    }
-                    startInv.clear(13);
-                    ItemStack soulsItem = new ItemStack(Material.INK_SACK, 1, (short) 9);
-                    ItemMeta soulsMeta = soulsItem.getItemMeta();
-                    soulsMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + pl.getConfig().getInt("players." + event.getWhoClicked().getUniqueId() + ".souls") + " Soul(s)");
-                    soulsItem.setItemMeta(soulsMeta);
-                    startInv.setItem(15, reduce);
-                    startInv.setItem(35, soulsItem);
-                    startInv.setItem(11, clear);
-                    return startInv;
-                },
                 ChatColor.GRAY + "Click me to barter your souls");
     }
 
@@ -341,14 +323,12 @@ public class SoulShop extends NPCSuper implements Listener{
                         new BukkitRunnable() {
                             int i = 0;
                             public void run() {
-                                try {
+                                if(i < notes.size()) {
                                     for (Note note : notes.get(i)) {
                                         p.playNote(p.getLocation(), Instrument.PIANO, note);
                                     }
                                     i++;
-                                }catch(ArrayIndexOutOfBoundsException ex){
-                                    cancel();
-                                }
+                                }else cancel();
                             }
                         }.runTaskTimer(pl, 0, 3);
                     } else {
@@ -438,17 +418,14 @@ public class SoulShop extends NPCSuper implements Listener{
         //making a new NBTItem, and throwing a custom NullPointerException if the required values don't exist
         NBTItem weaponNBT = new NBTItem(weapon);
         NBTCompound weaponCompound;
-        try{
-            //retrieving the weapon's CustomAttributes data
-            weaponCompound = weaponNBT.getCompound("CustomAttributes");
-            //transitioning to the catch statement if the compound doesn't have the WEIGHT key
-            if(!weaponCompound.hasKey("WEIGHT")) throw new NullPointerException("clearWeight transitional to catch statement, if you are seeing this then something is wrong!");
-        }catch(NullPointerException requiredValuesAbsent){
-            //throwing a custom NullPointerException if the required values are absent
+        //retrieving the weapon's CustomAttributes data
+        weaponCompound = weaponNBT.getCompound("CustomAttributes");
+        //transitioning to the catch statement if the compound doesn't have the WEIGHT key
+        if(!weaponCompound.hasKey("WEIGHT"))
             throw new NullPointerException(ChatColor.RED + "Item passed through clearWeight method with required NBT values (CustomAttributes, WEIGHT) absent.");
-        }
-        //setting the "WEIGHT" NBT value to 0 and
-        weaponCompound.setInteger("WEIGHT", 0);
+        //setting the "WEIGHT" NBT value to 0
+        weaponCompound.setDouble("WEIGHT", 0.00);
+        //returning the clean weapon
         return weaponNBT.getItem();
     }
 
@@ -470,4 +447,21 @@ public class SoulShop extends NPCSuper implements Listener{
         }
     }
 
+    @Override
+    public Inventory getStartInventory(NPCInteractEvent event) {
+        Inventory startInv = pl.getServer().createInventory(null, 36, "Soul Shop");
+        for(int i = 0; i<36; i++){
+            startInv.setItem(i, pane);
+        }
+        startInv.clear(13);
+        ItemStack soulsItem = new ItemStack(Material.INK_SACK, 1, (short) 9);
+        ItemMeta soulsMeta = soulsItem.getItemMeta();
+        int souls = ConfigUtils.getSouls(event.getWhoClicked());
+        soulsMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + souls + (souls == 1 ? " Souls" : " Soul"));
+        soulsItem.setItemMeta(soulsMeta);
+        startInv.setItem(15, reduce);
+        startInv.setItem(35, soulsItem);
+        startInv.setItem(11, clear);
+        return startInv;
+    }
 }

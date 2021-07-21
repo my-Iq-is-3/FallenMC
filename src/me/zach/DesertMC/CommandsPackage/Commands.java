@@ -13,6 +13,7 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
+import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.nbt.EnchantmentUtil;
 import me.zach.DesertMC.cosmetics.Cosmetic;
@@ -24,6 +25,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -38,19 +40,33 @@ import java.util.List;
 
 public class Commands extends CommandExecute implements Listener, CommandExecutor, TabCompleter {
 	public static HashMap<String, NPCSuper> npcsAndName = new HashMap<>();
+	private static final String colorsMessage;
 	static{
 		npcsAndName.put("STREAK_POLICE", SPolice.INSTANCE);
 		npcsAndName.put("SOUL_BROKER", SoulShop.INSTANCE);
+		ArrayList<String> colorsList = new ArrayList<>();
+		colorsList.add(ChatColor.GREEN + "With your rank, you can"  + ChatColor.YELLOW + " include " + ChatColor.AQUA + "colors " + ChatColor.GREEN + "in your messages!");
+		colorsList.add("Placing a color code in your messages will make any text after that color code your color!");
+		colorsList.add(ChatColor.GRAY + "Colors:");
+		for(String name : RankEvents.friendlyCC.keySet()){
+			ChatColor color = RankEvents.friendlyCC.get(name);
+			String colorName = color.name();
+			colorsList.add(name + ChatColor.DARK_GRAY + " - " + ChatColor.WHITE + colorName + " or !" + RankEvents.colorShortcuts.get(color));
+		}
+		colorsMessage = StringUtil.getCenteredWrappedMessage(new StringUtil.ChatWrapper('-', ChatColor.WHITE, true, true), colorsList.toArray(new String[0]));
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player) {
-        	Player player = ((Player) sender).getPlayer();
+        	Player player = ((Player) sender);
         	Plugin mainpl = DesertMain.getInstance;
         	if(command.getName().equalsIgnoreCase("setspawn")) {
         		if(player.hasPermission("admin")){
-        			mainpl.getConfig().set("server.lobbyspawn", player.getLocation());
-        			player.sendMessage(ChatColor.BLUE + "Spawn > "+ ChatColor.DARK_GRAY + "Set the spawn for Lobby");
+        			String type;
+        			if(args.length == 0) type = "lobby";
+        			else type = args[0];
+        			mainpl.getConfig().set("server.spawn." + type, player.getLocation());
+        			player.sendMessage(Prefix.SERVER + ChatColor.GRAY.toString() + ": Set the spawn for " + StringUtil.capitilizeFirst(type));
         			mainpl.saveConfig();
         		}else{
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
@@ -65,12 +81,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 
         	if(command.getName().equalsIgnoreCase("colors")){
         		if(RankEvents.rankSession.containsKey(player.getUniqueId())){
-        			player.sendMessage(ChatColor.GREEN + "With your rank, you can"  + ChatColor.YELLOW + " include " + ChatColor.AQUA + "colors " + ChatColor.GREEN + "in your messages! Placing a color code in your messages will make any text after that color code your color!\n" + ChatColor.GRAY + "Colors:");
-        			for(String name : RankEvents.friendlyCC.keySet()){
-        				ChatColor color = RankEvents.friendlyCC.get(name);
-        				String colorName = color.name();
-        				player.sendMessage(name + ChatColor.DARK_GRAY + " - " + ChatColor.WHITE + colorName + " or !" + RankEvents.colorShortcuts.get(color));
-					}
+					player.sendMessage(colorsMessage);
         			return true;
 				}else{
         			player.sendMessage(ChatColor.RED + "You must have a rank to use this command!");
@@ -91,7 +102,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 							}else{
 								player.sendMessage(ChatColor.RED + "You haven't unlocked that cosmetic yet! To see your unlocked cosmetics and more, type /cosmetic to open the menu!");
 							}
-						}
+						}else player.sendMessage(ChatColor.RED + "That cosmetic doesn't exist!");
 					}else if(args[0].equalsIgnoreCase("grant")){
 						if(player.hasPermission("admin")){
 							Cosmetic toSet = Cosmetic.getFromName(String.join(" ", args).replace("grant ", ""));
@@ -101,14 +112,15 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 					}
 				}else if(args.length >= 1){
 					if(args[0].equalsIgnoreCase("list")){
-						StringBuilder cList = new StringBuilder(ChatColor.GRAY + "Selected Cosmetics:");
+						ArrayList<String> cList = new ArrayList<>();
 						for (Cosmetic.CosmeticType type : Cosmetic.CosmeticType.values()) {
 							Cosmetic selected = Cosmetic.getSelected(player, type);
 							String name = ChatColor.DARK_GRAY + "None";
 							if (selected != null) name = selected.displayName;
-							cList.append("\n" + ChatColor.GRAY + "Selected " + ChatColor.AQUA).append(type.displayName).append(ChatColor.GRAY).append(": ").append(ChatColor.GOLD).append(name);
+							cList.add(ChatColor.AQUA + "  Selected " + type.displayName + ": " + ChatColor.GOLD + name);
 						}
-						player.sendMessage(cList + "");
+						StringUtil.ChatWrapper wrapper = new StringUtil.ChatWrapper('=', ChatColor.GOLD, true, true);
+						StringUtil.sendUncenteredWrappedMessage(player, wrapper, String.join("\n", cList));
 					}
 				}else{
 					player.sendMessage(ChatColor.RED + "Invalid Usage! " + ChatColor.YELLOW + "Type /cosmetic to open the menu." + ChatColor.DARK_GRAY + "\nAdditionally, you can use the non-menu command: /cosmetic <set|list> <cosmetic to set>");
@@ -117,12 +129,12 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 			}
         	if(command.getName().equalsIgnoreCase("rank")){
         		if(player.hasPermission("admin")){
-        			if(args[0] != null && args[1] != null){
+        			if(args.length == 2){
         				try{
         					if(Rank.valueOf(args[1]).equals(Rank.COOWNER) || Rank.valueOf(args[1]).equals(Rank.ADMIN)){
 								if (!player.getUniqueId().toString().equals("7f9ad03e-23ec-4648-91c8-2e0820318a8b")){
 									player.sendMessage(ChatColor.RED + "Nice try. You can't give other people COOWNER or ADMIN.");
-									return false;
+									return true;
 								}
 							}
         					mainpl.getConfig().set("players." + Bukkit.getPlayer(args[0]).getUniqueId() + ".rank", Rank.valueOf(args[1]).name());
@@ -130,9 +142,11 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         					player.sendMessage(ChatColor.GREEN + "Rank set successfully.");
 						}catch(IllegalArgumentException noRankFound){
         					player.sendMessage(ChatColor.RED + "Rank not found! Usage: /rank <player> <rank>");
+        					return true;
 						}
 					}else{
         				player.sendMessage(ChatColor.RED + "Invalid usage! Usage: /rank <player> <rank>");
+        				return true;
 					}
 				}
 			}
@@ -199,7 +213,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         	if(command.getName().equalsIgnoreCase("hideplayer")){
         		if(player.hasPermission("admin")){
         			try{
-        				player.hidePlayer(Bukkit.getPlayerExact(args[0]));
+        				player.hidePlayer(Bukkit.getPlayer(args[0]));
         				player.sendMessage(ChatColor.GREEN + "Hid " + args[0] + " from your view.");
 					}catch (Exception e){
         				player.sendMessage(ChatColor.RED + "There was an error fetching that player.");
@@ -222,28 +236,28 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 			}
         	if(command.getName().equalsIgnoreCase("selecttitle")){
         		try{
-        			Prefix p = Prefix.valueOf(args[0].toUpperCase());
-					if(TitleUtils.setTitle(player, p)){
-						player.sendMessage(ChatColor.GREEN + "Prefix successfully set to \"" + p.toString() + ChatColor.GREEN + "\"");
-						return true;
-					}else{
-						if(player.hasPermission("admin")){
-							TitleUtils.addTitle(player, p);
-							TitleUtils.setTitle(player, p);
-							player.sendMessage(ChatColor.YELLOW + "You didn't have that title so I added it for you and selected it.");
+        			if(args.length != 0) {
+						Prefix p = Prefix.valueOf(args[0].toUpperCase());
+						if (TitleUtils.setTitle(player, p)) {
+							player.sendMessage(ChatColor.GREEN + "Prefix successfully set to \"" + p.toString() + ChatColor.GREEN + "\"");
 							return true;
-						}else player.sendMessage(ChatColor.RED + "Sorry, it seems you don't own that title.");
-
-						return false;
+						} else {
+							if (player.hasPermission("admin")) {
+								TitleUtils.addTitle(player, p);
+								TitleUtils.setTitle(player, p);
+								player.sendMessage(ChatColor.YELLOW + "You didn't have that title so I added it for you and selected it.");
+								return true;
+							} else player.sendMessage(ChatColor.RED + "Sorry, it seems you don't own that title.");
+							return true;
+						}
+					}else{
+						player.sendMessage(ChatColor.RED + "Usage: /title <titletoequip>");
+						return true;
 					}
 				}catch(Exception e){
         			if(e instanceof IllegalArgumentException){
         				player.sendMessage(ChatColor.RED + "It appears that title doesn't exist.");
-        				return false;
-        			}
-        			else if(e instanceof ArrayIndexOutOfBoundsException){
-        				player.sendMessage(ChatColor.RED + "Usage: /title <titletoequip>");
-        				return false;
+        				return true;
         			}else{
         				e.printStackTrace();
         				return false;
@@ -255,7 +269,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         	if(command.getName().equalsIgnoreCase("showplayer")){
 				if(player.hasPermission("admin")){
 					try{
-						player.showPlayer(Bukkit.getPlayerExact(args[0]));
+						player.showPlayer(Bukkit.getPlayer(args[0]));
 						player.sendMessage(ChatColor.GREEN + "Showed " + args[0]);
 					}catch (Exception e){
 						player.sendMessage(ChatColor.RED + "There was an error fetching that player.");
@@ -404,13 +418,12 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         		}
         		
         	}
-            
         }
 		return true;
     }
 	@Override
 	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-		List<String> args = new ArrayList<String>();
+		List<String> args = new ArrayList<>();
 		if (strings.length == 1) {
 
 			if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("spawnnpc")) {

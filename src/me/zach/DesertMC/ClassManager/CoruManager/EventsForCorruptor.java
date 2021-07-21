@@ -1,32 +1,26 @@
 package me.zach.DesertMC.ClassManager.CoruManager;
 
 import de.tr7zw.nbtapi.NBTCompound;
-import de.tr7zw.nbtapi.NBTContainer;
-import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
-import de.tr7zw.nbtinjector.NBTInjector;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class EventsForCorruptor implements Listener {
@@ -77,7 +71,7 @@ public class EventsForCorruptor implements Listener {
             if (killed.getHealth() - event.getDamage() < 0.1) {
                 if (!killer.getInventory().getItemInHand().getType().equals(Material.AIR)) {
                     ItemStack item = killer.getInventory().getItemInHand();
-                    if (NBTUtil.INSTANCE.getCustomAttr(item, "ID").equals("VOLCANIC_SWORD")) {
+                    if (NBTUtil.getCustomAttrString(item, "ID").equals("VOLCANIC_SWORD")) {
                         if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
                             if (((Events.ks.get(killer.getUniqueId()) + 1) % 5) == 0) {
                                 for (Entity near : Bukkit.getOnlinePlayers()) {
@@ -135,7 +129,7 @@ public class EventsForCorruptor implements Listener {
     }
 
 
-    private void hf(Entity e, int duration){
+    public void hf(Entity e, int duration){
         if(hf.contains(e.getUniqueId())) return;
         hf.add(e.getUniqueId());
         e.setFireTicks(duration);
@@ -157,7 +151,7 @@ public class EventsForCorruptor implements Listener {
         if(event.getDamager() instanceof Player){
             Player hitter = (Player) event.getDamager();
             if(hitter.getInventory().getItemInHand() != null){
-                if(NBTUtil.INSTANCE.getCustomAttr(hitter.getInventory().getItemInHand(),"ID").equals("CORRUPTED_SWORD")){
+                if(NBTUtil.getCustomAttrString(hitter.getInventory().getItemInHand(),"ID").equals("CORRUPTED_SWORD")){
                     UUID uuid = hitter.getUniqueId();
                     if(combo.containsKey(uuid)) {
                         event.setDamage(event.getDamage() * (1 + combo.get(uuid)));
@@ -170,7 +164,7 @@ public class EventsForCorruptor implements Listener {
         }
     }
     public void corrupterLeggings(Player killer, Player killed){
-        Random rgen = new Random();
+        Random rgen = ThreadLocalRandom.current();
         int r = rgen.nextInt(5);
         if(r == 0 && ConfigUtils.getLevel("corrupter", killed) > 5){
             hf(killer, 100);

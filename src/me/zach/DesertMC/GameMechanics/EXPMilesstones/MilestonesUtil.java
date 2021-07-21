@@ -2,14 +2,17 @@ package me.zach.DesertMC.GameMechanics.EXPMilesstones;
 
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.MiscUtils;
+import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.cosmetics.Cosmetic;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.CommandExecute;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -36,19 +39,19 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
 
     public static String getNewCase(Player player){
         String displayCase = getDisplayCase(player);
-        StringBuilder newCase = new StringBuilder();
+        StringBuilder newCase;
         if(displayCase == null){
             newCase = new StringBuilder(starColors.get(0) + "0");
         }else{
+            int colorIndex = starColors.size();
+            int divResets = Math.floorDiv(DesertMain.resets + 1, 6);
+            if(divResets < starColors.size()){
+                colorIndex = divResets;
+            }
             if((DesertMain.resets + 1) % 6 == 0){
-                int colorIndex = starColors.size();
-                try{
-                    colorIndex = Math.floorDiv(DesertMain.resets + 1, 6);
-                }catch(IndexOutOfBoundsException ignored){}
                 ChatColor color = starColors.get(colorIndex);
                 newCase = new StringBuilder(color + "0");
             }else{
-                int colorIndex = starColors.size();
                 try{
                     colorIndex = Math.floorDiv(DesertMain.resets + 1, 6);
                 }catch(IndexOutOfBoundsException ignored){}
@@ -69,19 +72,28 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
     }
 
     public static void resetMilestones(Player player){
+        ArrayList<String> msgCompiler = new ArrayList<>();
+        msgCompiler.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "MILESTONES RESET!");
         int resets = DesertMain.resets;
         if(!DesertMain.unclaimed.isEmpty()){
-            player.sendMessage(ChatColor.RED + "You still have unclaimed milestones! Are you sure you wish to reset?");
-        }else player.sendMessage(ChatColor.GREEN + "You are resetting your milestones. This will be your " + (resets + 1) + MiscUtils.getOrdinalSuffix(resets + 1) + " reset.");
-        TextComponent component = new TextComponent(TextComponent.fromLegacyText(ChatColor.YELLOW + "Click to confirm your reset."));
+            msgCompiler.add(StringUtil.getCenteredMessage(ChatColor.RED + "You still have unclaimed milestones!", ChatColor.RED + "Are you sure you wish to reset?"));
+        }else msgCompiler.add(ChatColor.GREEN + "");
+        TextComponent component = new TextComponent(TextComponent.fromLegacyText("Click to confirm your reset."));
         String displayCase = getDisplayCase(player);
         String newCase = getNewCase(player);
-        player.sendMessage(ChatColor.GRAY + "Display case upgrade: " + displayCase + ChatColor.DARK_GRAY + " ➞ " + newCase);
+        msgCompiler.add(StringUtil.getCenteredMessage(ChatColor.GRAY + "Display case upgrade: " + displayCase + ChatColor.DARK_GRAY + " ➞ " + newCase));
         if(cosmetics.containsKey(resets))
-            player.sendMessage(ChatColor.GOLD + "Cosmetic: " + cosmetics.get(resets));
+            msgCompiler.add(StringUtil.getCenteredMessage(ChatColor.GOLD + "Cosmetic: " + cosmetics.get(resets)));
 
         component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/confirmreset"));
+        String yellow = net.md_5.bungee.api.ChatColor.YELLOW.toString();
+        String bold = net.md_5.bungee.api.ChatColor.BOLD.toString();
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(yellow + "This will be your " + bold  + (resets + 1) + MiscUtils.getOrdinalSuffix(resets + 1) + yellow + " reset.")));
+        StringUtil.ChatWrapper wrapper = StringUtil.ChatWrapper.HORIZONTAL_LINE;
+        player.sendMessage(wrapper + "\n" + String.join("\n", msgCompiler));
+        component.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
         player.spigot().sendMessage(component);
+        player.sendMessage("\n" + wrapper.toString());
         confirming.put(player.getUniqueId(), newCase);
         new BukkitRunnable(){
             public void run(){
