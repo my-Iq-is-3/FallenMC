@@ -61,6 +61,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 	//How to generate a random long: (long) (Math.random() * (rightLimit - leftLimit));
 	@Override
 	public void onEnable() {
+		Bukkit.getConsoleSender().sendMessage("1");
 		library = new NPCLib(this);
 		getInstance = this;
 		String[] cmdsfile = {"enchantmentmod","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications"};

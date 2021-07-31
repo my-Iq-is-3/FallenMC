@@ -2,11 +2,7 @@ package me.zach.DesertMC.GameMechanics;
 
 
 import de.tr7zw.nbtapi.NBTCompound;
-import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
-
-import me.zach.DesertMC.ClassManager.TravellerEvents;
-import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
 import me.zach.DesertMC.ClassManager.TankManager.EventsForTank;
@@ -26,10 +22,8 @@ import me.zach.DesertMC.cosmetics.Cosmetic;
 import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.artifacts.gui.inv.ArtifactData;
 import me.zach.artifacts.gui.inv.items.CreeperTrove;
-import me.zach.databank.saver.SaveManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -95,7 +89,7 @@ public class Events implements Listener{
 			arrowArray.put(arrow, player.getInventory().getItemInHand());
 			ArtifactEvents.shootEvent(event);
 			Cosmetic cosmetic = Cosmetic.getSelected(player, Cosmetic.CosmeticType.ARROW_TRAIL);
-			if(cosmetic != null) cosmetic.activateArrow(arrow, SaveManager.getData(player).getAD().bowS());
+			if(cosmetic != null) cosmetic.activateArrow(arrow, new ArtifactData(player).bowS());
 		}
 	}
 
@@ -346,14 +340,14 @@ public class Events implements Listener{
 
 	public static void executeKill(Player player, Player killer) {
 		try {
+			callOnKill(player, killer);
+			EventsForWizard.INSTANCE.wizardt1(killer);
 			Location spawn = ConfigUtils.getSpawn("lobby");
 			player.setHealth(player.getMaxHealth());
+
 			player.teleport(spawn);
 			if (player.getFireTicks() > 0)
 				player.setFireTicks(0);
-			ArtifactEvents.kill(player, killer);
-			callOnKill(player, killer);
-
 
 
 			Random random = ThreadLocalRandom.current();
@@ -539,13 +533,11 @@ public class Events implements Listener{
 
 			@Override
 			public void run() {
-				if(!p.isOnline()) {
-					this.cancel();
-					return;
-				}
+
 				FScoreboardManager.initialize(p);
 			}
-		}.runTaskTimer(DesertMain.getPlugin(DesertMain.class), 0, 20);
+
+		}.runTaskTimer(DesertMain.getPlugin(DesertMain.class), 0, 5);
 	}
 	@EventHandler
 	public void forKs(PlayerJoinEvent event){

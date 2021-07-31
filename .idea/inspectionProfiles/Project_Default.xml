@@ -30,7 +30,7 @@
       <option name="IGNORE_JAVADOC_PERIOD" value="true" />
       <option name="IGNORE_DUPLICATED_THROWS" value="false" />
       <option name="IGNORE_POINT_TO_ITSELF" value="false" />
-      <option name="myAdditionalJavadocTags" value="&lt;code&gt;executeKill&lt;/code&gt;,info" />
+      <option name="myAdditionalJavadocTags" value="String1,String2" />
     </inspection_tool>
   </profile>
 </component>
