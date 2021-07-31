@@ -5,7 +5,6 @@ import me.zach.DesertMC.Utils.ActionBar.ActionBarUtils;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

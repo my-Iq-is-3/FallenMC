@@ -31,6 +31,7 @@ public class ConfigUtils {
 	}
 
 
+
 	public static boolean deductSouls(Player player, int amount){
 		PlayerData data = SaveManager.getData(player);
 		int souls = data.getSouls();
@@ -116,16 +117,13 @@ public class ConfigUtils {
 
 		int[] xprTiers = {500,1000,2500,4000,7000,8500,10000,20000};
 
-		if(data.getClassXPR(classtoaddto) <= amount && level < 10){ // player levels up
+		if(amount+ConfigUtils.getXP(player,classtoaddto) >= ConfigUtils.getXpToNext(player,classtoaddto) && level < 10){ // player levels up
 			data.setClassXP(classtoaddto,0);
 			data.setClassXPR(classtoaddto,xprTiers[level-1]); // at level 3, it would pull level[2], therefore
 			data.setClassLevel(classtoaddto,data.getClassLevel(classtoaddto)+1);
-			player.sendMessage("levelup");
 		}else{ // doesn't level up
 			data.setClassXP(classtoaddto,data.getClassXP(classtoaddto)+amount);
 			if(level == 10) data.setClassXP(classtoaddto,Key.MAX_XP);
-
-
 		}
 	}
 
