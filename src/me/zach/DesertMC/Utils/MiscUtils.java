@@ -9,6 +9,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.bukkit.Note.natural;
 import static org.bukkit.Note.sharp;
@@ -89,9 +93,14 @@ public class MiscUtils {
         return nearbyDamageables;
     }
 
+    public static double trueRandom(){
+        double base = Math.random();
+        return (base - 0.5) * 2;
+    }
+
     public static Damageable canDamage(Entity entity){
         if(Events.invincible.contains(entity.getUniqueId())) return null;
-        else if(entity instanceof Player) return (Damageable) entity;
+        else if(entity instanceof Player) return ((Player) entity).getNoDamageTicks() == 0 ? (Damageable) entity : null;
         return !(entity.spigot().isInvulnerable()) && entity instanceof Damageable ? (Damageable) entity : null;
     }
 
@@ -99,7 +108,7 @@ public class MiscUtils {
     /**
      * Finds all entities within a radius of an already existing entity that are of specified type.<br>
      * Example (getting a list of {@link Player}s within a 5-block radius of the first player listed in <code>Bukkit.getOnlinePlayers()</code>:<blockquote><code>List{@literal <Player>} nearbyPlayers = getNearbyEntities(Player.class, Bukkit.getOnlinePlayers().iterator().next(), 5, 5, 5);</code></blockquote>
-     * @author Archonic/DrMlem (I'm proud of this)
+     * @author Archonic/DrMlem
      * @param toFind Class of entity to find
      * @param entity Entity to search nearby from
      * @param <T> Entity type to find
@@ -108,6 +117,7 @@ public class MiscUtils {
     @SuppressWarnings("unchecked")
     public static <T extends Entity> List<T> getNearbyEntities(Class<T> toFind, Entity entity, double xRange, double yRange, double zRange){
         List<Entity> nearbyEntities = entity.getNearbyEntities(xRange, yRange, zRange);
+        Predicate<Entity> filter = toFind::isInstance;
         ArrayList<T> nearbyFiltered = new ArrayList<>();
         for(Entity e : nearbyEntities)
             if(toFind.isInstance(e))

@@ -3,7 +3,7 @@ package me.zach.DesertMC.cosmetics;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 
-public interface CosmeticActivator{
+public interface CosmeticActivator {
 
 
     default void activateParticle(Player p){

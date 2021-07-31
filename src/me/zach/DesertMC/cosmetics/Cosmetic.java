@@ -7,6 +7,7 @@ import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
+import me.zach.artifacts.gui.helpers.ArtifactUtils;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
@@ -156,7 +157,7 @@ public enum Cosmetic implements CosmeticActivator{
             standardKillEffect(player.getLocation(), 15, materialsList.toArray(new Material[0]));
         }
     },
-    SKULL_DESTRUCTION("Skull Destruction", Material.GHAST_TEAR, "As if slaying them wasn't enough, this kill effect lifts your enemy's skull from where they previously stood and pulls it into the air, only to destroy it afterward. Talk about overkill, jeez.", CosmeticType.KILL_EFFECT){
+    SKULL_DESTRUCTION("Skull Destruction", Material.GHAST_TEAR, "As if slaying them wasn't enough, this kill effect lifts your enemy's skull from where they previously stood and draws it into the air, only to destroy it afterward. Talk about overkill, jeez.", CosmeticType.KILL_EFFECT, true){
         public void activateKill(Player player){
             ArmorStand armorStand = player.getWorld().spawn(player.getLocation(), ArmorStand.class);
             armorStand.setVisible(false);
@@ -243,7 +244,6 @@ public enum Cosmetic implements CosmeticActivator{
 
 
     static class CosmeticActivationException extends IllegalArgumentException{
-        CosmeticActivationException(){this("Error activating cosmetic");}
         CosmeticActivationException(String message){super(message);}
     }
 
