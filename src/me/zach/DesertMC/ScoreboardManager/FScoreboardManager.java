@@ -45,7 +45,7 @@ public class FScoreboardManager {
 
 			}else {
 
-				int totalxp = ConfigUtils.getXpToNext(player, ConfigUtils.findClass(player));
+				int totalxp = ConfigUtils.getXpToNext(player, ConfigUtils.findClass(player)) + ConfigUtils.getXP(player,ConfigUtils.findClass(player));
 				xp = objective.getScore(ChatColor.WHITE + "XP: " + ChatColor.GREEN + ConfigUtils.getXP(player, ConfigUtils.findClass(player)) + ChatColor.WHITE + "/" + ChatColor.DARK_GRAY + totalxp);
 			}
 

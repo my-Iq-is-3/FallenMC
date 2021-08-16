@@ -16,6 +16,7 @@ import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.GameMechanics.SPolice;
 import me.zach.DesertMC.GameMechanics.SoulShop;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
+import me.zach.DesertMC.Utils.gui.GUIManager;
 import net.jitse.npclib.NPCLib;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
@@ -31,7 +32,6 @@ import java.util.*;
 
 public class DesertMain extends JavaPlugin implements Listener {
 	public static DesertMain getInstance;
-	public static final Plugin getGeneric = Bukkit.getPluginManager().getPlugin("Fallen");
 	public static final Set<UUID> crouchers = new HashSet<>();
 	public static final Set<UUID> ct1players = new HashSet<UUID>();
 	public static final HashMap<UUID,UUID> lastdmgers = new HashMap<UUID, UUID>();
@@ -61,6 +61,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 	//How to generate a random long: (long) (Math.random() * (rightLimit - leftLimit));
 	@Override
 	public void onEnable() {
+		Bukkit.getConsoleSender().sendMessage("1");
 		library = new NPCLib(this);
 		getInstance = this;
 		String[] cmdsfile = {"testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications"};
@@ -88,6 +89,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(SoulShop.INSTANCE, this);
 		Bukkit.getPluginManager().registerEvents(new MilestonesEvents(), this);
 		Bukkit.getPluginManager().registerEvents(new TravellerEvents(), this);
+		Bukkit.getPluginManager().registerEvents(new GUIManager(), this);
 	}
 
 	private void registerCommands(String[] commands, CommandExecutor file){
