@@ -122,12 +122,15 @@ public class WizardTierMenu {
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - On death, 10% chance for your killer");
 				glore.add(ChatColor.GREEN + " will be frozen for 3 seconds and get a poison effect (also 3s)");
+				glore.add(ChatColor.GREEN + "- Alert enchantment");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - On death, 10% chance for your killer");
 				ylore.add(ChatColor.YELLOW + "will be frozen for 3 seconds and get a poison effect (also 3s)");
+				ylore.add(ChatColor.YELLOW + "- Alert enchantment");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - On death, 10% chance for your killer");
 				rlore.add(ChatColor.RED + "will be frozen for 3 seconds and get a poison effect (also 3s)");
+				rlore.add(ChatColor.RED + "- Alert enchantment");
 				break;
 			case 5:
 				
@@ -186,10 +189,13 @@ public class WizardTierMenu {
 			case 8:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - On reaching 2 Hearts or less, gain Speed 1 and Resistance 1 for 3 seconds.");
+				glore.add(ChatColor.GREEN + "- Ethereal enchantment");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - On reaching 2 Hearts or less, gain Speed 1 and Resistance 1.");
+				ylore.add(ChatColor.YELLOW + "- Ethereal enchantment");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - On reaching 2 Hearts or less, gain Speed 1 and Resistance 1.");
+				rlore.add(ChatColor.RED + "- Ethereal enchantment");
 				
 				break;
 			case 9:

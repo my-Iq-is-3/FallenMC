@@ -5,6 +5,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.PlayerUtils;
+import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
@@ -134,37 +135,26 @@ public class EventsForScout implements Listener {
 
     public void alert(EntityDamageByEntityEvent event){
         if(event.getEntity() instanceof Player && event.getDamager() instanceof Player){
-            int level = 0;
+
             Player damager = (Player) event.getDamager();
             Player damaged = (Player) event.getEntity();
-            ItemStack[] armor = damaged.getInventory().getArmorContents();
+            int level = CustomEnch.ALERT.getTotalArmorLevel(damaged);
 
-            for(ItemStack armorA : armor){
-                if(armorA != null){
-                    NBTItem nbtarmor = new NBTItem(armorA);
-                    try{
-                        level += nbtarmor.getCompound("CustomAttributes").getCompound("enchantments").getInteger("alert");
-                    }catch(NullPointerException ignored){}
 
-                }
-            }
-
-            if(ConfigUtils.findClass(damaged).equals("scout") && ConfigUtils.getLevel("scout",damaged) > 4){
+            if(ConfigUtils.findClass(damaged).equals("wizard") && ConfigUtils.getLevel("wizard",damaged) > 4){
                 try{
                     if(!DesertMain.alertEnchantment.get(damaged.getUniqueId()).contains(damager.getUniqueId())){
-                        HashMap<UUID, List<UUID>> alerts = DesertMain.alertEnchantment;
-
-                        if(alerts.get(damaged.getUniqueId()) == null){
-                            alerts.put(damaged.getUniqueId(), Collections.singletonList(damager.getUniqueId()));
+                        if(DesertMain.alertEnchantment.get(damaged.getUniqueId()) == null){
+                            DesertMain.alertEnchantment.put(damaged.getUniqueId(), Collections.singletonList(damager.getUniqueId()));
                         }else{
-                            alerts.get(damaged.getUniqueId()).add(damager.getUniqueId());
+                            DesertMain.alertEnchantment.get(damaged.getUniqueId()).add(damager.getUniqueId());
                         }
 
                         event.setDamage(event.getDamage() - event.getDamage()*(0.03*level));
                         new BukkitRunnable(){
                             @Override
                             public void run(){
-                                alerts.get(damaged.getUniqueId()).remove(damager.getUniqueId());
+                                DesertMain.alertEnchantment.get(damaged.getUniqueId()).remove(damager.getUniqueId());
                             }
 
                         }.runTaskLater(DesertMain.getInstance,300);

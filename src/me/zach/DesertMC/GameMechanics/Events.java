@@ -21,6 +21,7 @@ import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.TitleUtils;
+import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.cosmetics.Cosmetic;
 import me.zach.artifacts.events.ArtifactEvents;
@@ -89,6 +90,9 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void arrowShoot(ProjectileLaunchEvent event){
+		for(CustomEnch ce : CustomEnch.values()){
+			ce.onShoot(event);
+		}
 		if(event.getEntity().getShooter() instanceof Player && event.getEntity() instanceof Arrow){
 			Arrow arrow = (Arrow) event.getEntity();
 			Player player = (Player) event.getEntity().getShooter();
@@ -263,6 +267,7 @@ public class Events implements Listener{
 		if (entity instanceof Player) return (Player) entity;
 		else return (Player) ((Arrow) entity).getShooter();
 	}
+
 	// ---------------------------------------------------------------------------
 
 
@@ -270,7 +275,7 @@ public class Events implements Listener{
 	public void onKill(EntityDamageByEntityEvent event) {
 		try{
 			if(event.isCancelled()) return;
-			ArtifactEvents.hitEvent(event);
+
 			CreeperTrove.executeTrove(event);
 			if(event.getDamage() == 0) return;
 			if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
@@ -289,6 +294,9 @@ public class Events implements Listener{
 							DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
 				}
 			}
+			for(CustomEnch ce : CustomEnch.values()){
+				ce.onHit(event);
+			}
 			if (event.getEntity() instanceof Player) {
 				PlayerUtils.setFighting((Player) event.getEntity());
 			}
@@ -302,7 +310,11 @@ public class Events implements Listener{
 						if (DesertMain.ct1players.contains(event.getDamager().getUniqueId())) {
 							event.setDamage(event.getDamage() * 1.1);
 						}
+
 						SPolice.onHit(event);
+
+						ArtifactEvents.hitEvent(event);
+
 						EventsForCorruptor.INSTANCE.corruptedSword(event);
 
 						EventsForScout.getInstance().daggerHit(event);
@@ -340,6 +352,9 @@ public class Events implements Listener{
 		if (event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Arrow)) {
 			Player player = (Player) event.getEntity();
 			Player killer = getPlayer(event.getDamager());
+			for(CustomEnch ce : CustomEnch.values()){
+				ce.onKill(event);
+			}
 			if(player.getHealth() - event.getDamage() < 0.1) executeKill(player, killer);
 		}
 	}
@@ -415,6 +430,7 @@ public class Events implements Listener{
 		PlayerUtils.setIdle(player);
 		PlayerUtils.setFighting(killer);
 		EventsForWizard.INSTANCE.wizardt1(killer);
+
 		try{
 			if(new NBTItem(killer.getItemInHand()).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE")) EventsForWizard.addBladeCharge(killer);
 		}catch(Exception ex){

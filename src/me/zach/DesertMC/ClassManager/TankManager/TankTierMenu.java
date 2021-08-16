@@ -114,13 +114,13 @@ public class TankTierMenu {
 				break;
 			case 4:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Fortify Enchantment ");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Turtle Enchantment ");
 				glore.add(ChatColor.DARK_GRAY + "Tier I");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Fortify Enchantment");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Turtle Enchantment");
 				ylore.add(ChatColor.DARK_GRAY + "Tier I");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Fortify Enchantment");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Turtle Enchantment");
 				rlore.add(ChatColor.DARK_GRAY + "Tier I");
 				break;
 			case 5:
@@ -166,14 +166,14 @@ public class TankTierMenu {
 				break;
 			case 7:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Fortify Enchantment");
-				glore.add(ChatColor.DARK_GRAY + "Tier III");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Cruel Blow Enchantment");
+				glore.add(ChatColor.DARK_GRAY + "Tier I");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- Fortify Enchantment");
-				ylore.add(ChatColor.DARK_GRAY + "Tier III");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- Cruel Blow Enchantment");
+				ylore.add(ChatColor.DARK_GRAY + "Tier I");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- Fortify Enchantment");
-				rlore.add(ChatColor.DARK_GRAY + "Tier III");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- Cruel Blow Enchantment");
+				rlore.add(ChatColor.DARK_GRAY + "Tier I");
 				break;
 			case 8:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");

@@ -15,6 +15,7 @@ import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.TitleUtils;
+import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.EnchantmentUtil;
 import me.zach.DesertMC.cosmetics.Cosmetic;
 import net.minecraft.server.v1_8_R3.CommandExecute;
@@ -224,11 +225,11 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 			}
 
 
-        	if(command.getName().equalsIgnoreCase("enchantmentmod")){
+        	if(command.getName().equalsIgnoreCase("testench")){
         		if(player.hasPermission("admin")){
         			try{
-						player.getInventory().setItemInHand(EnchantmentUtil.getInstance().addEnchantment(args[0],Integer.parseInt(args[1]),player.getInventory().getItemInHand(),player));
-					}catch(Exception e){
+						player.getInventory().setItemInHand(CustomEnch.fromID(args[0]).apply(player.getInventory().getItemInHand(),Integer.parseInt(args[1])));
+        			}catch(Exception e){
         				player.sendMessage(ChatColor.RED + "An error occurred. " + e);
         				e.printStackTrace();
 					}

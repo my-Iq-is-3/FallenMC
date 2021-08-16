@@ -15,6 +15,7 @@ public class NBTUtil {
         else return "null";
     }
 
+
     public static boolean hasCustomKey(ItemStack item, String key){
         if(item == null) return false;
         NBTItem nbt = new NBTItem(item);

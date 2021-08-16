@@ -63,7 +63,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public void onEnable() {
 		library = new NPCLib(this);
 		getInstance = this;
-		String[] cmdsfile = {"enchantmentmod","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications"};
+		String[] cmdsfile = {"testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());

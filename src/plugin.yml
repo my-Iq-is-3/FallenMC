@@ -30,7 +30,7 @@ commands:
   description: Pretty self explanatory
  setks:
   description: Sets a player's killstreak
- enchantmentmod:
+ testench:
   description: modifies the item you are holding, putting a custom enchantment on it.
  selecttitle:
   description: Selects an owned prefix/title.

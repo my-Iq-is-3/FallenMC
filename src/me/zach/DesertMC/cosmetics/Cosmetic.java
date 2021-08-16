@@ -304,7 +304,7 @@ public enum Cosmetic implements CosmeticActivator{
 
     private static void standardArrowTrail(Arrow arrow, boolean fast, ParticleEffect particle, ParticleEffect.ParticleColor color){
         if(!fast){
-            particle.display(0, 0, 0, 0, 1, arrow.getLocation());
+            particle.display(0, 0, 0, 0, 1, arrow.getLocation(),300);
         }else{
             Location baseLocation = arrow.getLocation();
             Vector vector = arrow.getVelocity();

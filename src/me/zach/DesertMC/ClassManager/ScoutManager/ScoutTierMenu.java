@@ -119,17 +119,17 @@ public class ScoutTierMenu{
 			case 4:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - 1/2 Absorbtion heart on kill.");
-				glore.add(ChatColor.GREEN + "§lSHOP UNLOCK§a - Alert Enchantment");
+				glore.add(ChatColor.GREEN + "- Anti-Focus Enchantment");
 				glore.add(ChatColor.GREEN + "§lSHOP UNLOCK§a - Scout Dagger");
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - 1/2 Absorbtion heart on kill.");
-				ylore.add(ChatColor.YELLOW + "§lSHOP UNLOCK§e - Alert Enchantment");
+				ylore.add(ChatColor.YELLOW + " - Anti-Focus Enchantment");
 				ylore.add(ChatColor.YELLOW + "§lSHOP UNLOCK§e - Scout Dagger");
 
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - 1/2 Absorbtion heart on kill.");
-				rlore.add(ChatColor.RED + "§lSHOP UNLOCK§c - Alert Enchantment");
+				rlore.add(ChatColor.RED + " - Anti-Focus Enchantment");
 				rlore.add(ChatColor.RED + "§lSHOP UNLOCK§c - Scout Dagger");
 				break;
 			case 5:
@@ -159,11 +159,11 @@ public class ScoutTierMenu{
 				break;
 			case 7:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.GREEN + "- Alert Enchantment Tier 3");
+				glore.add(ChatColor.GREEN + "- Spirit Guard Enchantment");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.YELLOW + "- Alert Enchantment Tier 3");
+				ylore.add(ChatColor.YELLOW + "- Spirit Guard Enchantment");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + " SHOP UNLOCK " + ChatColor.RED + "- Alert Enchantment Tier 3");
+				rlore.add(ChatColor.RED + "- Spirit Guard Enchantment");
 				break;
 			case 8:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
