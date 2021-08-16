@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="FallenItems">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/FallenItems.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

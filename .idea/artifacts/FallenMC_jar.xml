@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="FallenMC:jar">
+    <output-path>$PROJECT_DIR$/../../server/spigotserver_8/plugins</output-path>
+    <root id="archive" name="FallenMC.jar">
+      <element id="module-output" name="FallenMC" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/FallenItems.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
