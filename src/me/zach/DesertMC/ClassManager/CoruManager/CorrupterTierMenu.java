@@ -120,14 +120,16 @@ public class CorrupterTierMenu {
 			case 4:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Immunity to fire and lava.");
-
+				glore.add(ChatColor.GREEN + "- Extravert enchantment");
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Immunity to fire and lava.");
+				ylore.add(ChatColor.YELLOW + "- Extravert enchantment");
 
 
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Immunity to fire and lava.");
+				rlore.add(ChatColor.RED + "- Extravert enchantment");
 
 				break;
 			case 5:
@@ -154,24 +156,17 @@ public class CorrupterTierMenu {
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + "§lSHOP UNLOCK " + ChatColor.GREEN + "- Corrupted Sword");
-				/*glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
-				glore.add(ChatColor.DARK_GRAY + "With this enchantment, every other kill subtracts 0.5 Health from everyone");
-				glore.add(ChatColor.DARK_GRAY + "within 6 blocks.");
-				 */
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Sword Enchantment)");
+
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + "§lSHOP UNLOCK " + ChatColor.YELLOW + "- Corrupted Sword");
-				/*ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
-				ylore.add(ChatColor.DARK_GRAY + "With this enchantment, every other kill subtracts 0.5 Health from everyone");
-				ylore.add(ChatColor.DARK_GRAY + "within 6 blocks.");
-				 */
-				
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Sword Enchantment)");
+
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + "§lSHOP UNLOCK " + ChatColor.RED + "- Corrupted Sword");
-				/*rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Armor Enchantment)");
-				rlore.add(ChatColor.DARK_GRAY + "With this enchantment, every other kill subtracts 0.5 Health from everyone");
-				rlore.add(ChatColor.DARK_GRAY + "within 6 blocks.");
-				 */
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Sword Enchantment)");
+
 				break;
 				
 				
