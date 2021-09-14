@@ -17,11 +17,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public abstract class NPCSuper implements Listener {
+public abstract class NPCSuper extends me.zach.DesertMC.Utils.npc.NPC implements Listener {
     String name;
     int id;
     String clickMsg;

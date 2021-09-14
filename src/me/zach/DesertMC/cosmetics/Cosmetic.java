@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public enum Cosmetic implements CosmeticActivator{
+    //player cosmetic enum
     EXPLOSION("Explosion Kill Effect", Material.TNT,  ChatColor.YELLOW + "Explode your enemies for the ultimate revenge!", CosmeticType.KILL_EFFECT){
         @Override
         public void activateKill(Player player){
@@ -153,6 +154,7 @@ public enum Cosmetic implements CosmeticActivator{
             armorStand.setCustomName(RankEvents.rankSession.get(player.getUniqueId()).c + player.getName());
             armorStand.setGravity(false);
             armorStand.setCustomNameVisible(true);
+
         }
     };
 

@@ -58,21 +58,6 @@ public class Events implements Listener{
 
 	public static HashMap<Arrow, ItemStack> arrowArray = new HashMap<>();
 
-//	public void initScoutTraveller(){
-//		new BukkitRunnable(){
-//			public void run(){
-//				TravellerEvents.travelled.forEach((uuid, blocks) -> {
-//					if(ConfigUtils.findClass(uuid).equalsIgnoreCase("scout") && ConfigUtils.getLevel("scout", uuid) > 5){
-//						Player player = Bukkit.getPlayer(uuid);
-//						float walkSpeed = player.getWalkSpeed();
-//						int newSpeed = walkSpeed +
-//						if(walkSpeed != )
-//					}
-//				});
-//			}
-//		}.runTaskTimer(main, 10, 77);
-//	}
-
 	@EventHandler
 	public void cancelPlayerChangeBlock(EntityChangeBlockEvent event){
 		event.setCancelled(true);
