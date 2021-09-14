@@ -2,7 +2,6 @@ package me.zach.DesertMC.Utils.debug;
 
 import org.bukkit.Bukkit;
 
-import java.awt.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,11 +19,6 @@ public class InfoDumper {
     final Object obj;
     final String name;
     final String[] methodKeywords;
-
-    public InfoDumper(Object obj, boolean includeDefaultMethodKeywords,  String... methodKeywords){
-        this(obj, "object", includeDefaultMethodKeywords, methodKeywords);
-    }
-
     public InfoDumper(Object obj, String name, boolean includeDefaultMethodKeywords, String... methodKeywords){
         this.obj = obj;
         this.name = name;
@@ -36,9 +30,13 @@ public class InfoDumper {
         }else this.methodKeywords = methodKeywords;
     }
 
+    public InfoDumper(Object obj, boolean includeDefaultMethodKeywords,  String... methodKeywords){
+        this(obj, "object", includeDefaultMethodKeywords, methodKeywords);
+    }
+
     public void dump(Level level){dump(Bukkit.getLogger(), level);}
     public void dump(Logger logger, Level level){
-        long startTime = System.nanoTime();
+        long startTime = System.currentTimeMillis();
         logger.log(level, "Dumping info for object \"" + name + "\" of type " + obj.getClass().getName() + "...");
         Class<?> objClass = obj.getClass();
         List<Exception> exceptions = new ArrayList<>();
@@ -57,7 +55,7 @@ public class InfoDumper {
             for(Method method : getMethodsThorough(objClass, methods, filter)){
                 String methodName = method.getName();
                 try{
-                    logger.log(level, methodName + "(): (" + method.getReturnType().getName() + ") " + method.invoke(obj));
+                    logger.log(level, methodName + "(): (" + method.getReturnType().getSimpleName() + ") " + method.invoke(obj));
                 }catch(IllegalAccessException | InvocationTargetException e){
                     logger.warning("An error occurred while running method " + method.getName() + "(). Stack trace to be printed after dump.");
                     exceptions.add(e);
@@ -72,7 +70,7 @@ public class InfoDumper {
                 }catch(IllegalAccessException ignored){/*IllegalAccessException should be unthrowable by field.get() since Class#getFields returns all public fields of that class.*/}
             }
         }
-        float elapsedTime = ((float) startTime - System.nanoTime()) / 1000000000;
+        float elapsedTime = ((float) startTime - System.currentTimeMillis()) / 1000000000;
         DecimalFormat formatter = new DecimalFormat("#.#####");
         logger.log(level, "Debug info dump finished in " + formatter.format(elapsedTime) + "s for object \"" + name + "\". ");
         if(!exceptions.isEmpty()){

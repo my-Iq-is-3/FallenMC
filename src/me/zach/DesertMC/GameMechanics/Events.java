@@ -33,10 +33,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.AnvilInventory;
@@ -76,6 +73,10 @@ public class Events implements Listener{
 //		}.runTaskTimer(main, 10, 77);
 //	}
 
+	@EventHandler
+	public void cancelPlayerChangeBlock(EntityChangeBlockEvent event){
+		event.setCancelled(true);
+	}
 
 	@EventHandler
 	public void cancelBlockFlow(BlockFromToEvent event){

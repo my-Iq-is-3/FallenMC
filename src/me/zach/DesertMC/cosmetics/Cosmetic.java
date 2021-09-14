@@ -7,10 +7,10 @@ import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
-import me.zach.artifacts.gui.helpers.ArtifactUtils;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
+
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -54,23 +54,17 @@ public enum Cosmetic implements CosmeticActivator{
     MUSICAL_ARROWS("Musical Arrows", Material.JUKEBOX, ChatColor.YELLOW + "Your arrows fly with graceful musical chords following them!", CosmeticType.ARROW_TRAIL){
         public void activateArrow(Arrow arrow, boolean fast){
             BukkitTask trail = new BukkitRunnable(){
-                int color = 0;
+                int colorIndex = 0;
                 @Override
                 public void run(){
                     if(arrow.isOnGround() || arrow.isDead()) cancel();
                     else{
-                        ParticleEffect.ParticleColor pColor;
-                        try{
-                            pColor = noteColors.get(color);
-                        }catch(IndexOutOfBoundsException ex){
-                            color = 0;
-                            pColor = noteColors.get(0);
-                        }
+                        ParticleEffect.NoteColor pColor = noteColors[colorIndex];
                         Cosmetic.standardArrowTrail(arrow, fast, ParticleEffect.NOTE, pColor);
                         if(arrow.getShooter() instanceof Player){
                             ((Player) arrow.getShooter()).playNote(arrow.getLocation(), Instrument.PIANO, Note.natural(1, Note.Tone.C));
                         }
-                        color++;
+                        colorIndex = colorIndex + 1 < rColors.length ? colorIndex + 1 : 0;
                     }
                 }
             }.runTaskTimerAsynchronously(DesertMain.getInstance, 0, 1);
@@ -94,18 +88,12 @@ public enum Cosmetic implements CosmeticActivator{
                 public void run(){
                     if(arrow.isOnGround() | arrow.isDead()) cancel();
                     else{
-                        ParticleEffect.ParticleColor pColor;
-                        try{
-                            pColor = rColors.get(colorIndex);
-                        }catch(IndexOutOfBoundsException ex){
-                            colorIndex = 0;
-                            pColor = rColors.get(0);
-                        }
+                        ParticleEffect.ParticleColor pColor = rColors[colorIndex];
                         Cosmetic.standardArrowTrail(arrow, fast, ParticleEffect.REDSTONE, pColor);
-                        colorIndex++;
+                        colorIndex = colorIndex + 1 < rColors.length ? colorIndex + 1 : 0;
                     }
                 }
-            }.runTaskTimerAsynchronously(DesertMain.getInstance, 0, 1);
+            }.runTaskTimer(DesertMain.getInstance, 0, 1);
         }
     },
 
@@ -196,8 +184,7 @@ public enum Cosmetic implements CosmeticActivator{
         ItemStack item = new ItemStack(iconType);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(ChatColor.GREEN + name);
-        ArrayList<String> lore = new ArrayList<>(StringUtil.wrapLore(iconDesc));
-        lore.add(0, "");
+        List<String> lore = StringUtil.wrapLore("\n" + iconDesc);
         lore.add(ChatColor.GRAY + "Type: " + ChatColor.GOLD + type);
         meta.setLore(lore);
         item.setItemMeta(meta);
@@ -223,21 +210,22 @@ public enum Cosmetic implements CosmeticActivator{
         this.hidden = hidden;
     }
 
-    static List<ParticleEffect.NoteColor> noteColors = new ArrayList<>();
-    static List<ParticleEffect.OrdinaryColor> rColors = new ArrayList<>();
+    static ParticleEffect.NoteColor[] noteColors = new ParticleEffect.NoteColor[9];
+    static ParticleEffect.OrdinaryColor[] rColors = new ParticleEffect.OrdinaryColor[]{
+            new ParticleEffect.OrdinaryColor(Color.RED),
+            new ParticleEffect.OrdinaryColor(Color.ORANGE),
+            new ParticleEffect.OrdinaryColor(Color.YELLOW),
+            new ParticleEffect.OrdinaryColor(Color.LIME),
+            new ParticleEffect.OrdinaryColor(Color.BLUE),
+            new ParticleEffect.OrdinaryColor(Color.fromRGB(75, 0, 130)),
+            new ParticleEffect.OrdinaryColor(Color.fromRGB(133, 0, 255))
+    };
     static List<String> deathMessages = Arrays.asList("*angry noises*", "Why'd you have to do that?!", "Oh no, my streak!", "You'll pay for this.", "I call hacks!", "But my gear was so good!", "I'm staying determined!");
     static List<ParticleEffect> eParticles = Arrays.asList(ParticleEffect.BLOCK_CRACK, ParticleEffect.DRIP_WATER, ParticleEffect.DRIP_LAVA, ParticleEffect.SMOKE_NORMAL);
     static{
-        for(int i = 0; i<=24; i+=3){
-            noteColors.add(new ParticleEffect.NoteColor(i));
+        for(int i = 0; i<9; i++){
+            noteColors[i] = new ParticleEffect.NoteColor(i * 3);
         }
-        rColors.add(new ParticleEffect.OrdinaryColor(Color.RED));
-        rColors.add(new ParticleEffect.OrdinaryColor(Color.ORANGE));
-        rColors.add(new ParticleEffect.OrdinaryColor(Color.YELLOW));
-        rColors.add(new ParticleEffect.OrdinaryColor(Color.LIME));
-        rColors.add(new ParticleEffect.OrdinaryColor(Color.BLUE));
-        rColors.add(new ParticleEffect.OrdinaryColor(Color.fromRGB(75, 0, 130)));
-        rColors.add(new ParticleEffect.OrdinaryColor(Color.fromRGB(133, 0, 255)));
     }
 
     public static final HashMap<UUID, Integer> trails = new HashMap<>();
@@ -282,7 +270,7 @@ public enum Cosmetic implements CosmeticActivator{
         if(!cosmetics.contains(name())) cosmetics.add(name());
         pl.getConfig().set("players." + player.getUniqueId() + ".cosmetics.acquired", cosmetics);
         pl.saveConfig();
-        player.sendMessage(ChatColor.GREEN + "COSMETIC ACQUIRED! " + ChatColor.GREEN + "You got: " + this + "\n" + ChatColor.GRAY + "Select it with /cosmetics!");
+        player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "COSMETIC ACQUIRED! " + ChatColor.GREEN + "You got: " + this + "\n" + ChatColor.GRAY + "Select it with /cosmetics!");
     }
 
     public final boolean hasCosmetic(Player player){
@@ -304,7 +292,8 @@ public enum Cosmetic implements CosmeticActivator{
 
     private static void standardArrowTrail(Arrow arrow, boolean fast, ParticleEffect particle, ParticleEffect.ParticleColor color){
         if(!fast){
-            particle.display(0, 0, 0, 0, 1, arrow.getLocation(),300);
+            if(color == null) particle.display(0, 0, 0, 1, 1, arrow.getLocation(), 300);
+            else particle.display(color, arrow.getLocation(), 300);
         }else{
             Location baseLocation = arrow.getLocation();
             Vector vector = arrow.getVelocity();
@@ -332,26 +321,22 @@ public enum Cosmetic implements CosmeticActivator{
         NBTCompound customAttributes = nbt.addCompound("CustomAttributes");
         customAttributes.setBoolean("NO_PICKUP", true);
         base = nbt.getItem();
-        ItemStack[] itemStacks = new ItemStack[amount];
+        int stacksSize = Math.min(materials.length, amount);
+        ItemStack[] itemStacks = new ItemStack[stacksSize];
+        itemStacks[0] = base;
 
-        for(int i = 1; i<materials.length; i++) {
+        for(int i = 1, j = 0; i<stacksSize; i++, j = (j + 1 < materials.length ? j + 1 : 0)){
             ItemStack itemStack = base.clone();
-            itemStack.setType(materials[i]);
+            itemStack.setType(materials[j]);
             itemStacks[i] = itemStack;
         }
-
-        int j = 0;
         Item[] items = new Item[amount];
-        for(int i = 0; i<amount; i++){
+        for(int i = 0, j = 0; i<amount; i++, j = (j + 1 < itemStacks.length ? j + 1 : 0)){
             Item dropped = location.getWorld().dropItemNaturally(location, itemStacks[j]);
             items[i] = dropped;
-            if(j + 1 < itemStacks.length) j++;
-            else j = 0;
         }
         Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, () -> {
-            for(Item item : items){
-                item.remove();
-            }
+            for(Item item : items) item.remove();
         }, 40);
     }
 

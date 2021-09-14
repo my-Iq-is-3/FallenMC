@@ -74,7 +74,7 @@ public class EventsForTank implements Listener {
             Player damager = (Player) event.getDamager();
             Player damaged = (Player) event.getEntity();
 
-            ItemStack[] armor = PlayerUtils.getArmor(damaged);
+            ItemStack[] armor = damaged.getInventory().getArmorContents();
             int level = 0;
 
             for(ItemStack armorA : armor){

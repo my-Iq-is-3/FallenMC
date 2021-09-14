@@ -8,16 +8,16 @@ import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.databank.saver.Key;
 import me.zach.databank.saver.PlayerData;
 import me.zach.databank.saver.SaveManager;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static me.zach.DesertMC.DesertMain.*;
@@ -113,19 +113,17 @@ public class ConfigUtils {
 
 		PlayerData data = SaveManager.getData(player);
 		int level = data.getClassLevel(classtoaddto); // 1
-
-		int[] xprTiers = {500,1000,2500,4000,7000,8500,10000,20000};
-
-		if(data.getClassXPR(classtoaddto) <= amount && level < 10){ // player levels up
+		int[] xprTiers = {100, 500, 1000, 2500, 4000, 7000, 8500, 10000, 20000};
+		int xpr = data.getClassXPR(classtoaddto);
+		if(xpr <= amount && level < 10){ // player levels up
+			int prevProgress = data.getClassXP(classtoaddto);
 			data.setClassXP(classtoaddto,0);
-			data.setClassXPR(classtoaddto,xprTiers[level-1]); // at level 3, it would pull level[2], therefore
+			data.setClassXPR(classtoaddto,xprTiers[level]);
 			data.setClassLevel(classtoaddto,data.getClassLevel(classtoaddto)+1);
-			player.sendMessage("levelup");
+			cexp(player, classtoaddto, amount - (xpr - prevProgress));
 		}else{ // doesn't level up
 			data.setClassXP(classtoaddto,data.getClassXP(classtoaddto)+amount);
 			if(level == 10) data.setClassXP(classtoaddto,Key.MAX_XP);
-
-
 		}
 	}
 
@@ -150,12 +148,18 @@ public class ConfigUtils {
 		if(amount == 0) return;
 		if(lv >= 59) return;
 		if(DesertMain.xpToNext <= currentProgress + amount){
-			String levelUp = StringUtil.getCenteredMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "EXP MILESTONE!" + ChatColor.GREEN + "(" + ChatColor.WHITE + "4 ➞ " + ChatColor.GREEN + ChatColor.BOLD + (DesertMain.lv - 1) + ChatColor.GREEN + ")", ChatColor.GREEN + "You reached level" + ChatColor.BOLD + " " + (DesertMain.lv - 1) + ChatColor.GREEN + "!");
-			TextComponent component = new TextComponent(TextComponent.fromLegacyText(StringUtil.getCenteredMessage("Click here to view your milestones progression", "and claim rewards!")));
+			String[] levelUp = StringUtil.getCenteredMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "EXP MILESTONE!" + ChatColor.GREEN + " (" + ChatColor.GRAY + (DesertMain.lv - 1) + " ➞ " + ChatColor.GREEN + ChatColor.BOLD + (DesertMain.lv - 1) + ChatColor.GREEN + ")", ChatColor.GREEN + "You reached level" + ChatColor.BOLD + " " + (DesertMain.lv - 1) + ChatColor.GREEN + "!");
+			String[] commandMessage = StringUtil.getCenteredMessage("Click here to view your milestones progression", "and claim rewards!");
+			List<BaseComponent> components = new ArrayList<>();
+			for(String str : commandMessage){
+				components.addAll(Arrays.asList(TextComponent.fromLegacyText(str)));
+			}
+			TextComponent component = new TextComponent(components.toArray(new BaseComponent[0]));
 			component.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GOLD + "Click to use /expmilestones").create()));
 			component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/expmilestones"));
-			player.sendMessage(StringUtil.ChatWrapper.THICK_HORIZONTAL_LINE.toString() + "\n" + levelUp);
+			player.sendMessage(StringUtil.ChatWrapper.THICK_HORIZONTAL_LINE.toString() + "\n");
+			player.sendMessage(levelUp);
 			player.spigot().sendMessage(component);
 			player.sendMessage("\n" + StringUtil.ChatWrapper.THICK_HORIZONTAL_LINE);
 			MiscUtils.ootChestFanfare(player);
@@ -176,7 +180,6 @@ public class ConfigUtils {
 	}
 
 	public static void addXP(Player player, String classtoaddto, int amount) {
-		int xptonext = getXpToNext(player, classtoaddto);
 		if(booster.containsKey(player.getUniqueId())) amount = Math.round(amount * booster.get(player.getUniqueId()));
 		cexp(player, classtoaddto, amount);
 		gexp(player, amount);

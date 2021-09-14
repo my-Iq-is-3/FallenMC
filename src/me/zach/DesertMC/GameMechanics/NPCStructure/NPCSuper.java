@@ -27,6 +27,7 @@ public abstract class NPCSuper implements Listener {
     String clickMsg;
     Sound clickSnd;
     int clickwait;
+    Set<UUID> npcUUIDs = new HashSet<>();
     ArrayList<String> npctext = new ArrayList<>();
     public Set<UUID> cantClick = new HashSet<>();
     public NPCSuper(String npcName, int skinID, String clickMessage, Sound clickSound, int clickWaitTime, String... npcTextExcludingName){
@@ -80,19 +81,13 @@ public abstract class NPCSuper implements Listener {
 
     @EventHandler
     public final void NPCClick(NPCInteractEvent event){
-        try {
-            if (event.getNPC().getUniqueId().equals(name) && !cantClick.contains(event.getWhoClicked().getUniqueId())){
-                Bukkit.getConsoleSender().sendMessage("NPC click registered. Player: " + event.getWhoClicked().getName() + ", NPC: " + name);
-                npcMessage(event.getWhoClicked(), clickMsg);
-                event.getWhoClicked().playSound(event.getWhoClicked().getLocation(), clickSnd, 10, 1);
-                cantClick.add(event.getWhoClicked().getUniqueId());
-                new BukkitRunnable(){
-                    public void run(){
-                        event.getWhoClicked().openInventory(getStartInventory(event));
-                    }
-                }.runTaskLater(DesertMain.getInstance, clickwait);
-            }
-        }catch(NullPointerException ignored){}
+        if (npcUUIDs.contains(event.getNPC().getUniqueId()) && !cantClick.contains(event.getWhoClicked().getUniqueId())){
+            Bukkit.getConsoleSender().sendMessage("NPC click registered. Player: " + event.getWhoClicked().getName() + ", NPC: " + name);
+            npcMessage(event.getWhoClicked(), clickMsg);
+            event.getWhoClicked().playSound(event.getWhoClicked().getLocation(), clickSnd, 10, 1);
+            cantClick.add(event.getWhoClicked().getUniqueId());
+            Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, () -> event.getWhoClicked().openInventory(getStartInventory(event)), clickwait);
+        }
     }
 
     @EventHandler
@@ -110,5 +105,7 @@ public abstract class NPCSuper implements Listener {
     public final void kickOnInv(PlayerKickEvent e){cantClick.remove(e.getPlayer().getUniqueId());}
     @EventHandler
     public final void dropOnInv(PlayerDropItemEvent e){if(cantClick.contains(e.getPlayer().getUniqueId())) e.setCancelled(true);}
+
     public abstract Inventory getStartInventory(NPCInteractEvent event);
+
 }

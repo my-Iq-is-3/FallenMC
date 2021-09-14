@@ -3,20 +3,17 @@ package me.zach.DesertMC.Utils;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import static org.bukkit.Note.natural;
-import static org.bukkit.Note.sharp;
-import static org.bukkit.Note.Tone;
+import static org.bukkit.Note.*;
 
 public class MiscUtils {
     private static final Plugin pl = DesertMain.getInstance;
@@ -49,10 +46,15 @@ public class MiscUtils {
     public static Firework spawnFirework(Location location, int power, boolean flicker, boolean trail, FireworkEffect.Type type, Color... colors){
         Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK);
         FireworkMeta fireworkMeta = firework.getFireworkMeta();
-        FireworkEffect fireworkEffect = FireworkEffect.builder().with(type).flicker(flicker).trail(trail).build();
+        FireworkEffect fireworkEffect = FireworkEffect.builder().with(type).flicker(flicker).trail(trail).withColor(colors).build();
         fireworkMeta.addEffect(fireworkEffect);
         fireworkMeta.setPower(power);
         firework.setFireworkMeta(fireworkMeta);
+        if(power == 0){
+            Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, () -> {
+                firework.detonate();
+            }, 2);
+        }
         return firework;
     }
 
@@ -107,7 +109,7 @@ public class MiscUtils {
 
     /**
      * Finds all entities within a radius of an already existing entity that are of specified type.<br>
-     * Example (getting a list of {@link Player}s within a 5-block radius of the first player listed in <code>Bukkit.getOnlinePlayers()</code>:<blockquote><code>List{@literal <Player>} nearbyPlayers = getNearbyEntities(Player.class, Bukkit.getOnlinePlayers().iterator().next(), 5, 5, 5);</code></blockquote>
+     * Example (getting a list of {@link Player}s within a 5-block radius of the first player listed in <code>Bukkit.getOnlinePlayers()</code>:<blockquote><code>List{@literal <Player>} nearbyPlayers = getNearbyEntities(Player.class, Bukkit.getOnlinePlayers().get(0), 5, 5, 5);</code></blockquote>
      * @author Archonic/DrMlem
      * @param toFind Class of entity to find
      * @param entity Entity to search nearby from
@@ -117,11 +119,43 @@ public class MiscUtils {
     @SuppressWarnings("unchecked")
     public static <T extends Entity> List<T> getNearbyEntities(Class<T> toFind, Entity entity, double xRange, double yRange, double zRange){
         List<Entity> nearbyEntities = entity.getNearbyEntities(xRange, yRange, zRange);
-        Predicate<Entity> filter = toFind::isInstance;
         ArrayList<T> nearbyFiltered = new ArrayList<>();
         for(Entity e : nearbyEntities)
             if(toFind.isInstance(e))
                 nearbyFiltered.add((T) e);
         return nearbyFiltered;
+    }
+
+    public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount){
+        ItemStack item = dataValue > -1 ? new ItemStack(type, amount, dataValue) : new ItemStack(type, amount);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(name);
+        if(!description.isEmpty()) meta.setLore(description);
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    public static boolean trueEmpty(Block block){
+        return block.isEmpty() || block.getType() == Material.GRASS || block.getType() == Material.LONG_GRASS || block.getType() == Material.SNOW;
+    }
+
+    /**
+     * @param min range minimum (inclusive)
+     * @param max range maximum (exclusive)
+     * @return an array of ints in the range of the two parameters provided.
+     */
+    public static int[] range(int min, int max){
+        int[] product = new int[max - min];
+        for(int i = 0; min != max; min++, i++){
+            product[i] = min;
+        }
+        return product;
+    }
+
+    public static <T> int indexOf(T[] array, T object){
+        for(int i = 0; i<array.length; i++){
+            if(array[i].equals(object)) return i;
+        }
+        return -1;
     }
 }

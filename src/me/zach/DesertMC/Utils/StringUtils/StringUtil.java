@@ -10,11 +10,20 @@ import java.util.List;
 public class StringUtil{
     public static List<String> wrapLore(String string){
         StringBuilder sb = new StringBuilder(string);
-        int i = 0;
-        while(i + 35 < sb.length() && (i = sb.lastIndexOf(" ", i + 35)) != -1){
-            sb.replace(i, i + 1, "\n");
+        int breakIndex = sb.lastIndexOf("\n");
+        int i = breakIndex == -1 ? 0 : breakIndex;
+        while(i + 35 < sb.length() && (i = sb.lastIndexOf(" ", i + 45)) != -1){
+            sb.setCharAt(i, '\n');
+            i = sb.lastIndexOf("\n", i + 45);
         }
-        return Arrays.asList(sb.toString().split("\n"));
+        //maintaining ChatColors since I'm pretty sure item lore doesn't carry them over through list entries
+        List<String> splitLore = new ArrayList<>(Arrays.asList(sb.toString().split("\n")));
+        String lastColors = ChatColor.getLastColors(splitLore.get(0));
+        for(int j = 1; j<splitLore.size(); lastColors = ChatColor.getLastColors(splitLore.get(j)), j++){
+            String line = splitLore.get(j);
+            splitLore.set(j, lastColors + line);
+        }
+        return splitLore;
     }
 
     private static final int CENTER_PX = 154;
@@ -22,13 +31,14 @@ public class StringUtil{
 
     /**
      * <p>Spigot Thread Link: https://www.spigotmc.org/threads/free-code-sending-perfectly-centered-chat-message.95872/</p>
+     * <p>Slightly altered</p>
      * @author @SirSpoodles
      */
-    private static String getCenteredMessage(boolean wrap, ChatWrapper wrapper, String... lines){
+    private static String[] getCenteredMessage(ChatWrapper wrapper, String... lines){
         ArrayList<String> messageBuilder = new ArrayList<>();
         for(String message : lines){
-            if(message == null || message.equals("")){
-                messageBuilder.add("");
+            if(message == null || message.isEmpty()){
+                messageBuilder.add(message);
                 continue;
             }
             message = ChatColor.translateAlternateColorCodes('&', message);
@@ -59,24 +69,27 @@ public class StringUtil{
                 sb.append(" ");
                 compensated += spaceLength;
             }
-            messageBuilder.add(sb + message);
+            messageBuilder.add(sb + message + sb);
         }
-        String centeredMessage = String.join("\n", messageBuilder);
-        return wrap ? wrapper.wrap(centeredMessage) : centeredMessage;
+        if(wrapper != null){
+            messageBuilder.add(0, wrapper.toString());
+            messageBuilder.add(wrapper.toString());
+        }
+        return messageBuilder.toArray(new String[0]);
     }
 
     public static void sendCenteredMessage(Player player, String... lines){
         player.sendMessage(getCenteredMessage(lines));
     }
 
-    public static String getCenteredMessage(String... lines){return getCenteredMessage(false, null, lines);}
+    public static String[] getCenteredMessage(String... lines){return getCenteredMessage(null, lines);}
 
-    public static void sendCenteredWrappedMessage(Player player, ChatWrapper wrapper, String... lines) throws IllegalArgumentException{
+    public static void sendCenteredWrappedMessage(Player player, ChatWrapper wrapper, String... lines){
         player.sendMessage(getCenteredWrappedMessage(wrapper, lines));
     }
 
-    public static String getCenteredWrappedMessage(ChatWrapper wrapper, String... lines){
-        return getCenteredMessage(true, wrapper);
+    public static String[] getCenteredWrappedMessage(ChatWrapper wrapper, String... lines){
+        return getCenteredMessage(wrapper, lines);
     }
 
     public static String getUncenteredWrappedMessage(ChatWrapper wrapper, String text){
@@ -87,15 +100,16 @@ public class StringUtil{
         player.sendMessage(getUncenteredWrappedMessage(wrapper, text));
     }
 
-    public static String capitilizeFirst(String str){
+    public static String capitalizeFirst(String str){
+        if(str.isEmpty()) return str;
         StringBuilder builder = new StringBuilder(str);
-        char upperChar = builder.substring(0, 1).toUpperCase().charAt(0);
+        char upperChar = Character.toUpperCase(builder.charAt(0));
         builder.setCharAt(0, upperChar);
         return builder.toString();
     }
 
     public static class ChatWrapper {
-        public static final ChatWrapper HORIZONTAL_LINE = new ChatWrapper('-', ChatColor.GREEN, true, false);
+        public static final ChatWrapper HORIZONTAL_LINE = new ChatWrapper('t', ChatColor.GREEN, true, false);
         public static final ChatWrapper THICK_HORIZONTAL_LINE = new ChatWrapper('-', ChatColor.GREEN, true, true);
                 
 
@@ -117,7 +131,7 @@ public class StringUtil{
         }
         
         public String wrap(String text){
-            return wrapper + "\n" + text + "\n" + wrapper;
+            return wrapper + ChatColor.RESET + "\n" + text + "\n" + ChatColor.RESET + wrapper;
         }
 
         public String toString(){

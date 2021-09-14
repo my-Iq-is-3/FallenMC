@@ -26,7 +26,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -41,7 +40,7 @@ import java.util.List;
 
 public class Commands extends CommandExecute implements Listener, CommandExecutor, TabCompleter {
 	public static HashMap<String, NPCSuper> npcsAndName = new HashMap<>();
-	private static final String colorsMessage;
+	private static final String[] colorsMessage;
 	static{
 		npcsAndName.put("STREAK_POLICE", SPolice.INSTANCE);
 		npcsAndName.put("SOUL_BROKER", SoulShop.INSTANCE);
@@ -67,7 +66,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         			if(args.length == 0) type = "lobby";
         			else type = args[0];
         			mainpl.getConfig().set("server.spawn." + type, player.getLocation());
-        			player.sendMessage(Prefix.SERVER + ChatColor.GRAY.toString() + ": Set the spawn for " + StringUtil.capitilizeFirst(type));
+        			player.sendMessage(Prefix.SERVER + ChatColor.GRAY.toString() + ": Set the spawn for " + StringUtil.capitalizeFirst(type));
         			mainpl.saveConfig();
         		}else{
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");

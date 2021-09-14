@@ -76,14 +76,14 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
         msgCompiler.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "MILESTONES RESET!");
         int resets = DesertMain.resets;
         if(!DesertMain.unclaimed.isEmpty()){
-            msgCompiler.add(StringUtil.getCenteredMessage(ChatColor.RED + "You still have unclaimed milestones!", ChatColor.RED + "Are you sure you wish to reset?"));
+            msgCompiler.add(Arrays.toString(StringUtil.getCenteredMessage(ChatColor.RED + "You still have unclaimed milestones!", ChatColor.RED + "Are you sure you wish to reset?")));
         }else msgCompiler.add(ChatColor.GREEN + "");
         TextComponent component = new TextComponent(TextComponent.fromLegacyText("Click to confirm your reset."));
         String displayCase = getDisplayCase(player);
         String newCase = getNewCase(player);
-        msgCompiler.add(StringUtil.getCenteredMessage(ChatColor.GRAY + "Display case upgrade: " + displayCase + ChatColor.DARK_GRAY + " ➞ " + newCase));
+        msgCompiler.add(Arrays.toString(StringUtil.getCenteredMessage(ChatColor.GRAY + "Display case upgrade: " + displayCase + ChatColor.DARK_GRAY + " ➞ " + newCase)));
         if(cosmetics.containsKey(resets))
-            msgCompiler.add(StringUtil.getCenteredMessage(ChatColor.GOLD + "Cosmetic: " + cosmetics.get(resets)));
+            msgCompiler.add(Arrays.toString(StringUtil.getCenteredMessage(ChatColor.GOLD + "Cosmetic: " + cosmetics.get(resets))));
 
         component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/confirmreset"));
         String yellow = net.md_5.bungee.api.ChatColor.YELLOW.toString();

@@ -1,6 +1,5 @@
 package me.zach.DesertMC.Utils.Particle;
 
-import me.zach.DesertMC.Utils.Particle.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;

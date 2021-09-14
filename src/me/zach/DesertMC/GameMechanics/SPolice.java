@@ -35,7 +35,7 @@ import static me.zach.DesertMC.DesertMain.weightQueue;
 
 public class SPolice extends NPCSuper implements Listener {
     public static SPolice INSTANCE = new SPolice();
-    public static int SKIN_ID = 240562954;
+    public static final int SKIN_ID = 240562954;
     private static final ItemStack falseItem = new ItemStack(Material.STAINED_GLASS, 1, (short) 14);
     private static final ItemStack trueItem = new ItemStack(Material.STAINED_CLAY, 1, (short) 5);
     static{

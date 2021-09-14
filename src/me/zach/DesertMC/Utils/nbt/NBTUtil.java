@@ -2,11 +2,12 @@ package me.zach.DesertMC.Utils.nbt;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class NBTUtil {
     public static String getCustomAttrString(ItemStack item, String key){
-        if(item == null) return "null";
+        if(item == null || item.getType().equals(Material.AIR)) return "null";
         NBTItem nbt = new NBTItem(item);
         NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
         if (customAttributes == null) return "null";
@@ -17,7 +18,7 @@ public class NBTUtil {
 
 
     public static boolean hasCustomKey(ItemStack item, String key){
-        if(item == null) return false;
+        if(item == null || item.getType().equals(Material.AIR)) return false;
         NBTItem nbt = new NBTItem(item);
         NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
         if(customAttributes == null) return false;
@@ -25,7 +26,7 @@ public class NBTUtil {
     }
 
     public static <T> T getCustomAttr(ItemStack item, String key, Class<T> type){
-        if(item == null) return null;
+        if(item == null || item.getType().equals(Material.AIR)) return null;
         NBTItem nbt = new NBTItem(item);
         NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
         if(customAttributes == null) return null;

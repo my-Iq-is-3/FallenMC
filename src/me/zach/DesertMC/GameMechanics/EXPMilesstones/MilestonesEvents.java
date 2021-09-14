@@ -24,7 +24,6 @@ public class MilestonesEvents implements Listener {
             if (invName.equals("EXP Milestones")) {
                 e.setCancelled(true);
                 try {
-
                     MilestonesInventory.RewardsItem item = MilestonesInventory.RewardsItem.parseLevel(e.getCurrentItem(), (Player) e.getWhoClicked());
                     int level = item.level;
                     if (DesertMain.unclaimed.contains(level)) {

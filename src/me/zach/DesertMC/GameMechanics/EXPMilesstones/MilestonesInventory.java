@@ -6,6 +6,8 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.command.CraftConsoleCommandSender;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -64,7 +66,7 @@ public class MilestonesInventory implements Listener {
         ArrayList<ItemStack> list = new ArrayList<>();
         if(page == 0){
             page = Math.floorDiv(lv - 1, 29) + 1;
-        }else if(page < 0) throw new IllegalArgumentException("Page passed through rewardsList(Player p, int page) must be greater than 0!");
+        }else if(page < 0) throw new IllegalArgumentException("Page passed through rewardsList(Player p, int page) must be greater than or equal to 0!");
         if(page > 2) page = 2;
         for(int i = (page * 29) - 29; i<=page * 29; i++){
             list.add(new RewardsItem(i + 1, p));
