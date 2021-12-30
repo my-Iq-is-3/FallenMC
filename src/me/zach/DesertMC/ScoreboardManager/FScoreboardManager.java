@@ -28,35 +28,23 @@ public class FScoreboardManager {
 			Objective objective = mains.registerNewObjective("main", "dummy");
 			objective.setDisplayName(ChatColor.AQUA + "" + ChatColor.BOLD + "FallenMC");
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-//			System.out.println("ConfigUtils: " + ConfigUtils.INSTANCE);
-//			System.out.println("Level: " + ConfigUtils.INSTANCE.getLevel(ConfigUtils.INSTANCE.findClass(player),player));
-//			System.out.println("Class: " + ConfigUtils.INSTANCE.findClass(player));
-
-
 			Score gems = objective.getScore(ChatColor.WHITE + "Gems: " + ChatColor.GREEN + ConfigUtils.getGems(player));
 			Score level = objective.getScore(ChatColor.WHITE + "Level: " + ChatColor.AQUA + ConfigUtils.getLevel(ConfigUtils.findClass(player), player));
 			Score souls = objective.getScore(ChatColor.WHITE + "Souls: " + ChatColor.LIGHT_PURPLE + ConfigUtils.getSouls(player));
-
 			Score xp;
 			//set experience element
-
-			if(ConfigUtils.getXP(player, ConfigUtils.findClass(player)) == Key.MAX_XP) {
+			if(ConfigUtils.getLevel(ConfigUtils.findClass(player), player) >= 10){
 				xp = objective.getScore(ChatColor.WHITE + "XP: " + ChatColor.AQUA + "MAX");
-
-			}else {
-
+			}else{
 				int totalxp = ConfigUtils.getXpToNext(player, ConfigUtils.findClass(player)) + ConfigUtils.getXP(player,ConfigUtils.findClass(player));
 				xp = objective.getScore(ChatColor.WHITE + "XP: " + ChatColor.GREEN + ConfigUtils.getXP(player, ConfigUtils.findClass(player)) + ChatColor.WHITE + "/" + ChatColor.DARK_GRAY + totalxp);
 			}
-
 			//Now we have to make the first letter uppercase for the player classes
 			String betterclass = ConfigUtils.findClass(player);
 			char[] betterclassarr = betterclass.toCharArray();
 			betterclassarr[0] = Character.toUpperCase(betterclassarr[0]);
 			Score playerclass = objective.getScore(ChatColor.WHITE + "Class: " + ChatColor.GREEN + new String(betterclassarr));
-
 			Events.ks.putIfAbsent(player.getUniqueId(), 0);
-
 			//killstreaks
 			Score killstreak = objective.getScore(ChatColor.WHITE + "Killstreak: " + ChatColor.RED + Events.ks.get(player.getUniqueId()));
 			Score inCombat = objective.getScore(ChatColor.WHITE + "Status: " + ChatColor.GREEN + "???");
@@ -67,11 +55,8 @@ public class FScoreboardManager {
 				else
 					inCombat = objective.getScore(ChatColor.WHITE + "Status: " + ChatColor.RED + "Combat " + ChatColor.DARK_GRAY + "(" + PlayerUtils.fighting.get(player.getUniqueId()) + ")");
 			}
-
-
 			//ip
 			Score ip = objective.getScore(ChatColor.YELLOW + "play.fallenmc.xyz");
-
 			//blanks
 			Score blank1 = objective.getScore("   ");
 			Score blank2 = objective.getScore("  ");
@@ -80,7 +65,6 @@ public class FScoreboardManager {
 
 			//now set them to their respective value
 			ip.setScore(0);
-
 			blank1.setScore(1);
 			inCombat.setScore(2);
 			killstreak.setScore(3);
@@ -112,13 +96,5 @@ public class FScoreboardManager {
 
 				play.fallenmc.xyz
 			 */
-
-
-
-
-
-
-
 	}
-
 }

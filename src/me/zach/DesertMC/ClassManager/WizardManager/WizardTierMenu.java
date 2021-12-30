@@ -13,7 +13,7 @@ import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 
 public class WizardTierMenu {
-	Player player = null;
+	Player player;
 	public WizardTierMenu(Player player) {
 		
 		this.player = player;
@@ -102,20 +102,20 @@ public class WizardTierMenu {
 				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + " SHOP UNLOCK" + ChatColor.GREEN + " - Magic Wand ");
 				glore.add(ChatColor.DARK_GRAY + "(When you hit an enemy with this wand, ");
 				glore.add(ChatColor.DARK_GRAY + "there is a 40% chance for them to get a good effect, ");
-				glore.add(ChatColor.DARK_GRAY + "and a 60% chance for them to recieve a bad effect).");
+				glore.add(ChatColor.DARK_GRAY + "and a 60% chance for them to receive a bad effect).");
 				
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + " SHOP UNLOCK" + ChatColor.YELLOW + " - Magic Wand ");
 				ylore.add(ChatColor.DARK_GRAY + "(When you hit an enemy with this wand, ");
 				ylore.add(ChatColor.DARK_GRAY + "there is a 40% chance for them to get a good effect, ");
-				ylore.add(ChatColor.DARK_GRAY + "and a 60% chance for them to recieve a bad effect).");
+				ylore.add(ChatColor.DARK_GRAY + "and a 60% chance for them to receive a bad effect).");
 				
 				
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + " SHOP UNLOCK" + ChatColor.RED + " - Magic Wand ");
 				rlore.add(ChatColor.DARK_GRAY + "(When you hit an enemy with this wand, ");
 				rlore.add(ChatColor.DARK_GRAY + "there is a 40% chance for them to get a good effect, ");
-				rlore.add(ChatColor.DARK_GRAY + "and a 60% chance for them to recieve a bad effect).");
+				rlore.add(ChatColor.DARK_GRAY + "and a 60% chance for them to receive a bad effect).");
 				
 				break;
 			case 4:
@@ -177,13 +177,13 @@ public class WizardTierMenu {
 				
 			case 7:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "MAGIC REFINERY " + ChatColor.GREEN + "- Now the magic wand only applys");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "MAGIC REFINERY " + ChatColor.GREEN + "- Now the magic wand only applies");
 				glore.add(ChatColor.GREEN + "bad effects to your enemy.");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "MAGIC REFINERY " + ChatColor.YELLOW + "- Now the magic wand only applys");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "MAGIC REFINERY " + ChatColor.YELLOW + "- Now the magic wand only applies");
 				ylore.add(ChatColor.YELLOW + "bad effects to your enemy.");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "MAGIC REFINERY " + ChatColor.RED + "- Now the magic wand only applys");
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "MAGIC REFINERY " + ChatColor.RED + "- Now the magic wand only applies");
 				rlore.add(ChatColor.RED + "bad effects to your enemy.");
 				break;
 			case 8:

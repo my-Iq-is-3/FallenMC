@@ -1,10 +1,11 @@
-package me.zach.DesertMC.GameMechanics;
+package me.zach.DesertMC.GameMechanics.npcs;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import net.jitse.npclib.api.events.NPCInteractEvent;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -27,8 +28,8 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 import static org.bukkit.Note.Tone;
-
-public class SoulShop extends NPCSuper implements Listener{
+//TODO refactor horrible class
+public class SoulBroker extends NPCSuper implements Listener{
     public static final int SKIN_ID = 1646375186;
     static Plugin pl = DesertMain.getInstance;
     static ItemStack clear = new ItemStack(Material.GLASS);
@@ -41,7 +42,7 @@ public class SoulShop extends NPCSuper implements Listener{
     static ItemMeta decreaseMeta = decrease.getItemMeta();
     static Set<UUID> dontGiveItemOnClose = new HashSet<>();
     static{
-        //creating some unchanging items statically to save on processing power
+        //creating some unchanging items statically to save on processing power (yeah right past me)
         ItemMeta clearMeta = clear.getItemMeta();
         paneMeta.setDisplayName(" ");
         pane.setItemMeta(paneMeta);
@@ -50,7 +51,6 @@ public class SoulShop extends NPCSuper implements Listener{
         clearMeta.setLore(Arrays.asList(ChatColor.YELLOW + "Temporarily clear an item of", ChatColor.YELLOW + "its weight.", "", ChatColor.YELLOW + "Cost: (Add an item to view cost)"));
         clearMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
         clear.setItemMeta(clearMeta);
-
         ItemMeta reduceMeta = reduce.getItemMeta();
         reduceMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "Reduce Weight Per Hit");
         reduceMeta.setLore(Arrays.asList(ChatColor.YELLOW + "Reduce the amount weight added to", ChatColor.YELLOW + "an item each time you hit a player.", "", ChatColor.YELLOW + "Cost: " + ChatColor.BLUE + "15" + ChatColor.LIGHT_PURPLE + " Souls" + ChatColor.YELLOW + " per " + ChatColor.BLUE + "0.00005%"));
@@ -73,13 +73,11 @@ public class SoulShop extends NPCSuper implements Listener{
 
 
 
-    public static SoulShop INSTANCE = new SoulShop();
-    public SoulShop(){
+    public SoulBroker(){
         super(ChatColor.LIGHT_PURPLE + "Soul Broker",
                 SKIN_ID,
                 ChatColor.WHITE + "I can wipe an items weight, or decrease its Weight Per Hit, but only in exchange for a few souls.",
                 Sound.WITHER_IDLE,
-                90,
                 ChatColor.GRAY + "Click me to barter your souls");
     }
 
@@ -94,125 +92,112 @@ public class SoulShop extends NPCSuper implements Listener{
         Player p = (Player) event.getWhoClicked();
         Inventory playerInv = p.getInventory();
         //does the player have the inventory open?
-        if(cantClick.contains(p.getUniqueId())){
+        if(openInv.contains(p.getUniqueId())){
             //cancel event immediately
             event.setCancelled(true);
             if(event.getClick().equals(ClickType.LEFT) || event.getClick().equals(ClickType.RIGHT)) {
+                //shop inventory variable
+                Inventory shopInv = p.getOpenInventory().getTopInventory();
+                //calling the Reduce Item WPH inventory event if needed, and then returning
+                if (shopInv.getName().equals("Reduce Item WPH")) {
+                    reduceInvClick(event);
+                    return;
+                }
+                //getting the item and nbt
+                ItemStack item = event.getCurrentItem();
+                NBTCompound nbt = new NBTItem(item);
+                //seeing if we can extract the CustomAttributes compound
                 try {
-                    //shop inventory variable
-                    Inventory shopInv = p.getOpenInventory().getTopInventory();
-                    //calling the Reduce Item WPH inventory event if needed, and then returning
-                    if (shopInv.getName().equals("Reduce Item WPH")) {
-                        reduceInvClick(event);
-                        return;
-                    }
-                    //getting the item and nbt
-                    ItemStack item = event.getCurrentItem();
-                    NBTCompound nbt = new NBTItem(item);
-                    //seeing if we can extract the CustomAttributes compound
-                    try {
-                        nbt = nbt.getCompound("CustomAttributes");
-                    } catch (NullPointerException ignored) {
-                    }
-                    //does the clicked item have the necessary values to be a player's item?
-                    boolean playerItem = false;
-                    try {
-                        playerItem = nbt.hasKey("WEIGHT") && nbt.hasKey("WEIGHT_ADD") && !nbt.getString("ID").equals("TOKEN");
-                    }catch(NullPointerException ignored){}
-                    if(playerItem){
-                        //checking if it is in the shopInv or player inventory
-                        if (!event.getClickedInventory().getName().equals(shopInv.getName())) {
-                            //checking if the shop inventory's item slot is open, and if so, adding the item occupying the slot into the player's inventory
-                            try {
-                                if (!shopInv.getItem(13).getType().equals(Material.AIR)) {
-                                    playerInv.addItem(shopInv.getItem(13));
-                                    shopInv.clear(13);
-                                }
-                            } catch (NullPointerException ignored) {
-                            }
-                            //setting the shop item slot and clearing the player's slot
-                            shopInv.setItem(13, event.getCurrentItem());
-                            playerInv.clear(event.getSlot());
-                            //creating a new "clear" item and other significant values, because some values in the lore and NBT need to be modified
-                            ItemStack newClear = clear.clone();
-                            ItemMeta newClearMeta = newClear.getItemMeta();
-                            List<String> nLore = newClearMeta.getLore();
-                            //calculating the price
-                            int price = (int) (15 * (nbt.getDouble("WEIGHT_ADD") / 0.01));
-                            //adding it to the lore, and replacing the old "(Add an item to view cost)" string
-                            nLore.set(3, nLore.get(3).replaceAll("\\(Add an item to view cost\\)", ChatColor.BLUE.toString() + price));
-                            //creating an NBTItem for the clear item, and then setting the "PRICE" value with the integer we have already calculated
-                            newClearMeta.setLore(nLore);
-                            newClear.setItemMeta(newClearMeta);
-                            NBTItem newClearNBT = new NBTItem(newClear);
-                            newClearNBT.addCompound("CustomAttributes").setInteger("PRICE", price);
-                            shopInv.setItem(11, newClearNBT.getItem());
-                        } else {
-                            if (event.getSlot() != 13) {
-                                //in case there is somehow a player item in any slot other than the designated one
-                                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Player " + p.getUniqueId() + " clicked an item with the attributes WEIGHT and WEIGHT_ADD inside the Soul Shop inventory, but the slot wasn't 13! Something's fishy...");
-                            } else {
+                    nbt = nbt.getCompound("CustomAttributes");
+                } catch (NullPointerException ignored) {
+                }
+                //does the clicked item have the necessary values to be a player's item?
+                boolean playerItem = false;
+                try {
+                    playerItem = nbt.hasKey("WEIGHT") && nbt.hasKey("WEIGHT_ADD") && !NBTUtil.getCustomAttrString(nbt, "ID").equals("TOKEN");
+                }catch(NullPointerException ignored){}
+                if(playerItem){
+                    //checking if it is in the shopInv or player inventory
+                    if (!event.getClickedInventory().getName().equals(shopInv.getName())) {
+                        //checking if the shop inventory's item slot is open, and if so, adding the item occupying the slot into the player's inventory
+                        try {
+                            if (!shopInv.getItem(13).getType().equals(Material.AIR)) {
+                                playerInv.addItem(shopInv.getItem(13));
                                 shopInv.clear(13);
-                                shopInv.setItem(11, clear);
-                                playerInv.addItem(item);
                             }
+                        } catch (NullPointerException ignored) {
                         }
-                    } else if (item.getItemMeta().getDisplayName().equals(ChatColor.LIGHT_PURPLE + "Clear Weight")) {
-                        if (!event.getClickedInventory().getName().equals(shopInv.getName())) {
-                            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Player " + p.getUniqueId() + " clicked the Clear Weight item, but the click didn't occur in the shop inventory! Something's fishy...");
-                            p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
+                        //setting the shop item slot and clearing the player's slot
+                        shopInv.setItem(13, event.getCurrentItem());
+                        playerInv.clear(event.getSlot());
+                        //creating a new "clear" item and other significant values, because some values in the lore and NBT need to be modified
+                        ItemStack newClear = clear.clone();
+                        ItemMeta newClearMeta = newClear.getItemMeta();
+                        List<String> nLore = newClearMeta.getLore();
+                        //calculating the price
+                        int price = (int) (15 * (nbt.getDouble("WEIGHT_ADD") / 0.01));
+                        //adding it to the lore, and replacing the old "(Add an item to view cost)" string
+                        nLore.set(3, nLore.get(3).replaceAll("\\(Add an item to view cost\\)", ChatColor.BLUE.toString() + price));
+                        //creating an NBTItem for the clear item, and then setting the "PRICE" value with the integer we have already calculated
+                        newClearMeta.setLore(nLore);
+                        newClear.setItemMeta(newClearMeta);
+                        NBTItem newClearNBT = new NBTItem(newClear);
+                        newClearNBT.addCompound("CustomAttributes").setInteger("PRICE", price);
+                        shopInv.setItem(11, newClearNBT.getItem());
+                    } else {
+                        if (event.getSlot() != 13) {
+                            //in case there is somehow a player item in any slot other than the designated one
+                            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Player " + p.getUniqueId() + " clicked an item with the attributes WEIGHT and WEIGHT_ADD inside the Soul Shop inventory, but the slot wasn't 13! Something's fishy...");
                         } else {
-                            //Checking if it is the extracted CustomAttributes compound
-                            if (!(nbt instanceof NBTItem)) {
-                                //checking if it has a price value
-                                if (nbt.hasKey("PRICE")) {
-                                    int price = nbt.getInteger("PRICE");
-                                    if (ConfigUtils.deductSouls(p, price)) {
-                                        playerInv.addItem(clearWeight(shopInv.getItem(13)));
-                                        shopInv.clear(13);
-                                        p.closeInventory();
-                                        npcMessage(p, "I cleared your weapon's weight, and took the promised souls in return. Thanks for trading with me.");
-                                    } else {
-                                        p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
-                                    }
+                            shopInv.clear(13);
+                            shopInv.setItem(11, clear);
+                            playerInv.addItem(item);
+                        }
+                    }
+                } else if (item.getItemMeta().getDisplayName().equals(ChatColor.LIGHT_PURPLE + "Clear Weight")) {
+                    if (!event.getClickedInventory().getName().equals(shopInv.getName())) {
+                        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Player " + p.getUniqueId() + " clicked the Clear Weight item, but the click didn't occur in the shop inventory! Something's fishy...");
+                        p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
+                    } else {
+                        //Checking if it is the extracted CustomAttributes compound
+                        if (!(nbt instanceof NBTItem)) {
+                            //checking if it has a price value
+                            if (nbt.hasKey("PRICE")) {
+                                int price = nbt.getInteger("PRICE");
+                                if (ConfigUtils.deductSouls(p, price)) {
+                                    playerInv.addItem(clearWeight(shopInv.getItem(13)));
+                                    shopInv.clear(13);
+                                    p.closeInventory();
+                                    npcMessage(p, "I cleared your weapon's weight, and took the promised souls in return. Thanks for trading with me.");
                                 } else {
                                     p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
                                 }
                             } else {
                                 p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
-                                return;
                             }
-
-                        }
-                    }else if(item.getItemMeta().getDisplayName().equals("§dReduce Weight Per Hit")){
-                        if (!event.getClickedInventory().getName().equals(shopInv.getName())) {
-                            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Player " + p.getUniqueId() + " clicked the Reduce Item Weight Per Hit item, but the click didn't occur in the shop inventory! Something's fishy...");
+                        } else {
                             p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
-                        }else{
-                            try {
-                                ItemStack itemToReduce = shopInv.getItem(13);
-                                dontGiveItemOnClose.add(p.getUniqueId());
-                                p.closeInventory();
-                                try{
-                                    cantClick.add(p.getUniqueId());
-                                    p.openInventory(getReduceInventory(p, itemToReduce));
-                                }catch(Exception e){
-                                    p.sendMessage(ChatColor.RED + "Insert an item before you try to reduce its WPH!");
-                                    cantClick.remove(p.getUniqueId());
-                                    throw e;
-                                }
-                            }catch(NullPointerException ignored){
-                                p.closeInventory();
-                                cantClick.remove(p.getUniqueId());
-                                p.sendMessage(ChatColor.RED + "Insert an item before you try to reduce its WPH!");
-                            }
                         }
-                    } else {
-                        p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
                     }
-
-
-                }catch(NullPointerException ex){throw ex;}
+                }else if(item.getItemMeta().getDisplayName().equals("§dReduce Weight Per Hit")){
+                    if (!event.getClickedInventory().getName().equals(shopInv.getName())) {
+                        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Player " + p.getUniqueId() + " clicked the Reduce Item Weight Per Hit item, but the click didn't occur in the shop inventory! Something's fishy...");
+                        p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
+                    }else{
+                        ItemStack itemToReduce = shopInv.getItem(13);
+                        if(itemToReduce == null){
+                            p.playSound(p.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
+                            p.sendMessage(ChatColor.RED + "Insert an item before trying to reduce it's WPH!");
+                        }else{
+                            dontGiveItemOnClose.add(p.getUniqueId());
+                            p.closeInventory();
+                            p.openInventory(getReduceInventory(p, itemToReduce));
+                            openInv.add(p.getUniqueId());
+                        }
+                    }
+                } else {
+                    p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
+                }
             }
         }
     }
@@ -335,7 +320,7 @@ public class SoulShop extends NPCSuper implements Listener{
                         //if the player doesn't have enough gems, close the inventory, tell them they don't have enough gems, and play a sound
                         p.closeInventory();
                         p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
-                        npcMessage(p, "Hey, stop tryna cheap me out. I don't negotiate my rates, get a few more souls then come back to me.");
+                        npcMessage(p, "Hey, stop tryna cheap me out, I don't negotiate my rates. Get a few more souls then come back to me.");
                     }
                 }else{
                     p.closeInventory();

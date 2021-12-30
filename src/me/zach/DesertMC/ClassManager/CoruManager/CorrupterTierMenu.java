@@ -124,19 +124,16 @@ public class CorrupterTierMenu {
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Immunity to fire and lava.");
-				ylore.add(ChatColor.YELLOW + "- Extravert enchantment");
-
-
+				ylore.add(ChatColor.YELLOW + " - Extravert enchantment");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Immunity to fire and lava.");
-				rlore.add(ChatColor.RED + "- Extravert enchantment");
-
+				rlore.add(ChatColor.RED + " - Extravert enchantment");
 				break;
 			case 5:
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Traveller");
-				glore.add(ChatColor.GREEN + " For every unique block travelled, deal an extra");
+				glore.add(ChatColor.GREEN + " For every unique (non-air) block travelled, deal an extra");
 				glore.add(ChatColor.GREEN + "0.02% damage. Resets upon death.");
 				glore.add(ChatColor.BOLD + "" + ChatColor.GREEN + "SHOP UNLOCK " + ChatColor.GREEN + "- Corrupter Leggings");
 
@@ -145,10 +142,11 @@ public class CorrupterTierMenu {
 				ylore.add(ChatColor.YELLOW + " For every unique (non-air) block travelled, deal an extra");
 				ylore.add(ChatColor.YELLOW + "0.02% damage. Resets upon death");
 				ylore.add(ChatColor.BOLD + "" + ChatColor.YELLOW + "SHOP UNLOCK " + ChatColor.YELLOW + "- Corrupter Leggings");
+
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Traveller");
 				rlore.add(ChatColor.RED + " For every unique (non-air) block travelled, deal an extra");
-				rlore.add(ChatColor.RED + "0.02Z% damage. Resets upon death.");
+				rlore.add(ChatColor.RED + "0.02% damage. Resets upon death.");
 				glore.add(ChatColor.BOLD + "" + ChatColor.RED + "SHOP UNLOCK " + ChatColor.RED + "- Corrupter Leggings");
 				break;
 			case 6:

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="MainPlugin">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/out/artifacts/MainPlugin_jar/MainPlugin.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

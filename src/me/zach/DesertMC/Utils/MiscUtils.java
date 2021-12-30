@@ -1,10 +1,20 @@
 package me.zach.DesertMC.Utils;
 
+import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTEntity;
+import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
+import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.RankUtils.Rank;
+import me.zach.DesertMC.Utils.RankUtils.RankEvents;
+import me.zach.DesertMC.Utils.structs.Pair;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -16,6 +26,7 @@ import java.util.*;
 import static org.bukkit.Note.*;
 
 public class MiscUtils {
+    private static final ItemStack emptyPane = generateItem(Material.STAINED_GLASS_PANE, " ", Collections.emptyList(), (byte) 7, 1);
     private static final Plugin pl = DesertMain.getInstance;
     public static void ootChestFanfare(Player player){
         player.playNote(player.getLocation(), Instrument.PIANO, natural(0, Tone.F));
@@ -51,9 +62,7 @@ public class MiscUtils {
         fireworkMeta.setPower(power);
         firework.setFireworkMeta(fireworkMeta);
         if(power == 0){
-            Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, () -> {
-                firework.detonate();
-            }, 2);
+            Bukkit.getScheduler().runTask(DesertMain.getInstance, firework::detonate);
         }
         return firework;
     }
@@ -65,16 +74,21 @@ public class MiscUtils {
         return "th";
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public static HashMap sortValues(HashMap<?, Integer> map){
-        List<Map.Entry<?, Integer>> list = new LinkedList<>(map.entrySet());
-        list.sort((e1, e2) -> ((Comparable<Integer>) ((e1)).getValue()).compareTo(e2.getValue()));
-        HashMap sortedHashMap = new LinkedHashMap();
-        for(Object o : list){
-            Map.Entry<?, Integer> entry = (Map.Entry<?, Integer>) o;
-            sortedHashMap.put(entry.getKey(), entry.getValue());
-        }
-        return sortedHashMap;
+    public static <K, V> List<Map.Entry<K, V>> sortValues(HashMap<K, V> map){
+        List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
+        list.sort((e1, e2) -> {
+            V value = e1.getValue();
+            if(value instanceof Comparable){
+                return ((Comparable<V>) value).compareTo(e2.getValue());
+            }else throw new IllegalArgumentException("HashMap parameter isn't comparable");
+        });
+        return list;
+    }
+
+    public static <T> void clearDuplicates(List<T> list){
+        Set<T> clearDuplicates = new HashSet<>(list);
+        list.clear();
+        list.addAll(clearDuplicates);
     }
 
     public static <T extends Entity> List<T> getNearbyEntities(Class<T> type, Entity entity, double range){
@@ -127,16 +141,101 @@ public class MiscUtils {
     }
 
     public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount){
+        return generateItem(type, name, description, dataValue, amount, null);
+    }
+
+    public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount, String id){
+        return generateItem(type, name, description, dataValue, amount, id, 1, 0);
+    }
+
+    /**
+     * Generates a custom item with the given parameters.
+     *
+     * @param attackMultiplier BONUS factor to multiply attack damage by (if any). Default: 1
+     * @param defenseBonus Percentage to add to the armor set's total defense BONUS (works in tandem with the vanilla armor protection rates). Default: 0<br><br>example: If a player wore boots generated with a defense bonus of 5, and wore a chestplate with a defense bonus of 15, attack damage against them would be the vanilla damage reduced by 20%.
+     */
+    public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount, String id, float attackMultiplier, float defenseBonus){
         ItemStack item = dataValue > -1 ? new ItemStack(type, amount, dataValue) : new ItemStack(type, amount);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(name);
+        if(!name.isEmpty()) meta.setDisplayName(name);
         if(!description.isEmpty()) meta.setLore(description);
+        meta.spigot().setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
         item.setItemMeta(meta);
+        boolean hasId = id != null;
+        boolean hasAtk = attackMultiplier != 1;
+        boolean hasDef = defenseBonus > 0;
+        if(hasId || hasAtk || hasDef){
+            NBTItem nbt = new NBTItem(item);
+            NBTCompound customAttributes = nbt.addCompound("CustomAttributes");
+            if(hasId) customAttributes.setString("ID", id);
+            if(hasAtk) customAttributes.setFloat("ATTACK", attackMultiplier);
+            if(hasDef) customAttributes.setFloat("DEFENSE", defenseBonus);
+            customAttributes.setString("UUID", UUID.randomUUID().toString());
+            item = nbt.getItem();
+        }
         return item;
+    }
+
+    public static Player getClosest(Location location) throws IllegalStateException {
+        Iterator<? extends Player> playerIterator = Bukkit.getOnlinePlayers().iterator();
+        if(!playerIterator.hasNext()) throw new IllegalStateException("Closest player check request with no players online!");
+        Player firstPlayer = playerIterator.next();
+        Pair<Player, Integer> closest = new Pair<>(firstPlayer, (int) firstPlayer.getLocation().distanceSquared(location));
+        while(playerIterator.hasNext()){
+            Player player = playerIterator.next();
+            int distance = (int) player.getLocation().distanceSquared(location);
+            if(distance < closest.second){
+                closest = new Pair<>(player, distance);
+            }
+        }
+        return closest.first;
+    }
+
+    public static ItemStack getEmptyPane(){
+        return emptyPane;
+    }
+
+    public static ItemStack getEmptyPane(byte color){
+        return generateItem(Material.STAINED_GLASS_PANE, " ", Collections.emptyList(), color, 1);
+    }
+
+    public static ItemStack getGemsItem(Player player){
+        return getGemsItem(ConfigUtils.getGems(player));
+    }
+
+    public static ItemStack getGemsItem(int gems){
+        return generateItem(Material.EMERALD, ChatColor.GREEN.toString() + gems + (gems == 1 ? " Gem" : " Gems"), Collections.emptyList(), (byte) -1, 1);
     }
 
     public static boolean trueEmpty(Block block){
         return block.isEmpty() || block.getType() == Material.GRASS || block.getType() == Material.LONG_GRASS || block.getType() == Material.SNOW;
+    }
+
+    public static String makePlural(String str){
+        return str.endsWith("s") ? str : str + "s";
+    }
+
+    public static ChatColor getRankColor(Player player){
+        Rank rank = RankEvents.rankSession.get(player.getUniqueId());
+        if(rank != null){
+            return rank.c;
+        }else return ChatColor.GRAY;
+    }
+
+    public static void setOwner(Item item, Player owner){
+        item.setCustomName(MiscUtils.getRankColor(owner) + owner.getName() + "'s " + ChatColor.WHITE + item.getItemStack().getItemMeta().getDisplayName());
+        item.setCustomNameVisible(true);
+        NBTEntity nbt = new NBTEntity(item);
+        nbt.setString("OWNER", owner.getUniqueId().toString());
+    }
+
+    public static int getEmpties(Inventory inventory){
+        int empties = 0;
+        for(ItemStack item : inventory.getContents()){
+            if(item == null) empties++;
+        }
+        return empties;
     }
 
     /**
@@ -157,5 +256,34 @@ public class MiscUtils {
             if(array[i].equals(object)) return i;
         }
         return -1;
+    }
+
+    public static <T> boolean contains(T[] array, T object){
+        for(T item : array){
+            if(item.equals(object)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * {@link Arrays#asList(T[])} returns an immutable list, so this method was created.
+     */
+    @SafeVarargs
+    public static <T> ArrayList<T> asArrayList(T... items){
+        return new ArrayList<>(Arrays.asList(items));
+    }
+
+    public static <T> List<T> trimList(List<T> list, int trimTo){
+        while(list.size() > trimTo) list.remove(list.size() - 1);
+        return list;
+    }
+    @SuppressWarnings("unchecked")
+    public static <T> T ensureDefault(String path, T defaultValue, Plugin plugin){
+        FileConfiguration config = plugin.getConfig();
+        if(!config.contains(path)){
+            config.set(path, defaultValue);
+            plugin.saveConfig();
+            return defaultValue;
+        }else return (T) config.get(path);
     }
 }

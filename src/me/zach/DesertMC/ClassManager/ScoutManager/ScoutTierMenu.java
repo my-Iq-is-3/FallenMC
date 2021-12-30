@@ -14,7 +14,7 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 
 
 public class ScoutTierMenu{
-	Player player = null;
+	Player player;
 	public ScoutTierMenu(Player player) {
 		this.player = player;
 	}

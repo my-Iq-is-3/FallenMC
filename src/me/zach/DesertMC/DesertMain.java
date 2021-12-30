@@ -8,19 +8,20 @@ import me.zach.DesertMC.CommandsPackage.Commands;
 import me.zach.DesertMC.CommandsPackage.ItemCommand;
 import me.zach.DesertMC.ClassManager.InvEvents;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesEvents;
-import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesInventory;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesOverride;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
-import me.zach.DesertMC.GameMechanics.SPolice;
-import me.zach.DesertMC.GameMechanics.SoulShop;
+import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
+import me.zach.DesertMC.GameMechanics.NPCStructure.SavedNPC;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.gui.GUIManager;
 import net.jitse.npclib.NPCLib;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -54,22 +55,24 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public static int resets = 0;
 	public static Set<UUID> claiming = new HashSet<>();
 	public static final ArrayList<Integer> unclaimed = new ArrayList<>();
+	public static final String[] NPC_PACKAGES = new String[]{"me.zach.DesertMC.GameMechanics.npcs", "xyz.fallenmc.shops.npcs.clazz"};
 	static{
 		unclaimed.add(1);
 		unclaimed.add(7);
 	}
-	//How to generate a random long: (long) (Math.random() * (rightLimit - leftLimit));
 	@Override
 	public void onEnable() {
 		Bukkit.getConsoleSender().sendMessage("1");
 		library = new NPCLib(this);
 		getInstance = this;
-		String[] cmdsfile = {"testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications"};
+		ConfigurationSerialization.registerClass(SavedNPC.class);
+		String[] cmdsfile = {"testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kot", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
 		getCommand("confirmreset").setExecutor(new MilestonesUtil());
 		loadConfig();
+		loadNPCs();
 		MilestonesOverride.addOverrides();
 		Events.check(this);
 		Bukkit.getConsoleSender().sendMessage("1.1");
@@ -79,17 +82,24 @@ public class DesertMain extends JavaPlugin implements Listener {
 	private void registerEvents(Plugin p){
 		Bukkit.getConsoleSender().sendMessage("2");
 		Bukkit.getPluginManager().registerEvents(new Events(), p);
-		Bukkit.getPluginManager().registerEvents(new RankEvents(this), p);
+		Bukkit.getPluginManager().registerEvents(new RankEvents(p), p);
 		Bukkit.getPluginManager().registerEvents(new InvEvents(), p);
-		Bukkit.getPluginManager().registerEvents(EventsForWizard.INSTANCE, this);
-		Bukkit.getPluginManager().registerEvents(EventsForCorruptor.INSTANCE, this);
-		Bukkit.getPluginManager().registerEvents(EventsForTank.getInstance(), this);
-		Bukkit.getPluginManager().registerEvents(EventsForScout.getInstance(), this);
-		Bukkit.getPluginManager().registerEvents(SPolice.INSTANCE, this);
-		Bukkit.getPluginManager().registerEvents(SoulShop.INSTANCE, this);
-		Bukkit.getPluginManager().registerEvents(new MilestonesEvents(), this);
-		Bukkit.getPluginManager().registerEvents(new TravellerEvents(), this);
-		Bukkit.getPluginManager().registerEvents(new GUIManager(), this);
+		Bukkit.getPluginManager().registerEvents(EventsForWizard.INSTANCE, p);
+		Bukkit.getPluginManager().registerEvents(EventsForCorruptor.INSTANCE, p);
+		Bukkit.getPluginManager().registerEvents(EventsForTank.getInstance(), p);
+		Bukkit.getPluginManager().registerEvents(EventsForScout.getInstance(), p);
+		Bukkit.getPluginManager().registerEvents(new MilestonesEvents(), p);
+		Bukkit.getPluginManager().registerEvents(new TravellerEvents(), p);
+		Bukkit.getPluginManager().registerEvents(new GUIManager(), p);
+	}
+
+	private void loadNPCs(){
+		List<SavedNPC> npcs = NPCSuper.stored(this);
+		for(SavedNPC savedNPC : npcs){
+			Location location = savedNPC.location;
+			savedNPC.npc.createNPC(savedNPC.location);
+			Bukkit.getLogger().info("Spawned " + savedNPC.npc.name + " from config at (" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ")");
+		}
 	}
 
 	private void registerCommands(String[] commands, CommandExecutor file){
@@ -104,6 +114,4 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public static NPCLib getNPCLib(){
 		return library;
 	}
-	
-	
 }

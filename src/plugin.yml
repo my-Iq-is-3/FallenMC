@@ -1,8 +1,11 @@
 name: Fallen
 main: me.zach.DesertMC.DesertMain
 version: "1.0"
-author: DrMlem/GodofMicrowaves
+author: DrMlem (Archonic)/one_iq
 description: Core Plugin
+depend:
+ - Databank
+ - NPCLibPlugin
 
 commands:
  addweight:
@@ -37,7 +40,7 @@ commands:
   usage: /<command> <title>
  spawnnpc:
   description: Spawns an npc.
-  usage: /<command> <npc name>
+  usage: /<command> <loadOnStartup:true|false> <npc name>
  seizehelditem:
   description: Seizes a target player's held item.
   usage: /<command> <target player>
@@ -70,6 +73,9 @@ commands:
  blocknotifications:
   description: Toggles block notifications for the Traveller class bonus
   usage: /<command>
+ shoptest:
+  description: Tests the server's new, fancy and programmatic Shop system. Admins only!
+  usage: /<command> <material1> <material2>...
 
 permissions:
  admin:

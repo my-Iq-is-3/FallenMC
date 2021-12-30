@@ -20,7 +20,7 @@ import org.bukkit.util.Vector;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-public enum Cosmetic implements CosmeticActivator{
+public enum Cosmetic {
     //player cosmetic enum
     EXPLOSION("Explosion Kill Effect", Material.TNT,  ChatColor.YELLOW + "Explode your enemies for the ultimate revenge!", CosmeticType.KILL_EFFECT){
         @Override
@@ -341,6 +341,27 @@ public enum Cosmetic implements CosmeticActivator{
             for(Item item : items) item.remove();
         }, 40);
     }
+
+    public void activateParticle(Player p){
+        throw new Cosmetic.CosmeticActivationException("No specific particle effect activation method was defined for cosmetic " + name() + "!");
+    }
+
+    public void activateArrow(Arrow a, boolean fast){
+        throw new Cosmetic.CosmeticActivationException("No specific arrow trail activation method was defined for cosmetic " + name() + "!");
+    }
+
+    public void activateStreak(Player p){
+        throw new Cosmetic.CosmeticActivationException("No specific streak effect activation method was defined for cosmetic " + name() + "!");
+    }
+
+    public void activateDeath(Player p){
+        throw new Cosmetic.CosmeticActivationException("No specific death effect activation method was defined for cosmetic " + name() + "!");
+    }
+
+    public void activateKill(Player p){
+        throw new Cosmetic.CosmeticActivationException("No specific kill effect activation method was defined for cosmetic " + name() + "!");
+    }
+
 
     public String toString(){
         return displayName;

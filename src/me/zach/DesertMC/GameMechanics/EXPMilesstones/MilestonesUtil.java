@@ -8,6 +8,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.CommandExecute;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,12 +22,11 @@ import java.util.*;
 
 public class MilestonesUtil extends CommandExecute implements CommandExecutor {
     private static final Plugin pl = DesertMain.getInstance;
-    private static final ArrayList<ChatColor> starColors = new ArrayList<>();
+    private static final List<ChatColor> starColors = Arrays.asList(ChatColor.YELLOW, ChatColor.BLUE, ChatColor.GREEN, ChatColor.LIGHT_PURPLE, ChatColor.DARK_GREEN, ChatColor.AQUA, ChatColor.DARK_AQUA, ChatColor.GOLD);
     public static final HashMap<Integer, Cosmetic> cosmetics = new HashMap<>();
-    public static final HashMap<UUID, String> confirming = new HashMap<>();
+    public static final Set<UUID> confirming = new HashSet<>();
     public static final char STAR = '✪';
     static{
-        starColors.addAll(Arrays.asList(ChatColor.YELLOW, ChatColor.BLUE, ChatColor.GREEN, ChatColor.LIGHT_PURPLE, ChatColor.DARK_GREEN, ChatColor.AQUA, ChatColor.DARK_AQUA, ChatColor.GOLD));
         cosmetics.put(0, Cosmetic.EXPLOSION);
         cosmetics.put(1, Cosmetic.FLAMING_ARROWS);
         cosmetics.put(2, Cosmetic.WATER_ARROWS);
@@ -37,38 +37,30 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
         cosmetics.put(7, Cosmetic.RAINBOW);
     }
 
-    public static String getNewCase(Player player){
-        String displayCase = getDisplayCase(player);
-        StringBuilder newCase;
-        if(displayCase == null){
-            newCase = new StringBuilder(starColors.get(0) + "0");
-        }else{
-            int colorIndex = starColors.size();
-            int divResets = Math.floorDiv(DesertMain.resets + 1, 6);
-            if(divResets < starColors.size()){
-                colorIndex = divResets;
-            }
-            if((DesertMain.resets + 1) % 6 == 0){
-                ChatColor color = starColors.get(colorIndex);
-                newCase = new StringBuilder(color + "0");
-            }else{
-                try{
-                    colorIndex = Math.floorDiv(DesertMain.resets + 1, 6);
-                }catch(IndexOutOfBoundsException ignored){}
-                ChatColor color = starColors.get(colorIndex);
-                newCase = new StringBuilder(color + "");
-
-                for(int i = 0; i < (DesertMain.resets + 1) % 6; i++){
-                    newCase.append(STAR);
-                }
-                newCase.append(" 0");
-            }
-        }
-        return newCase.toString();
+    public static String getDisplayCase(Player player){
+        return getDisplayCase(DesertMain.resets, DesertMain.lv);
     }
 
-    public static String getDisplayCase(Player player){
-        return pl.getConfig().getString("players." + player.getUniqueId() + ".displaycase");
+    public static String getDisplayCase(int resets, int lv){
+        StringBuilder newCase;
+        int colorIndex = starColors.size();
+        int divResets = Math.floorDiv(resets, 6);
+        if(divResets < starColors.size()){
+            colorIndex = divResets;
+        }
+        if(resets % 6 == 0){
+            ChatColor color = starColors.get(colorIndex);
+            newCase = new StringBuilder(color + String.valueOf(lv));
+        }else{
+            colorIndex = Math.floorDiv(resets, 6);
+            ChatColor color = starColors.get(colorIndex);
+            newCase = new StringBuilder(color + "");
+            for(int i = 0; i < resets % 6; i++){
+                newCase.append(STAR);
+            }
+            newCase.append(" ").append(lv);
+        }
+        return newCase.toString();
     }
 
     public static void resetMilestones(Player player){
@@ -80,7 +72,7 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
         }else msgCompiler.add(ChatColor.GREEN + "");
         TextComponent component = new TextComponent(TextComponent.fromLegacyText("Click to confirm your reset."));
         String displayCase = getDisplayCase(player);
-        String newCase = getNewCase(player);
+        String newCase = getDisplayCase(DesertMain.resets + 1, 0);
         msgCompiler.add(Arrays.toString(StringUtil.getCenteredMessage(ChatColor.GRAY + "Display case upgrade: " + displayCase + ChatColor.DARK_GRAY + " ➞ " + newCase)));
         if(cosmetics.containsKey(resets))
             msgCompiler.add(Arrays.toString(StringUtil.getCenteredMessage(ChatColor.GOLD + "Cosmetic: " + cosmetics.get(resets))));
@@ -88,40 +80,30 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
         component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/confirmreset"));
         String yellow = net.md_5.bungee.api.ChatColor.YELLOW.toString();
         String bold = net.md_5.bungee.api.ChatColor.BOLD.toString();
-        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(yellow + "This will be your " + bold  + (resets + 1) + MiscUtils.getOrdinalSuffix(resets + 1) + yellow + " reset.")));
+        component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(yellow + "This will be your " + bold + (resets + 1) + MiscUtils.getOrdinalSuffix(resets + 1) + yellow + " reset.")));
         StringUtil.ChatWrapper wrapper = StringUtil.ChatWrapper.HORIZONTAL_LINE;
         player.sendMessage(wrapper + "\n" + String.join("\n", msgCompiler));
         component.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
         player.spigot().sendMessage(component);
-        player.sendMessage("\n" + wrapper.toString());
-        confirming.put(player.getUniqueId(), newCase);
-        new BukkitRunnable(){
-            public void run(){
-                if(confirming.remove(player.getUniqueId()) != null)
-                    player.sendMessage(ChatColor.RED + "EXP Milestones reset cancelled.");
-            }
-        }.runTaskLater(pl, 1000);
+        player.sendMessage("\n" + wrapper);
+        confirming.add(player.getUniqueId());
+        Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, () -> {
+            if(confirming.remove(player.getUniqueId()))
+                player.sendMessage(ChatColor.RED + "EXP Milestones reset cancelled.");
+        }, 1000);
     }
 
     private void confirmReset(Player p){
-        String newCase = confirming.get(p.getUniqueId());
         confirming.remove(p.getUniqueId());
         DesertMain.lv = 1;
         DesertMain.currentProgress = 0;
         DesertMain.xpToNext = 200;
         DesertMain.unclaimed.clear();
         p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "EXP MILESTONES RESET!");
-         setDisplayCase(newCase, p);
-         try{
-             cosmetics.get(DesertMain.resets).grant(p);
-         }catch(NullPointerException ignored){}
+        Cosmetic cosmetic = cosmetics.get(DesertMain.resets);
+        if(cosmetic != null) cosmetic.grant(p);
         DesertMain.resets++;
         MilestonesInventory.RewardsItem.confirmationSound(p);
-    }
-
-    public static void setDisplayCase(String toSet, Player player){
-        pl.getConfig().set("players." + player.getUniqueId() + ".displaycase", toSet);
-        pl.saveConfig();
     }
 
     @Override
@@ -129,7 +111,7 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
         if(!(commandSender instanceof Player)) return false;
         Player p = (Player) commandSender;
         if(command.getName().equalsIgnoreCase("confirmreset")){
-            if (confirming.containsKey(p.getUniqueId())) {
+            if (confirming.contains(p.getUniqueId())) {
                 confirmReset(p);
                 return true;
             }else{
@@ -137,8 +119,5 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
                 return true;
             }
         }else return false;
-
     }
-
-
 }

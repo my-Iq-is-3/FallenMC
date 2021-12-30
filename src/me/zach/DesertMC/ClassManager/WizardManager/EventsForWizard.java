@@ -29,10 +29,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 public class EventsForWizard implements Listener {
-
     public static final EventsForWizard INSTANCE = new EventsForWizard();
     public static void addBladeCharge(Player player){
-
         NBTItem bladeNbt = new NBTItem(player.getItemInHand());
         if(bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") < 10){
             bladeNbt.getCompound("CustomAttributes").setInteger("CHARGE", bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") + 2);

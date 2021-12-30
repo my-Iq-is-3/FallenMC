@@ -74,7 +74,6 @@ public class MilestonesInventory implements Listener {
         return list;
     }
     protected static class RewardsItem extends ItemStack{
-
         private static final HashMap<Integer, RewardOverride> overrides = new HashMap<>();
         public static RewardsItem parseLevel(ItemStack item, Player p){
             return new RewardsItem(Integer.parseInt(item.getItemMeta().getDisplayName().replaceAll(ChatColor.GREEN + "Milestone ", "")), p);
@@ -90,6 +89,7 @@ public class MilestonesInventory implements Listener {
             if(overrides.containsKey(milestoneLevel)) return overrides.get(milestoneLevel).icon;
             else return Material.STAINED_GLASS_PANE;
         }
+
         boolean override;
         Integer level;
         IRewardGrant granter;
@@ -112,7 +112,7 @@ public class MilestonesInventory implements Listener {
             displayName = textColor + "Milestone " + milestoneLevel;
             if(milestoneLevel == 58){
                 reward = (DesertMain.resets + 1) + MiscUtils.getOrdinalSuffix(DesertMain.resets + 1) + " milestones reset";
-                lore.add(ChatColor.GRAY + "- Display case upgrade: " + MilestonesUtil.getDisplayCase(p) + ChatColor.GRAY + " ➞ " + MilestonesUtil.getNewCase(p));
+                lore.add(ChatColor.GRAY + "- Display case upgrade: " + MilestonesUtil.getDisplayCase(p) + ChatColor.GRAY + " ➞ " + MilestonesUtil.getDisplayCase(DesertMain.resets + 1, 0));
                 if(MilestonesUtil.cosmetics.containsKey(DesertMain.resets)) lore.add(ChatColor.GRAY + "- New cosmetic: " + MilestonesUtil.cosmetics.get(DesertMain.resets));
                 granter = (player, mLevel) -> false;
             }else{

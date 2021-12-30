@@ -2,6 +2,7 @@ package me.zach.DesertMC.GameMechanics;
 
 
 import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
@@ -10,6 +11,7 @@ import me.zach.DesertMC.ClassManager.TravellerEvents;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
+import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
@@ -21,13 +23,11 @@ import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.cosmetics.Cosmetic;
 import me.zach.artifacts.events.ArtifactEvents;
-import me.zach.artifacts.gui.inv.ArtifactData;
 import me.zach.artifacts.gui.inv.items.CreeperTrove;
+import me.zach.databank.saver.Key;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -42,6 +42,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import xyz.fallenmc.risenboss.main.RisenBoss;
+import xyz.fallenmc.risenboss.main.RisenMain;
+import xyz.fallenmc.risenboss.main.utils.RisenUtils;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -54,9 +57,35 @@ public class Events implements Listener{
 	public static Set<UUID> invincible = new HashSet<>();
 	Plugin main = DesertMain.getInstance;
 	public static HashMap<UUID,Integer> ks = new HashMap<>();
-	public static HashMap<UUID, Integer> scoutTraveller = new HashMap<>();
-
 	public static HashMap<Arrow, ItemStack> arrowArray = new HashMap<>();
+
+	public void attributeMod(EntityDamageByEntityEvent event){
+		Entity damager = event.getDamager();
+		Entity damaged = event.getEntity();
+		if(event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK){
+			double damage = event.getDamage();
+			Player playerDmgr = damager instanceof Player ? (Player) damager : null;
+			ItemStack itemUsed = damager instanceof Arrow ? arrowArray.get(damager) : (playerDmgr != null ? playerDmgr.getItemInHand() : null); //arrow? get from arrow array. player? get item in hand. neither? null.
+			if(itemUsed != null){
+				NBTItem nbt = new NBTItem(itemUsed);
+				float dmgMod = NBTUtil.getCustomAttrFloat(nbt, "ATTACK", 1);
+				if(dmgMod != 1) event.setDamage(damage * dmgMod);
+			}
+			if(damaged instanceof LivingEntity){
+				ItemStack[] armor = ((LivingEntity) damaged).getEquipment().getArmorContents();
+				float damagePercent = 0;
+				for(ItemStack item : armor){
+					if(item != null){
+						float defenseMod = NBTUtil.getCustomAttrFloat(item, "DEFENSE", 0);
+						damagePercent -= defenseMod;
+					}
+				}
+				if(damagePercent != 100){
+					event.setDamage(damage * (damagePercent / 100));
+				}
+			}
+		}
+	}
 
 	@EventHandler
 	public void cancelPlayerChangeBlock(EntityChangeBlockEvent event){
@@ -66,6 +95,17 @@ public class Events implements Listener{
 	@EventHandler
 	public void cancelBlockFlow(BlockFromToEvent event){
 		event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void nonOwnerPickup(PlayerPickupItemEvent event){
+		Item item = event.getItem();
+		String uuid = event.getPlayer().getUniqueId().toString();
+		NBTEntity nbt = new NBTEntity(item);
+		String owner = NBTUtil.getCustomAttrString(nbt, "OWNER");
+		if(!owner.equals("null") && !owner.equals(uuid)){
+			event.setCancelled(item.getTicksLived() < 3000);
+		}
 	}
 
 	@EventHandler
@@ -79,13 +119,12 @@ public class Events implements Listener{
 			arrowArray.put(arrow, player.getInventory().getItemInHand());
 			ArtifactEvents.shootEvent(event);
 			Cosmetic cosmetic = Cosmetic.getSelected(player, Cosmetic.CosmeticType.ARROW_TRAIL);
-			if(cosmetic != null) cosmetic.activateArrow(arrow, new ArtifactData(player).bowS());
+			if(cosmetic != null) cosmetic.activateArrow(arrow, ConfigUtils.getData(player).getArtifactData().bowS());
 		}
 	}
 
 	@EventHandler
 	public void illegalCommandSend(PlayerCommandPreprocessEvent event){
-
 			boolean plugins = event.getMessage().startsWith("/plugins");
 			boolean pl = event.getMessage().equalsIgnoreCase("/pl");
 			boolean pl2 = event.getMessage().startsWith("/pl ");
@@ -115,6 +154,7 @@ public class Events implements Listener{
 			event.getPlayer().sendMessage(ChatColor.RED + "You do not have permission to use this command.");
 		}
 	}
+
 	@EventHandler
 	public void cancelAnvil(InventoryOpenEvent event){
 		if(event.getInventory() instanceof AnvilInventory){
@@ -126,9 +166,8 @@ public class Events implements Listener{
 
 	public void travellerTank(EntityDamageByEntityEvent e){
 		if(e.getEntity() instanceof Player) {
-			Player player = (Player) e.getEntity();
-			if(ConfigUtils.getLevel(ConfigUtils.findClass(player), player) > 5){
-				UUID uuid = e.getDamager().getUniqueId();
+			UUID uuid = e.getEntity().getUniqueId();
+			if(ConfigUtils.getLevel("tank", uuid) > 5 && ConfigUtils.findClass(uuid).equals("tank")){
 				Set<Block> blockSet = TravellerEvents.travelled.get(uuid);
 				if (blockSet != null) {
 					double multiplier = 1 - (blockSet.size() * 0.0002);
@@ -140,10 +179,12 @@ public class Events implements Listener{
 
 	public void travellerCoru(EntityDamageByEntityEvent e){
 		UUID uuid = e.getDamager().getUniqueId();
-		Set<Block> blockSet = TravellerEvents.travelled.get(uuid);
-		if(blockSet != null){
-			double multiplier = 1 + blockSet.size() * 0.0002;
-			e.setDamage(e.getDamage() * multiplier);
+		if(ConfigUtils.findClass(uuid).equals("corrupter") && ConfigUtils.getLevel("corrupter", uuid) > 5){
+			Set<Block> blockSet = TravellerEvents.travelled.get(uuid);
+			if(blockSet != null){
+				double multiplier = 1 + blockSet.size() * 0.0002;
+				e.setDamage(e.getDamage() * multiplier);
+			}
 		}
 	}
 
@@ -255,7 +296,6 @@ public class Events implements Listener{
 	public void onKill(EntityDamageByEntityEvent event) {
 		try{
 			if(event.isCancelled()) return;
-
 			CreeperTrove.executeTrove(event);
 			if(event.getDamage() == 0) return;
 			if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
@@ -281,18 +321,16 @@ public class Events implements Listener{
 				PlayerUtils.setFighting((Player) event.getEntity());
 			}
 			if (event.getDamager() instanceof Player) {
-
-					if (((Player) event.getDamager()).getItemInHand().getType().equals(Material.DOUBLE_PLANT)) {
+					if (NBTUtil.getCustomAttrString(((Player) event.getDamager()).getItemInHand(), "ID").equals("TOKEN")){
 						event.setCancelled(true);
 						return;
 					}
 					if (event.getEntity() instanceof Player) {
+						attributeMod(event);
 						if (DesertMain.ct1players.contains(event.getDamager().getUniqueId())) {
 							event.setDamage(event.getDamage() * 1.1);
 						}
-
-						SPolice.onHit(event);
-
+						StreakPolice.onHit(event);
 						ArtifactEvents.hitEvent(event);
 
 						EventsForCorruptor.INSTANCE.corruptedSword(event);
@@ -323,8 +361,11 @@ public class Events implements Listener{
 				travellerTank(event);
 				snackHit(event);
 			}
-		}catch(NullPointerException ignored){}
+		}catch(NullPointerException ex){
+			ex.printStackTrace();
+		}
 		executeKill(event);
+		if(event.getDamager() instanceof Arrow) arrowArray.remove((Arrow) event.getDamager());
 	}
 
 
@@ -345,12 +386,9 @@ public class Events implements Listener{
 			EventsForWizard.INSTANCE.wizardt1(killer);
 			Location spawn = ConfigUtils.getSpawn("lobby");
 			player.setHealth(player.getMaxHealth());
-
 			player.teleport(spawn);
 			if (player.getFireTicks() > 0)
 				player.setFireTicks(0);
-
-
 			Random random = ThreadLocalRandom.current();
 			int soulsgained = 0;
 			int randomCompare = 4;
@@ -385,6 +423,8 @@ public class Events implements Listener{
 			ConfigUtils.addGems(killer, gemsgained);
 			ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
 			ConfigUtils.addSouls(killer, soulsgained);
+			if(RisenUtils.isBoss(player.getUniqueId()))
+				RisenMain.currentBoss.endBoss(RisenBoss.EndReason.BOSS_VANQUISHED);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -399,11 +439,10 @@ public class Events implements Listener{
 	}
 
 	@EventHandler
-	public void onDamage(EntityDamageEvent event) throws Exception {
+	public void onDamage(EntityDamageEvent event){
 		if (event instanceof EntityDamageByEntityEvent) return;
 		removeFallDMG(event);
 		executeUnexpectedKill(event);
-
 	}
 
 	private static void callOnKill(Player player, Player killer) {
@@ -412,18 +451,17 @@ public class Events implements Listener{
 		EventsForWizard.INSTANCE.wizardt1(killer);
 
 		try{
-			if(new NBTItem(killer.getItemInHand()).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE")) EventsForWizard.addBladeCharge(killer);
+			if(NBTUtil.getCustomAttrString(killer.getItemInHand(), "ID").equals("WIZARD_BLADE")) EventsForWizard.addBladeCharge(killer);
 		}catch(Exception ex){
 			if (!(ex instanceof NullPointerException)){
-				Bukkit.getConsoleSender().sendMessage("Error adding charge to wizard blade, error:");
-				ex.printStackTrace();
+				Bukkit.getLogger().log( Level.WARNING, "Error adding charge to wizard blade", ex);
 			}
 		}
 		try {
 			if(new NBTItem(killer.getInventory().getLeggings()).getString("ID").equals("CORRUPTER_LEGGINGS")) EventsForCorruptor.INSTANCE.corrupterLeggings(killer, player);
 		}catch(Exception ex){
 			if(!(ex instanceof NullPointerException)){
-				Bukkit.getConsoleSender().sendMessage("Error checking for corrupter leggings: " + ex.toString());
+				Bukkit.getConsoleSender().sendMessage("Error checking for corrupter leggings: " + ex);
 			}
 		}
 		for(int i = 0; i<36; i++){
@@ -438,14 +476,24 @@ public class Events implements Listener{
 			}catch(NullPointerException ignored){}
 		}
 
-		SPolice.onKill(killer);
+		StreakPolice.onKill(killer);
 		Cosmetic kSelected = Cosmetic.getSelected(killer, Cosmetic.CosmeticType.KILL_EFFECT);
 		if(kSelected != null) kSelected.activateKill(player);
 		Cosmetic dSelected = Cosmetic.getSelected(player, Cosmetic.CosmeticType.DEATH_EFFECT);
 		if(dSelected != null) dSelected.activateDeath(player);
 
-		if(TravellerEvents.travelled.containsKey(player.getUniqueId()))
-			TravellerEvents.travelled.get(player.getUniqueId()).clear();
+		if(TravellerEvents.travelled.containsKey(player.getUniqueId())) TravellerEvents.travelled.get(player.getUniqueId()).clear();
+		if(ks.get(killer.getUniqueId()) >= 50 && !RisenMain.alreadyUsed.contains(killer.getUniqueId())){
+			String[] classes = new String[]{Key.SCOUT, Key.CORRUPTER, Key.TANK, Key.WIZARD};
+			boolean allClassesMaxed = true;
+			for(String clazz : classes){
+				 if(!(ConfigUtils.getLevel(clazz, killer.getUniqueId()) > 9)){
+					 allClassesMaxed = false;
+					 break;
+				 }
+			}
+			if(allClassesMaxed) RisenUtils.activateBossReady(player);
+		}
 	}
 
 	@EventHandler
@@ -535,7 +583,6 @@ public class Events implements Listener{
 
 			@Override
 			public void run() {
-
 				FScoreboardManager.initialize(p);
 			}
 
@@ -555,13 +602,8 @@ public class Events implements Listener{
 		e.getPlayer().sendMessage("working");
 		if(!(main.getConfig().contains("players." + uuid))) {
 			main.getConfig().createSection("players." + uuid);
-			/* classes */
-			//in use
-
 			//init titles
 			TitleUtils.initializeTitles(e.getPlayer());
-			//init displaycase
-			main.getConfig().set("players." + uuid + ".displaycase", ChatColor.YELLOW + "" + 0);
 			//init block notifications
 			main.getConfig().set(blockNotifPath, true);
 			//save
@@ -577,29 +619,11 @@ public class Events implements Listener{
 			//init cosmetics
 			Cosmetic.init(e.getPlayer());
 		}
-		if(!main.getConfig().contains("players." + uuid + ".displaycase")) main.getConfig().set("players." + uuid + ".displaycase", ChatColor.YELLOW + "" + 0);
 
 
 		if(main.getConfig().getBoolean(blockNotifPath))
 			TravellerEvents.blockNotifs.add(p.getUniqueId());
 	}
-
-
-
-	/*
-	@EventHandler
-	public void removeTrail(EntityDamageByEntityEvent e){
-		if(e.getDamager() instanceof Arrow){
-			UUID uuid = e.getDamager().getUniqueId();
-			try{
-				Bukkit.getScheduler().cancelTask(Cosmetic.trails.get(uuid));
-				Cosmetic.trails.remove(uuid);
-			}catch(Exception ex){Cosmetic.trails.remove(uuid);}
-		}
-	}
-	 */
-
-
 
 	@EventHandler
 	public void snackEat(PlayerItemConsumeEvent event){

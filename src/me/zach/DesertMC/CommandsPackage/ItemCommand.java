@@ -52,7 +52,6 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
         enchs.put("giant_slayer",ChatColor.LIGHT_PURPLE + "\u25CF" + ChatColor.BLUE + " Giant Slayer");
         enchs.put("spike",ChatColor.GRAY + "\u25CF" + ChatColor.BLUE + " Spike");
         enchs.put("quick",ChatColor.GRAY + "\u25CF" + ChatColor.BLUE + " Quick");
-
     }
 
     public ItemCommand(){

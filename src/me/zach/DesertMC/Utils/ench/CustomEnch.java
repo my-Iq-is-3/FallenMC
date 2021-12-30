@@ -6,7 +6,9 @@ import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.PlayerUtils;
+import me.zach.databank.DBCore;
 import me.zach.databank.saver.Key;
+import me.zach.databank.saver.PlayerData;
 import me.zach.databank.saver.SaveManager;
 import net.minecraft.server.v1_8_R3.Vec3D;
 import org.bukkit.*;
@@ -301,7 +303,8 @@ public enum CustomEnch implements Listener {
 
     private static boolean validatePlayer(Entity p, String clazz, int lv){
         if(!(p instanceof Player)) return false;
-        return SaveManager.getData((Player) p).getClassLevel(clazz) > lv && SaveManager.getData((Player) p).getCurrentClass().equals(clazz);
+        PlayerData data = DBCore.getInstance().getSaveManager().getData(p.getUniqueId());
+        return data.getClassLevel(clazz) > lv && data.getCurrentClass().equals(clazz);
     }
     public void onHit(EntityDamageByEntityEvent event){}
 

@@ -6,26 +6,27 @@ import me.zach.DesertMC.ClassManager.KitsOrTraits;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesInventory;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
-import me.zach.DesertMC.GameMechanics.SoulShop;
 import me.zach.DesertMC.Prefix;
-import me.zach.DesertMC.GameMechanics.SPolice;
+import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.GameMechanics.Events;
+import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
-import me.zach.DesertMC.Utils.nbt.EnchantmentUtil;
+import me.zach.DesertMC.shops.ShopInventory;
+import me.zach.DesertMC.shops.ShopItem;
 import me.zach.DesertMC.cosmetics.Cosmetic;
 import net.minecraft.server.v1_8_R3.CommandExecute;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -34,16 +35,12 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.logging.Level;
 
 
-public class Commands extends CommandExecute implements Listener, CommandExecutor, TabCompleter {
-	public static HashMap<String, NPCSuper> npcsAndName = new HashMap<>();
+public class Commands extends CommandExecute implements Listener, CommandExecutor {
 	private static final String[] colorsMessage;
 	static{
-		npcsAndName.put("STREAK_POLICE", SPolice.INSTANCE);
-		npcsAndName.put("SOUL_BROKER", SoulShop.INSTANCE);
 		ArrayList<String> colorsList = new ArrayList<>();
 		colorsList.add(ChatColor.GREEN + "With your rank, you can"  + ChatColor.YELLOW + " include " + ChatColor.AQUA + "colors " + ChatColor.GREEN + "in your messages!");
 		colorsList.add("Placing a color code in your messages will make any text after that color code your color!");
@@ -60,6 +57,30 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         if (sender instanceof Player) {
         	Player player = ((Player) sender);
         	Plugin mainpl = DesertMain.getInstance;
+			if(command.getName().equalsIgnoreCase("shoptest")){
+				if(args.length > 0){
+					ShopItem[] items = new ShopItem[args.length];
+					for(int i = 0, price = 200; i < args.length; i++, price += 200){
+						String str = args[i];
+						try{
+							Material material = Material.valueOf(str.toUpperCase());
+							ShopItem item = new ShopItem(price) {
+								protected ItemStack get(){
+									return MiscUtils.generateItem(material, "", StringUtil.wrapLore(ChatColor.GRAY + "A regular ol' item. Hopefully " + player.getName() + " picked something snazzy!"), (byte) -1, 1);
+								}
+							};
+							items[i] = item;
+						}catch(IllegalArgumentException materialNotFound){
+							return false;
+						}
+					}
+					ItemStack thisIsATest = MiscUtils.generateItem(Material.REDSTONE_COMPARATOR, ChatColor.YELLOW + "This is a test!", StringUtil.wrapLore(ChatColor.GRAY +  "This is a test of our versatile Shop system. Hopefully it's working!\n" + ChatColor.DARK_GRAY + "Each price should be 200 more than the last."), (byte) -1, 1);
+					ShopInventory shop = new ShopInventory(player.getName() + "'s Shop Test", Arrays.asList(items), player, DyeColor.YELLOW.getData(), thisIsATest);
+					player.openInventory(shop.getInventory());
+					return true;
+				}else return false;
+			}
+
         	if(command.getName().equalsIgnoreCase("setspawn")) {
         		if(player.hasPermission("admin")){
         			String type;
@@ -151,7 +172,6 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 				}
 			}
 
-        	if(command.getName().equalsIgnoreCase(""))
 
         	if(command.getName().equalsIgnoreCase("seizehelditem")){
         		if(player.hasPermission("admin")){
@@ -159,7 +179,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 
         				Player target = Bukkit.getServer().getPlayerExact(args[0]);
         				PlayerInventory targetInv = target.getInventory();
-        				ItemStack seizedItem = SPolice.seize(targetInv.getItemInHand());
+        				ItemStack seizedItem = StreakPolice.seize(targetInv.getItemInHand());
         				int itemSeizeSlot = targetInv.getHeldItemSlot();
         				targetInv.clear(itemSeizeSlot);
         				targetInv.setItem(itemSeizeSlot, seizedItem);
@@ -192,18 +212,48 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 				}
 			}
         	if(command.getName().equalsIgnoreCase("spawnnpc")){
-        		player.sendMessage("Command registered.");
         		if(player.hasPermission("admin")){
-					if(args[0] != null){
-						player.sendMessage("args[0] wasn't null");
-						try{
-							npcsAndName.get(String.join("_", args).toUpperCase()).createNPC((player.getLocation()));
-							player.sendMessage("got npc");
-						}catch(NullPointerException nul){
-							player.sendMessage(ChatColor.RED + "Sorry, that NPC either doesn't exist of isn't registered.");
+					if(args.length > 1){
+						StringBuilder className = new StringBuilder();
+						String[] npcNameArr = new String[args.length - 1];
+						System.arraycopy(args, 1, npcNameArr, 0, npcNameArr.length);
+						for(String npcNameWord : npcNameArr) className.append(StringUtil.capitalizeFirst(npcNameWord));
+						for(String pack : DesertMain.NPC_PACKAGES){
+							try{
+								System.out.println("trying " + pack + "." + className);
+								@SuppressWarnings("unchecked")
+								Class<? extends NPCSuper> npcClass = (Class<? extends NPCSuper>) Class.forName(pack + "." + className);
+								NPCSuper npcObj = npcClass.newInstance();
+								npcObj.createNPC(player.getLocation());
+								boolean save = Boolean.parseBoolean(args[0]);
+								if(save){
+									try{
+										npcObj.saveCurrent(mainpl);
+										player.sendMessage(ChatColor.GREEN + "NPC successfully saved.");
+									}catch(Exception ex){
+										player.sendMessage(ChatColor.RED + "There was an error saving your NPC.");
+										Bukkit.getLogger().log(Level.WARNING, "Couldn't save NPC " + className + ":", ex);
+									}
+								}
+								return true;
+							}catch(Exception ex){ //lol
+								if(ex instanceof ClassCastException){
+									player.sendMessage(ChatColor.RED + "The file or your requested NPC was loaded, but it wasn't the correct type to be initialized as an NPC. Please inform a developer about this immediately, if you're not one. If you are one, get off your lazy ass and get crackin' fixing this error!");
+									Bukkit.getLogger().log(Level.SEVERE, "Problem casting NPC " + pack + "." + className + " to NPCSuper", ex);
+									return true;
+								}else if(ex instanceof InstantiationException || ex instanceof IllegalAccessException){
+									Bukkit.getLogger().log(Level.WARNING, "Error spawning NPC " + pack + "." + className, ex);
+									player.sendMessage(ChatColor.RED + "We encountered an error spawning your NPC. If this keeps happening, please alert a server dev.");
+									return true;
+								}else if(!(ex instanceof ClassNotFoundException)){
+									player.sendMessage(ChatColor.RED + "An unknown error occurred loading your NPC.");
+									Bukkit.getLogger().log(Level.WARNING, "Could not spawn NPC " + className, ex);
+								}
+							}
 						}
+						player.sendMessage(ChatColor.RED + "Sorry, that NPC wasn't found.");
+						return true;
 					}else{
-						player.sendMessage(ChatColor.RED + "Incorrect Usage!");
 						return false;
 					}
 				}else{
@@ -223,7 +273,6 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 				}
 			}
 
-
         	if(command.getName().equalsIgnoreCase("testench")){
         		if(player.hasPermission("admin")){
         			try{
@@ -239,7 +288,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         			if(args.length != 0) {
 						Prefix p = Prefix.valueOf(args[0].toUpperCase());
 						if (TitleUtils.setTitle(player, p)) {
-							player.sendMessage(ChatColor.GREEN + "Prefix successfully set to \"" + p.toString() + ChatColor.GREEN + "\"");
+							player.sendMessage(ChatColor.GREEN + "Prefix successfully set to \"" + p + ChatColor.GREEN + "\"");
 							return true;
 						} else {
 							if (player.hasPermission("admin")) {
@@ -421,15 +470,4 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         }
 		return true;
     }
-	@Override
-	public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-		List<String> args = new ArrayList<>();
-		if (strings.length == 1) {
-
-			if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("spawnnpc")) {
-				args = Arrays.asList("SOUL_BROKER", "STREAK_POLICE");
-			}
-		}
-		return args;
-	}
 }

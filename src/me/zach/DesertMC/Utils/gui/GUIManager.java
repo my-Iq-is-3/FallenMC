@@ -24,12 +24,26 @@ public class GUIManager implements Listener {
     }
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
-        Inventory inventory = event.getInventory();
-        InventoryHolder holder = event.getInventory().getHolder();
-        if(holder instanceof GUIHolder) ((GUIHolder) holder).inventoryClick((Player) event.getWhoClicked(),
-                event.getSlot(),
-                event.getCurrentItem(),
-                event.getClick(),
-                event);
+        Inventory inventory = event.getClickedInventory();
+        InventoryHolder holder = inventory.getHolder();
+        if(holder instanceof GUIHolder){
+            ((GUIHolder) holder).inventoryClick((Player) event.getWhoClicked(),
+                    event.getSlot(),
+                    event.getCurrentItem(),
+                    event.getClick(),
+                    event);
+        }else{
+            Player player = (Player) event.getWhoClicked();
+            Inventory topInventory = player.getOpenInventory().getTopInventory();
+            InventoryHolder topInventoryHolder = topInventory.getHolder();
+            if(topInventoryHolder instanceof GUIHolder){
+                ((GUIHolder) topInventoryHolder).bottomInventoryClick((Player) event.getWhoClicked(),
+                        player.getInventory(),
+                        event.getSlot(),
+                        event.getCurrentItem(),
+                        event.getClick(),
+                        event);
+            }
+        }
     }
 }

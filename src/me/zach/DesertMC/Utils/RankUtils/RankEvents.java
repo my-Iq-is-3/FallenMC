@@ -39,11 +39,11 @@ public class RankEvents implements Listener {
         }
 
         for(ChatColor color : ccList){
-            if(color.name().startsWith("DARK")) colorShortcuts.put(color, "D" + color.name().replace("DARK_", "").charAt(0));
+            if(color.name().startsWith("DARK_")) colorShortcuts.put(color, "D" + color.name().replace("DARK_", "").charAt(0));
         }
 
         for(ChatColor color : ccList){
-            if(color.name().startsWith("LIGHT")) colorShortcuts.put(color, "L" + color.name().replace("LIGHT_", "").charAt(0));
+            if(color.name().startsWith("LIGHT_")) colorShortcuts.put(color, "L" + color.name().replace("LIGHT_", "").charAt(0));
         }
 
         for(ChatColor color : ccList){
@@ -74,9 +74,8 @@ public class RankEvents implements Listener {
 
         p.playSound(p.getLocation(), Sound.SHOOT_ARROW, 10, 1);
 
-        if(displayCase != null) e.setFormat(displayCase + ChatColor.DARK_GRAY + " | " + ChatColor.RESET +  e.getFormat());
+        e.setFormat(displayCase + ChatColor.DARK_GRAY + " | " + ChatColor.RESET +  e.getFormat());
         if(title != null) e.setFormat(title + "" + ChatColor.DARK_GRAY + " | " + ChatColor.RESET + e.getFormat());
-
     }
 
     public String colorSupporterMessage(String msg){
@@ -87,9 +86,7 @@ public class RankEvents implements Listener {
         for(ChatColor c : ccList){
             if(!c.equals(ChatColor.RESET)){
                 msg = msg.replaceAll("\\b*(?<!\\\\)" + c.name(), c + "");
-                try{
-                    msg = msg.replaceAll("\\b*(?<!\\\\)!" + colorShortcuts.get(c), c + "");
-                }catch(NullPointerException ignored){}
+                msg = msg.replaceAll("\\b*(?<!\\\\)!" + colorShortcuts.get(c), c + "");
             }
         }
 

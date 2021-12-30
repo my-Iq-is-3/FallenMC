@@ -2,6 +2,7 @@ package me.zach.DesertMC.ClassManager;
 
 import java.util.ArrayList;
 
+import me.zach.DesertMC.Utils.MiscUtils;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,18 +17,15 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import net.md_5.bungee.api.ChatColor;
 
 public class ClassSelector{
-	private Player player = null;
+	private Player player;
 	public ClassSelector(Player player) {
 		this.player = player;
 	}
 	
 	public void openInventory() {
 		Inventory inventory = DesertMain.getInstance.getServer().createInventory(null, 45, "Class Selector");
-		for(int i=0;i<45;i++) {
-			ItemStack empty = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15);
-			ItemMeta meta = empty.getItemMeta();
-			meta.setDisplayName(" ");
-			empty.setItemMeta(meta);
+		for(int i=0;i<inventory.getSize();i++) {
+			ItemStack empty = MiscUtils.getEmptyPane();
 			inventory.setItem(i, empty);
 		}
 		
@@ -46,7 +44,7 @@ public class ClassSelector{
 			tankmeta.setDisplayName(ChatColor.BLUE + "Tank Class");
 		}
 		tanklore.add("");
-		tanklore.add(ChatColor.YELLOW + "Click me to view your progress on the tank class!");
+		tanklore.add(ChatColor.YELLOW + "Click me to view your tank class!");
 		tankmeta.setLore(tanklore);
 		tank.setItemMeta(tankmeta);
 		
@@ -62,7 +60,7 @@ public class ClassSelector{
 			scoutmeta.setDisplayName(ChatColor.BLUE + "Scout class");
 		}
 		scoutlore.add("");
-		scoutlore.add(ChatColor.YELLOW + "Click me to view your progress on the scout class!");
+		scoutlore.add(ChatColor.YELLOW + "Click me to view your scout class!");
 		scoutmeta.setLore(scoutlore);
 		scout.setItemMeta(scoutmeta);
 		
@@ -81,7 +79,7 @@ public class ClassSelector{
 			wizardmeta.setDisplayName(ChatColor.BLUE + "Wizard Class");
 		}
 		wizardlore.add("");
-		wizardlore.add(ChatColor.YELLOW + "Click me to view your progress on the wizard class!");
+		wizardlore.add(ChatColor.YELLOW + "Click me to view your wizard class!");
 		wizardmeta.setLore(wizardlore);
 		wizard.setItemMeta(wizardmeta);
 		
@@ -97,7 +95,7 @@ public class ClassSelector{
 			corruptmeta.setDisplayName(ChatColor.BLUE + "Corrupter Class");
 		}
 		corruptlore.add("");
-		corruptlore.add(ChatColor.YELLOW + "Click me to view your progress on the corrupter class!");
+		corruptlore.add(ChatColor.YELLOW + "Click me to view your corrupter class!");
 		corruptmeta.setLore(corruptlore);
 		corrupt.setItemMeta(corruptmeta);
 		
@@ -114,7 +112,4 @@ public class ClassSelector{
 		inventory.setItem(32, corrupt);
 		player.openInventory(inventory);
 	}
-	
-
-
 }

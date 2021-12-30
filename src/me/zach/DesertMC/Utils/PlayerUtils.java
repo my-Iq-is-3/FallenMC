@@ -1,5 +1,6 @@
 package me.zach.DesertMC.Utils;
 
+import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.artifacts.gui.helpers.ArtifactUtils;
 import me.zach.artifacts.gui.inv.ArtifactData;
@@ -15,7 +16,6 @@ import java.util.UUID;
 
 
 public class PlayerUtils implements Listener {
-
     public static HashMap<UUID,Integer> fighting = new HashMap<>();
     public static void setFighting(Player p){
         if(isIdle(p)) ArtifactEvents.enterCombat(p);
@@ -38,8 +38,8 @@ public class PlayerUtils implements Listener {
     public static void trueDamage(Damageable victim, double dmg, Entity damager){
         if(victim instanceof Player){
             Player victimPlayer = (Player) victim;
-            ArtifactData vad = new ArtifactData(victimPlayer);
-            if(ArtifactUtils.contains(vad.getSelected(), (byte) 10)){
+            ArtifactData vad = ConfigUtils.getAD(victimPlayer);
+            if(vad.getSelected().contains(10)){
                 double dmgsub = 15 * vad.rarities()[9].mult * 5; // 30
                 dmgsub /= 100; // 0.3
                 dmg -= dmgsub * dmg; // if its 10 its ~7
