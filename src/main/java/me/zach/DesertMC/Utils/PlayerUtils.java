@@ -2,7 +2,6 @@ package me.zach.DesertMC.Utils;
 
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.artifacts.events.ArtifactEvents;
-import me.zach.artifacts.gui.helpers.ArtifactUtils;
 import me.zach.artifacts.gui.inv.ArtifactData;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;

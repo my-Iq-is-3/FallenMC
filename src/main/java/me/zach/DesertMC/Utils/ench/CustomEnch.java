@@ -5,20 +5,15 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
-import me.zach.DesertMC.Utils.PlayerUtils;
+import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.databank.DBCore;
 import me.zach.databank.saver.Key;
 import me.zach.databank.saver.PlayerData;
-import me.zach.databank.saver.SaveManager;
-import net.minecraft.server.v1_8_R3.Vec3D;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.*;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -27,7 +22,6 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.bukkit.Material.AIR;
@@ -187,7 +181,7 @@ public enum CustomEnch implements Listener {
 
     CustomEnch(){
 
-        this.name = capitalizeString(this.name()).replace("_"," ");
+        this.name = capitalizeEnum(this.name()).replace("_"," ");
         this.id = this.name().toLowerCase();
 
     }
@@ -278,14 +272,13 @@ public enum CustomEnch implements Listener {
         return fromID(id).getLevel(i);
     }
 
-    private static String capitalizeString(String str) {
-        String retStr = str.toLowerCase();
-        try {
-            char[] a = retStr.toCharArray();
-            a[0] = Character.toUpperCase(a[0]);
-            retStr = new String(a);
-        }catch (Exception e){e.printStackTrace();}
-        return retStr;
+    private static String capitalizeEnum(String str) {
+        String[] words = str.toLowerCase().split("_");
+        for(int i = 0; i< words.length; i++){
+            String capital = StringUtil.capitalizeFirst(words[i]);
+            words[i] = capital;
+        }
+        return String.join(" ", words);
     }
 
     public static void spawnEtherealFW(Location loc){
@@ -299,6 +292,10 @@ public enum CustomEnch implements Listener {
                 firework.detonate();
             }
         }.runTaskLater(DesertMain.getInstance,3);
+    }
+
+    public ItemStack toBook(){
+        return null;
     }
 
     private static boolean validatePlayer(Entity p, String clazz, int lv){
