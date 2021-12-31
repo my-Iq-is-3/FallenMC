@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.github.paperspigot.Title;
+import com.destroystokyo.paper.Title;
 
 import java.util.*;
 import java.util.function.Supplier;

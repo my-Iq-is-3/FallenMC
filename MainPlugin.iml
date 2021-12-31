@@ -72,40 +72,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Desktop/Server/spigot.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$USER_HOME$/Desktop/Server/spigot.jar!/" />
-          <root url="file://$USER_HOME$/Downloads/BuildTools/Spigot/Bukkit/src/main/java" />
-          <root url="file://$USER_HOME$/Downloads/BuildTools/Spigot/Bukkit/src/main/javadoc" />
-          <root url="file://$USER_HOME$/Downloads/BuildTools/Spigot/Bukkit/src/test/java" />
-          <root url="file://$USER_HOME$/Downloads/BuildTools/Spigot/CraftBukkit/src/main/java" />
-          <root url="file://$USER_HOME$/Downloads/BuildTools/Spigot/CraftBukkit/src/test/java" />
-          <root url="file://$USER_HOME$/Downloads/BuildTools/Spigot/Spigot-API/src/main/java" />
-          <root url="file://$USER_HOME$/Downloads/BuildTools/Spigot/Spigot-API/src/test/java" />
-          <root url="file://$USER_HOME$/Downloads/BuildTools/Spigot/Spigot-Server/src/main/java" />
-          <root url="file://$USER_HOME$/Downloads/BuildTools/Spigot/Spigot-Server/src/test/java" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/NachoSpigot/NachoSpigot-API/src/main/java" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/NachoSpigot/NachoSpigot-API/src/main/javadoc" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/NachoSpigot/NachoSpigot-API/src/test/java" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/NachoSpigot/NachoSpigot-Server/src/main/java" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/NachoSpigot/NachoSpigot-Server/src/test/java" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/Spigot/Bukkit/src/main/java" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/Spigot/Bukkit/src/main/javadoc" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/Spigot/Bukkit/src/test/java" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/Spigot/CraftBukkit/src/main/java" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/Spigot/CraftBukkit/src/test/java" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/Spigot/Spigot-API/src/main/java" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/Spigot/Spigot-API/src/test/java" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/Spigot/Spigot-Server/src/main/java" />
-          <root url="file://$USER_HOME$/Downloads/JAR Sources/Spigot/Spigot-Server/src/test/java" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$USER_HOME$/Desktop/Server/plugins/RisenBoss.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -121,5 +87,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="NachoSpigot" level="project" />
   </component>
 </module>
