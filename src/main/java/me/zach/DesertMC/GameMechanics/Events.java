@@ -22,6 +22,7 @@ import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.cosmetics.Cosmetic;
+import me.zach.DesertMC.events.FallenDeathEvent;
 import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.artifacts.gui.inv.items.CreeperTrove;
 import me.zach.databank.saver.Key;
@@ -48,7 +49,6 @@ import xyz.fallenmc.risenboss.main.utils.RisenUtils;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
 import static me.zach.DesertMC.Utils.RankUtils.RankEvents.rankSession;
@@ -58,14 +58,18 @@ public class Events implements Listener{
 	Plugin main = DesertMain.getInstance;
 	public static HashMap<UUID,Integer> ks = new HashMap<>();
 	public static HashMap<Arrow, ItemStack> arrowArray = new HashMap<>();
+	static final HashMap<UUID, Float> blocking = new HashMap<>();
+
+	public static ItemStack getItemUsed(Entity damager){
+		Player playerDmgr = damager instanceof Player ? (Player) damager : null;
+		return damager instanceof Arrow ? arrowArray.get(damager) : (playerDmgr != null ? playerDmgr.getItemInHand() : null); //arrow? get from arrow array. player? get item in hand. neither? null.
+	}
 
 	public void attributeMod(EntityDamageByEntityEvent event){
-		Entity damager = event.getDamager();
-		Entity damaged = event.getEntity();
+		Entity damaged = event.getDamager();
+		ItemStack itemUsed = getItemUsed(event.getDamager());
 		if(event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK){
 			double damage = event.getDamage();
-			Player playerDmgr = damager instanceof Player ? (Player) damager : null;
-			ItemStack itemUsed = damager instanceof Arrow ? arrowArray.get(damager) : (playerDmgr != null ? playerDmgr.getItemInHand() : null); //arrow? get from arrow array. player? get item in hand. neither? null.
 			if(itemUsed != null){
 				NBTItem nbt = new NBTItem(itemUsed);
 				float dmgMod = NBTUtil.getCustomAttrFloat(nbt, "ATTACK", 1);
@@ -213,27 +217,32 @@ public class Events implements Listener{
 		}
 	}
 
+	public static float getBlockingTime(Player player){
+		return getBlockingTime(player.getUniqueId());
+	}
 
+	public static float getBlockingTime(UUID uuid){
+		return blocking.getOrDefault(uuid, 0f);
+	}
 
 	public static void check(DesertMain main){
 		new BukkitRunnable(){
 			@Override
 			public void run() {
 				for(Player p : Bukkit.getOnlinePlayers()){
-					if(!DesertMain.eating.contains(p.getUniqueId()))
+					UUID uuid = p.getUniqueId();
+					if(!DesertMain.eating.contains(uuid))
 					p.setFoodLevel(20);
 					Location location = p.getLocation();
 					Location locbefore = location.clone();
 
-
-					if (!PlayerUtils.fighting.containsKey(p.getUniqueId()))
-						PlayerUtils.fighting.put(p.getUniqueId(), 11);
-					int incombat = PlayerUtils.fighting.get(p.getUniqueId());
-					if (incombat > 0) PlayerUtils.fighting.put(p.getUniqueId(), incombat - 1);
+					if (!PlayerUtils.fighting.containsKey(uuid))
+						PlayerUtils.fighting.put(uuid, 11);
+					int incombat = PlayerUtils.fighting.get(uuid);
+					if (incombat > 0) PlayerUtils.fighting.put(uuid, incombat - 1);
 
 
 					if(locbefore.getBlock().getType().equals(Material.LAVA) || locbefore.getBlock().getType().equals(Material.STATIONARY_LAVA)){
-						p.sendMessage(Prefix.DEBUG + "1");
 						if(ConfigUtils.findClass(p).equals("corrupter") && ConfigUtils.getLevel("corrupter",p) > 7){
 							if(p.getHealth() + 0.5 <= p.getMaxHealth()){
 								p.setHealth(p.getHealth() + 0.5);
@@ -243,6 +252,8 @@ public class Events implements Listener{
 							ParticleEffect.VILLAGER_HAPPY.display(1,1,1,0,50,locbefore,10);
 						}
 					}
+					if(p.isBlocking()) blocking.put(uuid, getBlockingTime(uuid) + 0.05f);
+					else blocking.remove(uuid);
 				}
 			}
 		}.runTaskTimer(main,0,20);
@@ -284,7 +295,6 @@ public class Events implements Listener{
 
 
 	private Player getPlayer(Entity entity) {
-
 		if (entity instanceof Player) return (Player) entity;
 		else return (Player) ((Arrow) entity).getShooter();
 	}
@@ -382,6 +392,9 @@ public class Events implements Listener{
 
 	public static void executeKill(Player player, Player killer) {
 		try {
+			FallenDeathEvent event = new FallenDeathEvent(player, killer, getItemUsed(killer));
+			Bukkit.getPluginManager().callEvent(event);
+			if(event.isCancelled()) return;
 			callOnKill(player, killer);
 			EventsForWizard.INSTANCE.wizardt1(killer);
 			Location spawn = ConfigUtils.getSpawn("lobby");
@@ -520,40 +533,39 @@ public class Events implements Listener{
 		}catch(IllegalArgumentException | NullPointerException ignored){}
 	}
 
-	public static boolean dd(Player player){
-		AtomicBoolean dd = new AtomicBoolean(false);
-		player.getInventory().forEach(item -> {
-			if(!dd.get()){
-				if(NBTUtil.getCustomAttrString(item, "ID").equals("DEATH_DEFIANCE")) {
-					dd.set(true);
-					Location location = player.getLocation();
-					player.getInventory().remove(item);
-					player.playSound(player.getLocation(), Sound.DIG_STONE, 10, 1);
-					player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 10, 0.9f);
-					new BukkitRunnable() {
-						float tone = 0;
-						@Override
-						public void run() {
-							if (tone >= 2) cancel();
-							else {
-								player.getLocation().getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 10, tone);
-								tone += 0.1f;
-							}
+	@EventHandler
+	public void dd(FallenDeathEvent event){
+		Player player = event.getPlayer();
+		for(ItemStack item : player.getInventory().getContents()){
+			if(NBTUtil.getCustomAttrString(item, "ID").equals("DEATH_DEFIANCE")) {
+				event.setCancelled(true);
+				Location location = player.getLocation();
+				player.getInventory().remove(item);
+				player.playSound(location, Sound.DIG_STONE, 10, 1);
+				player.playSound(location, Sound.PISTON_EXTEND, 10, 0.9f);
+				new BukkitRunnable() {
+					float tone = 0;
+					@Override
+					public void run() {
+						if (tone >= 2) cancel();
+						else {
+							location.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 10, tone);
+							tone += 0.1f;
 						}
-					}.runTaskTimer(DesertMain.getInstance, 0, 2);
-					player.sendMessage(ChatColor.YELLOW + "You rise from the ashes!\n" + ChatColor.DARK_GRAY + "Consumed 1 Death Defiance");
-					ParticleEffect.FLAME.display(1, 10, 1, 0.2f, 200, player.getLocation(), 15);
-					player.setHealth(player.getMaxHealth() * 0.2);
-					invincible.add(player.getUniqueId());
-					new BukkitRunnable() {
-						public void run() {
-							invincible.remove(player.getUniqueId());
-						}
-					}.runTaskLater(DesertMain.getInstance, 50);
-				}
+					}
+				}.runTaskTimer(DesertMain.getInstance, 0, 2);
+				player.sendMessage(ChatColor.YELLOW + "You rise from the ashes!\n" + ChatColor.DARK_GRAY + "Consumed 1 Death Defiance");
+				ParticleEffect.FLAME.display(1, 10, 1, 0.2f, 200, player.getLocation(), 15);
+				player.setHealth(player.getMaxHealth() * 0.2);
+				invincible.add(player.getUniqueId());
+				new BukkitRunnable() {
+					public void run() {
+						invincible.remove(player.getUniqueId());
+					}
+				}.runTaskLater(DesertMain.getInstance, 50);
+				break;
 			}
-		});
-		return dd.get();
+		}
 	}
 
 	@EventHandler

@@ -25,10 +25,12 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.bukkit.Material.AIR;
-import static org.bukkit.Material.GRASS;
 
 public enum CustomEnch implements Listener {
     TURTLE("Turtle", "turtle") {
+        String getDescription(int level){
+            return null;
+        }
 
         @Override
         public void onHit(EntityDamageByEntityEvent event) {
@@ -54,6 +56,10 @@ public enum CustomEnch implements Listener {
         }
     },
     CRUEL_BLOW("Cruel Blow", "cruel_blow"){
+        String getDescription(int level){
+            return null;
+        }
+
         @Override
         public void onHit(EntityDamageByEntityEvent event) {
             super.onHit(event);
@@ -66,6 +72,10 @@ public enum CustomEnch implements Listener {
         }
     },
     EXTRAVERT{
+        String getDescription(int level){
+            return null;
+        }
+
         @Override
         public void onHit(EntityDamageByEntityEvent event) {
             super.onHit(event);
@@ -80,13 +90,15 @@ public enum CustomEnch implements Listener {
         }
     },
     NO_MERCY("No Mercy", "no_mercy"){
-//        @Override
-//        public void onHit(EntityDamageByEntityEvent event) {
-//            super.onHit(event);
-//        }
-        // already coded in EventsForCorrupter
+        String getDescription(int level){
+            return null;
+        }
     },
     ANTI_FOCUS("Anti-Focus", "anti_focus"){
+        String getDescription(int level){
+            return null;
+        }
+
         @Override
         public void onHit(EntityDamageByEntityEvent event) {
             super.onHit(event);
@@ -102,6 +114,10 @@ public enum CustomEnch implements Listener {
         }
     },
     SPIRIT_GUARD("Spirit Guard","spirit_guard"){
+        String getDescription(int level){
+            return null;
+        }
+
         @Override
         public void onHit(EntityDamageByEntityEvent event) {
             super.onHit(event);
@@ -115,8 +131,16 @@ public enum CustomEnch implements Listener {
             }
         }
     },
-    ALERT /*defined in EventsForScout*/,
+    ALERT{
+        String getDescription(int level){
+            return null;
+        }
+    } /*defined in EventsForScout*/,
     ETHEREAL{
+        String getDescription(int level){
+            return null;
+        }
+
         @Override
         public void onShoot(ProjectileLaunchEvent event) {
             super.onShoot(event);
@@ -136,7 +160,7 @@ public enum CustomEnch implements Listener {
                         Vector dir = current.getDirection();
                         current = current.add(dir);
                         event.getEntity().teleport(current);
-                        if(current.getBlock().getType() != GRASS && current.getBlock().getType() != AIR){
+                        if(MiscUtils.trueEmpty(current.getBlock())){
                             Bukkit.broadcastMessage("e5");
                             event.getEntity().teleport(current);
                             spawnEtherealFW(current);
@@ -167,23 +191,48 @@ public enum CustomEnch implements Listener {
                 }
             }
         }
+
+        void spawnEtherealFW(Location loc){
+            Firework firework = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
+
+            FireworkMeta meta = firework.getFireworkMeta();
+            meta.addEffect(FireworkEffect.builder().withColor(Color.BLUE).withColor(Color.WHITE).withFade(Color.WHITE).build());
+            firework.setFireworkMeta(meta);
+            new BukkitRunnable(){
+                public void run(){
+                    firework.detonate();
+                }
+            }.runTaskLater(DesertMain.getInstance,3);
+        }
     };
+
+    abstract String getDescription(int level);
 
     public static final String DOT = "\u25CF";
     public final String name;
     public final String id;
 
     CustomEnch(String name, String id){
-
         this.name = name;
         this.id = id;
     }
 
     CustomEnch(){
-
         this.name = capitalizeEnum(this.name()).replace("_"," ");
         this.id = this.name().toLowerCase();
+    }
 
+    public ItemStack getBook(int level){
+        ItemStack book = MiscUtils.generateItem(Material.ENCHANTED_BOOK,
+                ChatColor.BLUE + name + " " + level,
+                StringUtil.wrapLore("\n" + ChatColor.BLUE + getDescription(level)),
+                (byte) -1,
+                1,
+                "ENCHANTED_BOOK");
+        NBTItem nbt = new NBTItem(book);
+        nbt.setInteger("BASE_LEVEL", level);
+        nbt.setInteger("REAL_LEVEL", level);
+        return nbt.getItem();
     }
 
     public int getLevel(ItemStack i){
@@ -217,7 +266,7 @@ public enum CustomEnch implements Listener {
              */
             if(enchs.getInteger(id) > 0) {
                 lore.replaceAll(s -> {
-                    if (s.equals(ChatColor.BLUE + DOT + " " + name + " " + enchs.getInteger(id))) {
+                    if (s.contains(name + " " + enchs.getInteger(id))) {
                         return ChatColor.BLUE + DOT + " " + name + " " + level;
                     } else {
                         return s;
@@ -234,8 +283,6 @@ public enum CustomEnch implements Listener {
 
              */
         }
-
-
         enchs.setInteger(id,level);
         item = nbti.getItem();
         m = item.getItemMeta();
@@ -255,16 +302,12 @@ public enum CustomEnch implements Listener {
     }
 
     public static NBTCompound getEnch(NBTItem nbti){
-        Bukkit.broadcastMessage(nbti.toString());
         NBTCompound enchs;
         if(nbti.getCompound("CustomAttributes") != null && nbti.getCompound("CustomAttributes").getCompound("enchantments") != null){
-            Bukkit.broadcastMessage("ench1");
             enchs = nbti.getCompound("CustomAttributes").getCompound("enchantments");
         }else{
-            Bukkit.broadcastMessage("ench2");
             enchs = nbti.addCompound("CustomAttributes").addCompound("enchantments");
         }
-        Bukkit.broadcastMessage("enchs = " + enchs);
         return enchs;
     }
 
@@ -281,23 +324,6 @@ public enum CustomEnch implements Listener {
         return String.join(" ", words);
     }
 
-    public static void spawnEtherealFW(Location loc){
-        Firework firework = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
-
-        FireworkMeta meta = firework.getFireworkMeta();
-        meta.addEffect(FireworkEffect.builder().withColor(Color.BLUE).withColor(Color.WHITE).withFade(Color.WHITE).build());
-        firework.setFireworkMeta(meta);
-        new BukkitRunnable(){
-            public void run(){
-                firework.detonate();
-            }
-        }.runTaskLater(DesertMain.getInstance,3);
-    }
-
-    public ItemStack toBook(){
-        return null;
-    }
-
     private static boolean validatePlayer(Entity p, String clazz, int lv){
         if(!(p instanceof Player)) return false;
         PlayerData data = DBCore.getInstance().getSaveManager().getData(p.getUniqueId());
@@ -308,6 +334,4 @@ public enum CustomEnch implements Listener {
     public void onKill(EntityDamageByEntityEvent event){}
 
     public void onShoot(ProjectileLaunchEvent event){}
-
-
 }

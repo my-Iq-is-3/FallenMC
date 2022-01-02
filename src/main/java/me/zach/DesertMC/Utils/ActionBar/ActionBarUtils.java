@@ -1,38 +1,50 @@
 package me.zach.DesertMC.Utils.ActionBar;
 
-//import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.DesertMain;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-//import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.*;
 
 public class ActionBarUtils {
+    static HashMap<UUID, ActionBar> actionBars = new HashMap<>();
     public static void sendActionBar(Player player, String message){
-        PacketPlayOutChat packet = new PacketPlayOutChat(new ChatComponentText(message), (byte) 2);
-
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+        if(!actionBars.containsKey(player.getUniqueId())){
+            sendActionBar0(player, message);
+        }
     }
 
-//    public static void sendActionBar(Player player, String startMessage, ActionBarModifier modifier, int runAmount, int frequency){
-//        new BukkitRunnable(){
-//            int i = 0;
-//            String bar = startMessage;
-//            @Override
-//            public void run() {
-//                if(i < runAmount){
-//                    if(modifier == null || i == 0) sendActionBar(player, startMessage);
-//                    else{
-//                        bar = modifier.modActionBar(bar, player);
-//                        sendActionBar(player, bar);
-//                    }
-//                    i++;
-//                }else cancel();
-//            }
-//        }.runTaskTimer(DesertMain.getInstance, 0, frequency);
-//    }
-//
-//    public interface ActionBarModifier {
-//        String modActionBar(String currentBar, Player player);
-//    }
+    public static void setActionBar(Player player, ActionBar actionBar){
+        UUID uuid = player.getUniqueId();
+        actionBars.put(uuid, actionBar);
+        if(task == -1) init();
+        sendActionBar0(player, actionBar.getMessage());
+    }
+
+    public static ActionBar getActionBar(UUID uuid){
+        return actionBars.get(uuid);
+    }
+
+    public static void clearActionBar(Player player){
+        actionBars.remove(player.getUniqueId());
+        sendActionBar0(player, "");
+    }
+
+    static int task = -1;
+
+    private static void init(){
+        task = Bukkit.getScheduler().runTaskTimer(DesertMain.getInstance, () -> {
+            for(Map.Entry<UUID, ActionBar> bar : actionBars.entrySet()){
+                sendActionBar0(Bukkit.getPlayer(bar.getKey()), bar.getValue().getMessage());
+            }
+        }, 0, 50).getTaskId();
+    }
+
+    protected static void sendActionBar0(Player player, String message){
+        PacketPlayOutChat packet = new PacketPlayOutChat(new ChatComponentText(message), (byte) 2);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+    }
 }

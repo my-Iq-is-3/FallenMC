@@ -11,6 +11,7 @@ import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.structs.Pair;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.Inventory;
@@ -217,7 +218,11 @@ public class MiscUtils {
     }
 
     public static ChatColor getRankColor(Player player){
-        Rank rank = RankEvents.rankSession.get(player.getUniqueId());
+        return getRankColor(player.getUniqueId());
+    }
+
+    public static ChatColor getRankColor(UUID uuid){
+        Rank rank = RankEvents.rankSession.get(uuid);
         if(rank != null){
             return rank.c;
         }else return ChatColor.GRAY;

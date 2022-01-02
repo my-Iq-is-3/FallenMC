@@ -120,14 +120,14 @@ public class CorrupterTierMenu {
 			case 4:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Immunity to fire and lava.");
-				glore.add(ChatColor.GREEN + "- Extravert enchantment");
+				glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.GREEN + "- Extravert enchantment - Tier I & II");
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Immunity to fire and lava.");
-				ylore.add(ChatColor.YELLOW + " - Extravert enchantment");
+				ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.YELLOW + "- Extravert enchantment - Tier I & II");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Immunity to fire and lava.");
-				rlore.add(ChatColor.RED + " - Extravert enchantment");
+				rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.RED + "- Extravert enchantment - Tier I & II");
 				break;
 			case 5:
 				
@@ -154,39 +154,38 @@ public class CorrupterTierMenu {
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + "§lSHOP UNLOCK " + ChatColor.GREEN + "- Corrupted Sword");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Sword Enchantment)");
-
-
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- No Mercy Enchantment - Tier I & II");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + "§lSHOP UNLOCK " + ChatColor.YELLOW + "- Corrupted Sword");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Sword Enchantment)");
-
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- No Mercy Enchantment - Tier I & II");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + "§lSHOP UNLOCK " + ChatColor.RED + "- Corrupted Sword");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- No Mercy Enchantment" + ChatColor.DARK_GRAY + " (Sword Enchantment)");
-
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- No Mercy Enchantment - Tier I & II");
 				break;
-				
-				
 			case 7:
 
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + "- Heal 0.5 Hearts per second while in lava.");
+				glore.add(ChatColor.GREEN + "- Extravert enchantment - Tier III");
 				
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + "- Heal 0.5 Hearts per second while in lava.");
+				ylore.add(ChatColor.YELLOW + "- Extravert enchantment - Tier III");
 				
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + "- Heal 0.5 Hearts per second while in lava.");
+				rlore.add(ChatColor.RED + "- Extravert enchantment - Tier III");
 				break;
 			case 8:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- No Mercy Enchantment - Tier III");
 				glore.add(ChatColor.GREEN + " - Deal +5% damage.");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- No Mercy Enchantment - Tier III");
 				ylore.add(ChatColor.YELLOW + " - Deal +5% damage.");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Deal +5% damage.");
-				
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- No Mercy Enchantment - Tier III");
 				break;
 			case 9:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");

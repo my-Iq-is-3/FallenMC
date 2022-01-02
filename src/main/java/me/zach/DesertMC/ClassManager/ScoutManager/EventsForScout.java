@@ -89,11 +89,9 @@ public class EventsForScout implements Listener {
     }
 
     public void daggerHit(EntityDamageByEntityEvent event){
-        
         if(event.getDamager() instanceof Player && event.getEntity() instanceof LivingEntity){
             Player damager = (Player) event.getDamager();
             LivingEntity damaged = (LivingEntity) event.getEntity();
-
             if(ConfigUtils.getLevel("scout",damager) > 4 && ConfigUtils.findClass(damager).equals("scout")){
                 if(NBTUtil.getCustomAttrString(damager.getInventory().getItemInHand(),"ID").equals("SCOUT_DAGGER")){
                     if(damager.getLocation().distance(damaged.getLocation()) > 1){
