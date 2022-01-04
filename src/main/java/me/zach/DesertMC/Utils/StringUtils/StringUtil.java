@@ -41,7 +41,7 @@ public class StringUtil{
     }
 
     private static final int CENTER_PX = 154;
-    private static final int MAX_CHAT_LENGTH = 250;
+    private static final int MAX_CHAT_LENGTH = 270;
 
     /**
      * <p>Spigot Thread Link: https://www.spigotmc.org/threads/free-code-sending-perfectly-centered-chat-message.95872/</p>
@@ -108,7 +108,7 @@ public class StringUtil{
     }
 
     public static String getUncenteredWrappedMessage(ChatWrapper wrapper, String text){
-        return wrapper + text + wrapper;
+        return wrapper.wrap(text);
     }
 
     public static void sendUncenteredWrappedMessage(Player player, ChatWrapper wrapper, String text){
@@ -144,9 +144,10 @@ public class StringUtil{
             this.color = color;
 
             StringBuilder wrapBuilder = new StringBuilder();
-            wrapBuilder.append(strikethrough && bold ? color + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH.toString() : strikethrough ? color + ChatColor.STRIKETHROUGH.toString() : bold ? ChatColor.BOLD.toString() + color : color.toString());
+            wrapBuilder.append(strikethrough && bold ? color + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH : strikethrough ? color + ChatColor.STRIKETHROUGH.toString() : bold ? ChatColor.BOLD.toString() + color : color.toString());
             DefaultFontInfo fontInfo = DefaultFontInfo.getDefaultFontInfo(character);
-            for(int i = 0; i<Math.floorDiv(MAX_CHAT_LENGTH, bold ? fontInfo.getBoldLength() : fontInfo.getLength()); i++){
+            int length = bold ? fontInfo.getBoldLength() : fontInfo.getLength();
+            for(int i = 0; i<Math.floorDiv(MAX_CHAT_LENGTH, length); i += length){
                 wrapBuilder.append(character);
             }
             wrapper = wrapBuilder.toString();

@@ -20,8 +20,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-import static me.zach.DesertMC.DesertMain.lv;
-import static me.zach.DesertMC.DesertMain.unclaimed;
 
 public class MilestonesInventory implements Listener {
     static Plugin pl = DesertMain.getInstance;
@@ -42,7 +40,8 @@ public class MilestonesInventory implements Listener {
         }
         ItemStack claimItem = new ItemStack(Material.BREWING_STAND_ITEM);
         ItemMeta claimMeta = claimItem.getItemMeta();
-        if(unclaimed.isEmpty()){
+        MilestonesData data = MilestonesData.get(player);
+        if(data.getUnclaimed().isEmpty()){
             claimMeta.setDisplayName(ChatColor.RED + "Claim All Milestones");
             claimMeta.setLore(Collections.singletonList(ChatColor.RED + "You have no rewards to claim!"));
         }else{
@@ -65,7 +64,7 @@ public class MilestonesInventory implements Listener {
     private static ArrayList<ItemStack> rewardsList(Player p, int page){
         ArrayList<ItemStack> list = new ArrayList<>();
         if(page == 0){
-            page = Math.floorDiv(lv - 1, 29) + 1;
+            page = Math.floorDiv(MilestonesData.get(p).getLevel() - 1, 29) + 1;
         }else if(page < 0) throw new IllegalArgumentException("Page passed through rewardsList(Player p, int page) must be greater than or equal to 0!");
         if(page > 2) page = 2;
         for(int i = (page * 29) - 29; i<=page * 29; i++){
@@ -96,7 +95,8 @@ public class MilestonesInventory implements Listener {
         String reward;
         public RewardsItem(int milestoneLevel, Player p){
             super(type(milestoneLevel), 1);
-            int playerLevel = DesertMain.lv;
+            MilestonesData data = MilestonesData.get(p);
+            int playerLevel = data.getLevel();
             override = overrides.containsKey(level);
             level = milestoneLevel;
             ChatColor textColor = ChatColor.RED;
@@ -108,12 +108,12 @@ public class MilestonesInventory implements Listener {
             }else if(playerLevel == milestoneLevel){
                 textColor = ChatColor.YELLOW;
             }
-
             displayName = textColor + "Milestone " + milestoneLevel;
             if(milestoneLevel == 58){
-                reward = (DesertMain.resets + 1) + MiscUtils.getOrdinalSuffix(DesertMain.resets + 1) + " milestones reset";
-                lore.add(ChatColor.GRAY + "- Display case upgrade: " + MilestonesUtil.getDisplayCase(p) + ChatColor.GRAY + " ➞ " + MilestonesUtil.getDisplayCase(DesertMain.resets + 1, 0));
-                if(MilestonesUtil.cosmetics.containsKey(DesertMain.resets)) lore.add(ChatColor.GRAY + "- New cosmetic: " + MilestonesUtil.cosmetics.get(DesertMain.resets));
+                int resets = data.getResets();
+                reward = (resets + 1) + MiscUtils.getOrdinalSuffix(resets + 1) + " milestones reset";
+                lore.add(ChatColor.GRAY + "- Display case upgrade: " + MilestonesUtil.getDisplayCase(p) + ChatColor.GRAY + " ➞ " + MilestonesUtil.getDisplayCase(resets + 1, 0));
+                if(MilestonesUtil.cosmetics.containsKey(resets)) lore.add(ChatColor.GRAY + "- New cosmetic: " + MilestonesUtil.cosmetics.get(resets));
                 granter = (player, mLevel) -> false;
             }else{
                 if (overrides.containsKey(level)) {
@@ -210,9 +210,9 @@ public class MilestonesInventory implements Listener {
             lore.set(0, reward);
             if(playerLevel > milestoneLevel) {
                 lore.add(textColor + "Progress: Complete!");
-            }else if(playerLevel == milestoneLevel) lore.add(textColor + "Progress: " + DesertMain.currentProgress + "/" + DesertMain.xpToNext);
+            }else if(playerLevel == milestoneLevel) lore.add(textColor + "Progress: " + data.getCurrentProgress() + "/" + data.getXpToNext());
             ItemMeta meta = getItemMeta();
-            if(DesertMain.unclaimed.contains(milestoneLevel)){
+            if(data.getUnclaimed().contains(milestoneLevel)){
                 if(getType() != Material.SKULL_ITEM) meta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, true);
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 lore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "Click to claim!");
@@ -228,7 +228,7 @@ public class MilestonesInventory implements Listener {
                 MilestonesUtil.resetMilestones(player);
             }else{
                 if(granter.grant(player, level)) {
-                    unclaimed.remove(level);
+                    MilestonesData.get(player).getUnclaimed().remove(level);
                     StringUtil.sendCenteredWrappedMessage(player, StringUtil.ChatWrapper.HORIZONTAL_LINE, ChatColor.GREEN.toString() + ChatColor.BOLD + "REWARD CLAIMED!", ChatColor.GREEN + "You got: " + ChatColor.YELLOW + reward);
                     confirmationSound(player);
                 }else{

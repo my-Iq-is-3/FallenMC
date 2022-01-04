@@ -1,0 +1,82 @@
+name: Fallen
+main: me.zach.DesertMC.DesertMain
+version: "1.0"
+author: DrMlem (Archonic)/one_iq
+description: Core Plugin
+depend:
+ - Databank
+ - NPCLibPlugin
+
+commands:
+ addweight:
+  description: Adds weight (double) to held item
+ speed:
+  description: Set player speed
+ invincible:
+  description: Set player invincible
+ setspawn:
+  description: Sets a spawnpoint
+  usage: /<command> <type>
+ kothy:
+  description: Opens Kothy's menu. Admins only. Kothy resides at the Cafe, for other players.
+ classexp:
+  description: Gives class xp
+ item:
+  description: Gives an in-game item
+ showplayer:
+  description: Shows a player
+ hideplayer:
+  description: Hides a player
+ debug:
+  description: Debugs something
+ resetclass:
+  description: Pretty self explanatory
+ setks:
+  description: Sets a player's killstreak
+ testench:
+  description: modifies the item you are holding, putting a custom enchantment on it.
+ selecttitle:
+  description: Selects an owned prefix/title.
+  usage: /<command> <title>
+ spawnnpc:
+  description: Spawns an npc.
+  usage: /<command> <loadOnStartup:true|false> <npc name>
+ seizehelditem:
+  description: Seizes a target player's held item.
+  usage: /<command> <target player>
+ explv:
+  description: Sets the global placeholder exp milestone level for testing purposes, since we don't have our database yet
+ expmilestones:
+  description: Opens the exp milestone menu
+  usage: /<command>
+  aliases:
+   - xpmilestones
+   - xpmilestone
+   - expmilestone
+   - exp
+ colors:
+  description: Lists the color codes that ranked players can put in their messages.
+  usage: /<command>
+  aliases:
+   - color
+ rank:
+  description: Sets a player's rank.
+  usage: /<command> <rank>
+ confirmreset:
+  description: Situation specific, clickable command to confirm an EXP Milestones reset
+  usage: /<command>
+ cosmetic:
+  description: Sets a cosmetic, or opens the cosmetic menu
+  usage: /<command>
+  aliases:
+   - cosmetics
+ blocknotifications:
+  description: Toggles block notifications for the Traveller class bonus
+  usage: /<command>
+ shoptest:
+  description: Tests the server's new, fancy and programmatic Shop system. Admins only!
+  usage: /<command> <material1> <material2>...
+
+permissions:
+ admin:
+  description: This permission allows a player to have access to almost all special commands, such as /item, or /setspawn.

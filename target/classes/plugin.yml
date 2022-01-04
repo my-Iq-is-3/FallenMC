@@ -17,8 +17,8 @@ commands:
  setspawn:
   description: Sets a spawnpoint
   usage: /<command> <type>
- kot:
-  description: Opens selector inv
+ kothy:
+  description: Opens Kothy's menu. Admins only. Kothy resides at the Cafe, for other players.
  classexp:
   description: Gives class xp
  item:

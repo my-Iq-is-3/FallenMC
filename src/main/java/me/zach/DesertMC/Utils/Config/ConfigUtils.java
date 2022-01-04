@@ -3,7 +3,7 @@ package me.zach.DesertMC.Utils.Config;
 import itempackage.Items;
 import me.zach.DesertMC.ClassManager.TravellerEvents;
 import me.zach.DesertMC.DesertMain;
-import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
+import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesData;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.artifacts.gui.inv.ArtifactData;
@@ -23,7 +23,6 @@ import com.destroystokyo.paper.Title;
 import java.util.*;
 import java.util.function.Supplier;
 
-import static me.zach.DesertMC.DesertMain.*;
 
 public class ConfigUtils {
 	static final HashMap<String, Supplier<ItemStack>> FALLEN_PIECES = new HashMap<>();
@@ -142,12 +141,12 @@ public class ConfigUtils {
 				}
 			}else{
 				data.setClassXPR(classtoaddto,xprTiers[level - 1]);
-				player.sendTitle(new Title(ChatColor.WHITE.toString() + (level - 1) + " ➞ " + ChatColor.AQUA + ChatColor.BOLD + level));
+				player.sendTitle(new Title(ChatColor.WHITE.toString() + (level - 1) + " ➞ " + ChatColor.AQUA + ChatColor.BOLD + level, StringUtil.stylizeClass(classtoaddto) + " Class"));
 			}
 			data.setClassXP(classtoaddto,0);
 			data.setClassLevel(classtoaddto,level);
 			cexp(player, classtoaddto, amount - (xpr - prevProgress));
-		}else if(level != 10){ // doesn't level up
+		}else if(level < 10){ // doesn't level up
 			data.setClassXP(classtoaddto,data.getClassXP(classtoaddto)+amount);
 		}
 	}
@@ -171,9 +170,11 @@ public class ConfigUtils {
 
 	private static void gexp(Player player, int amount){
 		if(amount == 0) return;
-		if(lv >= 59) return;
-		if(DesertMain.xpToNext <= currentProgress + amount){
-			String[] levelUp = StringUtil.getCenteredMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "EXP MILESTONE!" + ChatColor.GREEN + " (" + ChatColor.GRAY + (DesertMain.lv - 1) + " ➞ " + ChatColor.GREEN + ChatColor.BOLD + (DesertMain.lv) + ChatColor.GREEN + ")", ChatColor.GREEN + "You reached level" + ChatColor.BOLD + " " + (DesertMain.lv - 1) + ChatColor.GREEN + "!");
+		MilestonesData data = MilestonesData.get(player);
+		if(data.getLevel() >= 59) return;
+		if(data.getXpToNext() <= data.getCurrentProgress() + amount){
+			int level = data.getLevel();
+			String[] levelUp = StringUtil.getCenteredMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "EXP MILESTONE!" + ChatColor.GREEN + " (" + ChatColor.GRAY + (level - 1) + " ➞ " + ChatColor.GREEN + ChatColor.BOLD + (level) + ChatColor.GREEN + ")", ChatColor.GREEN + "You completed level" + ChatColor.BOLD + " " + (level - 1) + ChatColor.GREEN + "!");
 			String[] commandMessage = StringUtil.getCenteredMessage("Click here to view your milestones progression", "and claim rewards!");
 			List<BaseComponent> components = new ArrayList<>();
 			for(String str : commandMessage){
@@ -183,22 +184,23 @@ public class ConfigUtils {
 			component.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GOLD + "Click to use /expmilestones").create()));
 			component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/expmilestones"));
-			player.sendMessage(StringUtil.ChatWrapper.THICK_HORIZONTAL_LINE + "\n");
+			player.sendMessage(StringUtil.ChatWrapper.HORIZONTAL_LINE + ChatColor.RESET.toString());
 			player.sendMessage(levelUp);
 			player.spigot().sendMessage(component);
-			player.sendMessage("\n" + StringUtil.ChatWrapper.THICK_HORIZONTAL_LINE);
+			player.sendMessage("\n" + StringUtil.ChatWrapper.HORIZONTAL_LINE);
 			MiscUtils.ootChestFanfare(player);
-			lv++;
-			int prevProgress = currentProgress;
-			int prevNext = xpToNext;
-			currentProgress = 0;
-			if(lv >= 29) xpToNext = lv * 300;
-			else xpToNext = lv * 200;
-			if(lv == 59) player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "MILESTONES MAXED!" + ChatColor.GREEN + " Open the EXP Milestones inventory using /expmilestones and reset your milestones to gain a STAR, and a potential cosmetic!");
-			unclaimed.add(lv - 1);
+			int newLevel = level + 1;
+			data.setLevel(newLevel);
+			int prevProgress = data.getCurrentProgress();
+			int prevNext = data.getXpToNext();
+			data.setCurrentProgress(0);
+			if(newLevel >= 29) data.setXpToNext(data.getLevel() * 300);
+			else data.setXpToNext(data.getLevel() * 200);
+			if(newLevel == 59) player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "MILESTONES MAXED!" + ChatColor.GREEN + " Open the EXP Milestones inventory using /expmilestones and reset your milestones to gain a STAR, and a potential cosmetic!");
+			data.getUnclaimed().add(data.getLevel() - 1);
 			gexp(player, amount - (prevNext - prevProgress));
 		}else{
-			currentProgress += amount;
+			data.setCurrentProgress(data.getCurrentProgress() + amount);
 		}
 	}
 
@@ -218,8 +220,17 @@ public class ConfigUtils {
 		return DBCore.getInstance().getSaveManager().getData(uuid);
 	}
 
+	public static boolean classesMaxed(Player player){
+		return classesMaxed(player.getUniqueId());
+	}
+
+	public static boolean classesMaxed(UUID uuid){
+		PlayerData data = getData(uuid);
+		return data.getCorL() == 10 && data.getTankL() == 10 && data.getScoutL() == 10 && data.getWizardL() == 10;
+	}
+
 	public static void addXP(Player player, String classtoaddto, int amount) {
-		if(booster.containsKey(player.getUniqueId())) amount = Math.round(amount * booster.get(player.getUniqueId()));
+		if(DesertMain.booster.containsKey(player.getUniqueId())) amount = Math.round(amount * DesertMain.booster.get(player.getUniqueId()));
 		cexp(player, classtoaddto, amount);
 		gexp(player, amount);
 	}

@@ -1,7 +1,9 @@
 package me.zach.DesertMC.ClassManager;
 
+import me.gabriel.Traits.TraitsInventory;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.databank.saver.PlayerData;
 import me.zach.databank.saver.SaveManager;
 import org.bukkit.Bukkit;
@@ -19,7 +21,7 @@ import me.zach.DesertMC.ClassManager.CoruManager.CorrupterTierMenu;
 import me.zach.DesertMC.ClassManager.ScoutManager.ScoutTierMenu;
 import me.zach.DesertMC.ClassManager.TankManager.TankTierMenu;
 import me.zach.DesertMC.ClassManager.WizardManager.WizardTierMenu;
-
+import xyz.fallenmc.risenboss.main.inventories.BossActivationInventory;
 
 
 public class InvEvents implements Listener {
@@ -35,29 +37,25 @@ public class InvEvents implements Listener {
 
 		ItemShop shop = new ItemShop(player);
 
-		if (inv.getName().equals("Selector")) {
-			
+		if (inv.getName().startsWith("Kothy")) {
 			event.setCancelled(true);
-			
-			
 			if (item.getItemMeta().getDisplayName().equals(ChatColor.BLUE + "Item Shop")) {
 				shop.updateInventory();
 			} else if(item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Class Selector")) {
 				ClassSelector classsel = new ClassSelector(player);
 				classsel.openInventory();
+			}else if(NBTUtil.getCustomAttrString(item, "ID").equals("RISEN_MENU")){
+				player.openInventory(new BossActivationInventory(player).getInventory());
+			}else if(NBTUtil.getCustomAttrString(item, "ID").equals("TRAITS_VIEWER")){
+				TraitsInventory.openTraitInventory(player);
 			}
-				
-			
 		}
 		
 		if(inv.getName().equals("Shop")) {
-			
 			event.setCancelled(true);
 			if (item == null || !item.hasItemMeta()) {
 				return;
 			}
-			
-			
 			if(item.getType().equals(Material.BOW)) {
 				if(ConfigUtils.deductGems(player,100)){
 					player.getInventory().addItem(new ItemStack(Material.BOW));

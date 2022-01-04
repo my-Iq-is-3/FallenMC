@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
@@ -43,6 +44,17 @@ public class GUIManager implements Listener {
                         event.getCurrentItem(),
                         event.getClick(),
                         event);
+            }
+        }
+    }
+    @EventHandler
+    public void onPickup(PlayerPickupItemEvent event){
+        Player player = event.getPlayer();
+        Inventory inventory = player.getOpenInventory().getTopInventory();
+        if(inventory != null){
+            InventoryHolder holder = inventory.getHolder();
+            if(holder instanceof GUIHolder){
+                event.setCancelled(((GUIHolder) holder).cancelPickup(event));
             }
         }
     }

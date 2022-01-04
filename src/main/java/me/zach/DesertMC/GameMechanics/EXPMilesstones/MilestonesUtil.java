@@ -1,6 +1,7 @@
 package me.zach.DesertMC.GameMechanics.EXPMilesstones;
 
 import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.cosmetics.Cosmetic;
@@ -38,7 +39,8 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
     }
 
     public static String getDisplayCase(Player player){
-        return getDisplayCase(DesertMain.resets, DesertMain.lv);
+        MilestonesData data = MilestonesData.get(player);
+        return getDisplayCase(data.getResets(), data.getLevel());
     }
 
     public static String getDisplayCase(int resets, int lv){
@@ -66,13 +68,14 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
     public static void resetMilestones(Player player){
         ArrayList<String> msgCompiler = new ArrayList<>();
         msgCompiler.add(ChatColor.GREEN.toString() + ChatColor.BOLD + "MILESTONES RESET!");
-        int resets = DesertMain.resets;
-        if(!DesertMain.unclaimed.isEmpty()){
+        MilestonesData data = MilestonesData.get(player);
+        int resets = data.getResets();
+        if(!data.getUnclaimed().isEmpty()){
             msgCompiler.add(Arrays.toString(StringUtil.getCenteredMessage(ChatColor.RED + "You still have unclaimed milestones!", ChatColor.RED + "Are you sure you wish to reset?")));
-        }else msgCompiler.add(ChatColor.GREEN + "");
+        }else msgCompiler.add(ChatColor.GREEN.toString());
         TextComponent component = new TextComponent(TextComponent.fromLegacyText("Click to confirm your reset."));
         String displayCase = getDisplayCase(player);
-        String newCase = getDisplayCase(DesertMain.resets + 1, 0);
+        String newCase = getDisplayCase(resets + 1, 0);
         msgCompiler.add(Arrays.toString(StringUtil.getCenteredMessage(ChatColor.GRAY + "Display case upgrade: " + displayCase + ChatColor.DARK_GRAY + " ➞ " + newCase)));
         if(cosmetics.containsKey(resets))
             msgCompiler.add(Arrays.toString(StringUtil.getCenteredMessage(ChatColor.GOLD + "Cosmetic: " + cosmetics.get(resets))));
@@ -95,14 +98,14 @@ public class MilestonesUtil extends CommandExecute implements CommandExecutor {
 
     private void confirmReset(Player p){
         confirming.remove(p.getUniqueId());
-        DesertMain.lv = 1;
-        DesertMain.currentProgress = 0;
-        DesertMain.xpToNext = 200;
-        DesertMain.unclaimed.clear();
+        int resets = MilestonesData.get(p).getResets();
+        MilestonesData newData = new MilestonesData(); //resetting data to its initial state
+        Cosmetic cosmetic = cosmetics.get(resets); //getting cosmetic
+        resets++; //adding reset
+        newData.setResets(resets);
+        ConfigUtils.getData(p).setMilestonesData(newData);
         p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "EXP MILESTONES RESET!");
-        Cosmetic cosmetic = cosmetics.get(DesertMain.resets);
         if(cosmetic != null) cosmetic.grant(p);
-        DesertMain.resets++;
         MilestonesInventory.RewardsItem.confirmationSound(p);
     }
 

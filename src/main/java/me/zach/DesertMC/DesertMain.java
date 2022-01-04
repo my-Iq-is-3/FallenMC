@@ -49,10 +49,6 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public static final HashMap<UUID, Float> booster = new HashMap<>();
 	public static final Set<UUID> blockNotifs = new HashSet<>();
 	private static NPCLib library;
-	public static int lv = 8;
-	public static int xpToNext = 100;
-	public static int currentProgress = 0;
-	public static int resets = 0;
 	public static Set<UUID> claiming = new HashSet<>();
 	public static final ArrayList<Integer> unclaimed = new ArrayList<>();
 	public static final String[] NPC_PACKAGES = new String[]{"me.zach.DesertMC.GameMechanics.npcs", "xyz.fallenmc.shops.npcs.clazz"};

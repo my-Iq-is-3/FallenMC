@@ -2,7 +2,7 @@ package me.zach.DesertMC.CommandsPackage;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
-import me.zach.DesertMC.ClassManager.KitsOrTraits;
+import me.zach.DesertMC.ClassManager.KothyMenu;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesInventory;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
@@ -153,7 +153,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         			if(args.length == 2){
         				try{
         					if(Rank.valueOf(args[1]).equals(Rank.COOWNER) || Rank.valueOf(args[1]).equals(Rank.ADMIN)){
-								if (!player.getUniqueId().toString().equals("7f9ad03e-23ec-4648-91c8-2e0820318a8b")){
+								if (!player.getUniqueId().toString().equals("7f9ad03e-23ec-4648-91c8-2e0820318a8b") || player.getUniqueId().toString().equals("a082eaf8-2e8d-4b23-a041-a33ba8d25d5d")){
 									player.sendMessage(ChatColor.RED + "Nice try. You can't give other people COOWNER or ADMIN.");
 									return true;
 								}
@@ -236,7 +236,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 									}
 								}
 								return true;
-							}catch(Exception ex){ //lol
+							}catch(Exception ex){
 								if(ex instanceof ClassCastException){
 									player.sendMessage(ChatColor.RED + "The file or your requested NPC was loaded, but it wasn't the correct type to be initialized as an NPC. Please inform a developer about this immediately, if you're not one. If you are one, get off your lazy ass and get crackin' fixing this error!");
 									Bukkit.getLogger().log(Level.SEVERE, "Problem casting NPC " + pack + "." + className + " to NPCSuper", ex);
@@ -412,13 +412,12 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 				}
 			}
 
-        	if(command.getName().equalsIgnoreCase("kot")) {
+        	if(command.getName().equalsIgnoreCase("kothy")) {
         		if(player.hasPermission("admin")){
-					KitsOrTraits kot = new KitsOrTraits(player);
-					kot.openInventory();
-
+					KothyMenu kot = new KothyMenu(player);
+					player.openInventory(kot.getInventory());
 				}else{
-        			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
+        			player.sendMessage(ChatColor.RED + "Only admins can use this command. Talk to Kothy at the cafe!");
 				}
         	}
         	

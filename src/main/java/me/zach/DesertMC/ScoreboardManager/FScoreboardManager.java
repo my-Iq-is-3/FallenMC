@@ -4,6 +4,7 @@ import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.databank.saver.Key;
+import me.zach.databank.saver.PlayerData;
 import me.zach.databank.saver.SaveManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,16 +29,19 @@ public class FScoreboardManager {
 			Objective objective = mains.registerNewObjective("main", "dummy");
 			objective.setDisplayName(ChatColor.AQUA + "" + ChatColor.BOLD + "FallenMC");
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-			Score gems = objective.getScore(ChatColor.WHITE + "Gems: " + ChatColor.GREEN + ConfigUtils.getGems(player));
-			Score level = objective.getScore(ChatColor.WHITE + "Level: " + ChatColor.AQUA + ConfigUtils.getLevel(ConfigUtils.findClass(player), player));
-			Score souls = objective.getScore(ChatColor.WHITE + "Souls: " + ChatColor.LIGHT_PURPLE + ConfigUtils.getSouls(player));
+			PlayerData data = ConfigUtils.getData(player);
+			Score gems = objective.getScore(ChatColor.WHITE + "Gems: " + ChatColor.GREEN + data.getGems());
+			Score level = objective.getScore(ChatColor.WHITE + "Level: " + ChatColor.AQUA + data.getClassLevel(data.getCurrentClass()));
+			Score souls = objective.getScore(ChatColor.WHITE + "Souls: " + ChatColor.LIGHT_PURPLE + data.getSouls());
 			Score xp;
+			String clazz = data.getCurrentClass();
 			//set experience element
 			if(ConfigUtils.getLevel(ConfigUtils.findClass(player), player) >= 10){
 				xp = objective.getScore(ChatColor.WHITE + "XP: " + ChatColor.AQUA + "MAX");
 			}else{
-				int totalxp = ConfigUtils.getXpToNext(player, ConfigUtils.findClass(player)) + ConfigUtils.getXP(player,ConfigUtils.findClass(player));
-				xp = objective.getScore(ChatColor.WHITE + "XP: " + ChatColor.GREEN + ConfigUtils.getXP(player, ConfigUtils.findClass(player)) + ChatColor.WHITE + "/" + ChatColor.DARK_GRAY + totalxp);
+				int exp = data.getClassXP(clazz);
+				int totalxp = data.getClassXPR(clazz);
+				xp = objective.getScore(ChatColor.WHITE + "XP: " + ChatColor.GREEN + exp + ChatColor.WHITE + "/" + ChatColor.DARK_GRAY + totalxp);
 			}
 			//Now we have to make the first letter uppercase for the player classes
 			String betterclass = ConfigUtils.findClass(player);

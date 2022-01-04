@@ -29,7 +29,7 @@ import static org.bukkit.Material.AIR;
 public enum CustomEnch implements Listener {
     TURTLE("Turtle", "turtle") {
         String getDescription(int level){
-            return null;
+            return level + "% knockback reduction when attacked";
         }
 
         @Override
@@ -57,7 +57,7 @@ public enum CustomEnch implements Listener {
     },
     CRUEL_BLOW("Cruel Blow", "cruel_blow"){
         String getDescription(int level){
-            return null;
+            return "Deal " + level + " additional damage if the attack deals more than 30% of your opponents max health";
         }
 
         @Override
@@ -73,7 +73,7 @@ public enum CustomEnch implements Listener {
     },
     EXTRAVERT{
         String getDescription(int level){
-            return null;
+            return "Take " + 0.1*level + "% less damage per person within a 5 block radius";
         }
 
         @Override
@@ -91,12 +91,12 @@ public enum CustomEnch implements Listener {
     },
     NO_MERCY("No Mercy", "no_mercy"){
         String getDescription(int level){
-            return null;
+            return "Deal " + 3*level + "% more damage if your opponent is under half health";
         }
     },
     ANTI_FOCUS("Anti-Focus", "anti_focus"){
         String getDescription(int level){
-            return null;
+            return "Take " + 0.3*level + "% less dmg if your opponent is sprinting";
         }
 
         @Override
@@ -115,7 +115,7 @@ public enum CustomEnch implements Listener {
     },
     SPIRIT_GUARD("Spirit Guard","spirit_guard"){
         String getDescription(int level){
-            return null;
+            return 8*level + "% chance to heal " + 0.3*level + " hp when blocking hits";
         }
 
         @Override
@@ -133,12 +133,12 @@ public enum CustomEnch implements Listener {
     },
     ALERT{
         String getDescription(int level){
-            return null;
+            return "Take " + level + "% less damage when someone first hits you";
         }
     } /*defined in EventsForScout*/,
     ETHEREAL{
         String getDescription(int level){
-            return null;
+            return "Transforms arrows into hyper-accurate laser beams, carrying them up to " + level * 7 + " blocks with zero drop-off.";
         }
 
         @Override
@@ -176,8 +176,6 @@ public enum CustomEnch implements Listener {
                                 break;
                             }
                         }
-
-                        Bukkit.broadcastMessage("e7");
                         ParticleEffect.FIREWORKS_SPARK.display(0f,0f,0f,0,1,current,300);
                     }
                     final Location cc = current;
@@ -298,7 +296,7 @@ public enum CustomEnch implements Listener {
                 return ce;
             }
         }
-        throw new NullPointerException("no id found");
+        return null;
     }
 
     public static NBTCompound getEnch(NBTItem nbti){

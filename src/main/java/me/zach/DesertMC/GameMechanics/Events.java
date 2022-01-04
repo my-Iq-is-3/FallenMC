@@ -12,7 +12,6 @@ import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
-import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
@@ -21,6 +20,7 @@ import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import me.zach.DesertMC.anvil.FallenAnvilInventory;
 import me.zach.DesertMC.cosmetics.Cosmetic;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import me.zach.artifacts.events.ArtifactEvents;
@@ -164,7 +164,7 @@ public class Events implements Listener{
 		if(event.getInventory() instanceof AnvilInventory){
 			Player player = (Player) event.getPlayer();
 			event.setCancelled(true);
-			Bukkit.getLogger().warning("Uh-oh! Player " + player.getName() + " (" + player.getUniqueId() + ") just attempted to open an anvil inventory. Don't worry, I cancelled it.");
+			player.openInventory(new FallenAnvilInventory().getInventory());
 		}
 	}
 

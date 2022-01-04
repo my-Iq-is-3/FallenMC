@@ -146,7 +146,15 @@ public class MiscUtils {
     }
 
     public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount, String id){
-        return generateItem(type, name, description, dataValue, amount, id, 1, 0);
+        return generateItem(type, name, description, dataValue, amount, id, false, 1, 0);
+    }
+
+    public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount, String id, boolean canEnchant){
+        return generateItem(type, name, description, dataValue, amount, id, canEnchant, 1, 0);
+    }
+
+    public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount, String id, float attackMultiplier, float defenseBonus){
+        return generateItem(type, name, description, dataValue, amount, id, false, attackMultiplier, defenseBonus);
     }
 
     /**
@@ -155,7 +163,7 @@ public class MiscUtils {
      * @param attackMultiplier BONUS factor to multiply attack damage by (if any). Default: 1
      * @param defenseBonus Percentage to add to the armor set's total defense BONUS (works in tandem with the vanilla armor protection rates). Default: 0<br><br>example: If a player wore boots generated with a defense bonus of 5, and wore a chestplate with a defense bonus of 15, attack damage against them would be the vanilla damage reduced by 20%.
      */
-    public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount, String id, float attackMultiplier, float defenseBonus){
+    public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount, String id, boolean canEnchant, float attackMultiplier, float defenseBonus){
         ItemStack item = dataValue > -1 ? new ItemStack(type, amount, dataValue) : new ItemStack(type, amount);
         ItemMeta meta = item.getItemMeta();
         if(!name.isEmpty()) meta.setDisplayName(name);
@@ -166,12 +174,13 @@ public class MiscUtils {
         boolean hasId = id != null;
         boolean hasAtk = attackMultiplier != 1;
         boolean hasDef = defenseBonus > 0;
-        if(hasId || hasAtk || hasDef){
+        if(hasId){
             NBTItem nbt = new NBTItem(item);
             NBTCompound customAttributes = nbt.addCompound("CustomAttributes");
-            if(hasId) customAttributes.setString("ID", id);
+            customAttributes.setString("ID", id);
             if(hasAtk) customAttributes.setFloat("ATTACK", attackMultiplier);
             if(hasDef) customAttributes.setFloat("DEFENSE", defenseBonus);
+            if(canEnchant) customAttributes.setBoolean("CAN_ENCHANT", true);
             customAttributes.setString("UUID", UUID.randomUUID().toString());
             item = nbt.getItem();
         }

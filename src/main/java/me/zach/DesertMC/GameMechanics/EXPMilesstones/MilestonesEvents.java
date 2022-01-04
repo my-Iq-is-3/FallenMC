@@ -1,7 +1,6 @@
 package me.zach.DesertMC.GameMechanics.EXPMilesstones;
 
 import me.zach.DesertMC.DesertMain;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -13,8 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
-
-import static me.zach.DesertMC.DesertMain.*;
+import java.util.List;
 
 public class MilestonesEvents implements Listener {
     @EventHandler
@@ -26,14 +24,15 @@ public class MilestonesEvents implements Listener {
                 try {
                     MilestonesInventory.RewardsItem item = MilestonesInventory.RewardsItem.parseLevel(e.getCurrentItem(), (Player) e.getWhoClicked());
                     int level = item.level;
-                    if (DesertMain.unclaimed.contains(level)) {
+                    if (MilestonesData.get((Player) e.getWhoClicked()).getUnclaimed().contains(level)) {
                         item.claim((Player) e.getWhoClicked());
                     }
                 } catch (IllegalArgumentException ignored) {}
                 if (e.getCurrentItem().getType().equals(Material.BREWING_STAND_ITEM) && e.getCurrentItem().containsEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL)) {
                     if (DesertMain.claiming.contains(e.getWhoClicked().getUniqueId())) return;
-                    else claiming.add(e.getWhoClicked().getUniqueId());
+                    else DesertMain.claiming.add(e.getWhoClicked().getUniqueId());
                     ArrayList<MilestonesInventory.RewardsItem> toClaim = new ArrayList<>();
+                    List<Integer> unclaimed = MilestonesData.get((Player) e.getWhoClicked()).getUnclaimed();
                     for (int i : unclaimed) {
                         if (i != 58)
                             toClaim.add(new MilestonesInventory.RewardsItem(i, (Player) e.getWhoClicked()));
@@ -50,7 +49,7 @@ public class MilestonesEvents implements Listener {
                                 rewardsItem.claim(p);
                                 i++;
                             }else{
-                                claiming.remove(p.getUniqueId());
+                                DesertMain.claiming.remove(p.getUniqueId());
                             }
                         }
                     }.runTaskTimer(DesertMain.getInstance, 15, 25);

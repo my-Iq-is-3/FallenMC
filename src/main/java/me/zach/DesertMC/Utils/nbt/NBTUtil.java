@@ -39,6 +39,17 @@ public class NBTUtil {
         return result == null ? defaultValue : result;
     }
 
+    public static boolean getCustomAttrBoolean(ItemStack item, String key){
+        if(item == null || item.getType() == Material.AIR) return false;
+        else return getCustomAttrBoolean(new NBTItem(item), key);
+    }
+
+    public static boolean getCustomAttrBoolean(NBTCompound nbt, String key){
+        Boolean bool = getCustomAttr(nbt, key, Boolean.class);
+        if(bool == null) return false;
+        else return bool;
+    }
+
     public static boolean hasCustomKey(NBTCompound nbt, String key){
         NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
         if(customAttributes == null) return false;
