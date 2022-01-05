@@ -213,8 +213,6 @@ public class SoulBroker extends NPCSuper implements Listener{
             boolean ifIncrease = meta.getDisplayName().equals(ChatColor.GREEN + "Increase WPH to remove");
             boolean ifDecrease = meta.getDisplayName().equals(ChatColor.GREEN + "Decrease WPH to remove");
             if (ifIncrease || ifDecrease){
-                if(ifIncrease) System.out.println("Increase");
-                else System.out.println("Decrease");
                 try{
                     NBTItem nbt = new NBTItem(item);
                     NBTCompound compound = nbt.getCompound("CustomAttributes");
@@ -236,7 +234,6 @@ public class SoulBroker extends NPCSuper implements Listener{
                         double splitDouble;
                         if(ifIncrease) splitDouble = weaponWPH;
                         else splitDouble = 0;
-                        System.out.println(increment + "");
                         if(splitCond){
                             p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
                             return;
@@ -282,8 +279,6 @@ public class SoulBroker extends NPCSuper implements Listener{
                             newMeta.setLore(newLore);
                             item.setItemMeta(newMeta);
                             NBTItem newNBT = new NBTItem(item);
-                            System.out.println(newIncrement + "");
-                            System.out.println("" + formatter.format(newIncrement));
                             newNBT.getCompound("CustomAttributes").setDouble("INCREMENT", newIncrement);
                             if(ifIncrease) inv.setItem(17, newNBT.getItem());
                             else inv.setItem(9, newNBT.getItem());

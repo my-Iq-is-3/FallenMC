@@ -12,23 +12,26 @@ public class StringUtil{
 
     public static List<String> wrapLore(String string){
         StringBuilder sb = new StringBuilder(string);
-        int i = 0;
+        int firstLfIndex = sb.indexOf("\n");
+        int i = firstLfIndex < LORE_LENGTH ? firstLfIndex : 0;
         while(i + LORE_LENGTH < sb.length() && (i = breakIndex(sb, i + LORE_LENGTH)) != -1){
             sb.setCharAt(i, '\n');
         }
         //maintaining ChatColors since I'm pretty sure item lore doesn't carry them over through list entries
         List<String> splitLore = new ArrayList<>(Arrays.asList(sb.toString().split("\n")));
-        String lastColors = ChatColor.getLastColors(splitLore.get(0));
-        for(int j = 1; j<splitLore.size(); lastColors = ChatColor.getLastColors(splitLore.get(j)), j++){
-            String line = splitLore.get(j);
-            splitLore.set(j, lastColors + line);
+        if(splitLore.size() > 1){
+            String lastColors = ChatColor.getLastColors(splitLore.get(0));
+            for(int j = 1; j < splitLore.size(); lastColors = ChatColor.getLastColors(splitLore.get(j)), j++){
+                String line = splitLore.get(j);
+                splitLore.set(j, lastColors + line);
+            }
         }
         return splitLore;
     }
 
     private static int breakIndex(StringBuilder builder, int from){
-        int spaceIndex = builder.lastIndexOf(" ", from);
-        int lfIndex = builder.lastIndexOf("\n", from);
+        int spaceIndex = builder.indexOf(" ", from);
+        int lfIndex = builder.indexOf("\n", from);
         if(spaceIndex == -1 || lfIndex == -1){
             //accounting for the index not being found
             if(spaceIndex == -1 && lfIndex == -1){

@@ -30,32 +30,31 @@ public enum Cosmetic {
     },
     EMERALD_TRAIL("Emerald Sparkle Arrow Trail", Material.EMERALD_ORE, ChatColor.YELLOW + "A green, sparkling trail that follows your arrows for some extra style!", CosmeticType.ARROW_TRAIL, ChatColor.WHITE + "Unlocked with the purchase of " + ChatColor.GREEN + "SUPPORTER" + ChatColor.WHITE + "rank"){
         public void activateArrow(Arrow arrow, boolean fast){
-            BukkitTask trail = new BukkitRunnable(){
+            new BukkitRunnable() {
                 @Override
-                public void run() {
+                public void run(){
                     if(arrow.isOnGround() || arrow.isDead()) cancel();
                     else Cosmetic.standardArrowTrail(arrow, fast, ParticleEffect.VILLAGER_HAPPY);
                 }
-            }.runTaskTimerAsynchronously(DesertMain.getInstance, 0, 1);
-            //trails.put(arrow.getUniqueId(), trail.getTaskId());
+            }.runTaskTimer(DesertMain.getInstance, 0, 1);
         }
     },
     FLAMING_ARROWS("Flaming Arrows", Material.FIREBALL, ChatColor.YELLOW + "Your arrows are followed by menacing flames!", CosmeticType.ARROW_TRAIL){
         public void activateArrow(Arrow arrow, boolean fast){
-            BukkitTask trail = new BukkitRunnable(){
+            new BukkitRunnable() {
                 @Override
                 public void run(){
                     if(arrow.isOnGround() || arrow.isDead()) cancel();
                     else Cosmetic.standardArrowTrail(arrow, fast, ParticleEffect.FLAME);
                 }
-            }.runTaskTimerAsynchronously(DesertMain.getInstance, 0, 1);
-            //trails.put(arrow.getUniqueId(), trail.getTaskId());
+            }.runTaskTimer(DesertMain.getInstance, 0, 1);
         }
     },
     MUSICAL_ARROWS("Musical Arrows", Material.JUKEBOX, ChatColor.YELLOW + "Your arrows fly with graceful musical chords following them!", CosmeticType.ARROW_TRAIL){
         public void activateArrow(Arrow arrow, boolean fast){
-            BukkitTask trail = new BukkitRunnable(){
+            new BukkitRunnable() {
                 int colorIndex = 0;
+
                 @Override
                 public void run(){
                     if(arrow.isOnGround() || arrow.isDead()) cancel();
@@ -68,7 +67,7 @@ public enum Cosmetic {
                         colorIndex = colorIndex + 1 < rColors.length ? colorIndex + 1 : 0;
                     }
                 }
-            }.runTaskTimerAsynchronously(DesertMain.getInstance, 0, 1);
+            }.runTaskTimer(DesertMain.getInstance, 0, 1);
         }
     },
     CUPID_ARROWS("Cupid Arrows", Material.RED_ROSE, ChatColor.YELLOW + "Shoot arrows with a \"lovely\" trail, courtesy of the elusive Cupid.", CosmeticType.ARROW_TRAIL){
@@ -120,7 +119,7 @@ public enum Cosmetic {
                     if(arrow.isDead() || arrow.isOnGround()) cancel();
                     else Cosmetic.standardArrowTrail(arrow, fast, ParticleEffect.DRIP_WATER);
                 }
-            }.runTaskTimerAsynchronously(pl, 0, 1);
+            }.runTaskTimer(pl, 0, 1);
         }
     },
     LAVA_ARROWS("Lava Arrows", Material.LAVA_BUCKET, ChatColor.YELLOW + "Your arrows drip molten lava as they whiz past your opponent!", CosmeticType.ARROW_TRAIL, true) {
@@ -131,7 +130,7 @@ public enum Cosmetic {
                     if(arrow.isDead() || arrow.isOnGround()) cancel();
                     else Cosmetic.standardArrowTrail(arrow, fast, ParticleEffect.DRIP_LAVA);
                 }
-            }.runTaskTimerAsynchronously(pl, 0, 1);
+            }.runTaskTimer(pl, 0, 1);
         }
     },
     EMERALD_DESTRUCTION("Emerald Destruction", Material.EMERALD_BLOCK, ChatColor.YELLOW + "Eliminate your foes with flair, and all sorts of stylish emerald things popping out of them.", CosmeticType.KILL_EFFECT, ChatColor.WHITE + "Unlocked with the purchase of " + ChatColor.GREEN + "SUPPORTER" + ChatColor.WHITE + " rank"){
@@ -194,7 +193,6 @@ public enum Cosmetic {
         NBTItem nbt = new NBTItem(item);
         nbt.setString("NAME", name());
         icon = nbt.getItem();
-
         ItemStack locked = icon.clone();
         locked.setType(Material.INK_SACK);
         locked.setDurability((short) 8);

@@ -21,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -66,7 +67,8 @@ public class DesertMain extends JavaPlugin implements Listener {
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
-		getCommand("confirmreset").setExecutor(new MilestonesUtil());
+		PluginCommand command = getCommand("confirmreset");
+		command.setExecutor(new MilestonesUtil());
 		loadConfig();
 		loadNPCs();
 		MilestonesOverride.addOverrides();

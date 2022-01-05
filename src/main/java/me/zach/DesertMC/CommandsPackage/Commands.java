@@ -220,7 +220,6 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 						for(String npcNameWord : npcNameArr) className.append(StringUtil.capitalizeFirst(npcNameWord));
 						for(String pack : DesertMain.NPC_PACKAGES){
 							try{
-								System.out.println("trying " + pack + "." + className);
 								@SuppressWarnings("unchecked")
 								Class<? extends NPCSuper> npcClass = (Class<? extends NPCSuper>) Class.forName(pack + "." + className);
 								NPCSuper npcObj = npcClass.newInstance();

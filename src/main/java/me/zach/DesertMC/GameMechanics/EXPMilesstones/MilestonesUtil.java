@@ -21,8 +21,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class MilestonesUtil extends CommandExecute implements CommandExecutor {
-    private static final Plugin pl = DesertMain.getInstance;
+public class MilestonesUtil implements CommandExecutor {
     private static final List<ChatColor> starColors = Arrays.asList(ChatColor.YELLOW, ChatColor.BLUE, ChatColor.GREEN, ChatColor.LIGHT_PURPLE, ChatColor.DARK_GREEN, ChatColor.AQUA, ChatColor.DARK_AQUA, ChatColor.GOLD);
     public static final HashMap<Integer, Cosmetic> cosmetics = new HashMap<>();
     public static final Set<UUID> confirming = new HashSet<>();
