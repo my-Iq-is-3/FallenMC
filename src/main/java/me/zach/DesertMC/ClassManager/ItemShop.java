@@ -69,7 +69,7 @@ public class ItemShop {
 		ItemMeta fmeta = frod.getItemMeta();
 		fmeta.setDisplayName(ChatColor.WHITE + "Fishing Rod");
 		ArrayList<String> flore = new ArrayList<String>();
-		flore.add(ChatColor.DARK_GRAY + "Click to buy a fishing rod that lasts " + ChatColor.RED + "500" + ChatColor.DARK_GRAY + " life");
+		flore.add(ChatColor.DARK_GRAY + "Click to buy a fishing rod that lasts " + ChatColor.RED + "10" + ChatColor.DARK_GRAY + " lives");
 		flore.add("");
 		flore.add(ChatColor.WHITE + "Cost:" + ChatColor.GREEN + " 5 Gems");
 		if(balance >= 500) {
@@ -122,6 +122,7 @@ public class ItemShop {
 		packLore.add(ChatColor.DARK_GRAY + "Contents: ");
 		packLore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " x1 Iron Helmet");
 		packLore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " x1 Iron Chestplate");
+		packLore.add(ChatColor.GRAY + "All items: " + ChatColor.RED + "15" + ChatColor.GRAY + " lives");
 		ipackMeta.setLore(packLore);
 		itemPackage.setItemMeta(ipackMeta);
 		addLore(itemPackage, 600, packLore, player);
@@ -149,17 +150,14 @@ public class ItemShop {
 		ItemStack sword = new ItemStack(Material.IRON_SWORD);
 		ItemMeta swordMeta = sword.getItemMeta();
 		swordMeta.setDisplayName(ChatColor.WHITE + "Iron Sword");
-		ArrayList<String> swordlore = new ArrayList<String>();
+		ArrayList<String> swordlore = new ArrayList<>();
 		swordlore.add(ChatColor.DARK_GRAY + "An Iron sword.");
-
+		swordlore.add(ChatColor.DARK_GRAY + "Lasts: " + ChatColor.RED + "5" + ChatColor.GRAY + " lives");
 		swordMeta.setLore(swordlore);
 		sword.setItemMeta(swordMeta);
 		addLore(sword, 150, swordlore, player);
 		shop.setItem(25, sword);
-		
-		
 		player.openInventory(shop);
-		
 	}
 	
 	

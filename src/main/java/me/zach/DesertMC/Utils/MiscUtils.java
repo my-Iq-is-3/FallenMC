@@ -8,6 +8,7 @@ import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
+import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.structs.Pair;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -149,6 +150,10 @@ public class MiscUtils {
         return generateItem(type, name, description, dataValue, amount, id, false, 1, 0);
     }
 
+    public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount, String id, int lives){
+        return generateItem(type, name, description, dataValue, amount, id, false, 1, 0, lives);
+    }
+
     public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount, String id, boolean canEnchant){
         return generateItem(type, name, description, dataValue, amount, id, canEnchant, 1, 0);
     }
@@ -157,13 +162,17 @@ public class MiscUtils {
         return generateItem(type, name, description, dataValue, amount, id, false, attackMultiplier, defenseBonus);
     }
 
+    public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount, String id, boolean canEnchant, float attackMultiplier, float defenseBonus){
+        return generateItem(type, name, description, dataValue, amount, id, canEnchant, attackMultiplier, defenseBonus, -1);
+    }
+
     /**
      * Generates a custom item with the given parameters.
      *
      * @param attackMultiplier BONUS factor to multiply attack damage by (if any). Default: 1
      * @param defenseBonus Percentage to add to the armor set's total defense BONUS (works in tandem with the vanilla armor protection rates). Default: 0<br><br>example: If a player wore boots generated with a defense bonus of 5, and wore a chestplate with a defense bonus of 15, attack damage against them would be the vanilla damage reduced by 20%.
      */
-    public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount, String id, boolean canEnchant, float attackMultiplier, float defenseBonus){
+    public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount, String id, boolean canEnchant, float attackMultiplier, float defenseBonus, int lives){
         ItemStack item = dataValue > -1 ? new ItemStack(type, amount, dataValue) : new ItemStack(type, amount);
         ItemMeta meta = item.getItemMeta();
         if(!name.isEmpty()) meta.setDisplayName(name);
@@ -172,17 +181,20 @@ public class MiscUtils {
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
         item.setItemMeta(meta);
         boolean hasId = id != null;
-        boolean hasAtk = attackMultiplier != 1;
-        boolean hasDef = defenseBonus > 0;
         if(hasId){
             NBTItem nbt = new NBTItem(item);
             NBTCompound customAttributes = nbt.addCompound("CustomAttributes");
             customAttributes.setString("ID", id);
+            boolean hasAtk = attackMultiplier != 1;
+            boolean hasDef = defenseBonus > 0;
+            boolean hasLives = lives > 0;
             if(hasAtk) customAttributes.setFloat("ATTACK", attackMultiplier);
             if(hasDef) customAttributes.setFloat("DEFENSE", defenseBonus);
             if(canEnchant) customAttributes.setBoolean("CAN_ENCHANT", true);
             customAttributes.setString("UUID", UUID.randomUUID().toString());
-            item = nbt.getItem();
+            if(hasLives){
+                item = NBTUtil.setLives(nbt.getItem(), lives);
+            }else item = nbt.getItem();
         }
         return item;
     }

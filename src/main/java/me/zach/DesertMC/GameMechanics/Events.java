@@ -32,12 +32,12 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
@@ -63,6 +63,23 @@ public class Events implements Listener{
 	public static ItemStack getItemUsed(Entity damager){
 		Player playerDmgr = damager instanceof Player ? (Player) damager : null;
 		return damager instanceof Arrow ? arrowArray.get(damager) : (playerDmgr != null ? playerDmgr.getItemInHand() : null); //arrow? get from arrow array. player? get item in hand. neither? null.
+	}
+
+	public static void checkItemLives(Player player){
+		Inventory inventory = player.getInventory();
+		for(int i = 0; i<inventory.getSize(); i++){
+			ItemStack item = inventory.getItem(i);
+			if(item != null && item.getType() != Material.AIR){
+				NBTItem nbt = new NBTItem(item);
+				if(NBTUtil.hasCustomKey(nbt, "LIVES")){
+					int lives = NBTUtil.getCustomAttr(item, "LIVES", int.class);
+					if(lives - 1 <= 0){
+						inventory.clear(i);
+						player.sendMessage(ChatColor.RED + "Your " + item.getItemMeta().getDisplayName() + " ran out of lives!");
+					}else inventory.setItem(i, NBTUtil.setLives(item, lives - 1));
+				}
+			}
+		}
 	}
 
 	public void attributeMod(EntityDamageByEntityEvent event){
@@ -214,6 +231,28 @@ public class Events implements Listener{
 		EventsForCorruptor.INSTANCE.fort4(event);
 		if(event.getCause().equals(EntityDamageEvent.DamageCause.FALL)){
 			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void breakBlock(BlockBreakEvent event){
+		Player player = event.getPlayer();
+		if(!player.hasPermission("admin")){
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void placeBlock(BlockPlaceEvent event){
+		if(!event.getPlayer().hasPermission("admin")) event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void till(PlayerInteractEvent event){
+		if(event.getAction() == Action.RIGHT_CLICK_BLOCK){
+			if(event.getItem().getType().name().endsWith("HOE")){
+				event.setCancelled(true);
+			}
 		}
 	}
 
@@ -459,6 +498,7 @@ public class Events implements Listener{
 	}
 
 	private static void callOnKill(Player player, Player killer) {
+		checkItemLives(player);
 		PlayerUtils.setIdle(player);
 		PlayerUtils.setFighting(killer);
 		EventsForWizard.INSTANCE.wizardt1(killer);

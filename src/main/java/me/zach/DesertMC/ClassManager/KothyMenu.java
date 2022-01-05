@@ -1,10 +1,14 @@
 package me.zach.DesertMC.ClassManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
+import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
+import me.zach.artifacts.gui.helpers.SkullUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -13,7 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import me.zach.DesertMC.DesertMain;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 
 public class KothyMenu {
 	Plugin main = DesertMain.getPlugin(DesertMain.class);
@@ -62,6 +66,15 @@ public class KothyMenu {
 				ItemStack risenBossItem = MiscUtils.generateItem(Material.EYE_OF_ENDER, ChatColor.GOLD + "Risen Boss", StringUtil.wrapLore(ChatColor.DARK_GRAY + "Click me to transform into a Risen Boss"), (byte) -1, 1, "RISEN_MENU");
 				kot.setItem(0, risenBossItem);
 			}
+
+			ItemStack artifactsItem = SkullUtils.MELEE_ARTIFACT_1;
+			ItemMeta artifactsMeta = artifactsItem.getItemMeta();
+			artifactsMeta.setDisplayName(ChatColor.YELLOW + "Artifacts Menu");
+			artifactsMeta.setLore(Arrays.asList(ChatColor.GRAY + "Click me to open your artifacts bag", ChatColor.DARK_GRAY + "Also use /artifacts"));
+			artifactsItem.setItemMeta(artifactsMeta);
+			NBTItem artiNBT = new NBTItem(artifactsItem);
+			artiNBT.addCompound("CustomAttributes").setString("ID", "ARTIFACTS_BAG");
+			kot.setItem(8, artiNBT.getItem());
 			return kot;
 	}
 }

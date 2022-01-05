@@ -2,8 +2,13 @@ package me.zach.DesertMC.Utils.nbt;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NBTUtil {
     public static String getCustomAttrString(ItemStack item, String key){
@@ -67,11 +72,35 @@ public class NBTUtil {
         else return getCustomAttr(new NBTItem(item), key, type);
     }
 
-    public NBTCompound checkCustomAttr(ItemStack item){
+    public static ItemStack setLives(ItemStack item, int lives){
+        if(item != null && item.getType() != Material.AIR){
+            NBTItem nbt = new NBTItem(item);
+            NBTCompound customAttr = checkCustomAttr(nbt);
+            customAttr.setInteger("LIVES", lives);
+            item = nbt.getItem();
+            ItemMeta meta = item.getItemMeta();
+            List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+            for(int i = 0, size = lore.size(); i < size; i++){
+                String line = lore.get(i);
+                if(line.contains("Lives remaining")){
+                    lore.set(i, ChatColor.GRAY + "Lives remaining: " + ChatColor.RED + lives);
+                    meta.setLore(lore);
+                    item.setItemMeta(meta);
+                    return item;
+                }
+            }
+            lore.add(ChatColor.GRAY + "Lives remaining: " + ChatColor.RED + lives);
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+            return item;
+        }else return item;
+    }
+
+    public static NBTCompound checkCustomAttr(ItemStack item){
         return checkCustomAttr(new NBTItem(item));
     }
 
-    public NBTCompound checkCustomAttr(NBTCompound nbt){
+    public static NBTCompound checkCustomAttr(NBTCompound nbt){
         NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
         return customAttributes == null ? nbt.addCompound("CustomAttributes") : customAttributes;
     }

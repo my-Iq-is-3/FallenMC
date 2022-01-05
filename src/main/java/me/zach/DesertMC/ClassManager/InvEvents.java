@@ -3,7 +3,9 @@ package me.zach.DesertMC.ClassManager;
 import me.gabriel.Traits.TraitsInventory;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import me.zach.artifacts.gui.inv.ArtifactsBag;
 import me.zach.databank.saver.PlayerData;
 import me.zach.databank.saver.SaveManager;
 import org.bukkit.Bukkit;
@@ -23,6 +25,9 @@ import me.zach.DesertMC.ClassManager.TankManager.TankTierMenu;
 import me.zach.DesertMC.ClassManager.WizardManager.WizardTierMenu;
 import xyz.fallenmc.risenboss.main.inventories.BossActivationInventory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 
 public class InvEvents implements Listener {
 
@@ -39,15 +44,18 @@ public class InvEvents implements Listener {
 
 		if (inv.getName().startsWith("Kothy")) {
 			event.setCancelled(true);
+			String id = NBTUtil.getCustomAttrString(item, "ID");
 			if (item.getItemMeta().getDisplayName().equals(ChatColor.BLUE + "Item Shop")) {
 				shop.updateInventory();
 			} else if(item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Class Selector")) {
 				ClassSelector classsel = new ClassSelector(player);
 				classsel.openInventory();
-			}else if(NBTUtil.getCustomAttrString(item, "ID").equals("RISEN_MENU")){
+			}else if(id.equals("RISEN_MENU")){
 				player.openInventory(new BossActivationInventory(player).getInventory());
-			}else if(NBTUtil.getCustomAttrString(item, "ID").equals("TRAITS_VIEWER")){
+			}else if(id.equals("TRAITS_VIEWER")){
 				TraitsInventory.openTraitInventory(player);
+			}else if(id.equals("ARTIFACTS_BAG")){
+				new ArtifactsBag(player).openInv();
 			}
 		}
 		
@@ -58,7 +66,7 @@ public class InvEvents implements Listener {
 			}
 			if(item.getType().equals(Material.BOW)) {
 				if(ConfigUtils.deductGems(player,100)){
-					player.getInventory().addItem(new ItemStack(Material.BOW));
+					player.getInventory().addItem(MiscUtils.generateItem(Material.BOW, "Bow", MiscUtils.asArrayList(ChatColor.GRAY + "A bow."), (byte) -1, 1, "BOW", 1));
 					shop.updateInventory();
 				}
 			}
@@ -72,7 +80,7 @@ public class InvEvents implements Listener {
 				
 			if(item.getType().equals(Material.FISHING_ROD)) {
 				if(ConfigUtils.deductGems(player,500)){
-					player.getInventory().addItem(new ItemStack(Material.FISHING_ROD));
+					player.getInventory().addItem(MiscUtils.generateItem(Material.FISHING_ROD, "Fishing Rod", MiscUtils.asArrayList(ChatColor.GRAY + "A fishing rod."), (byte) -1, 1, "FISHING_ROD", 10));
 					shop.updateInventory();
 				}
 			}
@@ -86,8 +94,8 @@ public class InvEvents implements Listener {
 				
 			if(item.getType().equals(Material.IRON_BLOCK)) {
 				if(ConfigUtils.deductGems(player,600)){
-					player.getInventory().addItem(new ItemStack(Material.IRON_CHESTPLATE));
-					player.getInventory().addItem(new ItemStack(Material.IRON_HELMET));
+					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_CHESTPLATE, "Iron Chestplate", new ArrayList<>(), (byte) -1, 1, "IRON_CHESTPLATE", 15));
+					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_HELMET, "Iron Helmet", new ArrayList<>(), (byte) -1, 1, "IRON_HELMET", 15));
 					shop.updateInventory();
 				}
 			}
@@ -96,17 +104,10 @@ public class InvEvents implements Listener {
 				
 				if(item.getType().equals(Material.IRON_SWORD)) {
 						if(ConfigUtils.deductGems(player,150)){
-						player.getInventory().addItem(new ItemStack(Material.IRON_SWORD));
+						player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_SWORD, "Iron Sword", MiscUtils.asArrayList(ChatColor.GRAY + "An iron sword."), (byte) -1, 1, "IRON_SWORD", 5));
 						shop.updateInventory();
 					}
 				}
-
-			
-				
-			
-				
-				
-				
 		}
 	
 	}

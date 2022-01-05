@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Collections;
 
 public class FallenAnvilInventory implements GUIHolder {
-    Inventory inventory = Bukkit.getServer().createInventory(this, 36);
+    Inventory inventory = Bukkit.getServer().createInventory(this, 36, "Apply Enchantments");
     ItemStack greenPane = MiscUtils.getEmptyPane(DyeColor.LIME.getData());
     ItemStack redPane = MiscUtils.getEmptyPane(DyeColor.RED.getData());
     final int buttonSlot = 22;
@@ -31,6 +31,9 @@ public class FallenAnvilInventory implements GUIHolder {
             inventory.setItem(i, MiscUtils.getEmptyPane());
         }
         setEdges(redPane);
+        inventory.clear(12);
+        inventory.clear(14);
+        inventory.setItem(22, falseItem);
     }
 
     private void setEdges(ItemStack item){
