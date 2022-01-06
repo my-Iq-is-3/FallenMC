@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class StringUtil{
-    public static final int LORE_LENGTH = 45;
+    public static final int LORE_LENGTH = 35;
 
     public static List<String> wrapLore(String string){
         StringBuilder sb = new StringBuilder(string);

@@ -1,5 +1,6 @@
 package me.zach.DesertMC;
 
+import de.tr7zw.nbtinjector.NBTInjector;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
 import me.zach.DesertMC.ClassManager.TankManager.EventsForTank;
@@ -58,12 +59,17 @@ public class DesertMain extends JavaPlugin implements Listener {
 		unclaimed.add(7);
 	}
 	@Override
+	public void onLoad(){
+		NBTInjector.inject();
+	}
+
+	@Override
 	public void onEnable() {
 		Bukkit.getConsoleSender().sendMessage("1");
 		library = new NPCLib(this);
 		getInstance = this;
 		ConfigurationSerialization.registerClass(SavedNPC.class);
-		String[] cmdsfile = {"testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest"};
+		String[] cmdsfile = {"testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());

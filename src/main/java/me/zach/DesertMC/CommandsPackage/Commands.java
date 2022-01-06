@@ -79,8 +79,17 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 					player.openInventory(shop.getInventory());
 					return true;
 				}else return false;
+			}else if(command.getName().equalsIgnoreCase("booster")){
+				if(args.length > 0){
+					try{
+						float multipler = Float.parseFloat(args[0]);
+						Float previous = DesertMain.booster.put(player.getUniqueId(), multipler);
+						player.sendMessage(previous == null ? ChatColor.GREEN + "Added " + multipler + "x EXP booster" : ChatColor.GREEN + "Added " + multipler + "x EXP booster, replacing " + previous);
+					}catch(NumberFormatException | NullPointerException ex){
+						return false;
+					}
+				}
 			}
-
         	if(command.getName().equalsIgnoreCase("setspawn")) {
         		if(player.hasPermission("admin")){
         			String type;

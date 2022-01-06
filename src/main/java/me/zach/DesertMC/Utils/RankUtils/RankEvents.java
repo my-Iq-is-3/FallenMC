@@ -1,7 +1,9 @@
 package me.zach.DesertMC.Utils.RankUtils;
 
+import com.destroystokyo.paper.Title;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.Prefix;
+import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.TitleUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,14 +19,19 @@ import org.bukkit.plugin.Plugin;
 import java.util.*;
 
 public class RankEvents implements Listener {
-    public static final ArrayList<ChatColor> ccList = new ArrayList<>();
+    public static final ArrayList<ChatColor> ccList = new ArrayList<>(Arrays.asList(ChatColor.values()));
     public static final HashMap<String, ChatColor> friendlyCC = new HashMap<>();
     public static final HashMap<UUID, Rank> rankSession = new HashMap<>();
     public static final HashMap<ChatColor, String> colorShortcuts = new HashMap<>();
     static{
-        ccList.addAll(Arrays.asList(ChatColor.values()));
-
         ccList.remove(ChatColor.RESET);
+        for(int i = 0, ccListSize = ccList.size(); i < ccListSize; i++){
+            ChatColor color = ccList.get(i);
+            if(color.name().startsWith("DARK_") || color.name().startsWith("LIGHT_")){
+                ccList.remove(i);
+                ccList.add(0, color);
+            }
+        }
 
         colorShortcuts.put(ChatColor.BOLD, "BO");
         colorShortcuts.put(ChatColor.GOLD, "GO");
@@ -33,9 +40,8 @@ public class RankEvents implements Listener {
 
         for(ChatColor color : ccList){
             String lowerName = color.name().replaceAll("_", " ").toLowerCase();
-            StringBuilder builder = new StringBuilder(lowerName);
-            builder.replace(0, 1, lowerName.substring(0, 1).toUpperCase());
-            friendlyCC.put(color + builder.toString(), color);
+            lowerName = StringUtil.capitalizeFirst(lowerName);
+            friendlyCC.put(color + lowerName, color);
         }
 
         for(ChatColor color : ccList){
@@ -78,18 +84,17 @@ public class RankEvents implements Listener {
         if(title != null) e.setFormat(title + "" + ChatColor.DARK_GRAY + " | " + ChatColor.RESET + e.getFormat());
     }
 
-    public String colorSupporterMessage(String msg){
+    public static String colorSupporterMessage(String msg){
         msg = msg.replaceAll("\\b*(?<!\\\\)!BO", ChatColor.BOLD + "");
         msg = msg.replaceAll("\\b*(?<!\\\\)!GO", ChatColor.GOLD + "");
         msg = msg.replaceAll("\\b*(?<!\\\\)!BL", ChatColor.BLACK + "");
         msg = msg.replaceAll("\\b*(?<!\\\\)!GR", ChatColor.GRAY + "");
         for(ChatColor c : ccList){
-            if(!c.equals(ChatColor.RESET)){
+            if(c != ChatColor.RESET){
                 msg = msg.replaceAll("\\b*(?<!\\\\)" + c.name(), c + "");
                 msg = msg.replaceAll("\\b*(?<!\\\\)!" + colorShortcuts.get(c), c + "");
             }
         }
-
         msg = msg.replaceAll("\\\\", "");
         return msg;
     }
@@ -102,7 +107,7 @@ public class RankEvents implements Listener {
                 Rank rank = Rank.valueOf(pl.getConfig().getString("players." + p.getUniqueId() + ".rank"));
                 p.sendMessage(Prefix.SERVER + ":" +  rank.c + " Wow, thank you so much for buying one of our ranks!! It helps support the server so much. You have our greatest gratitude, " + rank.c + p.getName() + "!");
                 p.playSound(p.getLocation(), Sound.ENDERDRAGON_DEATH, 8, 1);
-                p.sendTitle(rank.c + "Thank you!", ChatColor.DARK_RED + "<3");
+                p.sendTitle(new Title(rank.c + "Thank you!", ChatColor.DARK_RED + "<3"));
                 TitleUtils.addTitle(p, Rank.valueOf(pl.getConfig().getString("players." + p.getUniqueId() + ".rank")).p);
             }
         }

@@ -76,6 +76,9 @@ commands:
  shoptest:
   description: Tests the server's new, fancy and programmatic Shop system. Admins only!
   usage: /<command> <material1> <material2>...
+ booster:
+  description: Sets an exp booster, meant for alpha testers. If the server is past alpha testing, you shouldn't be seeing this!
+  usage: /<command> <multipler:decimal>
 
 permissions:
  admin:

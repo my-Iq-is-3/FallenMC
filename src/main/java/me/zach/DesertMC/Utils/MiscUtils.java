@@ -3,6 +3,7 @@ package me.zach.DesertMC.Utils;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.nbtinjector.NBTInjector;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
@@ -199,6 +200,26 @@ public class MiscUtils {
         return item;
     }
 
+    public static void setPersistentCustomName(Entity entity, String name){
+        removePersistentCustomName(entity);
+        ArmorStand stand = entity.getWorld().spawn(entity.getLocation(), ArmorStand.class);
+        stand.setCustomName(name);
+        stand.setVisible(false);
+        stand.setCustomNameVisible(true);
+        stand.setMarker(true);
+        stand.setSmall(true);
+        NBTEntity nbt = new NBTEntity(stand);
+        nbt.setBoolean("Invulnerable", true);
+        entity.setPassenger(stand);
+    }
+
+    public static void removePersistentCustomName(Entity entity){
+        Entity passenger = entity.getPassenger();
+        if(passenger instanceof ArmorStand){
+            passenger.remove();
+        }
+    }
+
     public static Player getClosest(Location location) throws IllegalStateException {
         Iterator<? extends Player> playerIterator = Bukkit.getOnlinePlayers().iterator();
         if(!playerIterator.hasNext()) throw new IllegalStateException("Closest player check request with no players online!");
@@ -303,6 +324,7 @@ public class MiscUtils {
         while(list.size() > trimTo) list.remove(list.size() - 1);
         return list;
     }
+
     @SuppressWarnings("unchecked")
     public static <T> T ensureDefault(String path, T defaultValue, Plugin plugin){
         FileConfiguration config = plugin.getConfig();

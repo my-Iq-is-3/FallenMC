@@ -18,7 +18,7 @@ import net.md_5.bungee.api.ChatColor;
 public class ItemShop {
 	Plugin main = DesertMain.getPlugin(DesertMain.class);
 	public Inventory shop = main.getServer().createInventory(null, 36, "Shop");
-	Player player = null;
+	Player player;
 	public ItemShop(Player player) {
 		this.player = player;
 	}

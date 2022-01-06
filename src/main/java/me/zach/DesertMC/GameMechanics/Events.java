@@ -82,6 +82,11 @@ public class Events implements Listener{
 		}
 	}
 
+	@EventHandler
+	public void iceMelt(BlockFadeEvent event){
+		event.setCancelled(true);
+	}
+
 	public void attributeMod(EntityDamageByEntityEvent event){
 		Entity damaged = event.getDamager();
 		ItemStack itemUsed = getItemUsed(event.getDamager());
