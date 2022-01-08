@@ -4,7 +4,6 @@ package me.zach.DesertMC.GameMechanics;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
-import me.ench.main.Commands;
 import me.ench.main.RefineryInventory;
 import me.ench.main.RefineryUtils;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
@@ -39,6 +38,7 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.EnchantingInventory;
 import org.bukkit.inventory.Inventory;
@@ -47,10 +47,12 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.CachedServerIcon;
 import xyz.fallenmc.risenboss.main.RisenBoss;
 import xyz.fallenmc.risenboss.main.RisenMain;
 import xyz.fallenmc.risenboss.main.utils.RisenUtils;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
@@ -63,6 +65,19 @@ public class Events implements Listener{
 	public static HashMap<UUID,Integer> ks = new HashMap<>();
 	public static HashMap<Arrow, ItemStack> arrowArray = new HashMap<>();
 	static final HashMap<UUID, Float> blocking = new HashMap<>();
+	private CachedServerIcon nft = null;
+	public Events(){
+		File serverDir = new File(".").getAbsoluteFile();
+		File nftFile = new File(serverDir, "nft.png");
+		if(nftFile.exists()){
+			try{
+				this.nft = Bukkit.loadServerIcon(nftFile);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+	}
+
 
 	public static ItemStack getItemUsed(Entity damager){
 		Player playerDmgr = damager instanceof Player ? (Player) damager : null;
@@ -89,6 +104,13 @@ public class Events implements Listener{
 	@EventHandler
 	public void iceMelt(BlockFadeEvent event){
 		event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void nft(ServerListPingEvent event){
+		if(nft != null && ThreadLocalRandom.current().nextDouble() < 0.02){
+			event.setServerIcon(nft);
+		}
 	}
 
 	public void attributeMod(EntityDamageByEntityEvent event){
