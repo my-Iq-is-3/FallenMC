@@ -4,6 +4,9 @@ package me.zach.DesertMC.GameMechanics;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
+import me.ench.main.Commands;
+import me.ench.main.RefineryInventory;
+import me.ench.main.RefineryUtils;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
 import me.zach.DesertMC.ClassManager.TankManager.EventsForTank;
@@ -37,6 +40,7 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.EnchantingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -214,7 +218,16 @@ public class Events implements Listener{
 		}
 	}
 
-
+	@EventHandler
+	public void enchantRefinery(InventoryOpenEvent event){
+		if(event.getInventory() instanceof EnchantingInventory){
+			event.setCancelled(true);
+			Player player = (Player) event.getPlayer();
+			RefineryInventory inv = RefineryUtils.instance.get(player.getUniqueId());
+			if(inv == null) RefineryUtils.instance.put(player.getUniqueId(), inv = new RefineryInventory());
+			inv.openRefineryInventory(player, false);
+		}
+	}
 
 	@EventHandler
 	public void onHitInWhileInvincible(EntityDamageByEntityEvent event) {

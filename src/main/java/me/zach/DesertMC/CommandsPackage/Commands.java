@@ -89,6 +89,16 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 						return false;
 					}
 				}
+			}else if(command.getName().equalsIgnoreCase("hologram")){
+				if(player.hasPermission("admin")){
+					if(args.length > 0){
+						String holoName = RankEvents.colorSupporterMessage(String.join(" ", args));
+						System.out.println("holoName = " + holoName);
+						if(!player.getInventory().addItem(MiscUtils.getHologramWand(holoName)).isEmpty()){
+							player.sendMessage(ChatColor.RED + "Full inventory!");
+						}
+					}else return false;
+				}else player.sendMessage(ChatColor.RED + "You don't have permission to use this command!");
 			}
         	if(command.getName().equalsIgnoreCase("setspawn")) {
         		if(player.hasPermission("admin")){

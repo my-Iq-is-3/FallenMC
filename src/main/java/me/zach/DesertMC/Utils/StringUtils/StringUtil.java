@@ -8,14 +8,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public class StringUtil{
-    public static final int LORE_LENGTH = 35;
-
+    public static final int LORE_LENGTH = 30;
     public static List<String> wrapLore(String string){
         StringBuilder sb = new StringBuilder(string);
-        int firstLfIndex = sb.indexOf("\n");
-        int i = firstLfIndex < LORE_LENGTH ? firstLfIndex : 0;
-        while(i + LORE_LENGTH < sb.length() && (i = breakIndex(sb, i + LORE_LENGTH)) != -1){
-            sb.setCharAt(i, '\n');
+        int i = 0;
+        while(true){
+            i = jumpToLineFeed(sb, i);
+            if(i + LORE_LENGTH > sb.length() || (i = sb.lastIndexOf(" ", i + LORE_LENGTH)) == -1) break;
+            if(sb.charAt(i) != '\n') sb.setCharAt(i, '\n');
         }
         //maintaining ChatColors since I'm pretty sure item lore doesn't carry them over through list entries
         List<String> splitLore = new ArrayList<>(Arrays.asList(sb.toString().split("\n")));
@@ -29,31 +29,23 @@ public class StringUtil{
         return splitLore;
     }
 
-    private static int breakIndex(StringBuilder builder, int from){
-        int spaceIndex = builder.indexOf(" ", from);
-        int lfIndex = builder.indexOf("\n", from);
-        if(spaceIndex == -1 || lfIndex == -1){
-            //accounting for the index not being found
-            if(spaceIndex == -1 && lfIndex == -1){
-                return -1;
-            }else{
-                if(spaceIndex == -1) return lfIndex;
-                else return spaceIndex;
-            }
-        }else return Math.min(lfIndex, spaceIndex);
+    private static int jumpToLineFeed(StringBuilder builder, int from){
+        int lfIndex = builder.lastIndexOf("\n", from + LORE_LENGTH);
+        if(lfIndex != -1 && lfIndex > from) return jumpToLineFeed(builder, lfIndex);
+        else return from;
     }
 
     private static final int CENTER_PX = 154;
     private static final int MAX_CHAT_LENGTH = 270;
 
     /**
-     * <p>Spigot Thread Link: https://www.spigotmc.org/threads/free-code-sending-perfectly-centered-chat-message.95872/</p>
-     * <p>Slightly altered</p>
+     * <p>Spigot Thread Link: https://www.spigotmc.org/threads/free-code-sending-perfectly-centered-chat-message.95872/
+     * <br>Slightly altered
+     * </p>
      * @author @SirSpoodles
      */
     public static String getCenteredLine(String message){
         if(message == null || message.isEmpty()) return message;
-        message = ChatColor.translateAlternateColorCodes('&', message);
         int messagePxSize = 0;
         boolean previousCode = false;
         boolean isBold = false;

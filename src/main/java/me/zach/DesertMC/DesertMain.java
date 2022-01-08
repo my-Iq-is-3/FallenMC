@@ -17,6 +17,7 @@ import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.GameMechanics.NPCStructure.SavedNPC;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.gui.GUIManager;
+import me.zach.DesertMC.holo.HologramEvents;
 import net.jitse.npclib.NPCLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -69,7 +70,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		library = new NPCLib(this);
 		getInstance = this;
 		ConfigurationSerialization.registerClass(SavedNPC.class);
-		String[] cmdsfile = {"testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster"};
+		String[] cmdsfile = {"testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
@@ -95,6 +96,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(new MilestonesEvents(), p);
 		Bukkit.getPluginManager().registerEvents(new TravellerEvents(), p);
 		Bukkit.getPluginManager().registerEvents(new GUIManager(), p);
+		Bukkit.getPluginManager().registerEvents(new HologramEvents(), this);
 	}
 
 	private void loadNPCs(){
