@@ -58,10 +58,10 @@ public class DesertMain extends JavaPlugin implements Listener {
 		unclaimed.add(1);
 		unclaimed.add(7);
 	}
-	@Override
-	public void onLoad(){
-		NBTInjector.inject();
-	}
+//	@Override
+//	public void onLoad(){
+//		NBTInjector.inject();
+//	}
 
 	@Override
 	public void onEnable() {

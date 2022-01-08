@@ -123,7 +123,7 @@ public class ConfigUtils {
 		int level = data.getClassLevel(classtoaddto); // 1
 		int[] xprTiers = {100, 500, 1000, 2500, 4000, 7000, 8500, 10000, 20000};
 		int xpr = data.getClassXPR(classtoaddto);
-		if(xpr <= amount && level < 10){ // player levels up
+		if(xpr-data.getClassXP(classtoaddto) <= amount && level < 10){ // player levels up
 			int prevProgress = data.getClassXP(classtoaddto);
 			level++;
 			if(level == 10){
