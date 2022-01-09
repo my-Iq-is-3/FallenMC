@@ -1,6 +1,5 @@
 package me.zach.DesertMC;
 
-import de.tr7zw.nbtinjector.NBTInjector;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
 import me.zach.DesertMC.ClassManager.TankManager.EventsForTank;
@@ -42,8 +41,8 @@ import java.util.*;
 public class DesertMain extends JavaPlugin implements Listener {
 	public static DesertMain getInstance;
 	public static final Set<UUID> crouchers = new HashSet<>();
-	public static final Set<UUID> ct1players = new HashSet<UUID>();
-	public static final HashMap<UUID,UUID> lastdmgers = new HashMap<UUID, UUID>();
+	public static final Set<UUID> ct1players = new HashSet<>();
+	public static final HashMap<UUID,UUID> lastdmgers = new HashMap<>();
 	public static final Set<Player> laststandcd = new HashSet<>();
 	public static final Set<Player> mwcd = new HashSet<>();
 	public static final HashMap<UUID,List<UUID>> alertEnchantment	= new HashMap<>();
@@ -116,11 +115,14 @@ public class DesertMain extends JavaPlugin implements Listener {
 	}
 
 	private void loadNPCs(){
+		System.out.println("1");
+		List<SavedNPC> npcs = SavedNPC.stored(this);
+		System.out.println("loop");
 		Bukkit.getConsoleSender().sendMessage("spawning npcs...");
-
-		List<SavedNPC> npcs = NPCSuper.stored(this);
 		for(SavedNPC savedNPC : npcs){
+			System.out.println("loc");
 			Location location = savedNPC.location;
+			System.out.println("createnpc");
 			savedNPC.npc.createNPC(savedNPC.location);
 			Bukkit.getLogger().info("Spawned " + savedNPC.npc.name + " from config at (" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ")");
 		}

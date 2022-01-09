@@ -33,7 +33,7 @@ public class Hologram {
     private ArmorStand getStand(String name, Location location){
         ArmorStand stand = location.getWorld().spawn(location, ArmorStand.class);
         stand.setCustomName(name);
-        stand.setVisible(true);
+        stand.setVisible(false);
         stand.setGravity(false);
         stand.setMarker(true);
         stand.setBasePlate(false);
