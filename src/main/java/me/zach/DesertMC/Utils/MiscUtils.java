@@ -9,12 +9,15 @@ import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
+import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.structs.Pair;
+import me.zach.DesertMC.holo.Hologram;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -201,16 +204,7 @@ public class MiscUtils {
     }
 
     public static void setPersistentCustomName(Entity entity, String name){
-        removePersistentCustomName(entity);
-        ArmorStand stand = entity.getWorld().spawn(entity.getLocation(), ArmorStand.class);
-        stand.setCustomName(name);
-        stand.setVisible(false);
-        stand.setCustomNameVisible(true);
-        stand.setMarker(true);
-        stand.setSmall(true);
-        NBTEntity nbt = new NBTEntity(stand);
-        nbt.setBoolean("Invulnerable", true);
-        entity.setPassenger(stand);
+        new Hologram(name, entity).create();
     }
 
     public static void removePersistentCustomName(Entity entity){
@@ -218,6 +212,19 @@ public class MiscUtils {
         if(passenger instanceof ArmorStand){
             passenger.remove();
         }
+    }
+
+    public static ItemStack getHologramWand(String name){
+        ItemStack wandBase = new ItemStack(Material.STICK);
+        ItemMeta wandMeta = wandBase.getItemMeta();
+        wandMeta.setDisplayName(ChatColor.YELLOW + name);
+        wandMeta.setLore(StringUtil.wrapLore(ChatColor.GRAY + "Spawns a hologram named " + ChatColor.YELLOW + name + ChatColor.GRAY + "." + ".\nLeft click block - spawn on block\nRight click - spawn on current location\nRight click entity - spawn riding entity"));
+        wandBase.setItemMeta(wandMeta);
+        NBTItem nbt = new NBTItem(wandBase);
+        NBTCompound customAttr = nbt.addCompound("CustomAttributes");
+        customAttr.setString("HOLOGRAM_NAME", name.replaceAll(" ", "_"));
+        customAttr.setString("ID", "HOLOGRAM_WAND");
+        return nbt.getItem();
     }
 
     public static Player getClosest(Location location) throws IllegalStateException {

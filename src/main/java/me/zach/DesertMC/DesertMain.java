@@ -1,5 +1,6 @@
 package me.zach.DesertMC;
 
+import de.tr7zw.nbtinjector.NBTInjector;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
 import me.zach.DesertMC.ClassManager.TankManager.EventsForTank;
@@ -21,6 +22,7 @@ import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.gui.GUIManager;
+import me.zach.DesertMC.holo.HologramEvents;
 import net.jitse.npclib.NPCLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -103,6 +105,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(new GUIManager(), p);
 		Bukkit.getPluginManager().registerEvents(new HitboxListener(),p);
 		Bukkit.getConsoleSender().sendMessage("events registered");
+		Bukkit.getPluginManager().registerEvents(new HologramEvents(), this);
 
 	}
 
