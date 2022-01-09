@@ -93,7 +93,6 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 				if(player.hasPermission("admin")){
 					if(args.length > 0){
 						String holoName = RankEvents.colorSupporterMessage(String.join(" ", args));
-						System.out.println("holoName = " + holoName);
 						if(!player.getInventory().addItem(MiscUtils.getHologramWand(holoName)).isEmpty()){
 							player.sendMessage(ChatColor.RED + "Full inventory!");
 						}

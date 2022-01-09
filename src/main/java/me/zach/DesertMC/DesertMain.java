@@ -1,6 +1,5 @@
 package me.zach.DesertMC;
 
-import de.tr7zw.nbtinjector.NBTInjector;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
 import me.zach.DesertMC.ClassManager.TankManager.EventsForTank;
@@ -13,7 +12,6 @@ import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesOverride;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
-import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.GameMechanics.NPCStructure.SavedNPC;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.gui.GUIManager;
@@ -37,8 +35,8 @@ import java.util.*;
 public class DesertMain extends JavaPlugin implements Listener {
 	public static DesertMain getInstance;
 	public static final Set<UUID> crouchers = new HashSet<>();
-	public static final Set<UUID> ct1players = new HashSet<UUID>();
-	public static final HashMap<UUID,UUID> lastdmgers = new HashMap<UUID, UUID>();
+	public static final Set<UUID> ct1players = new HashSet<>();
+	public static final HashMap<UUID,UUID> lastdmgers = new HashMap<>();
 	public static final Set<Player> laststandcd = new HashSet<>();
 	public static final Set<Player> mwcd = new HashSet<>();
 	public static final HashMap<UUID,List<UUID>> alertEnchantment	= new HashMap<>();
@@ -59,10 +57,6 @@ public class DesertMain extends JavaPlugin implements Listener {
 		unclaimed.add(1);
 		unclaimed.add(7);
 	}
-//	@Override
-//	public void onLoad(){
-//		NBTInjector.inject();
-//	}
 
 	@Override
 	public void onEnable() {
@@ -100,9 +94,13 @@ public class DesertMain extends JavaPlugin implements Listener {
 	}
 
 	private void loadNPCs(){
-		List<SavedNPC> npcs = NPCSuper.stored(this);
+		System.out.println("1");
+		List<SavedNPC> npcs = SavedNPC.stored(this);
+		System.out.println("loop");
 		for(SavedNPC savedNPC : npcs){
+			System.out.println("loc");
 			Location location = savedNPC.location;
+			System.out.println("createnpc");
 			savedNPC.npc.createNPC(savedNPC.location);
 			Bukkit.getLogger().info("Spawned " + savedNPC.npc.name + " from config at (" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ")");
 		}
