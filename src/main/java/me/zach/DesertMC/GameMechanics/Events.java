@@ -523,10 +523,15 @@ public class Events implements Listener{
 	}
 
 	private void executeUnexpectedKill(EntityDamageEvent event) throws NullPointerException {
-		UUID uuid = DesertMain.lastdmgers.get(event.getEntity().getUniqueId());
-		Player killer = Bukkit.getPlayer(uuid);
-		if (event.getEntity() instanceof Player) {
-			executeKill((Player) event.getEntity(), killer);
+		if(!event.isCancelled()){
+			UUID uuid = DesertMain.lastdmgers.get(event.getEntity().getUniqueId());
+			if(uuid != null){
+				Player killer = Bukkit.getPlayer(uuid);
+				if(event.getEntity() instanceof Player){
+					Player player = (Player) event.getEntity();
+					if(player.getHealth() - event.getDamage() < 0.1) executeKill(player, killer);
+				}
+			}
 		}
 	}
 
