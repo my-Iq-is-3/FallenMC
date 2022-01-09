@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.List;
 
-public class HitboxListener implements Listener {
+public class HitboxListener implements Listener {//
     @EventHandler
     public void onClick(PlayerInteractEvent event){
         for(Pair<String, Hitbox> h : HitboxManager.getAll()){
