@@ -13,6 +13,8 @@ import me.zach.DesertMC.ClassManager.TravellerEvents;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
+import me.zach.DesertMC.GameMechanics.hitbox.HitboxListener;
+import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
@@ -384,6 +386,7 @@ public class Events implements Listener{
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent event) {
 		try{
+			if(HitboxListener.isInCafe(event.getEntity().getLocation()) || HitboxListener.isInSpawn(event.getEntity().getLocation())) event.setCancelled(true);
 			if(event.isCancelled()) return;
 			CreeperTrove.executeTrove(event);
 			if(event.getDamage() == 0) return;
