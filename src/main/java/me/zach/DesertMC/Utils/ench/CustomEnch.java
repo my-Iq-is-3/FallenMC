@@ -160,7 +160,7 @@ public enum CustomEnch implements Listener {
                         Vector dir = current.getDirection();
                         current = current.add(dir);
                         event.getEntity().teleport(current);
-                        if(MiscUtils.trueEmpty(current.getBlock())){
+                        if(!MiscUtils.trueEmpty(current.getBlock())){
                             Bukkit.broadcastMessage("e5");
                             event.getEntity().teleport(current);
                             spawnEtherealFW(current);
@@ -172,6 +172,7 @@ public enum CustomEnch implements Listener {
                             if(!nearby.isEmpty() && nearby.get(0) != null /*&& nearby != shooter*/){
                                 Bukkit.broadcastMessage("e6.1a = " + event.getEntity().getLocation());
                                 event.getEntity().teleport(nearby.get(0).getLocation());
+
                                 spawnEtherealFW(current);
                                 break;
                             }

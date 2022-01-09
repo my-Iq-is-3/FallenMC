@@ -8,6 +8,9 @@ depend:
  - NPCLibPlugin
 
 commands:
+ hitbox:
+  description: sets a hitbox
+  usage: /hitbox <type> <params>
  addweight:
   description: Adds weight (double) to held item
  speed:

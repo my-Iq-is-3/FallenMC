@@ -6,6 +6,9 @@ import me.zach.DesertMC.ClassManager.KothyMenu;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesInventory;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
+import me.zach.DesertMC.GameMechanics.hitbox.BoxHitbox;
+import me.zach.DesertMC.GameMechanics.hitbox.CircleHitbox;
+import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
@@ -20,10 +23,7 @@ import me.zach.DesertMC.shops.ShopInventory;
 import me.zach.DesertMC.shops.ShopItem;
 import me.zach.DesertMC.cosmetics.Cosmetic;
 import net.minecraft.server.v1_8_R3.CommandExecute;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,10 +35,13 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 
 
 public class Commands extends CommandExecute implements Listener, CommandExecutor {
+	public static HashMap<UUID, Location> hitboxAwait = new HashMap<>();
 	private static final String[] colorsMessage;
 	static{
 		ArrayList<String> colorsList = new ArrayList<>();
@@ -190,6 +193,24 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 				}
 			}
 
+        	if(command.getName().equalsIgnoreCase("hitbox")){
+				if(player.hasPermission("admin")){
+					if(args[0].equalsIgnoreCase("rect")){
+						if(hitboxAwait.containsKey(player.getUniqueId())){
+							HitboxManager.set(args[1],new BoxHitbox(hitboxAwait.get(player.getUniqueId()),player.getLocation()));
+							player.sendMessage(ChatColor.GREEN + "Hitbox created.");
+							hitboxAwait.remove(player.getUniqueId());
+						}else {
+							player.sendMessage(ChatColor.GREEN + "Use /hitbox rect <name> at the next location.");
+							hitboxAwait.put(player.getUniqueId(), player.getLocation());
+						}
+					}
+					if(args[0].equalsIgnoreCase("sphere")){
+						HitboxManager.set(args[2],new CircleHitbox(player.getLocation(),Integer.parseInt(args[1])));
+						player.sendMessage(ChatColor.GREEN + "Hitbox created.");
+					}
+				}
+			}
 
         	if(command.getName().equalsIgnoreCase("seizehelditem")){
         		if(player.hasPermission("admin")){

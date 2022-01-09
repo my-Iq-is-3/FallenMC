@@ -12,7 +12,13 @@ import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesOverride;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
+import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.GameMechanics.NPCStructure.SavedNPC;
+import me.zach.DesertMC.GameMechanics.hitbox.BoxHitbox;
+import me.zach.DesertMC.GameMechanics.hitbox.CircleHitbox;
+import me.zach.DesertMC.GameMechanics.hitbox.HitboxListener;
+import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
+import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.gui.GUIManager;
 import me.zach.DesertMC.holo.HologramEvents;
@@ -60,11 +66,14 @@ public class DesertMain extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
-		Bukkit.getConsoleSender().sendMessage("1");
+		Bukkit.getConsoleSender().sendMessage("Attempting fallenmc onEnable");
 		library = new NPCLib(this);
 		getInstance = this;
 		ConfigurationSerialization.registerClass(SavedNPC.class);
-		String[] cmdsfile = {"testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram"};
+		ConfigurationSerialization.registerClass(BoxHitbox.class);
+		ConfigurationSerialization.registerClass(CircleHitbox.class);
+		HitboxManager.loadAll(this);
+		String[] cmdsfile = {"hitbox","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
@@ -74,12 +83,15 @@ public class DesertMain extends JavaPlugin implements Listener {
 		loadNPCs();
 		MilestonesOverride.addOverrides();
 		Events.check(this);
-		Bukkit.getConsoleSender().sendMessage("1.1");
+		Bukkit.getConsoleSender().sendMessage("Fallenmc onEnable success");
 	}
 
+	public void onDisable(){
+		HitboxManager.saveAll(this);
+	}
 
 	private void registerEvents(Plugin p){
-		Bukkit.getConsoleSender().sendMessage("2");
+		Bukkit.getConsoleSender().sendMessage("registering events...");
 		Bukkit.getPluginManager().registerEvents(new Events(), p);
 		Bukkit.getPluginManager().registerEvents(new RankEvents(p), p);
 		Bukkit.getPluginManager().registerEvents(new InvEvents(), p);
@@ -90,13 +102,23 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(new MilestonesEvents(), p);
 		Bukkit.getPluginManager().registerEvents(new TravellerEvents(), p);
 		Bukkit.getPluginManager().registerEvents(new GUIManager(), p);
+		Bukkit.getPluginManager().registerEvents(new HitboxListener(),p);
+		Bukkit.getConsoleSender().sendMessage("events registered");
 		Bukkit.getPluginManager().registerEvents(new HologramEvents(), this);
+
+	}
+
+	private void loadHitboxes(){
+		Bukkit.getConsoleSender().sendMessage("loading hitboxes...");
+		HitboxManager.loadAll(this);
+		Bukkit.getConsoleSender().sendMessage("loaded hitboxes");
 	}
 
 	private void loadNPCs(){
 		System.out.println("1");
 		List<SavedNPC> npcs = SavedNPC.stored(this);
 		System.out.println("loop");
+		Bukkit.getConsoleSender().sendMessage("spawning npcs...");
 		for(SavedNPC savedNPC : npcs){
 			System.out.println("loc");
 			Location location = savedNPC.location;
@@ -104,12 +126,16 @@ public class DesertMain extends JavaPlugin implements Listener {
 			savedNPC.npc.createNPC(savedNPC.location);
 			Bukkit.getLogger().info("Spawned " + savedNPC.npc.name + " from config at (" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ")");
 		}
+		Bukkit.getConsoleSender().sendMessage("npcs spawned");
 	}
 
 	private void registerCommands(String[] commands, CommandExecutor file){
+		Bukkit.getConsoleSender().sendMessage("registering commands...");
 		for(String s : commands){
 			getCommand(s).setExecutor(file);
 		}
+		Bukkit.getConsoleSender().sendMessage("commands registered");
+
 	}
 	private void loadConfig() {
 		getConfig().options().copyDefaults(true);
