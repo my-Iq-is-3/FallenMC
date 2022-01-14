@@ -115,7 +115,7 @@ public class ConfigUtils {
 
 	public static Location getSpawn(String type){
 		Object spawn = main.getConfig().get("server.spawn." + type);
-		return spawn instanceof Location ? (Location) spawn : null;
+		return spawn instanceof Location ? (Location) spawn : Bukkit.getWorlds().get(0).getSpawnLocation();
 	}
 
 	private static void cexp(Player player, String classtoaddto, int amount){

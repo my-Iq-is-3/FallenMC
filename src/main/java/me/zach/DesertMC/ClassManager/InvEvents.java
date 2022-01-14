@@ -79,7 +79,7 @@ public class InvEvents implements Listener {
 			}
 				
 			if(item.getType().equals(Material.FISHING_ROD)) {
-				if(ConfigUtils.deductGems(player,500)){
+				if(ConfigUtils.deductGems(player,50)){
 					player.getInventory().addItem(MiscUtils.generateItem(Material.FISHING_ROD, "Fishing Rod", MiscUtils.asArrayList(ChatColor.GRAY + "A fishing rod."), (byte) -1, 1, "FISHING_ROD", 10));
 					shop.updateInventory();
 				}

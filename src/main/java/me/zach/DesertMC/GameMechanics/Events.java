@@ -482,8 +482,15 @@ public class Events implements Listener{
 			Location spawn = ConfigUtils.getSpawn("lobby");
 			player.setHealth(player.getMaxHealth());
 			player.teleport(spawn);
+			player.getInventory().addItem(new ItemStack(Material.IRON_SWORD));
+			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_BOOTS));
+			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_CHESTPLATE));
+			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_LEGGINGS));
+			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_HELMET));
+
 			if (player.getFireTicks() > 0)
 				player.setFireTicks(0);
+
 			Random random = ThreadLocalRandom.current();
 			int soulsgained = 0;
 			int randomCompare = 4;

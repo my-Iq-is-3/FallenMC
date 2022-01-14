@@ -71,8 +71,8 @@ public class ItemShop {
 		ArrayList<String> flore = new ArrayList<String>();
 		flore.add(ChatColor.DARK_GRAY + "Click to buy a fishing rod that lasts " + ChatColor.RED + "10" + ChatColor.DARK_GRAY + " lives");
 		flore.add("");
-		flore.add(ChatColor.WHITE + "Cost:" + ChatColor.GREEN + " 5 Gems");
-		if(balance >= 500) {
+		flore.add(ChatColor.WHITE + "Cost:" + ChatColor.GREEN + " 50 Gems");
+		if(balance >= 50) {
 			flore.add(ChatColor.GREEN + "Click to buy!");
 		} else {
 			flore.add(ChatColor.RED + "You cannot afford this item!");

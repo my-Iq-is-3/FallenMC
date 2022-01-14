@@ -130,6 +130,15 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         			return false;
 				}
 			}
+
+        	if(command.getName().equalsIgnoreCase("gems")){
+        		ConfigUtils.addGems(player,1000);
+			}
+
+        	if(command.getName().equalsIgnoreCase("souls")){
+        		ConfigUtils.addSouls(player,100);
+			}
+
 			if(command.getName().equalsIgnoreCase("cosmetic")){
 				if(args.length >= 2){
 					if(args[0].equalsIgnoreCase("set")){

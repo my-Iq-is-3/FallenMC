@@ -73,7 +73,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		ConfigurationSerialization.registerClass(BoxHitbox.class);
 		ConfigurationSerialization.registerClass(CircleHitbox.class);
 		HitboxManager.loadAll(this);
-		String[] cmdsfile = {"hitbox","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster"};
+		String[] cmdsfile = {"gems","souls","hitbox","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());

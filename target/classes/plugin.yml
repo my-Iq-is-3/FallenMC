@@ -8,6 +8,10 @@ depend:
  - NPCLibPlugin
 
 commands:
+ gems:
+  description: adds 1k gems to your balance
+ souls:
+  description: grants 100 souls
  hitbox:
   description: sets a hitbox
   usage: /hitbox <type> <params>

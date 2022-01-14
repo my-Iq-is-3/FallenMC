@@ -167,9 +167,9 @@ public enum CustomEnch implements Listener {
                             break;
                         }else{
                             Bukkit.broadcastMessage("e6");
-                            List<Zombie> nearby = MiscUtils.getNearbyEntities(Zombie.class,event.getEntity(),0.5);
+                            List<Player> nearby = MiscUtils.getNearbyEntities(Player.class,event.getEntity(),0.5);
                             Bukkit.broadcastMessage("e6n: " + nearby);
-                            if(!nearby.isEmpty() && nearby.get(0) != null /*&& nearby != shooter*/){
+                            if(!nearby.isEmpty() && nearby.get(0) != null && !nearby.get(0).equals(shooter)){
                                 Bukkit.broadcastMessage("e6.1a = " + event.getEntity().getLocation());
                                 event.getEntity().teleport(nearby.get(0).getLocation());
 
@@ -182,7 +182,7 @@ public enum CustomEnch implements Listener {
                     final Location cc = current;
                     new BukkitRunnable(){
                         public void run(){
-                            event.getEntity().teleport(cc);
+                            event.getEntity().setVelocity(new Vector(0,0,0));
                         }
                     }.runTaskLater(DesertMain.getInstance,2);
                     spawnEtherealFW(current);
