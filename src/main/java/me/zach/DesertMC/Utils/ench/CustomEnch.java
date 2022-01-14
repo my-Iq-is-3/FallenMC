@@ -3,6 +3,7 @@ package me.zach.DesertMC.Utils.ench;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
@@ -15,26 +16,25 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.bukkit.Material.AIR;
 
 public enum CustomEnch implements Listener {
-    TURTLE("Turtle", "turtle") {
+    TURTLE("Turtle", "turtle", EnchantType.ARMOR) {
         String getDescription(int level){
-            return level + "% knockback reduction when attacked";
+            return "Grants a " + level + "% knockback reduction when attacked.";
         }
 
         @Override
         public void onHit(EntityDamageByEntityEvent event) {
-            super.onHit(event);
             Bukkit.broadcastMessage("turtle1");
             if(event.getEntity() instanceof Player){
                 Player player = (Player) event.getEntity();
@@ -55,30 +55,31 @@ public enum CustomEnch implements Listener {
             }
         }
     },
-    CRUEL_BLOW("Cruel Blow", "cruel_blow"){
+    CRUEL_BLOW("Cruel Blow", "cruel_blow", EnchantType.MELEE, EnchantType.BOW){
         String getDescription(int level){
             return "Deal " + level + " additional damage if the attack deals more than 30% of your opponents max health";
         }
 
         @Override
         public void onHit(EntityDamageByEntityEvent event) {
-            super.onHit(event);
-            if(event.getDamager() instanceof Player){
-                if(!CustomEnch.validatePlayer(event.getEntity(), Key.TANK,7)) return;
-                if(event.getEntity() instanceof LivingEntity && ((LivingEntity) event.getEntity()).getMaxHealth()/3 < event.getDamage()) {
-                    event.setDamage(event.getDamage() + getLevel(((Player) event.getDamager()).getItemInHand()));
+            Player player = Events.getPlayer(event.getDamager());
+            ItemStack itemUsed = Events.getItemUsed(event.getDamager());
+            if(player != null){
+                if(!CustomEnch.validatePlayer(event.getEntity(), Key.TANK,7)){
+                    if(event.getEntity() instanceof Damageable && ((Damageable) event.getEntity()).getMaxHealth() / 3 < event.getDamage()){
+                        event.setDamage(event.getDamage() + getLevel(itemUsed));
+                    }
                 }
             }
         }
     },
-    EXTRAVERT{
+    EXTRAVERT(EnchantType.ARMOR){
         String getDescription(int level){
-            return "Take " + 0.1*level + "% less damage per person within a 5 block radius";
+            return "Take " + 0.1*level + "% less damage per person within a 5 block radius.";
         }
 
         @Override
         public void onHit(EntityDamageByEntityEvent event) {
-            super.onHit(event);
             if(event.getEntity() instanceof Player){
                 Player player = (Player) event.getEntity();
                 if(!CustomEnch.validatePlayer(player,Key.CORRUPTER,4)) return;
@@ -89,12 +90,12 @@ public enum CustomEnch implements Listener {
             }
         }
     },
-    NO_MERCY("No Mercy", "no_mercy"){
+    NO_MERCY("No Mercy", "no_mercy", EnchantType.MELEE){
         String getDescription(int level){
             return "Deal " + 3*level + "% more damage if your opponent is under half health";
         }
     },
-    ANTI_FOCUS("Anti-Focus", "anti_focus"){
+    ANTI_FOCUS("Anti-Focus", "anti_focus", EnchantType.ARMOR){
         String getDescription(int level){
             return "Take " + 0.3*level + "% less dmg if your opponent is sprinting";
         }
@@ -113,7 +114,7 @@ public enum CustomEnch implements Listener {
             }
         }
     },
-    SPIRIT_GUARD("Spirit Guard","spirit_guard"){
+    SPIRIT_GUARD("Spirit Guard","spirit_guard", EnchantType.MELEE){
         String getDescription(int level){
             return 8*level + "% chance to heal " + 0.3*level + " hp when blocking hits";
         }
@@ -131,12 +132,12 @@ public enum CustomEnch implements Listener {
             }
         }
     },
-    ALERT{
+    ALERT(EnchantType.ARMOR){
         String getDescription(int level){
             return "Take " + level + "% less damage when someone first hits you";
         }
     } /*defined in EventsForScout*/,
-    ETHEREAL{
+    ETHEREAL(EnchantType.BOW){
         String getDescription(int level){
             return "Transforms arrows into hyper-accurate laser beams, carrying them up to " + level * 7 + " blocks with zero drop-off.";
         }
@@ -179,7 +180,7 @@ public enum CustomEnch implements Listener {
                         }
                         ParticleEffect.FIREWORKS_SPARK.display(0f,0f,0f,0,1,current,300);
                     }
-                    final Location cc = current;
+                    final Location cc = current; //TODO why is this never used?
                     new BukkitRunnable(){
                         public void run(){
                             event.getEntity().setVelocity(new Vector(0,0,0));
@@ -192,16 +193,7 @@ public enum CustomEnch implements Listener {
         }
 
         void spawnEtherealFW(Location loc){
-            Firework firework = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
-
-            FireworkMeta meta = firework.getFireworkMeta();
-            meta.addEffect(FireworkEffect.builder().withColor(Color.BLUE).withColor(Color.WHITE).withFade(Color.WHITE).build());
-            firework.setFireworkMeta(meta);
-            new BukkitRunnable(){
-                public void run(){
-                    firework.detonate();
-                }
-            }.runTaskLater(DesertMain.getInstance,3);
+            MiscUtils.spawnFirework(loc, 0, false, false, Color.WHITE, FireworkEffect.Type.BALL, Color.BLUE, Color.WHITE);
         }
     };
 
@@ -210,27 +202,38 @@ public enum CustomEnch implements Listener {
     public static final String DOT = "\u25CF";
     public final String name;
     public final String id;
+    public final EnchantType[] types;
 
-    CustomEnch(String name, String id){
-        this.name = name;
-        this.id = id;
+    private void checkTypeLength(){
+        if(types.length < 1) throw new IllegalArgumentException("Could not initialize enchant " + name() + ", because it didn't provide any enchant types.");
     }
 
-    CustomEnch(){
+    CustomEnch(String name, String id, EnchantType... types){
+        this.name = name;
+        this.id = id;
+        this.types = types;
+        checkTypeLength();
+    }
+
+    CustomEnch(EnchantType... types){
         this.name = capitalizeEnum(this.name()).replace("_"," ");
         this.id = this.name().toLowerCase();
+        this.types = types;
+        checkTypeLength();
     }
 
     public ItemStack getBook(int level){
         ItemStack book = MiscUtils.generateItem(Material.ENCHANTED_BOOK,
                 ChatColor.BLUE + name + " " + level,
-                StringUtil.wrapLore(ChatColor.GRAY + getDescription(level)),
+                StringUtil.wrapLore(ChatColor.GRAY + getDescription(level) + "\n" + ChatColor.DARK_GRAY + "Can be applied to " + StringUtil.series(Arrays.toString(types))),
                 (byte) -1,
                 1,
                 "ENCHANTED_BOOK");
         NBTItem nbt = new NBTItem(book);
-        nbt.setInteger("BASE_LEVEL", level);
-        nbt.setInteger("REAL_LEVEL", level);
+        NBTCompound customAttributes = nbt.addCompound("CustomAttributes");
+        customAttributes.setInteger("BASE_LEVEL", level);
+        customAttributes.setInteger("REAL_LEVEL", level);
+        customAttributes.setString("ENCH_ID", id);
         return nbt.getItem();
     }
 
@@ -275,9 +278,6 @@ public enum CustomEnch implements Listener {
             enchs = nbti.addCompound("CustomAttributes").addCompound("enchantments");
             lore.add(" ");
             lore.add(ChatColor.BLUE + DOT + " " + name + " " + level);
-            /* add ench lore
-
-             */
         }
         enchs.setInteger(id,level);
         item = nbti.getItem();
@@ -307,10 +307,6 @@ public enum CustomEnch implements Listener {
         return enchs;
     }
 
-    public static int getLevel(ItemStack i,String id){
-        return fromID(id).getLevel(i);
-    }
-
     private static String capitalizeEnum(String str) {
         String[] words = str.toLowerCase().split("_");
         for(int i = 0; i< words.length; i++){
@@ -325,9 +321,11 @@ public enum CustomEnch implements Listener {
         PlayerData data = DBCore.getInstance().getSaveManager().getData(p.getUniqueId());
         return data.getClassLevel(clazz) > lv && data.getCurrentClass().equals(clazz);
     }
+
     public void onHit(EntityDamageByEntityEvent event){}
 
     public void onKill(EntityDamageByEntityEvent event){}
 
     public void onShoot(ProjectileLaunchEvent event){}
+
 }

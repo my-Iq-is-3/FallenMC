@@ -14,10 +14,10 @@ import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxListener;
-import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
@@ -375,9 +375,10 @@ public class Events implements Listener{
 	}
 
 
-	private Player getPlayer(Entity entity) {
-		if (entity instanceof Player) return (Player) entity;
-		else return (Player) ((Arrow) entity).getShooter();
+	public static Player getPlayer(Entity arrowOrPlayer) {
+		if (arrowOrPlayer instanceof Player) return (Player) arrowOrPlayer;
+		else if(arrowOrPlayer instanceof Arrow) return ((Arrow) arrowOrPlayer).getShooter() instanceof Player ? ((Player) ((Arrow) arrowOrPlayer).getShooter()) : null;
+		else return null;
 	}
 
 	// ---------------------------------------------------------------------------
@@ -718,8 +719,9 @@ public class Events implements Listener{
 			e.setJoinMessage(e.getPlayer().getName() + ChatColor.GOLD + " just joined for the first time, give them a warm welcome!");
 		}else{
 			if(main.getConfig().getString("players." + uuid + ".rank") != null)
-				e.setJoinMessage(Rank.valueOf(main.getConfig().getString("players." + uuid + ".rank")).p + Rank.valueOf(main.getConfig().getString("players." + uuid + ".rank")).c.toString() + " " + e.getPlayer().getName() + " just joined.");
+				e.setJoinMessage(Rank.valueOf(main.getConfig().getString("players." + uuid + ".rank")).p.toString() + MiscUtils.getRankColor(e.getPlayer()) + " " + e.getPlayer().getName() + " just joined.");
 			else e.setJoinMessage("");
+			e.getPlayer().sendMessage(DesertMain.getWelcome());
 		}
 		if(!main.getConfig().contains("players." + uuid + ".cosmetics")){
 			Bukkit.getLogger().warning(ChatColor.RED + "Initializing cosmetics for player " + e.getPlayer().getName());

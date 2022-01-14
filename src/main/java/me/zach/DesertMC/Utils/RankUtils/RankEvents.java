@@ -66,7 +66,7 @@ public class RankEvents implements Listener {
         Player p = e.getPlayer();
         if(rankSession.containsKey(p.getUniqueId())){
             Rank rank = rankSession.get(p.getUniqueId());
-            e.setMessage(colorSupporterMessage(e.getMessage()));
+            e.setMessage(colorMessage(e.getMessage()));
             if(rank.equals(Rank.COOWNER)) e.setFormat(rank.c + "" + ChatColor.BOLD + p.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
             else e.setFormat(rank.c + p.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
         }else{
@@ -84,7 +84,7 @@ public class RankEvents implements Listener {
         if(title != null) e.setFormat(title + "" + ChatColor.DARK_GRAY + " | " + ChatColor.RESET + e.getFormat());
     }
 
-    public static String colorSupporterMessage(String msg){
+    public static String colorMessage(String msg){
         msg = msg.replaceAll("\\b*(?<!\\\\)!BO", ChatColor.BOLD + "");
         msg = msg.replaceAll("\\b*(?<!\\\\)!GO", ChatColor.GOLD + "");
         msg = msg.replaceAll("\\b*(?<!\\\\)!BL", ChatColor.BLACK + "");

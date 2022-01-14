@@ -12,7 +12,6 @@ import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesOverride;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
-import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.GameMechanics.NPCStructure.SavedNPC;
 import me.zach.DesertMC.GameMechanics.hitbox.BoxHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.CircleHitbox;
@@ -24,6 +23,7 @@ import me.zach.DesertMC.Utils.gui.GUIManager;
 import me.zach.DesertMC.holo.HologramEvents;
 import net.jitse.npclib.NPCLib;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
@@ -53,26 +53,23 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public static final HashMap<UUID, String> snack = new HashMap<>();
 	public static final Set<UUID> eating = new HashSet<>();
 	public static final HashMap<UUID, HashMap<String, Double>> weightQueue = new HashMap<>();
-	public static final HashMap<UUID, Float> booster = new HashMap<>();
+	public static final HashMap<UUID, Float> booster = new HashMap<>(); //TODO better booster system
+
+	public static String getWelcome(){
+		return welcome;
+	}
+
+	private static String welcome;
 	public static final Set<UUID> blockNotifs = new HashSet<>();
 	private static NPCLib library;
 	public static Set<UUID> claiming = new HashSet<>();
-	public static final ArrayList<Integer> unclaimed = new ArrayList<>();
 	public static final String[] NPC_PACKAGES = new String[]{"me.zach.DesertMC.GameMechanics.npcs", "xyz.fallenmc.shops.npcs.clazz"};
-	static{
-		unclaimed.add(1);
-		unclaimed.add(7);
-	}
 
 	@Override
 	public void onEnable() {
-		Bukkit.getConsoleSender().sendMessage("Attempting fallenmc onEnable");
+		Bukkit.getConsoleSender().sendMessage("Attempting FallenMC onEnable");
 		library = new NPCLib(this);
 		getInstance = this;
-		ConfigurationSerialization.registerClass(SavedNPC.class);
-		ConfigurationSerialization.registerClass(BoxHitbox.class);
-		ConfigurationSerialization.registerClass(CircleHitbox.class);
-		HitboxManager.loadAll(this);
 		String[] cmdsfile = {"gems","souls","hitbox","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
@@ -80,10 +77,15 @@ public class DesertMain extends JavaPlugin implements Listener {
 		PluginCommand command = getCommand("confirmreset");
 		command.setExecutor(new MilestonesUtil());
 		loadConfig();
+		ConfigurationSerialization.registerClass(SavedNPC.class);
+		ConfigurationSerialization.registerClass(BoxHitbox.class);
+		ConfigurationSerialization.registerClass(CircleHitbox.class);
+		HitboxManager.loadAll(this);
 		loadNPCs();
+		welcome = RankEvents.colorMessage(MiscUtils.ensureDefault("server.welcome", ChatColor.AQUA + "Welcome to FallenMC! We hope you'll have fun.", this));
 		MilestonesOverride.addOverrides();
 		Events.check(this);
-		Bukkit.getConsoleSender().sendMessage("Fallenmc onEnable success");
+		Bukkit.getLogger().info("FallenMC onEnable success!");
 	}
 
 	public void onDisable(){
@@ -103,15 +105,8 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(new TravellerEvents(), p);
 		Bukkit.getPluginManager().registerEvents(new GUIManager(), p);
 		Bukkit.getPluginManager().registerEvents(new HitboxListener(),p);
-		Bukkit.getConsoleSender().sendMessage("events registered");
 		Bukkit.getPluginManager().registerEvents(new HologramEvents(), this);
-
-	}
-
-	private void loadHitboxes(){
-		Bukkit.getConsoleSender().sendMessage("loading hitboxes...");
-		HitboxManager.loadAll(this);
-		Bukkit.getConsoleSender().sendMessage("loaded hitboxes");
+		Bukkit.getConsoleSender().sendMessage("events registered");
 	}
 
 	private void loadNPCs(){
@@ -124,7 +119,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 			Location location = savedNPC.location;
 			System.out.println("createnpc");
 			savedNPC.npc.createNPC(savedNPC.location);
-			Bukkit.getLogger().info("Spawned " + savedNPC.npc.name + " from config at (" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ")");
+			Bukkit.getLogger().info("Spawned " + ChatColor.stripColor(savedNPC.npc.name) + " from config at (" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ")");
 		}
 		Bukkit.getConsoleSender().sendMessage("npcs spawned");
 	}

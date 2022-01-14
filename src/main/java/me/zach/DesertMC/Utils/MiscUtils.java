@@ -61,10 +61,15 @@ public class MiscUtils {
     }
 
     public static Firework spawnFirework(Location location, int power, boolean flicker, boolean trail, FireworkEffect.Type type, Color... colors){
+        return spawnFirework(location, power, flicker, trail, null, type, colors);
+    }
+
+    public static Firework spawnFirework(Location location, int power, boolean flicker, boolean trail, Color fade, FireworkEffect.Type type, Color... colors){
         Firework firework = (Firework) location.getWorld().spawnEntity(location, EntityType.FIREWORK);
         FireworkMeta fireworkMeta = firework.getFireworkMeta();
-        FireworkEffect fireworkEffect = FireworkEffect.builder().with(type).flicker(flicker).trail(trail).withColor(colors).build();
-        fireworkMeta.addEffect(fireworkEffect);
+        FireworkEffect.Builder fireworkEffect = FireworkEffect.builder().with(type).flicker(flicker).trail(trail).withColor(colors);
+        if(fade != null) fireworkEffect.withFade(fade);
+        fireworkMeta.addEffect(fireworkEffect.build());
         fireworkMeta.setPower(power);
         firework.setFireworkMeta(fireworkMeta);
         if(power == 0){

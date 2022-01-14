@@ -118,11 +118,30 @@ public class StringUtil{
 
     public static String stylizeClass(String clazz){
          clazz = capitalizeFirst(clazz);
-         if(clazz.equals("Corrupter")) return ChatColor.RED + clazz;
-         else if(clazz.equals("Wizard")) return ChatColor.BLUE + clazz;
-         else if(clazz.equals("Scout")) return ChatColor.AQUA + clazz;
-         else if(clazz.equals("Tank")) return ChatColor.DARK_GREEN + clazz;
-         else return clazz;
+        switch(clazz){
+            case "Corrupter": return ChatColor.RED + clazz;
+            case "Wizard": return ChatColor.BLUE + clazz;
+            case "Scout": return ChatColor.AQUA + clazz;
+            case "Tank": return ChatColor.DARK_GREEN + clazz;
+            default:
+                return clazz;
+        }
+    }
+
+    /**
+     * Makes a string array into a series of items, with proper english grammar. Ex: The array {Tater tots, french fries, Power Wash Simulator 2000} would become the string "Tater tots, french fries, and Power Wash Simulator 2000".
+     * @param strings The string array to be made into a series of items.
+     * @return The string array made into a series of items.
+     */
+    public static String series(String... strings){
+        if(strings.length == 0) return "";
+        else if(strings.length == 1) return strings[1];
+        else if(strings.length == 2) return strings[0] + " and " + strings[1];
+        else{
+            int last = strings.length - 1;
+            strings[last] = "and " + strings[last];
+            return String.join(", ", strings);
+        }
     }
 
     public static class ChatWrapper {

@@ -9,9 +9,9 @@ depend:
 
 commands:
  gems:
-  description: adds 1k gems to your balance
+  description: "Adds 1k gems to your balance. Cooldown: 30m"
  souls:
-  description: grants 100 souls
+  description: "Grants 100 souls. Cooldown: 15m"
  hitbox:
   description: sets a hitbox
   usage: /hitbox <type> <params>

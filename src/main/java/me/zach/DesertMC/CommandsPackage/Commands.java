@@ -22,7 +22,6 @@ import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.shops.ShopInventory;
 import me.zach.DesertMC.shops.ShopItem;
 import me.zach.DesertMC.cosmetics.Cosmetic;
-import net.minecraft.server.v1_8_R3.CommandExecute;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -33,15 +32,19 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 
-public class Commands extends CommandExecute implements Listener, CommandExecutor {
+public class Commands implements Listener, CommandExecutor {
 	public static HashMap<UUID, Location> hitboxAwait = new HashMap<>();
+	Set<UUID> soulsCd = new HashSet<>();
+	Set<UUID> gemsCd = new HashSet<>();
+	Set<UUID> expCd = new HashSet<>();
+	static final long GEMS_COOLDOWN_TICKS = 30 * 20 * 60; //30m
+	static final long SOULS_COOLDOWN_TICKS = 15 * 20 * 60; //15m
+	static final long BOOSTER_EXPIRATION_TICKS = 45 * 20 * 60; //45m
+	static final long BOOSTER_COOLDOWN_TICKS = 60 * 20 * 60; //60m
 	private static final String[] colorsMessage;
 	static{
 		ArrayList<String> colorsList = new ArrayList<>();
@@ -61,33 +64,48 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
         	Player player = ((Player) sender);
         	Plugin mainpl = DesertMain.getInstance;
 			if(command.getName().equalsIgnoreCase("shoptest")){
-				if(args.length > 0){
-					ShopItem[] items = new ShopItem[args.length];
-					for(int i = 0, price = 200; i < args.length; i++, price += 200){
-						String str = args[i];
-						try{
-							Material material = Material.valueOf(str.toUpperCase());
-							ShopItem item = new ShopItem(price) {
-								protected ItemStack get(){
-									return MiscUtils.generateItem(material, "", StringUtil.wrapLore(ChatColor.GRAY + "A regular ol' item. Hopefully " + player.getName() + " picked something snazzy!"), (byte) -1, 1);
-								}
-							};
-							items[i] = item;
-						}catch(IllegalArgumentException materialNotFound){
-							return false;
+				if(player.hasPermission("admin")){
+					if(args.length > 0){
+						ShopItem[] items = new ShopItem[args.length];
+						for(int i = 0, price = 200; i < args.length; i++, price += 200){
+							String str = args[i];
+							try{
+								Material material = Material.valueOf(str.toUpperCase());
+								ShopItem item = new ShopItem(price) {
+									protected ItemStack get(){
+										return MiscUtils.generateItem(material, "", StringUtil.wrapLore(ChatColor.GRAY + "A regular ol' item. Hopefully " + player.getName() + " picked something snazzy!"), (byte) -1, 1);
+									}
+								};
+								items[i] = item;
+							}catch(IllegalArgumentException materialNotFound){
+								return false;
+							}
 						}
-					}
-					ItemStack thisIsATest = MiscUtils.generateItem(Material.REDSTONE_COMPARATOR, ChatColor.YELLOW + "This is a test!", StringUtil.wrapLore(ChatColor.GRAY +  "This is a test of our versatile Shop system. Hopefully it's working!\n" + ChatColor.DARK_GRAY + "Each price should be 200 more than the last."), (byte) -1, 1);
-					ShopInventory shop = new ShopInventory(player.getName() + "'s Shop Test", Arrays.asList(items), player, DyeColor.YELLOW.getData(), thisIsATest);
-					player.openInventory(shop.getInventory());
-					return true;
-				}else return false;
+						ItemStack thisIsATest = MiscUtils.generateItem(Material.REDSTONE_COMPARATOR, ChatColor.YELLOW + "This is a test!", StringUtil.wrapLore(ChatColor.GRAY + "This is a test of our versatile Shop system. Hopefully it's working!\n" + ChatColor.DARK_GRAY + "Each price should be 200 more than the last."), (byte) -1, 1);
+						ShopInventory shop = new ShopInventory(player.getName() + "'s Shop Test", Arrays.asList(items), player, DyeColor.YELLOW.getData(), thisIsATest);
+						player.openInventory(shop.getInventory());
+						return true;
+					}else return false;
+				}else{
+					player.sendMessage(ChatColor.RED + "You don't have permission to use this command");
+				}
 			}else if(command.getName().equalsIgnoreCase("booster")){
 				if(args.length > 0){
 					try{
 						float multipler = Float.parseFloat(args[0]);
-						Float previous = DesertMain.booster.put(player.getUniqueId(), multipler);
-						player.sendMessage(previous == null ? ChatColor.GREEN + "Added " + multipler + "x EXP booster" : ChatColor.GREEN + "Added " + multipler + "x EXP booster, replacing " + previous);
+						UUID uuid = player.getUniqueId();
+						if(expCd.add(uuid)){
+							Float previous = DesertMain.booster.put(player.getUniqueId(), multipler);
+							player.sendMessage(previous == null ? ChatColor.YELLOW + "Added " + multipler + "x EXP booster" : ChatColor.YELLOW + "Added " + multipler + "x EXP booster, replacing " + previous + "x");
+							Bukkit.getScheduler().runTaskLater(mainpl, () -> {
+								Float booster = DesertMain.booster.get(uuid);
+								if(booster != null && booster == multipler){
+									DesertMain.booster.remove(uuid);
+									player.sendMessage(ChatColor.YELLOW + "Your " + booster + "x " + "EXP booster has expired.");
+								}
+							}, BOOSTER_EXPIRATION_TICKS);
+							Bukkit.getScheduler().runTaskLater(mainpl, () -> expCd.remove(uuid), BOOSTER_COOLDOWN_TICKS);
+						}else player.sendMessage(ChatColor.RED + "This command is on cooldown!");
 					}catch(NumberFormatException | NullPointerException ex){
 						return false;
 					}
@@ -95,7 +113,7 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 			}else if(command.getName().equalsIgnoreCase("hologram")){
 				if(player.hasPermission("admin")){
 					if(args.length > 0){
-						String holoName = RankEvents.colorSupporterMessage(String.join(" ", args));
+						String holoName = RankEvents.colorMessage(String.join(" ", args));
 						if(!player.getInventory().addItem(MiscUtils.getHologramWand(holoName)).isEmpty()){
 							player.sendMessage(ChatColor.RED + "Full inventory!");
 						}
@@ -132,11 +150,21 @@ public class Commands extends CommandExecute implements Listener, CommandExecuto
 			}
 
         	if(command.getName().equalsIgnoreCase("gems")){
-        		ConfigUtils.addGems(player,1000);
+				UUID uuid = player.getUniqueId();
+				if(gemsCd.add(uuid)){
+					player.sendMessage(ChatColor.GREEN + "Gave you 1000 gems");
+					ConfigUtils.addGems(player,1000);
+					Bukkit.getScheduler().runTaskLater(mainpl, () -> gemsCd.remove(uuid), GEMS_COOLDOWN_TICKS);
+				}else player.sendMessage(ChatColor.RED + "This command is on cooldown!");
 			}
 
         	if(command.getName().equalsIgnoreCase("souls")){
-        		ConfigUtils.addSouls(player,100);
+				UUID uuid = player.getUniqueId();
+				if(soulsCd.add(uuid)){
+					player.sendMessage(ChatColor.LIGHT_PURPLE + "Gave you 30 souls");
+					ConfigUtils.addSouls(player, 30);
+					Bukkit.getScheduler().runTaskLater(mainpl, () -> soulsCd.remove(uuid), SOULS_COOLDOWN_TICKS);
+				}else player.sendMessage(ChatColor.RED + "This command is on cooldown!");
 			}
 
 			if(command.getName().equalsIgnoreCase("cosmetic")){
