@@ -96,7 +96,7 @@ public class Events implements Listener{
 					int lives = NBTUtil.getCustomAttr(item, "LIVES", int.class);
 					if(lives - 1 <= 0){
 						inventory.clear(i);
-						player.sendMessage(ChatColor.RED + "Your " + item.getItemMeta().getDisplayName() + " ran out of lives!");
+						player.sendMessage(ChatColor.RED + "Your " + item.getItemMeta().getDisplayName() + ChatColor.RED + " ran out of lives!");
 					}else inventory.setItem(i, NBTUtil.setLives(item, lives - 1));
 				}
 			}
@@ -127,7 +127,7 @@ public class Events implements Listener{
 			}
 			if(damaged instanceof LivingEntity){
 				ItemStack[] armor = ((LivingEntity) damaged).getEquipment().getArmorContents();
-				float damagePercent = 0;
+				float damagePercent = 100;
 				for(ItemStack item : armor){
 					if(item != null){
 						float defenseMod = NBTUtil.getCustomAttrFloat(item, "DEFENSE", 0);
@@ -457,19 +457,23 @@ public class Events implements Listener{
 		}catch(NullPointerException ex){
 			ex.printStackTrace();
 		}
-		executeKill(event);
+		executePreKill(event);
 		if(event.getDamager() instanceof Arrow) arrowArray.remove((Arrow) event.getDamager());
 	}
 
 
-	public void executeKill(EntityDamageByEntityEvent event) {
-		if (event.getEntity() instanceof Player && (event.getDamager() instanceof Player || event.getDamager() instanceof Arrow)) {
+	public void executePreKill(EntityDamageByEntityEvent event) {
+		Player damager = getPlayer(event.getDamager());
+		if (event.getEntity() instanceof Player && damager != null) {
 			Player player = (Player) event.getEntity();
 			Player killer = getPlayer(event.getDamager());
 			for(CustomEnch ce : CustomEnch.values()){
 				ce.onKill(event);
 			}
-			if(player.getHealth() - event.getDamage() < 0.1) executeKill(player, killer);
+			if(player.getHealth() - event.getDamage() < 0.1){
+				event.setCancelled(true);
+				executeKill(player, killer);
+			}
 		}
 	}
 
@@ -540,7 +544,10 @@ public class Events implements Listener{
 				Player killer = Bukkit.getPlayer(uuid);
 				if(event.getEntity() instanceof Player){
 					Player player = (Player) event.getEntity();
-					if(player.getHealth() - event.getDamage() < 0.1) executeKill(player, killer);
+					if(player.getHealth() - event.getDamage() < 0.1){
+						event.setCancelled(true);
+						executeKill(player, killer);
+					}
 				}
 			}
 		}

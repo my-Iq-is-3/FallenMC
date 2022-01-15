@@ -76,10 +76,10 @@ public class DesertMain extends JavaPlugin implements Listener {
 		getCommand("item").setExecutor(new ItemCommand());
 		PluginCommand command = getCommand("confirmreset");
 		command.setExecutor(new MilestonesUtil());
-		loadConfig();
 		ConfigurationSerialization.registerClass(SavedNPC.class);
 		ConfigurationSerialization.registerClass(BoxHitbox.class);
 		ConfigurationSerialization.registerClass(CircleHitbox.class);
+		loadConfig();
 		HitboxManager.loadAll(this);
 		loadNPCs();
 		welcome = RankEvents.colorMessage(MiscUtils.ensureDefault("server.welcome", ChatColor.AQUA + "Welcome to FallenMC! We hope you'll have fun.", this));
@@ -104,7 +104,6 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(new MilestonesEvents(), p);
 		Bukkit.getPluginManager().registerEvents(new TravellerEvents(), p);
 		Bukkit.getPluginManager().registerEvents(new GUIManager(), p);
-		Bukkit.getPluginManager().registerEvents(new HitboxListener(),p);
 		Bukkit.getPluginManager().registerEvents(new HologramEvents(), this);
 		Bukkit.getConsoleSender().sendMessage("events registered");
 	}
