@@ -92,7 +92,7 @@ public class Commands implements Listener, CommandExecutor {
 			}else if(command.getName().equalsIgnoreCase("booster")){
 				if(args.length > 0){
 					try{
-						float multipler = Float.parseFloat(args[0]);
+						float multipler = Math.min(Float.parseFloat(args[0]), 3);
 						UUID uuid = player.getUniqueId();
 						if(expCd.add(uuid)){
 							Float previous = DesertMain.booster.put(player.getUniqueId(), multipler);
@@ -290,6 +290,10 @@ public class Commands implements Listener, CommandExecutor {
         	if(command.getName().equalsIgnoreCase("spawnnpc")){
         		if(player.hasPermission("admin")){
 					if(args.length > 1){
+						boolean save;
+						if(args[0].equalsIgnoreCase("true")) save = true;
+						else if(args[0].equalsIgnoreCase("false")) save = false;
+						else return false;
 						StringBuilder className = new StringBuilder();
 						String[] npcNameArr = new String[args.length - 1];
 						System.arraycopy(args, 1, npcNameArr, 0, npcNameArr.length);
@@ -300,7 +304,6 @@ public class Commands implements Listener, CommandExecutor {
 								Class<? extends NPCSuper> npcClass = (Class<? extends NPCSuper>) Class.forName(pack + "." + className);
 								NPCSuper npcObj = npcClass.newInstance();
 								npcObj.createNPC(player.getLocation());
-								boolean save = Boolean.parseBoolean(args[0]);
 								if(save){
 									try{
 										npcObj.saveCurrent(mainpl);
