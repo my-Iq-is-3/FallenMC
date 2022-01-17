@@ -198,6 +198,8 @@ public class Events implements Listener{
 			boolean bukkitver = event.getMessage().startsWith("/bukkit:ver");
 			boolean bukkithelp = event.getMessage().startsWith("/bukkit:help");
 			boolean help = event.getMessage().startsWith("/minecraft:help");
+
+
 		if(plugins || pl || pl2 || gc || icanhasbukkit || unknown || version || ver || bukkitplugin || bukkitpl || bukkitunknown || about || a || bukkitabout || bukkita || help || bukkithelp || bukkitver || bukkitversion){
 			if(event.getPlayer().hasPermission("admin")){
 				return;
@@ -456,7 +458,7 @@ public class Events implements Listener{
 			ex.printStackTrace();
 		}
 		executePreKill(event);
-		if(event.getDamager() instanceof Arrow) arrowArray.remove((Arrow) event.getDamager());
+		if(event.getDamager() instanceof Arrow) arrowArray.remove(event.getDamager());
 	}
 
 
@@ -480,8 +482,6 @@ public class Events implements Listener{
 			FallenDeathEvent event = new FallenDeathEvent(player, killer, getItemUsed(killer));
 			Bukkit.getPluginManager().callEvent(event);
 			if(event.isCancelled()) return;
-			callOnKill(player, killer);
-			EventsForWizard.INSTANCE.wizardt1(killer);
 			Location spawn = ConfigUtils.getSpawn("lobby");
 			player.setHealth(player.getMaxHealth());
 			player.teleport(spawn);
@@ -491,9 +491,15 @@ public class Events implements Listener{
 			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_LEGGINGS));
 			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_HELMET));
 
-			if (player.getFireTicks() > 0)
-				player.setFireTicks(0);
-
+			player.setFireTicks(0);
+			player.sendMessage(ChatColor.RED + "You were killed by " + (killer == null ? ChatColor.GRAY + "no one! (how are you this bad)" : MiscUtils.getRankColor(killer) + killer.getName()) + ChatColor.RED + " and lost your streak of " + ChatColor.AQUA + ks.get(player.getUniqueId()));
+			callOnKill(player, killer);
+			if(RisenUtils.isBoss(player.getUniqueId()))
+				RisenMain.currentBoss.endBoss(RisenBoss.EndReason.BOSS_VANQUISHED);
+			DesertMain.snack.remove(player.getUniqueId());
+			ks.put(player.getUniqueId(), 0);
+			player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
+			if(killer == null) return;
 			Random random = ThreadLocalRandom.current();
 			int soulsgained = 0;
 			int randomCompare = 4;
@@ -518,18 +524,12 @@ public class Events implements Listener{
 			killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
 			ks.putIfAbsent(killer.getUniqueId(), 0);
 			ks.put(killer.getUniqueId(), ks.get(killer.getUniqueId()) + 1);
-
-			DesertMain.snack.remove(player.getUniqueId());
-			ks.put(player.getUniqueId(), 0);
-			player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
-			killer.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 4);
-			killer.playSound(player.getLocation(), Sound.BURP, 6, 1.3f);
-			killer.playSound(player.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
+			killer.playSound(killer.getLocation(), Sound.LEVEL_UP, 1, 4);
+			killer.playSound(killer.getLocation(), Sound.BURP, 6, 1.3f);
+			killer.playSound(killer.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
 			ConfigUtils.addGems(killer, gemsgained);
 			ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
 			ConfigUtils.addSouls(killer, soulsgained);
-			if(RisenUtils.isBoss(player.getUniqueId()))
-				RisenMain.currentBoss.endBoss(RisenBoss.EndReason.BOSS_VANQUISHED);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -538,16 +538,17 @@ public class Events implements Listener{
 	private void executeUnexpectedKill(EntityDamageEvent event) throws NullPointerException {
 		if(!event.isCancelled()){
 			UUID uuid = DesertMain.lastdmgers.get(event.getEntity().getUniqueId());
-			if(uuid != null){
-				Player killer = Bukkit.getPlayer(uuid);
-				if(event.getEntity() instanceof Player){
-					Player player = (Player) event.getEntity();
-					if(player.getHealth() - event.getDamage() < 0.1){
-						event.setCancelled(true);
-						executeKill(player, killer);
-					}
+			Player killer = Bukkit.getPlayer(uuid);
+
+			if(event.getEntity() instanceof Player){
+				Player player = (Player) event.getEntity();
+				if(player.getHealth() - event.getDamage() < 0.1){
+					event.setCancelled(true);
+					executeKill(player, killer);
+
 				}
 			}
+
 		}
 	}
 
@@ -561,9 +562,25 @@ public class Events implements Listener{
 	private static void callOnKill(Player player, Player killer) {
 		checkItemLives(player);
 		PlayerUtils.setIdle(player);
+		for(int i = 0; i<36; i++){
+			ItemStack item = player.getInventory().getItem(i);
+			try{
+				NBTItem nbt = new NBTItem(item);
+				NBTCompound compound = nbt.getCompound("CustomAttributes");
+				if(compound.getString("ID").equals("WIZARD_BLADE")){
+					compound.setInteger("CHARGE", 0);
+					player.getInventory().setItem(i, nbt.getItem());
+				}
+			}catch(NullPointerException ignored){}
+		}
+		Cosmetic dSelected = Cosmetic.getSelected(player, Cosmetic.CosmeticType.DEATH_EFFECT);
+		if(dSelected != null) dSelected.activateDeath(player);
+
+		if(TravellerEvents.travelled.containsKey(player.getUniqueId())) TravellerEvents.travelled.get(player.getUniqueId()).clear();
+		if(killer == null) return;
+		// ---------------------------------------------------------------------
 		PlayerUtils.setFighting(killer);
 		EventsForWizard.INSTANCE.wizardt1(killer);
-
 		try{
 			if(NBTUtil.getCustomAttrString(killer.getItemInHand(), "ID").equals("WIZARD_BLADE")) EventsForWizard.addBladeCharge(killer);
 		}catch(Exception ex){
@@ -578,25 +595,12 @@ public class Events implements Listener{
 				Bukkit.getConsoleSender().sendMessage("Error checking for corrupter leggings: " + ex);
 			}
 		}
-		for(int i = 0; i<36; i++){
-			ItemStack item = killer.getInventory().getItem(i);
-			try{
-				NBTItem nbt = new NBTItem(item);
-				NBTCompound compound = nbt.getCompound("CustomAttributes");
-				if(compound.getString("ID").equals("WIZARD_BLADE")){
-					compound.setInteger("CHARGE", 0);
-					player.getInventory().setItem(i, nbt.getItem());
-				}
-			}catch(NullPointerException ignored){}
-		}
+
 
 		StreakPolice.onKill(killer);
 		Cosmetic kSelected = Cosmetic.getSelected(killer, Cosmetic.CosmeticType.KILL_EFFECT);
 		if(kSelected != null) kSelected.activateKill(player);
-		Cosmetic dSelected = Cosmetic.getSelected(player, Cosmetic.CosmeticType.DEATH_EFFECT);
-		if(dSelected != null) dSelected.activateDeath(player);
 
-		if(TravellerEvents.travelled.containsKey(player.getUniqueId())) TravellerEvents.travelled.get(player.getUniqueId()).clear();
 		if(ks.get(killer.getUniqueId()) >= 50 && !RisenMain.alreadyUsed.contains(killer.getUniqueId())){
 			String[] classes = new String[]{Key.SCOUT, Key.CORRUPTER, Key.TANK, Key.WIZARD};
 			boolean allClassesMaxed = true;
@@ -606,7 +610,7 @@ public class Events implements Listener{
 					 break;
 				 }
 			}
-			if(allClassesMaxed) RisenUtils.activateBossReady(player);
+			if(allClassesMaxed) RisenUtils.activateBossReady(killer);
 		}
 	}
 
@@ -733,6 +737,8 @@ public class Events implements Listener{
 			//init cosmetics
 			Cosmetic.init(e.getPlayer());
 		}
+
+
 		if(main.getConfig().getBoolean(blockNotifPath))
 			TravellerEvents.blockNotifs.add(p.getUniqueId());
 	}

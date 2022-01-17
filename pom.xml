@@ -50,6 +50,8 @@
             <groupId>me.zach</groupId>
             <artifactId>Artifacts</artifactId>
             <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${user.home}/Desktop/Server/plugins/Artifacts.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>xyz.fallenmc</groupId>
