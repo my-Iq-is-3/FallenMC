@@ -198,8 +198,6 @@ public class Events implements Listener{
 			boolean bukkitver = event.getMessage().startsWith("/bukkit:ver");
 			boolean bukkithelp = event.getMessage().startsWith("/bukkit:help");
 			boolean help = event.getMessage().startsWith("/minecraft:help");
-
-
 		if(plugins || pl || pl2 || gc || icanhasbukkit || unknown || version || ver || bukkitplugin || bukkitpl || bukkitunknown || about || a || bukkitabout || bukkita || help || bukkithelp || bukkitver || bukkitversion){
 			if(event.getPlayer().hasPermission("admin")){
 				return;
@@ -735,8 +733,6 @@ public class Events implements Listener{
 			//init cosmetics
 			Cosmetic.init(e.getPlayer());
 		}
-
-
 		if(main.getConfig().getBoolean(blockNotifPath))
 			TravellerEvents.blockNotifs.add(p.getUniqueId());
 	}

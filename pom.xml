@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.zach</groupId>
-    <artifactId>DesertMC</artifactId>
+    <artifactId>FallenMC</artifactId>
     <version>1.0</version>
 
     <properties>
@@ -18,11 +18,78 @@
             <artifactId>api</artifactId>
             <version>e48db52338</version>
         </dependency>
+        <dependency>
+            <groupId>me.gabriel</groupId>
+            <artifactId>Traits</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${user.home}/Desktop/Server/plugins/Traits.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>xyz.fallenmc</groupId>
+            <artifactId>Databank</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${user.home}/Desktop/Server/plugins/DataBank.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>xyz.fallenmc</groupId>
+            <artifactId>RisenBoss</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${user.home}/Desktop/Server/plugins/RisenBoss.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>me.ench</groupId>
+            <artifactId>EnchantRefinery</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${user.home}/Desktop/Server/plugins/EnchantRefinery.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>me.zach</groupId>
+            <artifactId>Artifacts</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>xyz.fallenmc</groupId>
+            <artifactId>FallenItems</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${user.home}/Desktop/Server/plugins/FallenItems.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>net.jitse</groupId>
+            <artifactId>npclib-api</artifactId>
+            <version>2.11.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.tr7zw</groupId>
+            <artifactId>item-nbt-api-plugin</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+        <dependency>
+            <artifactId>Spigot-server</artifactId>
+            <groupId>org.bukkit</groupId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${user.home}/Desktop/Server/spigot.jar</systemPath>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+            <layout>default</layout>
         </repository>
     </repositories>
 </project>
