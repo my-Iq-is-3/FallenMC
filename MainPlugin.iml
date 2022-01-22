@@ -42,7 +42,7 @@
     <orderEntry type="module-library">
       <library name="Maven: me.gabriel:Traits:1.0">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../server/plugins/Traits.jar!/" />
+          <root url="jar://$USER_HOME$/Desktop/Server/plugins/Traits.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -51,7 +51,7 @@
     <orderEntry type="module-library">
       <library name="Maven: xyz.fallenmc:Databank:1.0">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../server/plugins/DataBank.jar!/" />
+          <root url="jar://$USER_HOME$/Desktop/Server/plugins/DataBank.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -60,7 +60,7 @@
     <orderEntry type="module-library">
       <library name="Maven: xyz.fallenmc:RisenBoss:1.0">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../server/plugins/RisenBoss.jar!/" />
+          <root url="jar://$USER_HOME$/Desktop/Server/plugins/RisenBoss.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -69,7 +69,7 @@
     <orderEntry type="module-library">
       <library name="Maven: me.ench:EnchantRefinery:1.0">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../server/plugins/EnchantRefinery.jar!/" />
+          <root url="jar://$USER_HOME$/Desktop/Server/plugins/EnchantRefinery.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -78,7 +78,7 @@
     <orderEntry type="module-library">
       <library name="Maven: me.zach:Artifacts:1.0">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../server/plugins/Artifacts.jar!/" />
+          <root url="jar://$USER_HOME$/Desktop/Server/plugins/Artifacts.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -87,7 +87,7 @@
     <orderEntry type="module-library">
       <library name="Maven: xyz.fallenmc:FallenItems:1.0">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../server/plugins/FallenItems.jar!/" />
+          <root url="jar://$USER_HOME$/Desktop/Server/plugins/FallenItems.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -98,7 +98,7 @@
     <orderEntry type="module-library">
       <library name="Maven: org.bukkit:Spigot-server:1.0">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../server/spigot.jar!/" />
+          <root url="jar://$USER_HOME$/Desktop/Server/spigot.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

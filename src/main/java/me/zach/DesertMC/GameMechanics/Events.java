@@ -93,11 +93,11 @@ public class Events implements Listener{
 			if(item != null && item.getType() != Material.AIR){
 				NBTItem nbt = new NBTItem(item);
 				if(NBTUtil.hasCustomKey(nbt, "LIVES")){
-					int lives = NBTUtil.getCustomAttr(item, "LIVES", int.class);
-					if(lives - 1 <= 0){
+					Integer lives = NBTUtil.getCustomAttr(nbt, "LIVES", Integer.class);
+					if(lives != null && lives - 1 <= 0){
 						inventory.clear(i);
 						player.sendMessage(ChatColor.RED + "Your " + item.getItemMeta().getDisplayName() + ChatColor.RED + " ran out of lives!");
-					}else inventory.setItem(i, NBTUtil.setLives(item, lives - 1));
+					}
 				}
 			}
 		}

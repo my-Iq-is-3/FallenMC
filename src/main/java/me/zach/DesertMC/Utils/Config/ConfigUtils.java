@@ -174,7 +174,7 @@ public class ConfigUtils {
 		if(data.getLevel() >= 59) return;
 		if(data.getXpToNext() <= data.getCurrentProgress() + amount){
 			int level = data.getLevel();
-			String[] levelUp = StringUtil.getCenteredMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "EXP MILESTONE!" + ChatColor.GREEN + " (" + ChatColor.GRAY + (level - 1) + " ➞ " + ChatColor.GREEN + ChatColor.BOLD + (level) + ChatColor.GREEN + ")", ChatColor.GREEN + "You completed level" + ChatColor.BOLD + " " + (level - 1) + ChatColor.GREEN + "!");
+			String[] levelUp = StringUtil.getCenteredMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "EXP MILESTONE!" + ChatColor.GREEN + " (" + ChatColor.GRAY + (level) + " ➞ " + ChatColor.GREEN + ChatColor.BOLD + (level + 1) + ChatColor.GREEN + ")", ChatColor.GREEN + "You completed level" + ChatColor.BOLD + " " + (level) + ChatColor.GREEN + "!");
 			String[] commandMessage = StringUtil.getCenteredMessage("Click here to view your milestones progression", "and claim rewards!");
 			List<BaseComponent> components = new ArrayList<>();
 			for(String str : commandMessage){
