@@ -16,6 +16,7 @@ import me.zach.DesertMC.holo.Hologram;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -24,6 +25,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.permissions.Permissible;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -34,6 +37,8 @@ import static org.bukkit.Note.*;
 public class MiscUtils {
     private static final ItemStack emptyPane = generateItem(Material.STAINED_GLASS_PANE, " ", Collections.emptyList(), (byte) 7, 1);
     private static final Plugin pl = DesertMain.getInstance;
+    public static final UUID UUID_DRMLEM = UUID.fromString("7f9ad03e-23ec-4648-91c8-2e0820318a8b");
+    public static final UUID UUID_1IQ = UUID.fromString("a082eaf8-2e8d-4b23-a041-a33ba8d25d5d");
     public static void ootChestFanfare(Player player){
         player.playNote(player.getLocation(), Instrument.PIANO, natural(0, Tone.F));
         player.playNote(player.getLocation(), Instrument.PIANO, sharp(0, Tone.G));
@@ -131,6 +136,9 @@ public class MiscUtils {
         return !(entity.spigot().isInvulnerable()) && entity instanceof Damageable ? (Damageable) entity : null;
     }
 
+    public static boolean isAdmin(Player player){
+        return ConfigUtils.getRank(player).admin || player.hasPermission("admin");
+    }
 
     /**
      * Finds all entities within a radius of an already existing entity that are of specified type.<br>
@@ -271,15 +279,25 @@ public class MiscUtils {
         return str.endsWith("s") ? str : str + "s";
     }
 
-    public static ChatColor getRankColor(Player player){
+    public static String getRankColor(Player player){
         return getRankColor(player.getUniqueId());
     }
 
-    public static ChatColor getRankColor(UUID uuid){
-        Rank rank = RankEvents.rankSession.get(uuid);
+    public static String getRankColor(UUID uuid){
+        Rank rank = ConfigUtils.getRank(uuid);
         if(rank != null){
-            return rank.c;
-        }else return ChatColor.GRAY;
+            return rank.c.toString();
+        }else return ChatColor.GRAY.toString();
+    }
+
+    public static boolean isCoolPerson(UUID uuid){
+        return uuid.equals(UUID_DRMLEM) || uuid.equals(UUID_1IQ);
+    }
+
+    public static void removeAdmin(Permissible permissible){
+        for(PermissionAttachmentInfo perm : permissible.getEffectivePermissions()){
+
+        }
     }
 
     public static void setOwner(Item item, Player owner){

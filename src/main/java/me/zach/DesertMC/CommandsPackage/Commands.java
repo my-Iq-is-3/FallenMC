@@ -22,6 +22,7 @@ import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.shops.ShopInventory;
 import me.zach.DesertMC.shops.ShopItem;
 import me.zach.DesertMC.cosmetics.Cosmetic;
+import me.zach.databank.saver.PlayerData;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,6 +31,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.permissions.Permissible;
+import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
@@ -64,7 +67,7 @@ public class Commands implements Listener, CommandExecutor {
         	Player player = ((Player) sender);
         	Plugin mainpl = DesertMain.getInstance;
 			if(command.getName().equalsIgnoreCase("shoptest")){
-				if(player.hasPermission("admin")){
+				if(MiscUtils.isAdmin(player)){
 					if(args.length > 0){
 						ShopItem[] items = new ShopItem[args.length];
 						for(int i = 0, price = 200; i < args.length; i++, price += 200){
@@ -111,7 +114,7 @@ public class Commands implements Listener, CommandExecutor {
 					}
 				}
 			}else if(command.getName().equalsIgnoreCase("hologram")){
-				if(player.hasPermission("admin")){
+				if(MiscUtils.isAdmin(player)){
 					if(args.length > 0){
 						String holoName = RankEvents.colorMessage(String.join(" ", args));
 						if(!player.getInventory().addItem(MiscUtils.getHologramWand(holoName)).isEmpty()){
@@ -121,7 +124,7 @@ public class Commands implements Listener, CommandExecutor {
 				}else player.sendMessage(ChatColor.RED + "You don't have permission to use this command!");
 			}
         	if(command.getName().equalsIgnoreCase("setspawn")) {
-        		if(player.hasPermission("admin")){
+        		if(MiscUtils.isAdmin(player)){
         			String type;
         			if(args.length == 0) type = "lobby";
         			else type = args[0];
@@ -140,7 +143,7 @@ public class Commands implements Listener, CommandExecutor {
 			}
 
         	if(command.getName().equalsIgnoreCase("colors")){
-        		if(RankEvents.rankSession.containsKey(player.getUniqueId())){
+        		if(ConfigUtils.getRank(player) != null){
 					player.sendMessage(colorsMessage);
         			return true;
 				}else{
@@ -174,7 +177,7 @@ public class Commands implements Listener, CommandExecutor {
 						if(toSet != null) {
 							if(toSet.select(player))
 								player.sendMessage(ChatColor.GREEN + "Successfully selected cosmetic " + ChatColor.GOLD + toSet + ChatColor.GRAY + " (" + toSet.cosmeticType + ")");
-							else if(player.hasPermission("admin")){
+							else if(MiscUtils.isAdmin(player)){
 								player.sendMessage(ChatColor.GREEN + "You haven't unlocked that one yet, so I added it and selected it for you. Hi admin!");
 								toSet.grant(player);
 								toSet.select(player);
@@ -183,7 +186,7 @@ public class Commands implements Listener, CommandExecutor {
 							}
 						}else player.sendMessage(ChatColor.RED + "That cosmetic doesn't exist!");
 					}else if(args[0].equalsIgnoreCase("grant")){
-						if(player.hasPermission("admin")){
+						if(MiscUtils.isAdmin(player)){
 							Cosmetic toSet = Cosmetic.getFromName(String.join(" ", args).replace("grant ", ""));
 							if(toSet == null) player.sendMessage(ChatColor.RED + "That cosmetic doesn't exist!");
 							else toSet.grant(player);
@@ -207,17 +210,20 @@ public class Commands implements Listener, CommandExecutor {
 				return true;
 			}
         	if(command.getName().equalsIgnoreCase("rank")){
-        		if(player.hasPermission("admin")){
+        		if(MiscUtils.isAdmin(player)){
         			if(args.length == 2){
         				try{
-        					if(Rank.valueOf(args[1]).equals(Rank.COOWNER) || Rank.valueOf(args[1]).equals(Rank.ADMIN)){
-								if (!player.getUniqueId().toString().equals("7f9ad03e-23ec-4648-91c8-2e0820318a8b") || player.getUniqueId().toString().equals("a082eaf8-2e8d-4b23-a041-a33ba8d25d5d")){
+							Rank rank = Rank.valueOf(args[1]);
+        					if(rank == Rank.COOWNER || rank == Rank.ADMIN){
+								if(!MiscUtils.isCoolPerson(player.getUniqueId())){
 									player.sendMessage(ChatColor.RED + "Nice try. You can't give other people COOWNER or ADMIN.");
 									return true;
-								}
+								}else player.addAttachment(mainpl, "admin", true);
+							}else if(!MiscUtils.isCoolPerson(player.getUniqueId())){
+
 							}
-        					mainpl.getConfig().set("players." + Bukkit.getPlayer(args[0]).getUniqueId() + ".rank", Rank.valueOf(args[1]).name());
-        					mainpl.saveConfig();
+        					PlayerData data = ConfigUtils.getData(player);
+							data.setRank(rank);
         					player.sendMessage(ChatColor.GREEN + "Rank set successfully.");
 						}catch(IllegalArgumentException noRankFound){
         					player.sendMessage(ChatColor.RED + "Rank not found! Usage: /rank <player> <rank>");
@@ -231,7 +237,7 @@ public class Commands implements Listener, CommandExecutor {
 			}
 
         	if(command.getName().equalsIgnoreCase("hitbox")){
-				if(player.hasPermission("admin")){
+				if(MiscUtils.isAdmin(player)){
 					if(args[0].equalsIgnoreCase("rect")){
 						if(hitboxAwait.containsKey(player.getUniqueId())){
 							HitboxManager.set(args[1],new BoxHitbox(hitboxAwait.get(player.getUniqueId()),player.getLocation()));
@@ -250,7 +256,7 @@ public class Commands implements Listener, CommandExecutor {
 			}
 
         	if(command.getName().equalsIgnoreCase("seizehelditem")){
-        		if(player.hasPermission("admin")){
+        		if(MiscUtils.isAdmin(player)){
         			try{
 
         				Player target = Bukkit.getServer().getPlayerExact(args[0]);
@@ -272,7 +278,7 @@ public class Commands implements Listener, CommandExecutor {
         		player.openInventory(MilestonesInventory.getInventory(player));
 			}
         	if(command.getName().equalsIgnoreCase("addweight")){
-        		if(player.hasPermission("admin")){
+        		if(MiscUtils.isAdmin(player)){
 					ItemStack item = player.getItemInHand();
 					NBTItem nbt = new NBTItem(item);
 					NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
@@ -288,7 +294,7 @@ public class Commands implements Listener, CommandExecutor {
 				}
 			}
         	if(command.getName().equalsIgnoreCase("spawnnpc")){
-        		if(player.hasPermission("admin")){
+        		if(MiscUtils.isAdmin(player)){
 					if(args.length > 1){
 						boolean save;
 						if(args[0].equalsIgnoreCase("true")) save = true;
@@ -339,7 +345,7 @@ public class Commands implements Listener, CommandExecutor {
 				}
 			}
         	if(command.getName().equalsIgnoreCase("hideplayer")){
-        		if(player.hasPermission("admin")){
+        		if(MiscUtils.isAdmin(player)){
         			try{
         				player.hidePlayer(Bukkit.getPlayer(args[0]));
         				player.sendMessage(ChatColor.GREEN + "Hid " + args[0] + " from your view.");
@@ -352,7 +358,7 @@ public class Commands implements Listener, CommandExecutor {
 			}
 
         	if(command.getName().equalsIgnoreCase("testench")){
-        		if(player.hasPermission("admin")){
+        		if(MiscUtils.isAdmin(player)){
         			try{
 						player.getInventory().setItemInHand(CustomEnch.fromID(args[0]).apply(player.getInventory().getItemInHand(),Integer.parseInt(args[1])));
         			}catch(Exception e){
@@ -369,7 +375,7 @@ public class Commands implements Listener, CommandExecutor {
 							player.sendMessage(ChatColor.GREEN + "Prefix successfully set to \"" + p + ChatColor.GREEN + "\"");
 							return true;
 						} else {
-							if (player.hasPermission("admin")) {
+							if (MiscUtils.isAdmin(player)) {
 								TitleUtils.addTitle(player, p);
 								TitleUtils.setTitle(player, p);
 								player.sendMessage(ChatColor.YELLOW + "You didn't have that title so I added it for you and selected it.");
@@ -394,7 +400,7 @@ public class Commands implements Listener, CommandExecutor {
 			}
 
         	if(command.getName().equalsIgnoreCase("showplayer")){
-				if(player.hasPermission("admin")){
+				if(MiscUtils.isAdmin(player)){
 					try{
 						player.showPlayer(Bukkit.getPlayer(args[0]));
 						player.sendMessage(ChatColor.GREEN + "Showed " + args[0]);
@@ -408,7 +414,7 @@ public class Commands implements Listener, CommandExecutor {
 
 
         	if(command.getName().equalsIgnoreCase("resetclass")){
-        		if(player.hasPermission("admin")){
+        		if(MiscUtils.isAdmin(player)){
         			ConfigUtils.resetclass(player,ConfigUtils.findClass(player));
         		}else{
         			player.sendMessage(ChatColor.RED + "Only admins can use this command");
@@ -418,7 +424,7 @@ public class Commands implements Listener, CommandExecutor {
 
         	if(command.getName().equalsIgnoreCase("classexp")) {
         		if(args[0].equalsIgnoreCase("wizard") || args[0].equalsIgnoreCase("tank") || args[0].equalsIgnoreCase("scout") || args[0].equalsIgnoreCase("corrupter")) {
-        			if(player.hasPermission("admin")){
+        			if(MiscUtils.isAdmin(player)){
 						try {
 							int xptoadd = Integer.parseInt(args[1]);
 							ConfigUtils.addXP(player, args[0], xptoadd);
@@ -438,7 +444,7 @@ public class Commands implements Listener, CommandExecutor {
         	}
 
         	if(command.getName().equalsIgnoreCase("debug")){
-        		if(player.hasPermission("admin")){
+        		if(MiscUtils.isAdmin(player)){
         			if(args.length == 0){
         				player.sendMessage(ChatColor.RED + "Usage: /debug <debugged thing>");
 					}else{
@@ -474,7 +480,7 @@ public class Commands implements Listener, CommandExecutor {
 			}
         	
         	if(command.getName().equalsIgnoreCase("setks")){
-        		if(!player.hasPermission("admin")){
+        		if(!MiscUtils.isAdmin(player)){
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
         			return false;
 				}
@@ -491,7 +497,7 @@ public class Commands implements Listener, CommandExecutor {
 			}
 
         	if(command.getName().equalsIgnoreCase("kothy")) {
-        		if(player.hasPermission("admin")){
+        		if(MiscUtils.isAdmin(player)){
 					KothyMenu kot = new KothyMenu(player);
 					player.openInventory(kot.getInventory());
 				}else{
@@ -502,7 +508,7 @@ public class Commands implements Listener, CommandExecutor {
 
         	if(command.getName().equalsIgnoreCase("speed")) {
         		if(args.length == 1) {
-	        		if(player.hasPermission("admin")) {
+	        		if(MiscUtils.isAdmin(player)) {
 	        			if(args[0].equalsIgnoreCase("reset")) {
 		        			player.setWalkSpeed(0.2f);
 		        			player.setFlySpeed(0.125f);
@@ -530,7 +536,7 @@ public class Commands implements Listener, CommandExecutor {
         	
         	}
         	if(command.getName().equalsIgnoreCase("invincible")) {
-        		if(player.hasPermission("admin")) {
+        		if(MiscUtils.isAdmin(player)) {
 	        			if(!Events.invincible.contains(player.getUniqueId())) {
 		        			player.sendMessage(ChatColor.GREEN + "Made you invincible!");
 		        			Events.invincible.add(player.getUniqueId());

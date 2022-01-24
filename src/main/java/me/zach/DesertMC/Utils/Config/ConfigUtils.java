@@ -4,7 +4,9 @@ import itempackage.Items;
 import me.zach.DesertMC.ClassManager.TravellerEvents;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesData;
+import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.Utils.MiscUtils;
+import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.artifacts.gui.inv.ArtifactData;
 import me.zach.databank.DBCore;
@@ -90,7 +92,6 @@ public class ConfigUtils {
 	public static String findClass(Player player) {
 		String cClass = getData(player).getCurrentClass();
 		return !cClass.equals("") ?  cClass : "none";
-		
 	}
 
 	public static String findClass(UUID uuid){
@@ -210,6 +211,30 @@ public class ConfigUtils {
 
 	public static ArtifactData getAD(UUID uuid){
 		return getData(uuid).getArtifactData();
+	}
+
+	public static Rank getRank(Player player){
+		return getRank(player.getUniqueId());
+	}
+
+	public static Rank getRank(UUID uuid){
+		return getData(uuid).getRank();
+	}
+
+	public static List<Prefix> getUnlockedTitles(Player player){
+		return getUnlockedTitles(player.getUniqueId());
+	}
+
+	public static List<Prefix> getUnlockedTitles(UUID uuid){
+		return getData(uuid).getTitles();
+	}
+
+	public static Prefix getSelectedTitle(Player player){
+		return getSelectedTitle(player.getUniqueId());
+	}
+
+	public static Prefix getSelectedTitle(UUID uuid){
+		return getData(uuid).getTitle();
 	}
 	
 	public static PlayerData getData(Player player){

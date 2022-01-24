@@ -3,8 +3,10 @@ package me.zach.DesertMC.Utils.RankUtils;
 import com.destroystokyo.paper.Title;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.Prefix;
+import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.TitleUtils;
+import me.zach.databank.saver.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -21,7 +23,6 @@ import java.util.*;
 public class RankEvents implements Listener {
     public static final ArrayList<ChatColor> ccList = new ArrayList<>(Arrays.asList(ChatColor.values()));
     public static final HashMap<String, ChatColor> friendlyCC = new HashMap<>();
-    public static final HashMap<UUID, Rank> rankSession = new HashMap<>();
     public static final HashMap<ChatColor, String> colorShortcuts = new HashMap<>();
     static{
         ccList.remove(ChatColor.RESET);
@@ -37,6 +38,7 @@ public class RankEvents implements Listener {
         colorShortcuts.put(ChatColor.GOLD, "GO");
         colorShortcuts.put(ChatColor.GRAY, "GR");
         colorShortcuts.put(ChatColor.BLACK, "BL");
+        colorShortcuts.put(ChatColor.DARK_GRAY, "DGRY");
 
         for(ChatColor color : ccList){
             String lowerName = color.name().replaceAll("_", " ").toLowerCase();
@@ -64,19 +66,18 @@ public class RankEvents implements Listener {
     @EventHandler
     public void addChatFormatting(AsyncPlayerChatEvent e){
         Player p = e.getPlayer();
-        if(rankSession.containsKey(p.getUniqueId())){
-            Rank rank = rankSession.get(p.getUniqueId());
+        PlayerData data = ConfigUtils.getData(p);
+        Rank rank = data.getRank();
+        if(rank != null){
             e.setMessage(colorMessage(e.getMessage()));
-            if(rank.equals(Rank.COOWNER)) e.setFormat(rank.c + "" + ChatColor.BOLD + p.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
+            if(rank == Rank.COOWNER) e.setFormat(rank.c + "" + ChatColor.BOLD + p.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
             else e.setFormat(rank.c + p.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
         }else{
             e.setFormat(ChatColor.GRAY + p.getName() + ": " + ChatColor.GRAY + e.getMessage());
         }
 
-        Prefix title = null;
+        Prefix title = data.getTitle();
         String displayCase = MilestonesUtil.getDisplayCase(p);
-        String unparsedTitle = pl.getConfig().getString("players." + p.getUniqueId() + ".title");
-        if(unparsedTitle != null) title = Prefix.valueOf(unparsedTitle);
 
         p.playSound(p.getLocation(), Sound.SHOOT_ARROW, 10, 1);
 
@@ -89,6 +90,7 @@ public class RankEvents implements Listener {
         msg = msg.replaceAll("\\b*(?<!\\\\)!GO", ChatColor.GOLD + "");
         msg = msg.replaceAll("\\b*(?<!\\\\)!BL", ChatColor.BLACK + "");
         msg = msg.replaceAll("\\b*(?<!\\\\)!GR", ChatColor.GRAY + "");
+        msg = msg.replaceAll("\\b*(?<!\\\\)!DGRY", ChatColor.DARK_GRAY + "");
         for(ChatColor c : ccList){
             if(c != ChatColor.RESET){
                 msg = msg.replaceAll("\\b*(?<!\\\\)" + c.name(), c + "");
@@ -101,14 +103,14 @@ public class RankEvents implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void giveRankTitle(PlayerJoinEvent e){
-        if(pl.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank") != null) {
-            if (!pl.getConfig().getStringList("players." + e.getPlayer().getUniqueId() + ".titles").contains(Rank.valueOf(pl.getConfig().getString("players." + e.getPlayer().getUniqueId() + ".rank")).p.name())){
-                Player p = e.getPlayer();
-                Rank rank = Rank.valueOf(pl.getConfig().getString("players." + p.getUniqueId() + ".rank"));
-                p.sendMessage(Prefix.SERVER + ":" +  rank.c + " Wow, thank you so much for buying one of our ranks!! It helps support the server so much. You have our greatest gratitude, " + rank.c + p.getName() + "!");
-                p.playSound(p.getLocation(), Sound.ENDERDRAGON_DEATH, 8, 1);
+        Player p = e.getPlayer();
+        Rank rank = ConfigUtils.getRank(p);
+        if(rank != null) {
+            if(TitleUtils.hasTitle(e.getPlayer(), rank.p)){
+                p.sendMessage(rank.c + "Wow, thank you so much for buying one of our ranks!! It helps support the server so much. You have our greatest gratitude, " + rank.c + p.getName() + "!\n");
+                p.playSound(p.getLocation(), Sound.ENDERDRAGON_DEATH, 7, 1);
                 p.sendTitle(new Title(rank.c + "Thank you!", ChatColor.DARK_RED + "<3"));
-                TitleUtils.addTitle(p, Rank.valueOf(pl.getConfig().getString("players." + p.getUniqueId() + ".rank")).p);
+                TitleUtils.addTitle(p, rank.p);
             }
         }
     }

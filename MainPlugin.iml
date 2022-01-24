@@ -51,7 +51,7 @@
     <orderEntry type="module-library">
       <library name="Maven: xyz.fallenmc:Databank:1.0">
         <CLASSES>
-          <root url="jar://$USER_HOME$/Desktop/Server/plugins/DataBank.jar!/" />
+          <root url="jar://$USER_HOME$/Desktop/Server/plugins/Databank.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

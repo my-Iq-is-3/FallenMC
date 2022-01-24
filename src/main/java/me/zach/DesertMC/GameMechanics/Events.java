@@ -21,7 +21,6 @@ import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
-import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.anvil.FallenAnvilInventory;
@@ -34,7 +33,6 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
@@ -58,8 +56,6 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
-
-import static me.zach.DesertMC.Utils.RankUtils.RankEvents.rankSession;
 
 public class Events implements Listener{
 	public static Set<UUID> invincible = new HashSet<>();
@@ -110,7 +106,7 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void nft(ServerListPingEvent event){
-		if(nft != null && ThreadLocalRandom.current().nextDouble() < 0.02){
+		if(nft != null && Math.random() < 0.02){
 			event.setServerIcon(nft);
 		}
 	}
@@ -201,7 +197,7 @@ public class Events implements Listener{
 
 
 		if(plugins || pl || pl2 || gc || icanhasbukkit || unknown || version || ver || bukkitplugin || bukkitpl || bukkitunknown || about || a || bukkitabout || bukkita || help || bukkithelp || bukkitver || bukkitversion){
-			if(event.getPlayer().hasPermission("admin")){
+			if(MiscUtils.isAdmin(event.getPlayer())){
 				return;
 			}
 			event.setCancelled(true);
@@ -279,14 +275,14 @@ public class Events implements Listener{
 	@EventHandler
 	public void breakBlock(BlockBreakEvent event){
 		Player player = event.getPlayer();
-		if(!player.hasPermission("admin")){
+		if(!MiscUtils.isAdmin(player)){
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler
 	public void placeBlock(BlockPlaceEvent event){
-		if(!event.getPlayer().hasPermission("admin")) event.setCancelled(true);
+		if(!MiscUtils.isAdmin(event.getPlayer())) event.setCancelled(true);
 	}
 
 	@EventHandler
@@ -492,7 +488,7 @@ public class Events implements Listener{
 			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_HELMET));
 
 			player.setFireTicks(0);
-			player.sendMessage(ChatColor.RED + "You were killed by " + (killer == null ? ChatColor.GRAY + "no one! (how are you this bad)" : MiscUtils.getRankColor(killer) + killer.getName()) + ChatColor.RED + " and lost your streak of " + ChatColor.AQUA + ks.get(player.getUniqueId()));
+			player.sendMessage(ChatColor.RED + "You were killed by " + (killer == null ? ChatColor.GRAY + "no one! (Seriously?)" : MiscUtils.getRankColor(killer) + killer.getName()) + ChatColor.RED + " and lost your streak of " + ChatColor.AQUA + ks.get(player.getUniqueId()));
 			callOnKill(player, killer);
 			if(RisenUtils.isBoss(player.getUniqueId()))
 				RisenMain.currentBoss.endBoss(RisenBoss.EndReason.BOSS_VANQUISHED);
@@ -615,30 +611,6 @@ public class Events implements Listener{
 	}
 
 	@EventHandler
-	public void resetConfirmRemove(PlayerQuitEvent e){
-		MilestonesUtil.confirming.remove(e.getPlayer().getUniqueId());
-	}
-
-	@EventHandler
-	public void rankSessionRemove(PlayerQuitEvent e){
-		rankSession.remove(e.getPlayer().getUniqueId());
-	}
-
-	@EventHandler(priority = EventPriority.LOW)
-	public void rankSession(PlayerJoinEvent e){
-		try {
-			Player player = e.getPlayer();
-			UUID uuid = player.getUniqueId();
-			String rankRaw = main.getConfig().getString("players." + uuid + ".rank");
-			if(rankRaw != null) {
-				Rank rank = Rank.valueOf(rankRaw);
-				rankSession.put(uuid, rank);
-				Bukkit.getLogger().log(Level.INFO, "Updated rank session for player " + player.getName() + " (" + uuid + ")" + "\nAdded rank " + rank);
-			}
-		}catch(IllegalArgumentException | NullPointerException ignored){}
-	}
-
-	@EventHandler
 	public void dd(FallenDeathEvent event){
 		Player player = event.getPlayer();
 		for(ItemStack item : player.getInventory().getContents()){
@@ -680,17 +652,19 @@ public class Events implements Listener{
 				DesertMain.eating.remove(e.getEntity().getUniqueId());
 				e.setCancelled(true);
 			}else {
-				int random = (int) (Math.random() * 3) + 1;
-				if (random >= 2) {
-					e.setCancelled(true);
-				}
+				if(Math.random() >= 0.666) e.setCancelled(true);
 			}
 		}
 	}
 
 	@EventHandler
-	public void clearks(PlayerQuitEvent event){
+	public void quit(PlayerQuitEvent event){
 		ks.put(event.getPlayer().getUniqueId(), 0);
+		MilestonesUtil.confirming.remove(event.getPlayer().getUniqueId());
+		Rank rank = ConfigUtils.getRank(event.getPlayer());
+		if(rank != null)
+			event.setQuitMessage(rank.p.toString() + rank.c + " " + event.getPlayer().getName() + " just left. See you around!");
+		else event.setQuitMessage("");
 	}
 
 	@EventHandler
@@ -719,16 +693,15 @@ public class Events implements Listener{
 		e.getPlayer().sendMessage("working");
 		if(!(main.getConfig().contains("players." + uuid))) {
 			main.getConfig().createSection("players." + uuid);
-			//init titles
-			TitleUtils.initializeTitles(e.getPlayer());
 			//init block notifications
 			main.getConfig().set(blockNotifPath, true);
 			//save
 			main.saveConfig();
 			e.setJoinMessage(e.getPlayer().getName() + ChatColor.GOLD + " just joined for the first time, give them a warm welcome!");
 		}else{
-			if(main.getConfig().getString("players." + uuid + ".rank") != null)
-				e.setJoinMessage(Rank.valueOf(main.getConfig().getString("players." + uuid + ".rank")).p.toString() + MiscUtils.getRankColor(e.getPlayer()) + " " + e.getPlayer().getName() + " just joined.");
+			Rank rank = ConfigUtils.getRank(e.getPlayer());
+			if(rank != null)
+				e.setJoinMessage(rank.p.toString() + rank + " " + e.getPlayer().getName() + " just joined.");
 			else e.setJoinMessage("");
 			e.getPlayer().sendMessage(DesertMain.getWelcome());
 		}

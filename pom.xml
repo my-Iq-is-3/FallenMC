@@ -30,7 +30,7 @@
             <artifactId>Databank</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${user.home}/Desktop/Server/plugins/DataBank.jar</systemPath>
+            <systemPath>${user.home}/Desktop/Server/plugins/Databank.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>xyz.fallenmc</groupId>

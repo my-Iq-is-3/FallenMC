@@ -4,6 +4,7 @@ import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
@@ -150,7 +151,7 @@ public enum Cosmetic {
             ArmorStand armorStand = player.getWorld().spawn(player.getLocation(), ArmorStand.class);
             armorStand.setVisible(false);
             new NBTEntity(armorStand).setBoolean("Invulnerable", true);
-            armorStand.setCustomName(RankEvents.rankSession.get(player.getUniqueId()).c + player.getName());
+            armorStand.setCustomName(MiscUtils.getRankColor(player) + player.getName());
             armorStand.setGravity(false);
             armorStand.setCustomNameVisible(true);
 

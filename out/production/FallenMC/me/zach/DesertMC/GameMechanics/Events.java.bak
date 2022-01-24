@@ -73,7 +73,7 @@ public class Events implements Listener {
 
 
 		if(plugins || pl || pl2 || gc || icanhasbukkit || unknown || version || ver || bukkitplugin || bukkitpl || bukkitunknown || about || a || bukkitabout || bukkita || help || bukkithelp || bukkitver || bukkitversion){
-			if(event.getPlayer().hasPermission("admin")){
+			if(MiscUtils.isAdmin(event.getPlayer())){
 				return;
 			}
 			event.setCancelled(true);

@@ -4,6 +4,7 @@ import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTContainer;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.mythicalitems.Mythical;
 import net.minecraft.server.v1_8_R3.CommandExecute;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -24,13 +25,14 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import itempackage.Items;
 import java.util.*;
 
-public class ItemCommand extends CommandExecute implements CommandExecutor, Listener, TabCompleter {
+public class ItemCommand implements CommandExecutor, Listener, TabCompleter {
     public static final ItemCommand INSTANCE = new ItemCommand();
 
     private static final HashMap<String,ItemStack> items = new HashMap<>();
     public static final HashMap<String, String> enchs = new HashMap<>();
     public static final char DOT = '\u25CF';
     static {
+        //TODO chance these to suppliers instead of a single item (or just make our item system better)
         items.put("MagicWand",itempackage.Items.getMagicWand());
         items.put("WizardBlade", Items.getWizardBlade());
         items.put("ScoutGoggles",Items.getScoutGoggles());
@@ -61,10 +63,8 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args){
         if(commandSender instanceof Player){
-            if(commandSender.hasPermission("item") ||commandSender.hasPermission("admin")){
-
-                Player player = (Player) commandSender;
-
+            Player player = (Player) commandSender;
+            if(MiscUtils.isAdmin(player)){
                 if(args.length == 1){
                     try {
 
@@ -120,12 +120,15 @@ public class ItemCommand extends CommandExecute implements CommandExecutor, List
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-            List<String> args = new ArrayList<>();
-            if (strings.length == 1) {
-                if (commandSender.hasPermission("admin") && command.getName().equalsIgnoreCase("item")) {
+        List<String> args = new ArrayList<>();
+        if(commandSender instanceof Player){
+            Player player = (Player) commandSender;
+            if(strings.length == 1){
+                if(MiscUtils.isAdmin(player) && command.getName().equalsIgnoreCase("item")){
                     args = Arrays.asList("ScoutGoggles", "MagicWand", "VolcanicSword", "Mythical", "Dagger", "StubbornBoots", "WizardBlade", "CorruptedSword", "LuckyChestplate", "CorrupterLeggings", "FirstAidKit", "ScoutBlade", "MagicSnack", "ProteinSnack", "LavaCake", "EnergySnack", "Bludgeon", "Stomper");
                 }
             }
-            return args;
+        }
+        return args;
     }
 }

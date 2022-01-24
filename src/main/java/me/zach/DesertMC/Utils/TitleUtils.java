@@ -2,6 +2,8 @@ package me.zach.DesertMC.Utils;
 
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Prefix;
+import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.databank.saver.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,29 +15,23 @@ import java.util.List;
 public class TitleUtils {
     private static final Plugin pl = DesertMain.getInstance;
     public static boolean hasTitle(Player p, Prefix pr){
-        return pl.getConfig().getStringList("players." + p.getUniqueId() + ".titles").contains(pr.name());
-    }
-    public static void initializeTitles(Player p){
-        pl.getConfig().set("players." + p.getUniqueId() + ".titles", new ArrayList<String>());
-        pl.saveConfig();
+        return ConfigUtils.getUnlockedTitles(p.getUniqueId()).contains(pr);
     }
     public static boolean setTitle(Player p, Prefix pr){
-        if(pl.getConfig().getStringList("players." + p.getUniqueId() + ".titles").contains(pr.name())){
-            pl.getConfig().set("players." + p.getUniqueId() + ".title", pr.name());
-            pl.saveConfig();
+        if(hasTitle(p, pr)){
+            PlayerData data = ConfigUtils.getData(p);
+            data.setTitle(pr);
             return true;
         }else return false;
     }
     public static void resetTitle(Player p){
-        pl.getConfig().set("players." + p.getUniqueId() + ".title", null);
-        pl.saveConfig();
+        ConfigUtils.getData(p).setTitle(null);
     }
     public static void addTitle(Player p, Prefix pr){
-        List<String> titles = pl.getConfig().getStringList("players." + p.getUniqueId() + ".titles");
-        titles.add(pr.name());
-        p.sendMessage(ChatColor.GRAY + "You have just received the title \"" + pr + ChatColor.GRAY +"\". Wear it with pride using /selecttitle " + pr.name());
+        PlayerData data = ConfigUtils.getData(p);
+        List<Prefix> titles = data.getTitles();
+        titles.add(pr);
+        p.sendMessage("Unlocked title " + pr + ChatColor.RESET + "!\n§7Select with /selecttitle " + pr.name());
         setTitle(p,pr);
-        pl.getConfig().set("players." + p.getUniqueId() + ".titles", titles);
-        pl.saveConfig();
     }
 }

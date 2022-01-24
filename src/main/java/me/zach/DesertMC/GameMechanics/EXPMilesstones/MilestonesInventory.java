@@ -1,6 +1,7 @@
 package me.zach.DesertMC.GameMechanics.EXPMilesstones;
 
 import itempackage.Items;
+import me.gabriel.Traits.data.TraitsData;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.MiscUtils;
@@ -139,11 +140,11 @@ public class MilestonesInventory implements Listener {
                             };
                             break;
                         case (2):
-                            reward = "2 Trait Tokens";
-                            Plugin traitsPl = Bukkit.getPluginManager().getPlugin("Traits");
+                            int tts = (int) Math.ceil(milestoneLevel / 16d);
+                            reward = tts + " Trait Tokens";
+                            TraitsData traitsData = TraitsData.get(p);
                             granter = (player, mLevel) -> {
-                                traitsPl.getConfig().set(player.getUniqueId() + ".traittokens", traitsPl.getConfig().getInt(player.getUniqueId() + ".traittokens" + 2));
-                                traitsPl.saveConfig();
+                                traitsData.setTraitTokens(traitsData.getTraitTokens() + tts);
                                 return true;
                             };
                             break;
