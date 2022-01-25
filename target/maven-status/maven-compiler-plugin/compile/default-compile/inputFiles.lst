@@ -15,6 +15,7 @@
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/StringUtils/StringUtil.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/MiscUtils.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/ActionBar/ActionBar.java
+/Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/cosmetics/CosmeticData.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/EXPMilesstones/MilestonesInventory.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/gui/GUIHolder.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/holo/Hologram.java
@@ -53,12 +54,12 @@
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/NPCStructure/SavedNPC.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/structs/Pair.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/ClassManager/WizardManager/WizardTierMenu.java
+/Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/hitbox/hitboxes/BoxHitbox.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/nbt/EnchantmentUtil.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/ActionBar/SimpleActionBar.java
-/Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/hitbox/CircleHitbox.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/mythicalitems/items/DestroyerItem.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/EXPMilesstones/MilestonesData.java
-/Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/hitbox/BoxHitbox.java
+/Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/hitbox/hitboxes/CircleHitbox.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/ActionBar/ActionBarUtils.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/CommandsPackage/ItemCommand.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/anvil/FallenAnvilInventory.java

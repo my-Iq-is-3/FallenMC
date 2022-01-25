@@ -1,12 +1,13 @@
-package me.zach.DesertMC.GameMechanics.hitbox;
+package me.zach.DesertMC.GameMechanics.hitbox.hitboxes;
 
+import me.zach.DesertMC.GameMechanics.hitbox.Hitbox;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CircleHitbox implements Hitbox{
+public class CircleHitbox implements Hitbox {
     Location center;
     int radius;
 //    String name;

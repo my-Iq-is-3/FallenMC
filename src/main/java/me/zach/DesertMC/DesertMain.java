@@ -13,9 +13,8 @@ import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.GameMechanics.NPCStructure.SavedNPC;
-import me.zach.DesertMC.GameMechanics.hitbox.BoxHitbox;
-import me.zach.DesertMC.GameMechanics.hitbox.CircleHitbox;
-import me.zach.DesertMC.GameMechanics.hitbox.HitboxListener;
+import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BoxHitbox;
+import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.CircleHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
@@ -33,7 +32,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import java.util.ArrayList;
 
 import java.util.*;
 
@@ -70,7 +68,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getConsoleSender().sendMessage("Attempting FallenMC onEnable");
 		library = new NPCLib(this);
 		getInstance = this;
-		String[] cmdsfile = {"gems","souls","hitbox","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster"};
+		String[] cmdsfile = {"gems","souls","hitbox","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());

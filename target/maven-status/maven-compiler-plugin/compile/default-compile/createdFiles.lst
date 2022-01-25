@@ -17,13 +17,11 @@ me/zach/DesertMC/ClassManager/WizardManager/EventsForWizard$1.class
 me/zach/DesertMC/Utils/MiscUtils$2.class
 me/zach/DesertMC/GameMechanics/EXPMilesstones/MilestonesInventory$RewardsItem$2.class
 me/zach/DesertMC/cosmetics/Cosmetic$2$1.class
-me/zach/DesertMC/GameMechanics/hitbox/BoxHitbox.class
 me/zach/DesertMC/ClassManager/CoruManager/EventsForCorruptor$2.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ParticlePacket.class
 me/zach/DesertMC/ClassManager/TankManager/EventsForTank$1.class
 me/zach/DesertMC/cosmetics/Cosmetic$1.class
 me/zach/DesertMC/Utils/ench/CustomEnch$3.class
-me/zach/DesertMC/GameMechanics/hitbox/CircleHitbox.class
 me/zach/DesertMC/Utils/Particle/ReflectionUtils.class
 me/zach/DesertMC/GameMechanics/NPCStructure/SavedNPC.class
 me/zach/DesertMC/Utils/TitleUtils.class
@@ -39,6 +37,7 @@ me/zach/DesertMC/ClassManager/ScoutManager/EventsForScout.class
 me/zach/DesertMC/GameMechanics/EXPMilesstones/MilestonesEvents.class
 me/zach/DesertMC/GameMechanics/EXPMilesstones/MilestonesData.class
 me/zach/DesertMC/mythicalitems/Mythical.class
+me/zach/DesertMC/GameMechanics/hitbox/hitboxes/BoxHitbox.class
 me/zach/DesertMC/cosmetics/Cosmetic.class
 me/zach/DesertMC/cosmetics/Cosmetic$CosmeticType.class
 me/zach/DesertMC/cosmetics/Cosmetic$5.class
@@ -117,9 +116,11 @@ me/zach/DesertMC/ClassManager/WizardManager/EventsForWizard$2.class
 me/zach/DesertMC/CommandsPackage/Commands$1.class
 me/zach/DesertMC/cosmetics/Cosmetic$3$1.class
 me/zach/DesertMC/DesertMain.class
+me/zach/DesertMC/GameMechanics/hitbox/hitboxes/CircleHitbox.class
 me/zach/DesertMC/cosmetics/Cosmetic$9.class
 me/zach/DesertMC/Utils/MiscUtils$3.class
 me/zach/DesertMC/Utils/ench/CustomEnch$6.class
+me/zach/DesertMC/cosmetics/CosmeticData.class
 me/zach/DesertMC/ClassManager/ScoutManager/EventsForScout$2.class
 me/zach/DesertMC/Utils/ench/EnchantType$1.class
 me/zach/DesertMC/cosmetics/Cosmetic$12.class

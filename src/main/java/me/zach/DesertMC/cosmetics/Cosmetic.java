@@ -6,7 +6,6 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
-import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -15,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -222,66 +220,56 @@ public enum Cosmetic {
             new ParticleEffect.OrdinaryColor(Color.fromRGB(133, 0, 255))
     };
     static List<String> deathMessages = Arrays.asList("*angry noises*", "Why'd you have to do that?!", "Oh no, my streak!", "You'll pay for this.", "I call hacks!", "But my gear was so good!", "I'm staying determined!");
-    static List<ParticleEffect> eParticles = Arrays.asList(ParticleEffect.BLOCK_CRACK, ParticleEffect.DRIP_WATER, ParticleEffect.DRIP_LAVA, ParticleEffect.SMOKE_NORMAL);
     static{
         for(int i = 0; i<9; i++){
             noteColors[i] = new ParticleEffect.NoteColor(i * 3);
         }
     }
 
-    public static final HashMap<UUID, Integer> trails = new HashMap<>();
 
 
     static class CosmeticActivationException extends IllegalArgumentException{
         CosmeticActivationException(String message){super(message);}
     }
 
-
-    public static void init(Player player){
-        CosmeticType[] types = CosmeticType.values();
-        for(CosmeticType type : types){
-            pl.getConfig().set("players." + player.getUniqueId() + ".cosmetics." + type.name() + ".selected", "NONE");
-        }
-        pl.getConfig().set("players." + player.getUniqueId() + ".cosmetics.acquired", new ArrayList<String>());
-        pl.saveConfig();
-    }
-
     public final boolean isSelected(Player player){
-        try{
-            return valueOf(pl.getConfig().getString("players." + player.getUniqueId() + ".cosmetics." + cosmeticType.name() + ".selected")).equals(this);
-        }catch(IllegalArgumentException ex){return false;}
+        return CosmeticData.get(player).cosmeticGet(cosmeticType) == this;
     }
 
     public final boolean select(Player player){
         if(!hasCosmetic(player)) return false;
-        pl.getConfig().set("players." + player.getUniqueId() + ".cosmetics." + cosmeticType.name() + ".selected", this.name());
-        pl.saveConfig();
-        return true;
+        else{
+            CosmeticData data = CosmeticData.get(player);
+            data.cosmeticSet(this);
+            return true;
+        }
     }
 
     public final boolean deselect(Player player){
         if(!isSelected(player)) return false;
-        pl.getConfig().set("players." + player.getUniqueId() + ".cosmetics." + cosmeticType.name() + ".selected", "NONE");
-        pl.saveConfig();
-        return true;
+        else{
+            CosmeticData data = CosmeticData.get(player);
+            data.unselectCosmetic(this);
+            return true;
+        }
     }
 
     public final void grant(Player player){
-        List<String> cosmetics = pl.getConfig().getStringList("players." + player.getUniqueId() + ".cosmetics.acquired");
-        if(!cosmetics.contains(name())) cosmetics.add(name());
-        pl.getConfig().set("players." + player.getUniqueId() + ".cosmetics.acquired", cosmetics);
-        pl.saveConfig();
-        player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "COSMETIC ACQUIRED! " + ChatColor.GREEN + "You got: " + this + "\n" + ChatColor.GRAY + "Select it with /cosmetics!");
+        Set<Cosmetic> unlocked = CosmeticData.get(player.getUniqueId()).getUnlocked();
+        if(unlocked.add(this)){
+            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "COSMETIC ACQUIRED! " + ChatColor.GREEN + "You got: " + this + "\n" + ChatColor.GRAY + "Select it with /cosmetics!");
+        }else{
+            int compensation = ThreadLocalRandom.current().nextInt(750, 2000);
+            player.sendMessage(ChatColor.YELLOW + "Got duplicate cosmetic: " + this + ChatColor.GRAY + " (" + ChatColor.GREEN + "+" + compensation + " " + (compensation == 1 ? "Gem" : "Gems") + ChatColor.GRAY + ")");
+        }
     }
 
     public final boolean hasCosmetic(Player player){
-        return pl.getConfig().getStringList("players." + player.getUniqueId() + ".cosmetics.acquired").contains(name());
+        return CosmeticData.get(player).getUnlocked().contains(this);
     }
 
     public static Cosmetic getSelected(Player player, CosmeticType type){
-        String selectedRaw = pl.getConfig().getString("players." + player.getUniqueId() + ".cosmetics." + type.name() + ".selected");
-        if(selectedRaw.equals("NONE")) return null;
-        else return Cosmetic.valueOf(selectedRaw);
+        return CosmeticData.get(player).cosmeticGet(type);
     }
 
     public static Cosmetic getFromName(String name){
@@ -299,7 +287,6 @@ public enum Cosmetic {
             Location baseLocation = arrow.getLocation();
             Vector vector = arrow.getVelocity();
             double distance = 0.2;
-            if(particle.equals(ParticleEffect.REDSTONE)) distance = 0.05;
             final int steps = (int) (vector.length() / distance);
             final Vector increment = vector.clone().normalize().multiply(distance);
             final Vector base = increment.clone();
@@ -363,7 +350,7 @@ public enum Cosmetic {
 
 
     public String toString(){
-        return displayName;
+        return ChatColor.GOLD + displayName;
     }
 
     public enum CosmeticType{

@@ -86,7 +86,7 @@ public class MiscUtils {
     public static String getOrdinalSuffix(int num){
         if((num + "").endsWith("1") && num != 11) return "st";
         else if((num + "").endsWith("2") && num != 12) return "nd";
-        else if((num + "").endsWith("3") && num != (10 + 3)) return "rd";
+        else if((num + "").endsWith("3") && num != 13) return "rd";
         return "th";
     }
 
@@ -137,7 +137,8 @@ public class MiscUtils {
     }
 
     public static boolean isAdmin(Player player){
-        return ConfigUtils.getRank(player).admin || player.hasPermission("admin");
+        Rank rank = ConfigUtils.getRank(player);
+        return (rank != null && rank.admin) || player.hasPermission("admin");
     }
 
     /**
@@ -286,18 +287,11 @@ public class MiscUtils {
     public static String getRankColor(UUID uuid){
         Rank rank = ConfigUtils.getRank(uuid);
         if(rank != null){
-            return rank.c.toString();
+            return rank.c;
         }else return ChatColor.GRAY.toString();
     }
-
     public static boolean isCoolPerson(UUID uuid){
         return uuid.equals(UUID_DRMLEM) || uuid.equals(UUID_1IQ);
-    }
-
-    public static void removeAdmin(Permissible permissible){
-        for(PermissionAttachmentInfo perm : permissible.getEffectivePermissions()){
-
-        }
     }
 
     public static void setOwner(Item item, Player owner){

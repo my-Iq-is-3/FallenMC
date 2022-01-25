@@ -1,5 +1,6 @@
-package me.zach.DesertMC.GameMechanics.hitbox;
+package me.zach.DesertMC.GameMechanics.hitbox.hitboxes;
 
+import me.zach.DesertMC.GameMechanics.hitbox.Hitbox;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import org.bukkit.Location;
 
@@ -12,7 +13,7 @@ import static java.lang.Math.min;
 /**
  * @author Spigot user FrozenLegend from thread https://www.spigotmc.org/threads/checking-if-location-is-in-an-area.293771/
  */
-public class BoxHitbox implements Hitbox{
+public class BoxHitbox implements Hitbox {
     public Location minLocation;
     public Location maxLocation;
 //    String name;

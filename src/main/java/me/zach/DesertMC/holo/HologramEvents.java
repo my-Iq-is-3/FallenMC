@@ -24,7 +24,7 @@ public class HologramEvents implements Listener {
                 if(action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR){
                     new Hologram(name, player.getLocation().clone().add(0, 1.4, 0)).create();
                 }else if(action == Action.LEFT_CLICK_BLOCK){
-                    new Hologram(name, event.getClickedBlock().getLocation().add(0.5, 1.8, 0.5)).create();
+                    new Hologram(name, event.getClickedBlock().getLocation().add(0.5, 1.5, 0.5)).create();
                 }
             }
         }

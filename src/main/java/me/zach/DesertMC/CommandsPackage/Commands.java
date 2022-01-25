@@ -6,8 +6,8 @@ import me.zach.DesertMC.ClassManager.KothyMenu;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesInventory;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
-import me.zach.DesertMC.GameMechanics.hitbox.BoxHitbox;
-import me.zach.DesertMC.GameMechanics.hitbox.CircleHitbox;
+import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BoxHitbox;
+import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.CircleHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
@@ -31,8 +31,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.permissions.Permissible;
-import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
@@ -378,7 +376,7 @@ public class Commands implements Listener, CommandExecutor {
 							if (MiscUtils.isAdmin(player)) {
 								TitleUtils.addTitle(player, p);
 								TitleUtils.setTitle(player, p);
-								player.sendMessage(ChatColor.YELLOW + "You didn't have that title so I added it for you and selected it.");
+								player.sendMessage(ChatColor.YELLOW + "You didn't have that title so I added it for you and selected it. Hi admin!");
 								return true;
 							} else player.sendMessage(ChatColor.RED + "Sorry, it seems you don't own that title.");
 							return true;

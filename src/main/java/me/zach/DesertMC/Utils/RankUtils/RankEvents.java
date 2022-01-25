@@ -70,7 +70,7 @@ public class RankEvents implements Listener {
         Rank rank = data.getRank();
         if(rank != null){
             e.setMessage(colorMessage(e.getMessage()));
-            if(rank == Rank.COOWNER) e.setFormat(rank.c + "" + ChatColor.BOLD + p.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
+            if(rank == Rank.COOWNER) e.setFormat(rank.c + "" + p.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
             else e.setFormat(rank.c + p.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
         }else{
             e.setFormat(ChatColor.GRAY + p.getName() + ": " + ChatColor.GRAY + e.getMessage());
@@ -101,16 +101,16 @@ public class RankEvents implements Listener {
         return msg;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void giveRankTitle(PlayerJoinEvent e){
         Player p = e.getPlayer();
         Rank rank = ConfigUtils.getRank(p);
         if(rank != null) {
-            if(TitleUtils.hasTitle(e.getPlayer(), rank.p)){
+            if(!TitleUtils.hasTitle(e.getPlayer(), rank.p)){
+                TitleUtils.addTitle(p, rank.p);
                 p.sendMessage(rank.c + "Wow, thank you so much for buying one of our ranks!! It helps support the server so much. You have our greatest gratitude, " + rank.c + p.getName() + "!\n");
                 p.playSound(p.getLocation(), Sound.ENDERDRAGON_DEATH, 7, 1);
-                p.sendTitle(new Title(rank.c + "Thank you!", ChatColor.DARK_RED + "<3"));
-                TitleUtils.addTitle(p, rank.p);
+                p.sendTitle(new Title(rank.c + ChatColor.BOLD + "Thank you!", ChatColor.DARK_RED + "<3"));
             }
         }
     }

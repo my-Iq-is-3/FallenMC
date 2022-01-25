@@ -304,34 +304,42 @@ public class Events implements Listener{
 
 	public static void check(DesertMain main){
 		new BukkitRunnable(){
+			int count = 0;
 			@Override
 			public void run() {
-				for(Player p : Bukkit.getOnlinePlayers()){
-					UUID uuid = p.getUniqueId();
-					if(!DesertMain.eating.contains(uuid))
-					p.setFoodLevel(20);
-					Location location = p.getLocation();
-					Location locbefore = location.clone();
+				if(count % 20 == 0){
+					count = 0;
+					for(Player p : Bukkit.getOnlinePlayers()){
+						UUID uuid = p.getUniqueId();
+						if(!DesertMain.eating.contains(uuid))
+							p.setFoodLevel(20);
+						Location location = p.getLocation();
+						Location locbefore = location.clone();
 
-					if (!PlayerUtils.fighting.containsKey(uuid))
-						PlayerUtils.fighting.put(uuid, 11);
-					int incombat = PlayerUtils.fighting.get(uuid);
-					if (incombat > 0) PlayerUtils.fighting.put(uuid, incombat - 1);
+						if(!PlayerUtils.fighting.containsKey(uuid))
+							PlayerUtils.fighting.put(uuid, 11);
+						int incombat = PlayerUtils.fighting.get(uuid);
+						if(incombat > 0) PlayerUtils.fighting.put(uuid, incombat - 1);
 
 
-					if(locbefore.getBlock().getType().equals(Material.LAVA) || locbefore.getBlock().getType().equals(Material.STATIONARY_LAVA)){
-						if(ConfigUtils.findClass(p).equals("corrupter") && ConfigUtils.getLevel("corrupter",p) > 7){
-							if(p.getHealth() + 0.5 <= p.getMaxHealth()){
-								p.setHealth(p.getHealth() + 0.5);
-							}else if(p.getHealth() + 0.5  > p.getMaxHealth()){
-								p.setHealth(p.getMaxHealth());
+						if(locbefore.getBlock().getType().equals(Material.LAVA) || locbefore.getBlock().getType().equals(Material.STATIONARY_LAVA)){
+							if(ConfigUtils.findClass(p).equals("corrupter") && ConfigUtils.getLevel("corrupter", p) > 7){
+								if(p.getHealth() + 0.5 <= p.getMaxHealth()){
+									p.setHealth(p.getHealth() + 0.5);
+								}else if(p.getHealth() + 0.5 > p.getMaxHealth()){
+									p.setHealth(p.getMaxHealth());
+								}
+								ParticleEffect.VILLAGER_HAPPY.display(1, 1, 1, 0, 50, locbefore, 10);
 							}
-							ParticleEffect.VILLAGER_HAPPY.display(1,1,1,0,50,locbefore,10);
 						}
 					}
+				}
+				for(Player p : Bukkit.getOnlinePlayers()){
+					UUID uuid = p.getUniqueId();
 					if(p.isBlocking()) blocking.put(uuid, getBlockingTime(uuid) + 0.05f);
 					else blocking.remove(uuid);
 				}
+				count++;
 			}
 		}.runTaskTimer(main,0,20);
 	}
@@ -671,12 +679,12 @@ public class Events implements Listener{
 	public void forScoreboard(PlayerJoinEvent e) {
 		final Player p = e.getPlayer();
 		new BukkitRunnable() {
-
 			@Override
 			public void run() {
-				FScoreboardManager.initialize(p);
+				if(p.isOnline()){
+					FScoreboardManager.initialize(p);
+				}else cancel();
 			}
-
 		}.runTaskTimer(DesertMain.getPlugin(DesertMain.class), 0, 5);
 	}
 	@EventHandler
@@ -701,17 +709,10 @@ public class Events implements Listener{
 		}else{
 			Rank rank = ConfigUtils.getRank(e.getPlayer());
 			if(rank != null)
-				e.setJoinMessage(rank.p.toString() + rank + " " + e.getPlayer().getName() + " just joined.");
+				e.setJoinMessage(rank.p.toString() + rank.c + " " + e.getPlayer().getName() + " just joined.");
 			else e.setJoinMessage("");
 			e.getPlayer().sendMessage(DesertMain.getWelcome());
 		}
-		if(!main.getConfig().contains("players." + uuid + ".cosmetics")){
-			Bukkit.getLogger().warning(ChatColor.RED + "Initializing cosmetics for player " + e.getPlayer().getName());
-			//init cosmetics
-			Cosmetic.init(e.getPlayer());
-		}
-
-
 		if(main.getConfig().getBoolean(blockNotifPath))
 			TravellerEvents.blockNotifs.add(p.getUniqueId());
 	}

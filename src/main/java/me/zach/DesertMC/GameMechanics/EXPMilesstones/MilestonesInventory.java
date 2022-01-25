@@ -114,7 +114,7 @@ public class MilestonesInventory implements Listener {
                 int resets = data.getResets();
                 reward = (resets + 1) + MiscUtils.getOrdinalSuffix(resets + 1) + " milestones reset";
                 lore.add(ChatColor.GRAY + "- Display case upgrade: " + MilestonesUtil.getDisplayCase(p) + ChatColor.GRAY + " ➞ " + MilestonesUtil.getDisplayCase(resets + 1, 0));
-                if(MilestonesUtil.cosmetics.containsKey(resets)) lore.add(ChatColor.GRAY + "- New cosmetic: " + MilestonesUtil.cosmetics.get(resets));
+                if(MilestonesUtil.cosmetics.containsKey(resets)) lore.add(ChatColor.GRAY + "- New cosmetic: " + MilestonesUtil.cosmetics.get(resets).toString());
                 granter = (player, mLevel) -> false;
             }else{
                 if (overrides.containsKey(level)) {
