@@ -4,10 +4,12 @@ import org.bukkit.Location;
 
 public class HitboxListener {
     public static boolean isInSpawn(Location l){
-        return HitboxManager.get("spawn").isInside(l);
+        Hitbox spawn = HitboxManager.get("spawn");
+        return spawn != null && spawn.isInside(l);
     }
 
     public static boolean isInCafe(Location l){
-        return (HitboxManager.get("cafe1").isInside(l) || HitboxManager.get("cafe2").isInside(l));
+        Hitbox cafeBlob = HitboxManager.get("cafe");
+        return cafeBlob != null && cafeBlob.isInside(l);
     }
 }

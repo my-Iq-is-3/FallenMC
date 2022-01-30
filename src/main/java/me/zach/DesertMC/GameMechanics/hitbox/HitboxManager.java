@@ -3,12 +3,11 @@ package me.zach.DesertMC.GameMechanics.hitbox;
 import me.zach.DesertMC.Utils.structs.Pair;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
-import java.util.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class HitboxManager {
     public static final String PATH = "server.hitboxes";
@@ -24,12 +23,14 @@ public class HitboxManager {
 
     public static void saveAll(Plugin plugin){
         FileConfiguration config = plugin.getConfig();
-//        for(Map.Entry<String, Object> hitbox : hitboxDict.entrySet()){
-//            config.set(hitbox.getKey(), hitbox.getValue());
-//        }
         config.createSection(PATH,hitboxDict);
         plugin.saveConfig();
     }
+
+    public static Hitbox remove(String name){
+        return (Hitbox) hitboxDict.remove(name);
+    }
+
     public static List<Pair<String, Hitbox>> getAll(){
         List<Pair<String, Hitbox>> hitboxes = new ArrayList<>();
         for(Map.Entry<String, Object> entry : hitboxDict.entrySet()){
@@ -37,6 +38,7 @@ public class HitboxManager {
         }
         return hitboxes;
     }
+
     public static void set(String name, Hitbox h){
         hitboxDict.put(name,h);
     }

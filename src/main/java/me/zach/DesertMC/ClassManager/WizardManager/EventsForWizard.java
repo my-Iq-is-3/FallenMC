@@ -4,6 +4,7 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
@@ -158,7 +159,7 @@ public class EventsForWizard implements Listener {
                 NBTItem bladeNbt = new NBTItem(e.getPlayer().getItemInHand());
                 if(e.getRightClicked() instanceof Player) {
                     if (bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") != 0) {
-                        if (!Events.invincible.contains(e.getRightClicked().getUniqueId())) {
+                        if (MiscUtils.canDamage(e.getPlayer()) != null) {
 //                            if (bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") >= ((Player) e.getRightClicked()).getHealth()) {
                             ItemMeta bladeMeta = bladeNbt.getItem().getItemMeta();
                             bladeMeta.setDisplayName(bladeMeta.getDisplayName().replaceAll((bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE")) + "", "0"));

@@ -133,33 +133,12 @@ public class EventsForScout implements Listener {
 
     public void alert(EntityDamageByEntityEvent event){
         if(event.getEntity() instanceof Player && event.getDamager() instanceof Player){
-
-            Player damager = (Player) event.getDamager();
             Player damaged = (Player) event.getEntity();
             int level = CustomEnch.ALERT.getTotalArmorLevel(damaged);
-
-
             if(ConfigUtils.findClass(damaged).equals("wizard") && ConfigUtils.getLevel("wizard",damaged) > 4){
-                try{
-                    if(!DesertMain.alertEnchantment.get(damaged.getUniqueId()).contains(damager.getUniqueId())){
-                        if(DesertMain.alertEnchantment.get(damaged.getUniqueId()) == null){
-                            DesertMain.alertEnchantment.put(damaged.getUniqueId(), Collections.singletonList(damager.getUniqueId()));
-                        }else{
-                            DesertMain.alertEnchantment.get(damaged.getUniqueId()).add(damager.getUniqueId());
-                        }
-
-                        event.setDamage(event.getDamage() - event.getDamage()*(0.03*level));
-                        new BukkitRunnable(){
-                            @Override
-                            public void run(){
-                                DesertMain.alertEnchantment.get(damaged.getUniqueId()).remove(damager.getUniqueId());
-                            }
-
-                        }.runTaskLater(DesertMain.getInstance,300);
-                    }
-                }catch(NullPointerException ignored){}
-
-
+                if(level > 0 && PlayerUtils.isIdle(damaged)){
+                    event.setDamage(event.getDamage() * (1 - 0.01 * level));
+                }
             }
         }
     }

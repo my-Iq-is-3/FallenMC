@@ -130,15 +130,15 @@ public class ScoutTierMenu{
 			case 5:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Traveller");
-				glore.add(ChatColor.GREEN + " Every 20 unique blocks travelled, gain +1% speed.");
+				glore.add(ChatColor.GREEN + " Every 20 unique blocks travelled, gain +0.1% speed.");
 				glore.add(ChatColor.GREEN + "Resets on death.");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Traveller");
-				ylore.add(ChatColor.YELLOW + " Every 20 unique blocks travelled, gain +1% speed.");
+				ylore.add(ChatColor.YELLOW + " Every 20 unique blocks travelled, gain +0.1% speed.");
 				ylore.add(ChatColor.YELLOW + " Resets on death.");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Traveller");
-				rlore.add(ChatColor.RED + " Every 20 unique blocks travelled, gain +1% speed."); //TODO this is too op
+				rlore.add(ChatColor.RED + " Every 20 unique blocks travelled, gain +0.1% speed."); //TODO this is too op
 				rlore.add(ChatColor.RED + " Resets on death.");
 				break;
 			case 6:

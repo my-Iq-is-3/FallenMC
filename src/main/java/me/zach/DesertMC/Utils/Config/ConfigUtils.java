@@ -221,11 +221,11 @@ public class ConfigUtils {
 		return getData(uuid).getRank();
 	}
 
-	public static List<Prefix> getUnlockedTitles(Player player){
+	public static Set<Prefix> getUnlockedTitles(Player player){
 		return getUnlockedTitles(player.getUniqueId());
 	}
 
-	public static List<Prefix> getUnlockedTitles(UUID uuid){
+	public static Set<Prefix> getUnlockedTitles(UUID uuid){
 		return getData(uuid).getTitles();
 	}
 

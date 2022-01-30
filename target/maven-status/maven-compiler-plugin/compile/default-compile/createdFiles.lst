@@ -64,6 +64,7 @@ me/zach/DesertMC/Utils/ench/EnchantType.class
 me/zach/DesertMC/GameMechanics/EXPMilesstones/MilestonesInventory$RewardsItem$3.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$BlockData.class
 me/zach/DesertMC/GameMechanics/Events$3.class
+me/zach/DesertMC/GameMechanics/hitbox/hitboxes/BlobHitbox.class
 me/zach/DesertMC/cosmetics/Cosmetic$9$1.class
 me/zach/DesertMC/Utils/ench/EnchantType$3.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ParticleColor.class
@@ -85,6 +86,7 @@ me/zach/DesertMC/GameMechanics/Events.class
 me/zach/DesertMC/GameMechanics/Events$2.class
 me/zach/DesertMC/shops/ShopItem$PurchaseResponse.class
 me/zach/DesertMC/Utils/nbt/EnchantmentUtil.class
+me/zach/DesertMC/GameMechanics/hitbox/HitboxCommand.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ItemData.class
 me/zach/DesertMC/ClassManager/ItemShop.class
 me/zach/DesertMC/ClassManager/CoruManager/EventsForCorruptor$1.class
@@ -121,7 +123,6 @@ me/zach/DesertMC/cosmetics/Cosmetic$9.class
 me/zach/DesertMC/Utils/MiscUtils$3.class
 me/zach/DesertMC/Utils/ench/CustomEnch$6.class
 me/zach/DesertMC/cosmetics/CosmeticData.class
-me/zach/DesertMC/ClassManager/ScoutManager/EventsForScout$2.class
 me/zach/DesertMC/Utils/ench/EnchantType$1.class
 me/zach/DesertMC/cosmetics/Cosmetic$12.class
 me/zach/DesertMC/Utils/structs/Pair.class

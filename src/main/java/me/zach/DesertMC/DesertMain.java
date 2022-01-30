@@ -13,6 +13,8 @@ import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.GameMechanics.NPCStructure.SavedNPC;
+import me.zach.DesertMC.GameMechanics.hitbox.HitboxCommand;
+import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BlobHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BoxHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.CircleHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
@@ -38,12 +40,10 @@ import java.util.*;
 
 public class DesertMain extends JavaPlugin implements Listener {
 	public static DesertMain getInstance;
-	public static final Set<UUID> crouchers = new HashSet<>();
 	public static final Set<UUID> ct1players = new HashSet<>();
 	public static final HashMap<UUID,UUID> lastdmgers = new HashMap<>();
 	public static final Set<Player> laststandcd = new HashSet<>();
 	public static final Set<Player> mwcd = new HashSet<>();
-	public static final HashMap<UUID,List<UUID>> alertEnchantment	= new HashMap<>();
 	public static final Set<UUID> slowed = new HashSet<>();
 	public static final Set<UUID> scoutBladeCD = new HashSet<>();
 	public static final HashMap<UUID, Block> stomperStage = new HashMap<>();
@@ -58,25 +58,28 @@ public class DesertMain extends JavaPlugin implements Listener {
 	}
 
 	private static String welcome;
-	public static final Set<UUID> blockNotifs = new HashSet<>();
 	private static NPCLib library;
 	public static Set<UUID> claiming = new HashSet<>();
 	public static final String[] NPC_PACKAGES = new String[]{"me.zach.DesertMC.GameMechanics.npcs", "xyz.fallenmc.shops.npcs.clazz"};
 
 	@Override
 	public void onEnable() {
-		Bukkit.getConsoleSender().sendMessage("Attempting FallenMC onEnable");
+		Bukkit.getLogger().info("Attempting FallenMC onEnable");
 		library = new NPCLib(this);
 		getInstance = this;
-		String[] cmdsfile = {"gems","souls","hitbox","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram"};
+		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
+		HitboxCommand hitboxCommand = new HitboxCommand();
+		getCommand("hitbox").setExecutor(hitboxCommand);
+		Bukkit.getPluginManager().registerEvents(hitboxCommand, this);
 		PluginCommand command = getCommand("confirmreset");
 		command.setExecutor(new MilestonesUtil());
 		ConfigurationSerialization.registerClass(SavedNPC.class);
 		ConfigurationSerialization.registerClass(BoxHitbox.class);
 		ConfigurationSerialization.registerClass(CircleHitbox.class);
+		ConfigurationSerialization.registerClass(BlobHitbox.class);
 		loadConfig();
 		HitboxManager.loadAll(this);
 		loadNPCs();

@@ -15,6 +15,7 @@ import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxListener;
 import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
+import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.MiscUtils;
@@ -29,8 +30,10 @@ import me.zach.DesertMC.events.FallenDeathEvent;
 import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.artifacts.gui.inv.items.CreeperTrove;
 import me.zach.databank.saver.Key;
+import net.minecraft.server.v1_8_R3.EntityArrow;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftArrow;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -61,7 +64,7 @@ public class Events implements Listener{
 	public static Set<UUID> invincible = new HashSet<>();
 	Plugin main = DesertMain.getInstance;
 	public static HashMap<UUID,Integer> ks = new HashMap<>();
-	public static HashMap<Arrow, ItemStack> arrowArray = new HashMap<>();
+	public static HashMap<Integer, ItemStack> arrowArray = new HashMap<>();
 	static final HashMap<UUID, Float> blocking = new HashMap<>();
 	private CachedServerIcon nft = null;
 	public Events(){
@@ -76,10 +79,9 @@ public class Events implements Listener{
 		}
 	}
 
-
 	public static ItemStack getItemUsed(Entity damager){
 		Player playerDmgr = damager instanceof Player ? (Player) damager : null;
-		return damager instanceof Arrow ? arrowArray.get(damager) : (playerDmgr != null ? playerDmgr.getItemInHand() : null); //arrow? get from arrow array. player? get item in hand. neither? null.
+		return damager instanceof Arrow ? arrowArray.get(damager.getEntityId()) : (playerDmgr != null ? playerDmgr.getItemInHand() : null); //arrow? get from arrow array. player? get item in hand. neither? null.
 	}
 
 	public static void checkItemLives(Player player){
@@ -102,6 +104,17 @@ public class Events implements Listener{
 	@EventHandler
 	public void iceMelt(BlockFadeEvent event){
 		event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void projectileLand(ProjectileHitEvent event){
+		Entity entity = event.getEntity();
+		if(entity instanceof Arrow){
+			Arrow arrow = (Arrow) entity;
+			if(arrow.isDead() || arrow.isOnGround() || new NBTEntity(arrow).getBoolean("inGround")){
+				arrowArray.remove(arrow.getEntityId());
+			}
+		}
 	}
 
 	@EventHandler
@@ -166,7 +179,7 @@ public class Events implements Listener{
 		if(event.getEntity().getShooter() instanceof Player && event.getEntity() instanceof Arrow){
 			Arrow arrow = (Arrow) event.getEntity();
 			Player player = (Player) event.getEntity().getShooter();
-			arrowArray.put(arrow, player.getInventory().getItemInHand());
+			arrowArray.put(arrow.getEntityId(), player.getInventory().getItemInHand());
 			ArtifactEvents.shootEvent(event);
 			Cosmetic cosmetic = Cosmetic.getSelected(player, Cosmetic.CosmeticType.ARROW_TRAIL);
 			if(cosmetic != null) cosmetic.activateArrow(arrow, ConfigUtils.getData(player).getArtifactData().bowS());
@@ -314,22 +327,18 @@ public class Events implements Listener{
 						if(!DesertMain.eating.contains(uuid))
 							p.setFoodLevel(20);
 						Location location = p.getLocation();
-						Location locbefore = location.clone();
-
 						if(!PlayerUtils.fighting.containsKey(uuid))
 							PlayerUtils.fighting.put(uuid, 11);
 						int incombat = PlayerUtils.fighting.get(uuid);
 						if(incombat > 0) PlayerUtils.fighting.put(uuid, incombat - 1);
-
-
-						if(locbefore.getBlock().getType().equals(Material.LAVA) || locbefore.getBlock().getType().equals(Material.STATIONARY_LAVA)){
+						if(location.getBlock().getType().equals(Material.LAVA) || location.getBlock().getType().equals(Material.STATIONARY_LAVA)){
 							if(ConfigUtils.findClass(p).equals("corrupter") && ConfigUtils.getLevel("corrupter", p) > 7){
 								if(p.getHealth() + 0.5 <= p.getMaxHealth()){
 									p.setHealth(p.getHealth() + 0.5);
 								}else if(p.getHealth() + 0.5 > p.getMaxHealth()){
 									p.setHealth(p.getMaxHealth());
 								}
-								ParticleEffect.VILLAGER_HAPPY.display(1, 1, 1, 0, 50, locbefore, 10);
+								ParticleEffect.VILLAGER_HAPPY.display(1, 1, 1, 0, 50, location, 10);
 							}
 						}
 					}
@@ -342,15 +351,6 @@ public class Events implements Listener{
 				count++;
 			}
 		}.runTaskTimer(main,0,20);
-	}
-
-	@EventHandler
-	public void onCrouchToggle(PlayerToggleSneakEvent event){
-		if(DesertMain.crouchers.contains(event.getPlayer().getUniqueId())) {
-			DesertMain.crouchers.remove(event.getPlayer().getUniqueId());
-		}else{
-			DesertMain.crouchers.add(event.getPlayer().getUniqueId());
-		}
 	}
 
 	@EventHandler
@@ -368,16 +368,14 @@ public class Events implements Listener{
 								public void run() {
 									DesertMain.eating.remove(e.getPlayer().getUniqueId());
 								}
-							}.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), 10);
+							}.runTaskLater(DesertMain.getInstance, 10);
 						}
-					}.runTaskLater(Bukkit.getPluginManager().getPlugin("Fallen"), 60);
+					}.runTaskLater(DesertMain.getInstance, 60);
 				}
 			}
 		} catch (NullPointerException ignored) {
 		}
-
 	}
-
 
 	public static Player getPlayer(Entity arrowOrPlayer) {
 		if (arrowOrPlayer instanceof Player) return (Player) arrowOrPlayer;
@@ -389,28 +387,12 @@ public class Events implements Listener{
 
 
 	@EventHandler
-	public void onKill(EntityDamageByEntityEvent event) {
+	public void onHit(EntityDamageByEntityEvent event) {
 		try{
 			if(HitboxListener.isInCafe(event.getEntity().getLocation()) || HitboxListener.isInSpawn(event.getEntity().getLocation())) event.setCancelled(true);
 			if(event.isCancelled()) return;
 			CreeperTrove.executeTrove(event);
 			if(event.getDamage() == 0) return;
-			if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
-				Player damager = (Player) event.getDamager();
-				PlayerUtils.setFighting(damager);
-				if (event.getEntity() instanceof Player)
-					if (!event.getEntity().getUniqueId().equals(event.getDamager().getUniqueId()))
-						DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), damager.getUniqueId());
-			}else if(event.getDamager() instanceof Arrow){
-				Arrow damager = (Arrow) event.getDamager();
-				if(damager.getShooter() instanceof Player){
-					Player shooter = (Player) damager.getShooter();
-					PlayerUtils.setFighting(shooter);
-					if (event.getEntity() instanceof Player)
-						if (!shooter.getUniqueId().equals(event.getEntity().getUniqueId()))
-							DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
-				}
-			}
 			for(CustomEnch ce : CustomEnch.values()){
 				ce.onHit(event);
 			}
@@ -461,8 +443,24 @@ public class Events implements Listener{
 		}catch(NullPointerException ex){
 			ex.printStackTrace();
 		}
+		if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
+			Player damager = (Player) event.getDamager();
+			PlayerUtils.setFighting(damager);
+			if (event.getEntity() instanceof Player)
+				if (!event.getEntity().getUniqueId().equals(event.getDamager().getUniqueId()))
+					DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), damager.getUniqueId());
+		}else if(event.getDamager() instanceof Arrow){
+			Arrow damager = (Arrow) event.getDamager();
+			if(damager.getShooter() instanceof Player){
+				Player shooter = (Player) damager.getShooter();
+				PlayerUtils.setFighting(shooter);
+				if (event.getEntity() instanceof Player)
+					if (!shooter.getUniqueId().equals(event.getEntity().getUniqueId()))
+						DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
+			}
+		}
 		executePreKill(event);
-		if(event.getDamager() instanceof Arrow) arrowArray.remove(event.getDamager());
+		if(event.getDamager() instanceof Arrow) arrowArray.remove(event.getDamager().getEntityId());
 	}
 
 
@@ -543,16 +541,13 @@ public class Events implements Listener{
 		if(!event.isCancelled()){
 			UUID uuid = DesertMain.lastdmgers.get(event.getEntity().getUniqueId());
 			Player killer = Bukkit.getPlayer(uuid);
-
 			if(event.getEntity() instanceof Player){
 				Player player = (Player) event.getEntity();
 				if(player.getHealth() - event.getDamage() < 0.1){
 					event.setCancelled(true);
 					executeKill(player, killer);
-
 				}
 			}
-
 		}
 	}
 
@@ -694,7 +689,7 @@ public class Events implements Listener{
 	}
 
 	@EventHandler
-	public void onFirstJoin(PlayerJoinEvent e) {
+	public void onJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
 		UUID uuid = p.getUniqueId();
 		String blockNotifPath = "players." + uuid + ".blocknotifications";
@@ -708,8 +703,12 @@ public class Events implements Listener{
 			e.setJoinMessage(e.getPlayer().getName() + ChatColor.GOLD + " just joined for the first time, give them a warm welcome!");
 		}else{
 			Rank rank = ConfigUtils.getRank(e.getPlayer());
-			if(rank != null)
+			if(rank != null){
+				Prefix title = ConfigUtils.getSelectedTitle(e.getPlayer());
+				e.getPlayer().setDisplayName(rank.c + e.getPlayer().getName());
+				e.getPlayer().setPlayerListName(title != null ? title + " " + e.getPlayer().getDisplayName() : e.getPlayer().getDisplayName());
 				e.setJoinMessage(rank.p.toString() + rank.c + " " + e.getPlayer().getName() + " just joined.");
+			}
 			else e.setJoinMessage("");
 			e.getPlayer().sendMessage(DesertMain.getWelcome());
 		}

@@ -134,7 +134,7 @@ public enum CustomEnch implements Listener {
     },
     ALERT(EnchantType.ARMOR){
         String getDescription(int level){
-            return "Take " + level + "% less damage when someone first hits you";
+            return "Your senses heightened, take " + level + "% less damage on your opponent's first blow.";
         }
     } /*defined in EventsForScout*/,
     ETHEREAL(EnchantType.BOW){

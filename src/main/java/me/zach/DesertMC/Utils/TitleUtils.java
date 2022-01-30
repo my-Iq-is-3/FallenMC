@@ -7,8 +7,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Set;
 
 public class TitleUtils {
+
     public static boolean hasTitle(Player p, Prefix pr){
         return ConfigUtils.getUnlockedTitles(p.getUniqueId()).contains(pr);
     }
@@ -24,7 +26,7 @@ public class TitleUtils {
     }
     public static void addTitle(Player p, Prefix pr){
         PlayerData data = ConfigUtils.getData(p);
-        List<Prefix> titles = data.getTitles();
+        Set<Prefix> titles = data.getTitles();
         titles.add(pr);
         p.sendMessage(ChatColor.GOLD + "Unlocked title " + pr + ChatColor.GOLD + "!\n§7Select it again with /selecttitle " + pr.name());
         setTitle(p,pr);

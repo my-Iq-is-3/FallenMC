@@ -62,7 +62,7 @@ public class EventsForTank implements Listener {
         if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
             Player damager = (Player) event.getDamager();
             if(ConfigUtils.getLevel("tank",damager) > 7 && ConfigUtils.findClass(damager).equals("tank")){
-                if(DesertMain.crouchers.contains(damager.getUniqueId())){
+                if(damager.isSneaking()){
                     event.setDamage(event.getDamage() * 1.05);
                 }
             }
@@ -71,7 +71,6 @@ public class EventsForTank implements Listener {
 
     public void fortify(EntityDamageByEntityEvent event){
         if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
-            Player damager = (Player) event.getDamager();
             Player damaged = (Player) event.getEntity();
 
             ItemStack[] armor = damaged.getInventory().getArmorContents();

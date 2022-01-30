@@ -4,6 +4,7 @@
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/DesertMain.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/Particle/ReflectionUtils.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/RankUtils/Rank.java
+/Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/hitbox/HitboxCommand.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/ClassManager/TankManager/TankTierMenu.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/ClassManager/ClassSelector.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/Particle/ParticleEffect.java
@@ -39,6 +40,7 @@
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/Events.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/invisible/PlayerInvisible.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/hitbox/HitboxManager.java
+/Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/hitbox/hitboxes/BlobHitbox.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/mythicalitems/MythicalItem.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/cosmetics/Cosmetic.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/shops/ShopItem.java

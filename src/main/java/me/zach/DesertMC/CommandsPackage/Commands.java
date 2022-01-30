@@ -6,6 +6,8 @@ import me.zach.DesertMC.ClassManager.KothyMenu;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesInventory;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
+import me.zach.DesertMC.GameMechanics.hitbox.Hitbox;
+import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BlobHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BoxHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.CircleHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
@@ -38,7 +40,6 @@ import java.util.logging.Level;
 
 
 public class Commands implements Listener, CommandExecutor {
-	public static HashMap<UUID, Location> hitboxAwait = new HashMap<>();
 	Set<UUID> soulsCd = new HashSet<>();
 	Set<UUID> gemsCd = new HashSet<>();
 	Set<UUID> expCd = new HashSet<>();
@@ -216,9 +217,7 @@ public class Commands implements Listener, CommandExecutor {
 								if(!MiscUtils.isCoolPerson(player.getUniqueId())){
 									player.sendMessage(ChatColor.RED + "Nice try. You can't give other people COOWNER or ADMIN.");
 									return true;
-								}else player.addAttachment(mainpl, "admin", true);
-							}else if(!MiscUtils.isCoolPerson(player.getUniqueId())){
-
+								}
 							}
         					PlayerData data = ConfigUtils.getData(player);
 							data.setRank(rank);
@@ -230,25 +229,6 @@ public class Commands implements Listener, CommandExecutor {
 					}else{
         				player.sendMessage(ChatColor.RED + "Invalid usage! Usage: /rank <player> <rank>");
         				return true;
-					}
-				}
-			}
-
-        	if(command.getName().equalsIgnoreCase("hitbox")){
-				if(MiscUtils.isAdmin(player)){
-					if(args[0].equalsIgnoreCase("rect")){
-						if(hitboxAwait.containsKey(player.getUniqueId())){
-							HitboxManager.set(args[1],new BoxHitbox(hitboxAwait.get(player.getUniqueId()),player.getLocation()));
-							player.sendMessage(ChatColor.GREEN + "Hitbox created.");
-							hitboxAwait.remove(player.getUniqueId());
-						}else {
-							player.sendMessage(ChatColor.GREEN + "Use /hitbox rect <name> at the next location.");
-							hitboxAwait.put(player.getUniqueId(), player.getLocation());
-						}
-					}
-					if(args[0].equalsIgnoreCase("sphere")){
-						HitboxManager.set(args[2],new CircleHitbox(player.getLocation(),Integer.parseInt(args[1])));
-						player.sendMessage(ChatColor.GREEN + "Hitbox created.");
 					}
 				}
 			}
@@ -535,14 +515,13 @@ public class Commands implements Listener, CommandExecutor {
         	}
         	if(command.getName().equalsIgnoreCase("invincible")) {
         		if(MiscUtils.isAdmin(player)) {
-	        			if(!Events.invincible.contains(player.getUniqueId())) {
-		        			player.sendMessage(ChatColor.GREEN + "Made you invincible!");
-		        			Events.invincible.add(player.getUniqueId());
-						}else{
-		        			Events.invincible.remove(player.getUniqueId());
-		        			player.sendMessage(ChatColor.RED + "Turned off your invincibility!");
-						}
-					mainpl.saveConfig();
+					if(!Events.invincible.contains(player.getUniqueId())) {
+						player.sendMessage(ChatColor.GREEN + "Made you invincible!");
+						Events.invincible.add(player.getUniqueId());
+					}else{
+						Events.invincible.remove(player.getUniqueId());
+						player.sendMessage(ChatColor.RED + "Turned off your invincibility!");
+					}
 				} else {
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
         		}
