@@ -506,7 +506,7 @@ public class Events implements Listener{
 				}.runTaskTimer(DesertMain.getInstance, 2, 2);
 			}else playerTick.second = tick;
 			int difference = playerTick.second - playerTick.first;
-			Location playerLoc = player.getLocation();
+			Location playerLoc = player.getLocation().add(0, 1, 0);
 			if(difference >= PORTAL_TIME){
 				portal.remove(uuid);
 				if(wizardPortalSpawn != null){
@@ -525,13 +525,13 @@ public class Events implements Listener{
 						double x = wizardPortalSpawn.getX() - loc.getX();
 						double y = wizardPortalSpawn.getY() - loc.getY();
 						double z = wizardPortalSpawn.getZ() - loc.getZ();
-						int points = (int) (playerLoc.distance(wizardPortalSpawn) * 2.5);
+						int points = (int) (loc.distance(wizardPortalSpawn) * 1.3);
 						int step = (PORTAL_TIME - PARTICLE_CHANGE_POINT) - (PORTAL_TIME - difference) + 2;
 						x = x / points * step;
 						y = y / points * step;
 						z = z / points * step;
 						loc = loc.add(x, y, z);
-						ParticleEffect.FLAME.display(0, 0, 0, 0, 1, loc.add(x, y, z), 75);
+						ParticleEffect.FLAME.display(0, 0, 0, 0, 1, loc, 75);
 					}
 				}else{
 					double radius = (PORTAL_TIME - difference) / PORTAL_CIRCLE_FACTOR;

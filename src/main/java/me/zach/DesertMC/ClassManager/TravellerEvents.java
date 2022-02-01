@@ -43,7 +43,7 @@ public class TravellerEvents implements Listener {
                     if(blockSet.add(block) && notifications(uuid)){
                         Player player = e.getPlayer();
                         String actionBar = ChatColor.YELLOW + "Unique block travelled! Unique blocks travelled this run: " + ChatColor.GREEN + blockSet.size();
-                        if(blockSet.size() - 1 % 150 == 0){
+                        if(blockSet.size() % 150 == 0){
                             player.sendMessage(Prefix.SERVER + ChatColor.YELLOW.toString() + ChatColor.BOLD + " TIP: " + ChatColor.GRAY + "Toggle block notifications using /blocknotifications");
                         }
                         ActionBarUtils.sendActionBar(player, actionBar);
