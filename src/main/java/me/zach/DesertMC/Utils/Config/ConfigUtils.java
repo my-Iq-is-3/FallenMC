@@ -4,6 +4,7 @@ import itempackage.Items;
 import me.zach.DesertMC.ClassManager.TravellerEvents;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesData;
+import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
@@ -116,7 +117,7 @@ public class ConfigUtils {
 
 	public static Location getSpawn(String type){
 		Object spawn = main.getConfig().get("server.spawn." + type);
-		return spawn instanceof Location ? (Location) spawn : Bukkit.getWorlds().get(0).getSpawnLocation();
+		return spawn instanceof Location ? (Location) spawn : type.equals("lobby") ? Bukkit.getWorlds().get(0).getSpawnLocation() : null;
 	}
 
 	private static void cexp(Player player, String classtoaddto, int amount){
@@ -203,6 +204,7 @@ public class ConfigUtils {
 		}else{
 			data.setCurrentProgress(data.getCurrentProgress() + amount);
 		}
+		MilestonesUtil.refreshExpBar(player);
 	}
 
 	public static ArtifactData getAD(Player player){

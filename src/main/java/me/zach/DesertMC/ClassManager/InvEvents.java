@@ -86,14 +86,14 @@ public class InvEvents implements Listener {
 			}
 				
 			if(item.getType().equals(Material.GOLDEN_APPLE)) {
-				if(ConfigUtils.deductGems(player,250)){
+				if(ConfigUtils.deductGems(player,75)){
 					player.getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE));
 					shop.updateInventory();
 				}
 			}
 				
 			if(item.getType().equals(Material.IRON_BLOCK)) {
-				if(ConfigUtils.deductGems(player,600)){
+				if(ConfigUtils.deductGems(player, 250)){
 					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_CHESTPLATE, "Iron Chestplate", new ArrayList<>(), (byte) -1, 1, "IRON_CHESTPLATE", 15));
 					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_HELMET, "Iron Helmet", new ArrayList<>(), (byte) -1, 1, "IRON_HELMET", 15));
 					shop.updateInventory();
@@ -103,7 +103,7 @@ public class InvEvents implements Listener {
 				
 				
 				if(item.getType().equals(Material.IRON_SWORD)) {
-						if(ConfigUtils.deductGems(player,150)){
+						if(ConfigUtils.deductGems(player,125)){
 						player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_SWORD, "Iron Sword", MiscUtils.asArrayList(ChatColor.GRAY + "An iron sword."), (byte) -1, 1, "IRON_SWORD", 5));
 						shop.updateInventory();
 					}

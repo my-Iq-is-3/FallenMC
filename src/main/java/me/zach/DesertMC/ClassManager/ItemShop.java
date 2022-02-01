@@ -40,11 +40,9 @@ public class ItemShop {
 			gemM.setDisplayName(ChatColor.WHITE + "You have " + ChatColor.GREEN + "1 Gem");
 		} else {
 			gemM.setDisplayName(ChatColor.WHITE + "You have " + ChatColor.GREEN + balance + ChatColor.GREEN + " Gems");
-			
 		}
 		gemCount.setItemMeta(gemM);
 		shop.setItem(35, gemCount);
-
 		//bow
 		ItemStack bow = new ItemStack(Material.BOW);
 		ItemMeta bowM = bow.getItemMeta();
@@ -93,8 +91,8 @@ public class ItemShop {
 		glore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " Regen II for 5 seconds");
 		glore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " Absorption I for 2 minutes (" + ChatColor.YELLOW + "❤❤" + ChatColor.DARK_GRAY + ")");
 		glore.add("");
-		glore.add(ChatColor.WHITE + "Cost: " + ChatColor.GREEN + "250 Gems");
-		if(balance >= 250) {
+		glore.add(ChatColor.WHITE + "Cost: " + ChatColor.GREEN + "75 Gems");
+		if(balance >= 75) {
 			glore.add(ChatColor.GREEN + "Click to buy!");
 		} else {
 			glore.add(ChatColor.RED + "You cannot afford this item!");
@@ -125,12 +123,9 @@ public class ItemShop {
 		packLore.add(ChatColor.GRAY + "All items: " + ChatColor.RED + "15" + ChatColor.GRAY + " lives");
 		ipackMeta.setLore(packLore);
 		itemPackage.setItemMeta(ipackMeta);
-		addLore(itemPackage, 600, packLore, player);
+		addLore(itemPackage, 250, packLore, player);
 		shop.setItem(16, itemPackage);
-		
-		
-		
-		
+
 		//diamond package
 		/*ItemStack itemPackageD = new ItemStack(Material.DIAMOND_BLOCK);
 		ItemMeta ipackDMeta = itemPackage.getItemMeta();
@@ -155,7 +150,7 @@ public class ItemShop {
 		swordlore.add(ChatColor.DARK_GRAY + "Lasts: " + ChatColor.RED + "5" + ChatColor.GRAY + " lives");
 		swordMeta.setLore(swordlore);
 		sword.setItemMeta(swordMeta);
-		addLore(sword, 150, swordlore, player);
+		addLore(sword, 125, swordlore, player);
 		shop.setItem(25, sword);
 		player.openInventory(shop);
 	}

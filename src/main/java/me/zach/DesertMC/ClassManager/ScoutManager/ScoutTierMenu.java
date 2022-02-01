@@ -113,32 +113,32 @@ public class ScoutTierMenu{
 				break;
 			case 4:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - 1/2 Absorbtion heart on kill.");
+				glore.add(ChatColor.GREEN + " - 1 Absorbtion heart on kill.");
 				glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.GREEN + "- Anti-Focus Enchantment - Tier I & II");
 				glore.add(ChatColor.GREEN + "§lSHOP UNLOCK§a - Scout Dagger");
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - 1/2 Absorbtion heart on kill.");
+				ylore.add(ChatColor.YELLOW + " - 1 Absorbtion heart on kill.");
 				ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.YELLOW + " - Anti-Focus Enchantment - Tier I & II");
 				ylore.add(ChatColor.YELLOW + "§lSHOP UNLOCK§e - Scout Dagger");
 
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - 1/2 Absorbtion heart on kill.");
+				rlore.add(ChatColor.RED + " - 1 Absorbtion heart on kill.");
 				rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.RED + " - Anti-Focus Enchantment - Tier I & II");
 				rlore.add(ChatColor.RED + "§lSHOP UNLOCK§c - Scout Dagger");
 				break;
 			case 5:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Traveller");
-				glore.add(ChatColor.GREEN + " Every 20 unique blocks travelled, gain +0.1% speed.");
+				glore.add(ChatColor.GREEN + " Every 20 unique blocks travelled, gain +0.5% speed.");
 				glore.add(ChatColor.GREEN + "Resets on death.");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Traveller");
-				ylore.add(ChatColor.YELLOW + " Every 20 unique blocks travelled, gain +0.1% speed.");
+				ylore.add(ChatColor.YELLOW + " Every 20 unique blocks travelled, gain +0.5% speed.");
 				ylore.add(ChatColor.YELLOW + " Resets on death.");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Traveller");
-				rlore.add(ChatColor.RED + " Every 20 unique blocks travelled, gain +0.1% speed."); //TODO this is too op
+				rlore.add(ChatColor.RED + " Every 20 unique blocks travelled, gain +0.5% speed.");
 				rlore.add(ChatColor.RED + " Resets on death.");
 				break;
 			case 6:
@@ -162,13 +162,13 @@ public class ScoutTierMenu{
 				break;
 			case 8:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - Deal +5% damage while sprinting.");
+				glore.add(ChatColor.GREEN + " - Deal +20% damage while sprinting.");
 				glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.GREEN + "- Spirit Guard Enchantment - Tier III");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - Deal +5% damage while sprinting."); //TODO this isn't OP enough
+				ylore.add(ChatColor.YELLOW + " - Deal +20% damage while sprinting."); //TODO this isn't OP enough
 				ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.YELLOW + "- Spirit Guard Enchantment - Tier III");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - Deal +5% damage while sprinting.");
+				rlore.add(ChatColor.RED + " - Deal +20% damage while sprinting.");
 				rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.RED + "- Spirit Guard Enchantment - Tier III");
 				break;
 			case 9:

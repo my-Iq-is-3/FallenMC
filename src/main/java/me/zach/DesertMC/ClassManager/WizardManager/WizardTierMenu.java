@@ -78,24 +78,22 @@ public class WizardTierMenu {
 			switch (level) {
 			case 1:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - Full invisibility for 1s on kill.");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Magic Snack");
+				glore.add(ChatColor.GREEN + " - Invisibility & invulnerability for 2s on kill.");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - Full invisibility for 1s on kill.");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Magic Snack");
+				ylore.add(ChatColor.YELLOW + " - Full invisibility & invulnerability for 2s on kill.");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - Full invisibility for 1s on kill.");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Magic Snack");
+				rlore.add(ChatColor.RED + " - Full invisibility & invulnerability for 2s on kill.");
 				break;
-				
 			case 2:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Unlock the " + ChatColor.BOLD + "Wizard Shop.");
+				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Magic Snack");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Unlock the " + ChatColor.BOLD + "Wizard Shop.");
+				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Magic Snack");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Unlock the " + ChatColor.BOLD + "Wizard Shop.");
-				//add level 2 rewards
+				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Magic Snack");
 				break;
 			case 3:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");

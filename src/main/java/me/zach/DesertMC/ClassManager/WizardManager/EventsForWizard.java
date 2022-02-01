@@ -55,16 +55,8 @@ public class EventsForWizard implements Listener {
 
                 if (ConfigUtils.findClass(killer).equals("wizard") && ConfigUtils.getLevel("wizard", killer) > 1) {
                     for (Player player : killer.getWorld().getPlayers()) {
-
-
-                        if (player.getInventory().getHelmet() != null) {
-                            NBTItem helmet = new NBTItem(player.getInventory().getHelmet());
-                            if (NBTUtil.getCustomAttrString(helmet.getItem(), "ID").equalsIgnoreCase("SCOUT_GOGGLES")) {
-                                player.hidePlayer(killer);
-                            }
-                        } else {
-                            player.hidePlayer(killer);
-                        }
+                        if(!NBTUtil.getCustomAttrString(player.getInventory().getHelmet(), "ID").equals("SCOUT_GOGGLES"))
+                            player.hidePlayer(killer, false);
                     }
 
                     new BukkitRunnable() {
@@ -72,9 +64,7 @@ public class EventsForWizard implements Listener {
                         @Override
                         public void run() {
                             for (Player player : killer.getWorld().getPlayers()) {
-
-                                player.showPlayer(killer);
-
+                                if(!player.canSee(killer)) player.showPlayer(killer);
                             }
                         }
                     }.runTaskLater(DesertMain.getInstance, 40);

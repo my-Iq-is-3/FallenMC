@@ -18,6 +18,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.craftbukkit.v1_8_R3.scheduler.CraftScheduler;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.Inventory;
@@ -30,7 +31,9 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.bukkit.Note.*;
 
@@ -290,6 +293,22 @@ public class MiscUtils {
             return rank.c;
         }else return ChatColor.GRAY.toString();
     }
+
+    public static ArrayList<Location> getCircle(Location center, double radius, int amount) {
+        World world = center.getWorld();
+        double increment = 6.283185307179586D / (double)amount;
+        ArrayList<Location> locations = new ArrayList<>();
+
+        for(int i = 0; i < amount; ++i) {
+            double angle = (double)i * increment;
+            double x = center.getX() + radius * Math.cos(angle);
+            double z = center.getZ() + radius * Math.sin(angle);
+            locations.add(new Location(world, x, center.getY(), z));
+        }
+
+        return locations;
+    }
+
     public static boolean isCoolPerson(UUID uuid){
         return uuid.equals(UUID_DRMLEM) || uuid.equals(UUID_1IQ);
     }
@@ -299,6 +318,53 @@ public class MiscUtils {
         item.setCustomNameVisible(true);
         NBTEntity nbt = new NBTEntity(item);
         nbt.setString("OWNER", owner.getUniqueId().toString());
+    }
+
+    /**
+     * Floors the provided Location to its current block.
+     * @param location the Location to modify
+     * @return the modified Location
+     */
+    public static Location floorToBlockLocation(Location location){
+        location.setX(location.getBlockX());
+        location.setY(location.getBlockY());
+        location.setZ(location.getBlockZ());
+        return location;
+    }
+
+    private static final double INDICATOR_MIN_DISTANCE = 0.3;
+    private static final double INDICATOR_MAX_DISTANCE = 1.5;
+
+    public static void showIndicator(String content, Location center){
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        Location location = center.clone().add(randomWithRandomSign(INDICATOR_MIN_DISTANCE, INDICATOR_MAX_DISTANCE, random), random.nextDouble(INDICATOR_MIN_DISTANCE,INDICATOR_MAX_DISTANCE), randomWithRandomSign(INDICATOR_MIN_DISTANCE, INDICATOR_MAX_DISTANCE, random));
+        Hologram holo = new Hologram(content, location);
+        holo.create();
+        Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, holo::remove, 15);
+    }
+
+    public static double randomWithRandomSign(double origin, double bound){
+        return randomWithRandomSign(origin, bound, ThreadLocalRandom.current());
+    }
+
+    public static double randomWithRandomSign(double origin, double bound, ThreadLocalRandom random){
+        double original = random.nextDouble(origin, bound);
+        return random.nextBoolean() ? -original : original;
+    }
+
+    private static Field tickField;
+
+    static{
+        try{
+            tickField = Bukkit.getScheduler().getClass().getDeclaredField("currentTick");
+            tickField.setAccessible(true);
+        }catch(NoSuchFieldException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static int getCurrentTick() throws IllegalAccessException {
+        return tickField.getInt(Bukkit.getScheduler());
     }
 
     public static int getEmpties(Inventory inventory){

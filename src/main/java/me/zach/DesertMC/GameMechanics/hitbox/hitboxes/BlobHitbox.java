@@ -12,9 +12,11 @@ public class BlobHitbox implements Hitbox {
     public final List<Hitbox> hitboxes;
     public boolean isInside(Location l){
         for(Hitbox hitbox : hitboxes){
-            if(!hitbox.isInside(l)) return false;
+            if(hitbox.isInside(l)){
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     public Map<String, Object> serialize(){

@@ -7,9 +7,12 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -72,18 +75,12 @@ public class EventsForScout implements Listener {
         }
 
     }
-
-    public void t4Event(EntityDamageByEntityEvent event){
-        if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
-            Player damager = (Player) event.getDamager();
-            Player damaged = (Player) event.getEntity();
-            if(damaged.getHealth() - event.getDamage() < 0.1){
-
-                if(ConfigUtils.getLevel("scout",damager) > 4 && ConfigUtils.findClass(damager).equals("scout")){
-                    PotionEffect absorb = new PotionEffect(PotionEffectType.ABSORPTION,10000,0,true,false);
-                    damager.addPotionEffect(absorb);
-                }
-
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void t4Event(FallenDeathEvent event){
+        if(!event.isCancelled()){
+            Player damager = event.getKiller();
+            if(ConfigUtils.getLevel("scout", damager) > 4 && ConfigUtils.findClass(damager).equals("scout")){
+                PlayerUtils.addAbsorption(damager, 2);
             }
         }
     }
@@ -107,7 +104,7 @@ public class EventsForScout implements Listener {
         if(event.getDamager() instanceof Player){
             Player damager = (Player) event.getDamager();
             if(ConfigUtils.findClass(damager).equals("scout") && ConfigUtils.getLevel("scout",damager) > 8){
-                if(damager.isSprinting()) event.setDamage(event.getDamage() * 1.05);
+                if(damager.isSprinting()) event.setDamage(event.getDamage() * 1.2);
             }
         }
     }

@@ -43,11 +43,12 @@ public class HitboxCommand implements CommandExecutor, Listener {
                                     player.sendMessage(ChatColor.RED + "To close your active rectangle hitbox, give it a name with /hitbox rect <name>.");
                                     return true;
                                 }
-                                Hitbox hitbox = new BoxHitbox(hitboxAwait.get(player.getUniqueId()), player.getLocation());
+                                Location location = MiscUtils.floorToBlockLocation(player.getLocation());
+                                Hitbox hitbox = new BoxHitbox(hitboxAwait.get(player.getUniqueId()), location);
                                 checkoutHitbox(hitbox, args[1], player);
                             }else{
                                 player.sendMessage(ChatColor.GREEN + "Use /hitbox rect <name> at the next location.");
-                                hitboxAwait.put(player.getUniqueId(), player.getLocation());
+                                hitboxAwait.put(player.getUniqueId(), MiscUtils.floorToBlockLocation(player.getLocation()).add(1, 0, 1));
                             }
                         }else if(args[0].equalsIgnoreCase("sphere")){
                             if(args.length == 3){
@@ -84,7 +85,8 @@ public class HitboxCommand implements CommandExecutor, Listener {
                                         List<Hitbox> blobList = currentBlob.get(uuid).hitboxes;
                                         int size = blobList.size();
                                         if(size > 0){
-                                            blobList.remove(size - 1);
+                                            Hitbox removed = blobList.remove(size - 1);
+                                            player.sendMessage(ChatColor.GREEN + "Removed a " + removed.getClass().getSimpleName());
                                         }else player.sendMessage(ChatColor.RED + "Your current blob has no hitboxes!");
                                     }else player.sendMessage(ChatColor.RED + "You have no hitbox blob currently active.");
                                 }else if(args[1].equalsIgnoreCase("clear")){
@@ -93,7 +95,7 @@ public class HitboxCommand implements CommandExecutor, Listener {
                                         blobList.clear();
                                         player.sendMessage(ChatColor.GREEN + "Cleared contents of your current blob");
                                     }else player.sendMessage(ChatColor.RED + "You have no hitbox blob currently active.");
-                                }
+                                }else player.sendMessage(ChatColor.RED + "Usage: /hitbox blob <start|end|undo|clear> <start;name>");
                             }else player.sendMessage(ChatColor.RED + "Usage: /hitbox blob <start|end|undo|clear> <start;name>");
                         }
                     }else return false;

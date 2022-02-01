@@ -49,7 +49,6 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public static final HashMap<UUID, Block> stomperStage = new HashMap<>();
 	public static final Set<UUID> stomperCD = new HashSet<>();
 	public static final HashMap<UUID, String> snack = new HashMap<>();
-	public static final Set<UUID> eating = new HashSet<>();
 	public static final HashMap<UUID, HashMap<String, Double>> weightQueue = new HashMap<>();
 	public static final HashMap<UUID, Float> booster = new HashMap<>(); //TODO better booster system
 
@@ -65,8 +64,16 @@ public class DesertMain extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		Bukkit.getLogger().info("Attempting FallenMC onEnable");
-		library = new NPCLib(this);
 		getInstance = this;
+		library = new NPCLib(this);
+		ConfigurationSerialization.registerClass(SavedNPC.class);
+		ConfigurationSerialization.registerClass(BoxHitbox.class);
+		ConfigurationSerialization.registerClass(CircleHitbox.class);
+		ConfigurationSerialization.registerClass(BlobHitbox.class);
+		loadConfig();
+		HitboxManager.loadAll(this);
+		loadNPCs();
+		welcome = RankEvents.colorMessage(MiscUtils.ensureDefault("server.welcome", ChatColor.AQUA + "Welcome to FallenMC! We hope you'll have fun.", this));
 		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
@@ -76,16 +83,10 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(hitboxCommand, this);
 		PluginCommand command = getCommand("confirmreset");
 		command.setExecutor(new MilestonesUtil());
-		ConfigurationSerialization.registerClass(SavedNPC.class);
-		ConfigurationSerialization.registerClass(BoxHitbox.class);
-		ConfigurationSerialization.registerClass(CircleHitbox.class);
-		ConfigurationSerialization.registerClass(BlobHitbox.class);
-		loadConfig();
-		HitboxManager.loadAll(this);
-		loadNPCs();
-		welcome = RankEvents.colorMessage(MiscUtils.ensureDefault("server.welcome", ChatColor.AQUA + "Welcome to FallenMC! We hope you'll have fun.", this));
 		MilestonesOverride.addOverrides();
-		Events.check(this);
+		Events events = new Events();
+		Bukkit.getPluginManager().registerEvents(events, this);
+		events.check(this);
 		Bukkit.getLogger().info("FallenMC onEnable success!");
 	}
 
@@ -95,7 +96,6 @@ public class DesertMain extends JavaPlugin implements Listener {
 
 	private void registerEvents(Plugin p){
 		Bukkit.getConsoleSender().sendMessage("registering events...");
-		Bukkit.getPluginManager().registerEvents(new Events(), p);
 		Bukkit.getPluginManager().registerEvents(new RankEvents(p), p);
 		Bukkit.getPluginManager().registerEvents(new InvEvents(), p);
 		Bukkit.getPluginManager().registerEvents(EventsForWizard.INSTANCE, p);

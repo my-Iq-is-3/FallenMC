@@ -29,7 +29,7 @@ public class MilestonesUtil implements CommandExecutor {
     static{
         cosmetics.put(0, Cosmetic.EXPLOSION);
         cosmetics.put(1, Cosmetic.FLAMING_ARROWS);
-        cosmetics.put(2, Cosmetic.WATER_ARROWS);
+        cosmetics.put(2, Cosmetic.EVERYTHING);
         cosmetics.put(3, Cosmetic.DEATH_MESSAGES);
         cosmetics.put(4, Cosmetic.MUSICAL_ARROWS);
         cosmetics.put(5, Cosmetic.CUPID_ARROWS);
@@ -106,6 +106,14 @@ public class MilestonesUtil implements CommandExecutor {
         p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "EXP MILESTONES RESET!");
         if(cosmetic != null) cosmetic.grant(p);
         MilestonesInventory.RewardsItem.confirmationSound(p);
+        refreshExpBar(p);
+    }
+
+    public static void refreshExpBar(Player player){
+        MilestonesData data = MilestonesData.get(player);
+        int level = data.getLevel();
+        player.setLevel(level);
+        player.setExp(level >= 59 ? 0.99999999f : data.getCurrentProgress() / (float) data.getXpToNext());
     }
 
     @Override

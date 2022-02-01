@@ -13,7 +13,9 @@ import me.zach.DesertMC.ClassManager.TravellerEvents;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
+import me.zach.DesertMC.GameMechanics.hitbox.Hitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxListener;
+import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.ScoreboardManager.FScoreboardManager;
@@ -24,18 +26,18 @@ import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import me.zach.DesertMC.Utils.structs.Pair;
 import me.zach.DesertMC.anvil.FallenAnvilInventory;
 import me.zach.DesertMC.cosmetics.Cosmetic;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.artifacts.gui.inv.items.CreeperTrove;
 import me.zach.databank.saver.Key;
-import net.minecraft.server.v1_8_R3.EntityArrow;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftArrow;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
@@ -56,17 +58,22 @@ import xyz.fallenmc.risenboss.main.RisenMain;
 import xyz.fallenmc.risenboss.main.utils.RisenUtils;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
 public class Events implements Listener{
+	public static DecimalFormat DMG_FORMATTER = new DecimalFormat();
 	public static Set<UUID> invincible = new HashSet<>();
 	Plugin main = DesertMain.getInstance;
 	public static HashMap<UUID,Integer> ks = new HashMap<>();
 	public static HashMap<Integer, ItemStack> arrowArray = new HashMap<>();
 	static final HashMap<UUID, Float> blocking = new HashMap<>();
 	private CachedServerIcon nft = null;
+	static{
+		DMG_FORMATTER.setMaximumFractionDigits(1);
+	}
 	public Events(){
 		File serverDir = new File(".").getAbsoluteFile();
 		File nftFile = new File(serverDir, "nft.png");
@@ -103,7 +110,7 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void iceMelt(BlockFadeEvent event){
-		event.setCancelled(true);
+		if(event.getBlock().getType() != Material.FIRE) event.setCancelled(true);
 	}
 
 	@EventHandler
@@ -124,8 +131,7 @@ public class Events implements Listener{
 		}
 	}
 
-	public void attributeMod(EntityDamageByEntityEvent event){
-		Entity damaged = event.getDamager();
+	public void attackMod(EntityDamageByEntityEvent event){
 		ItemStack itemUsed = getItemUsed(event.getDamager());
 		if(event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK){
 			double damage = event.getDamage();
@@ -134,18 +140,23 @@ public class Events implements Listener{
 				float dmgMod = NBTUtil.getCustomAttrFloat(nbt, "ATTACK", 1);
 				if(dmgMod != 1) event.setDamage(damage * dmgMod);
 			}
-			if(damaged instanceof LivingEntity){
-				ItemStack[] armor = ((LivingEntity) damaged).getEquipment().getArmorContents();
-				float damagePercent = 100;
-				for(ItemStack item : armor){
-					if(item != null){
-						float defenseMod = NBTUtil.getCustomAttrFloat(item, "DEFENSE", 0);
-						damagePercent -= defenseMod;
-					}
+		}
+	}
+
+	public void defenseMod(EntityDamageEvent event){
+		Entity damaged = event.getEntity();
+		if(damaged instanceof LivingEntity){
+			double damage = event.getDamage();
+			ItemStack[] armor = ((LivingEntity) damaged).getEquipment().getArmorContents();
+			float damagePercent = 100;
+			for(ItemStack item : armor){
+				if(item != null){
+					float defenseMod = NBTUtil.getCustomAttrFloat(item, "DEFENSE", 0);
+					damagePercent -= defenseMod;
 				}
-				if(damagePercent != 100){
-					event.setDamage(damage * (damagePercent / 100));
-				}
+			}
+			if(damagePercent != 100){
+				event.setDamage(damage * (damagePercent / 100));
 			}
 		}
 	}
@@ -315,7 +326,8 @@ public class Events implements Listener{
 		return blocking.getOrDefault(uuid, 0f);
 	}
 
-	public static void check(DesertMain main){
+	Location coruPortalSpawn = ConfigUtils.getSpawn("corrupterPortalEntry");
+	public void check(DesertMain main){
 		new BukkitRunnable(){
 			int count = 0;
 			@Override
@@ -324,8 +336,7 @@ public class Events implements Listener{
 					count = 0;
 					for(Player p : Bukkit.getOnlinePlayers()){
 						UUID uuid = p.getUniqueId();
-						if(!DesertMain.eating.contains(uuid))
-							p.setFoodLevel(20);
+						p.setFoodLevel(20);
 						Location location = p.getLocation();
 						if(!PlayerUtils.fighting.containsKey(uuid))
 							PlayerUtils.fighting.put(uuid, 11);
@@ -343,37 +354,36 @@ public class Events implements Listener{
 						}
 					}
 				}
+				Hitbox coruPortal = HitboxManager.get("corrupterPortal");
 				for(Player p : Bukkit.getOnlinePlayers()){
 					UUID uuid = p.getUniqueId();
 					if(p.isBlocking()) blocking.put(uuid, getBlockingTime(uuid) + 0.05f);
 					else blocking.remove(uuid);
+					if(coruPortal != null){
+						if(coruPortal.isInside(p.getLocation())){
+							if(coruPortalSpawn == null){
+								coruPortalSpawn = ConfigUtils.getSpawn("corrupterPortalEntry");
+								if(coruPortalSpawn == null)
+									p.sendMessage(ChatColor.RED + "We couldn't teleport you because this portal's spawn is not yet set! Please tell an admin to run /setspawn corrupterPortalEntry");
+							}else{
+								p.teleport(coruPortalSpawn);
+								p.playSound(p.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
+							}
+						}
+					}
 				}
 				count++;
 			}
-		}.runTaskTimer(main,0,20);
+		}.runTaskTimer(main,0,1);
 	}
 
 	@EventHandler
 	public void eating(PlayerInteractEvent e) {
-		try {
-			if (e.getPlayer().getItemInHand().getType().equals(Material.COOKIE)) {
-				if (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-					e.getPlayer().setFoodLevel(19);
-					DesertMain.eating.add(e.getPlayer().getUniqueId());
-					new BukkitRunnable() {
-						public void run() {
-
-							e.getPlayer().setFoodLevel(20);
-							new BukkitRunnable() {
-								public void run() {
-									DesertMain.eating.remove(e.getPlayer().getUniqueId());
-								}
-							}.runTaskLater(DesertMain.getInstance, 10);
-						}
-					}.runTaskLater(DesertMain.getInstance, 60);
-				}
+		ItemStack item = e.getPlayer().getItemInHand();
+		if (item != null && NBTUtil.getCustomAttrString(item, "ID").endsWith("SNACK")) {
+			if (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+				e.getPlayer().setFoodLevel(19);
 			}
-		} catch (NullPointerException ignored) {
 		}
 	}
 
@@ -405,7 +415,7 @@ public class Events implements Listener{
 						return;
 					}
 					if (event.getEntity() instanceof Player) {
-						attributeMod(event);
+						attackMod(event);
 						if (DesertMain.ct1players.contains(event.getDamager().getUniqueId())) {
 							event.setDamage(event.getDamage() * 1.1);
 						}
@@ -422,9 +432,6 @@ public class Events implements Listener{
 
 						EventsForWizard.INSTANCE.wizardt8(event);
 						EventsForScout.getInstance().t1Event(event);
-						EventsForScout.getInstance().t4Event(event);
-
-						EventsForScout.getInstance().t8Event(event);
 						EventsForCorruptor.INSTANCE.volcanicSword(event);
 						EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
 						EventsForCorruptor.INSTANCE.corruptedSword(event);
@@ -435,6 +442,7 @@ public class Events implements Listener{
 						EventsForScout.getInstance().alert(event);
 						EventsForTank.getInstance().bludgeon(event);
 						EventsForScout.getInstance().scoutBlade((Player)event.getDamager(), (Player) event.getEntity());
+						EventsForScout.getInstance().t8Event(event);
 					}
 				travellerCoru(event);
 				travellerTank(event);
@@ -463,6 +471,80 @@ public class Events implements Listener{
 		if(event.getDamager() instanceof Arrow) arrowArray.remove(event.getDamager().getEntityId());
 	}
 
+	final Map<UUID, Pair<Integer, Integer>> portal = new HashMap<>(); //first: server tick when player entered portal, second: server tick when player last stepped in portal
+	Location wizardPortalSpawn = ConfigUtils.getSpawn("wizardPortalEntry");
+	private static final int PORTAL_TIME = 60;
+	private static final double PORTAL_CIRCLE_FACTOR = 9.0;
+	private static final int PORTAL_CIRCLE_DENSITY = 15;
+	private static final int PARTICLE_CHANGE_POINT = PORTAL_TIME - PORTAL_TIME / 4; //when the particles switch from the spiral effect to the line shoot effect
+	@EventHandler
+	public void portal(PlayerPortalEvent event) throws IllegalAccessException {
+		PlayerTeleportEvent.TeleportCause cause = event.getCause();
+		event.setCancelled(true);
+		if(cause == PlayerTeleportEvent.TeleportCause.END_PORTAL){
+			Player player = event.getPlayer();
+			UUID uuid = player.getUniqueId();
+			int tick = MiscUtils.getCurrentTick();
+			Pair<Integer, Integer> playerTick = portal.get(uuid);
+			if(playerTick == null){
+				portal.put(uuid, playerTick = new Pair<>(tick, tick));
+				new BukkitRunnable() {
+					public void run(){
+						if(portal.containsKey(uuid)){
+							int portalTicks = portal.get(uuid).second;
+							try{
+								if(MiscUtils.getCurrentTick() - portalTicks > 3){
+									portal.remove(uuid);
+									player.playSound(player.getLocation(), Sound.NOTE_BASS, 10, 0.9f);
+									cancel();
+								}
+							}catch(IllegalAccessException e){
+								e.printStackTrace();
+							}
+						}else cancel();
+					}
+				}.runTaskTimer(DesertMain.getInstance, 2, 2);
+			}else playerTick.second = tick;
+			int difference = playerTick.second - playerTick.first;
+			Location playerLoc = player.getLocation();
+			if(difference >= PORTAL_TIME){
+				portal.remove(uuid);
+				if(wizardPortalSpawn != null){
+					player.teleport(wizardPortalSpawn);
+					player.playSound(playerLoc, Sound.ENDERMAN_TELEPORT, 10, 1);
+					ParticleEffect.CLOUD.display(1, 1, 1, 0, 20, playerLoc, 75);
+				}else{
+					player.sendMessage(ChatColor.RED + "We couldn't teleport you as the portal spawn has not been set yet! Please tell an admin to run /setspawn wizardPortalEntry.");
+					player.playSound(playerLoc, Sound.VILLAGER_NO, 10, 1);
+					wizardPortalSpawn = ConfigUtils.getSpawn("wizardPortalEntry");
+				}
+			}else{
+				if(difference > PARTICLE_CHANGE_POINT){
+					if(wizardPortalSpawn != null){ //shoot a line of flames from the player to the corrupter biome spawn
+						Location loc = player.getEyeLocation();
+						double x = wizardPortalSpawn.getX() - loc.getX();
+						double y = wizardPortalSpawn.getY() - loc.getY();
+						double z = wizardPortalSpawn.getZ() - loc.getZ();
+						int points = (int) (playerLoc.distance(wizardPortalSpawn) * 2.5);
+						int step = (PORTAL_TIME - PARTICLE_CHANGE_POINT) - (PORTAL_TIME - difference) + 2;
+						x = x / points * step;
+						y = y / points * step;
+						z = z / points * step;
+						loc = loc.add(x, y, z);
+						ParticleEffect.FLAME.display(0, 0, 0, 0, 1, loc.add(x, y, z), 75);
+					}
+				}else{
+					double radius = (PORTAL_TIME - difference) / PORTAL_CIRCLE_FACTOR;
+					if(radius > 0){
+						List<Location> circle = MiscUtils.getCircle(playerLoc, radius, (int) (radius * PORTAL_CIRCLE_DENSITY));
+						ParticleEffect.FLAME.display(0, 0, 0, 0, 1, circle.get(difference % circle.size()), 50);
+						if(difference % 20 == 0)
+							player.playSound(playerLoc, Sound.NOTE_BASS, 10, 1 + (difference / 20f / 8));
+					}
+				}
+			}
+		}
+	}
 
 	public void executePreKill(EntityDamageByEntityEvent event) {
 		Player damager = getPlayer(event.getDamager());
@@ -494,7 +576,7 @@ public class Events implements Listener{
 			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_HELMET));
 
 			player.setFireTicks(0);
-			player.sendMessage(ChatColor.RED + "You were killed by " + (killer == null ? ChatColor.GRAY + "no one! (Seriously?)" : MiscUtils.getRankColor(killer) + killer.getName()) + ChatColor.RED + " and lost your streak of " + ChatColor.AQUA + ks.get(player.getUniqueId()));
+			player.sendMessage(ChatColor.RED + "You were killed by " + (killer == null ? ChatColor.GRAY + "no one! (seriously?)" : killer.getDisplayName()) + ChatColor.RED + " and lost your streak of " + ChatColor.AQUA + ks.get(player.getUniqueId()));
 			callOnKill(player, killer);
 			if(RisenUtils.isBoss(player.getUniqueId()))
 				RisenMain.currentBoss.endBoss(RisenBoss.EndReason.BOSS_VANQUISHED);
@@ -502,10 +584,9 @@ public class Events implements Listener{
 			ks.put(player.getUniqueId(), 0);
 			player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
 			if(killer == null) return;
-			Random random = ThreadLocalRandom.current();
+			ThreadLocalRandom random = ThreadLocalRandom.current();
 			int soulsgained = 0;
-			int randomCompare = 4;
-			if (random.nextInt(randomCompare) == 0){
+			if (random.nextDouble() <= 0.2){
 				try {
 					if(NBTUtil.getCustomAttrString(killer.getInventory().getChestplate(), "ID").equals("LUCKY_CHESTPLATE"))
 						soulsgained = 2;
@@ -519,13 +600,10 @@ public class Events implements Listener{
 					}
 				}
 			}
-			int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 10) + 5 + ks.get(player.getUniqueId()) * 5;
-
-			int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 15) + ks.get(player.getUniqueId()) * 3;
-
+			int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 50) + ks.get(player.getUniqueId()) * 5 + (random.nextInt(random.nextInt(40, 50), 200) * (Math.floorDiv(ks.get(killer.getUniqueId()), 2) + 1)) + 50;
+			int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 60) + ks.get(player.getUniqueId()) * 4 + (random.nextInt(random.nextInt(30, 40), 100) * (Math.floorDiv(ks.get(killer.getUniqueId()), 2) + 1)) + 50;
 			killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
-			ks.putIfAbsent(killer.getUniqueId(), 0);
-			ks.put(killer.getUniqueId(), ks.get(killer.getUniqueId()) + 1);
+			ks.put(killer.getUniqueId(), ks.getOrDefault(killer.getUniqueId(), 0) + 1);
 			killer.playSound(killer.getLocation(), Sound.LEVEL_UP, 1, 4);
 			killer.playSound(killer.getLocation(), Sound.BURP, 6, 1.3f);
 			killer.playSound(killer.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
@@ -551,11 +629,33 @@ public class Events implements Listener{
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onDamage(EntityDamageEvent event){
-		if (event instanceof EntityDamageByEntityEvent) return;
-		removeFallDMG(event);
-		executeUnexpectedKill(event);
+		if(!(event instanceof EntityDamageByEntityEvent)){
+			removeFallDMG(event);
+			executeUnexpectedKill(event);
+		}
+		defenseMod(event);
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void showMarker(EntityDamageEvent event){
+		double damage = event.getFinalDamage();
+		if(!event.isCancelled() && damage > 0){
+			boolean playerInvolved;
+			if(event instanceof EntityDamageByEntityEvent)
+				playerInvolved = ((EntityDamageByEntityEvent) event).getDamager() instanceof Player || event.getEntity() instanceof Player;
+			else playerInvolved = event.getEntity() instanceof Player;
+			if(playerInvolved){
+				String content = DMG_FORMATTER.format(damage);
+				if(damage > 15) content = ChatColor.RED + ChatColor.MAGIC.toString() + "A" + ChatColor.GOLD + ChatColor.BOLD + content + ChatColor.RED + ChatColor.MAGIC + "A";
+				else if(damage > 10) content = ChatColor.GOLD + ChatColor.BOLD.toString() + content;
+				else if(damage > 5) content = ChatColor.GOLD + content;
+				else content = ChatColor.GRAY + content;
+				Location center = event.getEntity().getLocation();
+				MiscUtils.showIndicator(content, center);
+			}
+		}
 	}
 
 	private static void callOnKill(Player player, Player killer) {
@@ -650,13 +750,8 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void healthRegen(EntityRegainHealthEvent e){
-		if(e.getEntity() instanceof Player && (e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED) || e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.REGEN) || e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.EATING))){
-			if(!DesertMain.eating.contains(e.getEntity().getUniqueId())){
-				DesertMain.eating.remove(e.getEntity().getUniqueId());
-				e.setCancelled(true);
-			}else {
-				if(Math.random() >= 0.666) e.setCancelled(true);
-			}
+		if(e.getEntity() instanceof Player && (e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED) || e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.EATING))){
+			e.setCancelled(true);
 		}
 	}
 
@@ -668,6 +763,7 @@ public class Events implements Listener{
 		if(rank != null)
 			event.setQuitMessage(rank.p.toString() + rank.c + " " + event.getPlayer().getName() + " just left. See you around!");
 		else event.setQuitMessage("");
+		portal.remove(event.getPlayer().getUniqueId());
 	}
 
 	@EventHandler
@@ -684,13 +780,14 @@ public class Events implements Listener{
 	}
 	@EventHandler
 	public void forKs(PlayerJoinEvent event){
-
 		ks.putIfAbsent(event.getPlayer().getUniqueId(), 0);
 	}
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
+		Location lobbySpawn = ConfigUtils.getSpawn("lobby");
+		p.teleport(lobbySpawn == null ? Bukkit.getWorlds().get(0).getSpawnLocation() : lobbySpawn);
 		UUID uuid = p.getUniqueId();
 		String blockNotifPath = "players." + uuid + ".blocknotifications";
 		e.getPlayer().sendMessage("working");
@@ -714,6 +811,7 @@ public class Events implements Listener{
 		}
 		if(main.getConfig().getBoolean(blockNotifPath))
 			TravellerEvents.blockNotifs.add(p.getUniqueId());
+		MilestonesUtil.refreshExpBar(p);
 	}
 
 	@EventHandler
@@ -787,7 +885,6 @@ public class Events implements Listener{
 				}
 			}
 		}catch(NullPointerException ignored){}
-
 	}
 
 	public void snackHit(EntityDamageByEntityEvent e) {

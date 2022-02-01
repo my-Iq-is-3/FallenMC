@@ -47,11 +47,11 @@ public class RankEvents implements Listener {
         }
 
         for(ChatColor color : ccList){
-            if(color.name().startsWith("DARK_")) colorShortcuts.put(color, "D" + color.name().replace("DARK_", "").charAt(0));
+            if(color.name().startsWith("DARK_") && !colorShortcuts.containsKey(color)) colorShortcuts.put(color, "D" + color.name().replace("DARK_", "").charAt(0));
         }
 
         for(ChatColor color : ccList){
-            if(color.name().startsWith("LIGHT_")) colorShortcuts.put(color, "L" + color.name().replace("LIGHT_", "").charAt(0));
+            if(color.name().startsWith("LIGHT_") && !colorShortcuts.containsKey(color)) colorShortcuts.put(color, "L" + color.name().replace("LIGHT_", "").charAt(0));
         }
 
         for(ChatColor color : ccList){
@@ -70,17 +70,13 @@ public class RankEvents implements Listener {
         Rank rank = data.getRank();
         if(rank != null){
             e.setMessage(colorMessage(e.getMessage()));
-            if(rank == Rank.COOWNER) e.setFormat(rank.c + "" + p.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
-            else e.setFormat(rank.c + p.getName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
+            e.setFormat(p.getDisplayName() + ChatColor.GRAY + ": " + ChatColor.RESET + e.getMessage());
         }else{
-            e.setFormat(ChatColor.GRAY + p.getName() + ": " + ChatColor.GRAY + e.getMessage());
+            e.setFormat(ChatColor.GRAY + p.getDisplayName() + ": " + ChatColor.GRAY + e.getMessage());
         }
-
         Prefix title = data.getTitle();
         String displayCase = MilestonesUtil.getDisplayCase(p);
-
         p.playSound(p.getLocation(), Sound.SHOOT_ARROW, 10, 1);
-
         e.setFormat(displayCase + ChatColor.DARK_GRAY + " | " + ChatColor.RESET +  e.getFormat());
         if(title != null) e.setFormat(title + "" + ChatColor.DARK_GRAY + " | " + ChatColor.RESET + e.getFormat());
     }
@@ -101,7 +97,7 @@ public class RankEvents implements Listener {
         return msg;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void giveRankTitle(PlayerJoinEvent e){
         Player p = e.getPlayer();
         Rank rank = ConfigUtils.getRank(p);

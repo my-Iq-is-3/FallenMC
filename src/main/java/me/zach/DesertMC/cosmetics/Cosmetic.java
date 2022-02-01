@@ -257,7 +257,7 @@ public enum Cosmetic {
     public final void grant(Player player){
         Set<Cosmetic> unlocked = CosmeticData.get(player.getUniqueId()).getUnlocked();
         if(unlocked.add(this)){
-            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "COSMETIC ACQUIRED! " + ChatColor.GREEN + "You got: " + this + "\n" + ChatColor.GRAY + "Select it with /cosmetics!");
+            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "COSMETIC ACQUIRED! " + ChatColor.GREEN + "You got: " + this + "\n" + ChatColor.GRAY + "Select it with /cosmetic set " + displayName);
         }else{
             int compensation = ThreadLocalRandom.current().nextInt(750, 2000);
             player.sendMessage(ChatColor.YELLOW + "Got duplicate cosmetic: " + this + ChatColor.GRAY + " (" + ChatColor.GREEN + "+" + compensation + " " + (compensation == 1 ? "Gem" : "Gems") + ChatColor.GRAY + ")");

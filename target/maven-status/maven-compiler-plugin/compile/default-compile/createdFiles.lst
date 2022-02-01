@@ -70,7 +70,6 @@ me/zach/DesertMC/Utils/ench/EnchantType$3.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ParticleColor.class
 me/zach/DesertMC/GameMechanics/EXPMilesstones/MilestonesInventory$RewardsItem.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ParticlePacket$PacketInstantiationException.class
-me/zach/DesertMC/GameMechanics/Events$2$1.class
 me/zach/DesertMC/Utils/MiscUtils$1.class
 me/zach/DesertMC/Utils/ench/CustomEnch$2.class
 me/zach/DesertMC/ClassManager/TankManager/EventsForTank$2.class
