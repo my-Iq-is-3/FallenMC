@@ -44,11 +44,11 @@ public class HitboxCommand implements CommandExecutor, Listener {
                                     return true;
                                 }
                                 Location location = MiscUtils.floorToBlockLocation(player.getLocation());
-                                Hitbox hitbox = new BoxHitbox(hitboxAwait.get(player.getUniqueId()), location.subtract(1, 1, 1));
+                                Hitbox hitbox = new BoxHitbox(hitboxAwait.get(player.getUniqueId()), location);
                                 checkoutHitbox(hitbox, args[1], player);
                             }else{
                                 player.sendMessage(ChatColor.GREEN + "Use /hitbox rect <name> at the next location.");
-                                hitboxAwait.put(player.getUniqueId(), MiscUtils.floorToBlockLocation(player.getLocation()).add(1, 0, 1));
+                                hitboxAwait.put(player.getUniqueId(), MiscUtils.floorToBlockLocation(player.getLocation()));
                             }
                         }else if(args[0].equalsIgnoreCase("sphere")){
                             if(args.length == 3){

@@ -492,26 +492,29 @@ public class Events implements Listener{
 					public void run(){
 						if(portal.containsKey(uuid)){
 							int portalTicks = portal.get(uuid).second;
-							try{
-								if(MiscUtils.getCurrentTick() - portalTicks > 3){
-									portal.remove(uuid);
-									player.playSound(player.getLocation(), Sound.NOTE_BASS, 10, 0.9f);
-									cancel();
+							if(portalTicks == -2){
+								portal.remove(player.getUniqueId()); //scrappy
+							}else{
+								try{
+									if(MiscUtils.getCurrentTick() - portalTicks > 3){
+										if(portal.remove(uuid) != null)
+											player.playSound(player.getLocation(), Sound.NOTE_BASS, 10, 0.9f);
+										cancel();
+									}
+								}catch(IllegalAccessException e){
+									e.printStackTrace();
 								}
-							}catch(IllegalAccessException e){
-								e.printStackTrace();
 							}
 						}else{
 							cancel();
 						}
 					}
-				}.runTaskTimer(DesertMain.getInstance, 2, 2);
+				}.runTaskTimer(DesertMain.getInstance, 2, 3);
 			}else playerTick.second = tick;
 			int difference = playerTick.second - playerTick.first;
 			Location playerLoc = player.getLocation().add(0, 1.1, 0);
 			if(difference >= PORTAL_TIME){
-				portal.remove(uuid);
-				System.out.println("removed");
+				playerTick.second = -2;
 				if(wizardPortalSpawn != null){
 					player.teleport(wizardPortalSpawn);
 					player.playSound(playerLoc, Sound.ENDERMAN_TELEPORT, 10, 1);
