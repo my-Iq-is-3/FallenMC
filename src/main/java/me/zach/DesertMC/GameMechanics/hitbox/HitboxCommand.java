@@ -44,7 +44,7 @@ public class HitboxCommand implements CommandExecutor, Listener {
                                     return true;
                                 }
                                 Location location = MiscUtils.floorToBlockLocation(player.getLocation());
-                                Hitbox hitbox = new BoxHitbox(hitboxAwait.get(player.getUniqueId()), location);
+                                Hitbox hitbox = new BoxHitbox(hitboxAwait.get(player.getUniqueId()), location.subtract(1, 1, 1));
                                 checkoutHitbox(hitbox, args[1], player);
                             }else{
                                 player.sendMessage(ChatColor.GREEN + "Use /hitbox rect <name> at the next location.");

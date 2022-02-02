@@ -501,14 +501,17 @@ public class Events implements Listener{
 							}catch(IllegalAccessException e){
 								e.printStackTrace();
 							}
-						}else cancel();
+						}else{
+							cancel();
+						}
 					}
 				}.runTaskTimer(DesertMain.getInstance, 2, 2);
 			}else playerTick.second = tick;
 			int difference = playerTick.second - playerTick.first;
-			Location playerLoc = player.getLocation().add(0, 1, 0);
+			Location playerLoc = player.getLocation().add(0, 1.1, 0);
 			if(difference >= PORTAL_TIME){
 				portal.remove(uuid);
+				System.out.println("removed");
 				if(wizardPortalSpawn != null){
 					player.teleport(wizardPortalSpawn);
 					player.playSound(playerLoc, Sound.ENDERMAN_TELEPORT, 10, 1);
