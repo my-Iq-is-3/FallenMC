@@ -221,8 +221,8 @@ public class MiscUtils {
     }
 
     public static void setPersistentCustomName(Entity entity, String name){
-        removePersistentCustomName(entity);
-        new Hologram(name, entity).create();
+        if(entity.getPassenger() instanceof ArmorStand) entity.getPassenger().setCustomName(name);
+        else new Hologram(name, entity).create();
     }
 
     public static void removePersistentCustomName(Entity entity){

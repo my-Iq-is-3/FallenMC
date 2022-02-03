@@ -494,6 +494,7 @@ public class Events implements Listener{
 							int portalTicks = portal.get(uuid).second;
 							if(portalTicks == -2){
 								portal.remove(player.getUniqueId()); //scrappy
+								cancel();
 							}else{
 								try{
 									if(MiscUtils.getCurrentTick() - portalTicks > 3){
@@ -510,6 +511,9 @@ public class Events implements Listener{
 						}
 					}
 				}.runTaskTimer(DesertMain.getInstance, 2, 3);
+			}else if(playerTick.second == -2){
+				portal.remove(player.getUniqueId());
+				return;
 			}else playerTick.second = tick;
 			int difference = playerTick.second - playerTick.first;
 			Location playerLoc = player.getLocation().add(0, 1.1, 0);

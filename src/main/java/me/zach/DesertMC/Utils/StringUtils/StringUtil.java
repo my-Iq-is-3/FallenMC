@@ -135,7 +135,7 @@ public class StringUtil{
      */
     public static String series(String... strings){
         if(strings.length == 0) return "";
-        else if(strings.length == 1) return strings[1];
+        else if(strings.length == 1) return strings[0];
         else if(strings.length == 2) return strings[0] + " and " + strings[1];
         else{
             int last = strings.length - 1;
@@ -161,10 +161,10 @@ public class StringUtil{
             wrapBuilder.append(strikethrough && bold ? color + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH : strikethrough ? color + ChatColor.STRIKETHROUGH.toString() : bold ? ChatColor.BOLD.toString() + color : color.toString());
             DefaultFontInfo fontInfo = DefaultFontInfo.getDefaultFontInfo(character);
             int length = bold ? fontInfo.getBoldLength() : fontInfo.getLength();
-            for(int i = 0; i<Math.floorDiv(MAX_CHAT_LENGTH, length); i += length){
+            for(int i = 0; length * (i + 1) < MAX_CHAT_LENGTH; i++){
                 wrapBuilder.append(character);
             }
-            wrapper = wrapBuilder.toString();
+            wrapper = getCenteredLine(wrapBuilder.toString());
         }
         
         public String wrap(String text){

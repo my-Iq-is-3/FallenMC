@@ -25,9 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 
 public class EventsForScout implements Listener {
-
     private static final EventsForScout INSTANCE = new EventsForScout();
-
     public static EventsForScout getInstance() {
         return INSTANCE;
     }
@@ -79,7 +77,7 @@ public class EventsForScout implements Listener {
     public void t4Event(FallenDeathEvent event){
         if(!event.isCancelled()){
             Player damager = event.getKiller();
-            if(ConfigUtils.getLevel("scout", damager) > 4 && ConfigUtils.findClass(damager).equals("scout")){
+            if(damager != null && ConfigUtils.getLevel("scout", damager) > 4 && ConfigUtils.findClass(damager).equals("scout")){
                 PlayerUtils.addAbsorption(damager, 2);
             }
         }
@@ -139,5 +137,4 @@ public class EventsForScout implements Listener {
             }
         }
     }
-
 }
