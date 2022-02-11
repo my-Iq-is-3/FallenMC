@@ -113,7 +113,7 @@ public class MilestonesInventory implements Listener {
             if(milestoneLevel == 58){
                 int resets = data.getResets();
                 reward = (resets + 1) + MiscUtils.getOrdinalSuffix(resets + 1) + " milestones reset";
-                lore.add(ChatColor.GRAY + "- Display case upgrade: " + MilestonesUtil.getDisplayCase(p) + ChatColor.GRAY + " ➞ " + MilestonesUtil.getDisplayCase(resets + 1, 0));
+                lore.add(ChatColor.GRAY + "- Display case upgrade: " + MilestonesUtil.getDisplayCase(p) + ChatColor.GRAY + " ➞ " + MilestonesUtil.getDisplayCase(resets + 1, 1));
                 if(MilestonesUtil.cosmetics.containsKey(resets)) lore.add(ChatColor.GRAY + "- New cosmetic: " + MilestonesUtil.cosmetics.get(resets).toString());
                 granter = (player, mLevel) -> false;
             }else{
@@ -124,7 +124,7 @@ public class MilestonesInventory implements Listener {
                 } else {
                     switch (milestoneLevel % 5) {
                         case (0):
-                            int gemsToGrant = 100 * (milestoneLevel / 5);
+                            int gemsToGrant = 500 * (milestoneLevel / 4);
                             reward = gemsToGrant + " Gems";
                             granter = (player, mLevel) -> {
                                 ConfigUtils.addGems(player, gemsToGrant);

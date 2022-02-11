@@ -177,13 +177,12 @@ public class ConfigUtils {
 		if(data.getXpToNext() <= data.getCurrentProgress() + amount){
 			int level = data.getLevel();
 			String[] levelUp = StringUtil.getCenteredMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "EXP MILESTONE!" + ChatColor.GREEN + " (" + ChatColor.GRAY + (level) + " ➞ " + ChatColor.GREEN + ChatColor.BOLD + (level + 1) + ChatColor.GREEN + ")", ChatColor.GREEN + "You completed level" + ChatColor.BOLD + " " + (level) + ChatColor.GREEN + "!");
-			String[] commandMessage = StringUtil.getCenteredMessage("Click here to view your milestones progression", "and claim rewards!");
+			String[] commandMessage = StringUtil.getCenteredMessage(ChatColor.YELLOW + "Click here to view your milestones progression", ChatColor.YELLOW + "and claim rewards!");
 			List<BaseComponent> components = new ArrayList<>();
-			for(String str : commandMessage){
-				components.addAll(Arrays.asList(TextComponent.fromLegacyText(str)));
+			for(String msg : commandMessage){
+				components.addAll(Arrays.asList(TextComponent.fromLegacyText(msg)));
 			}
 			TextComponent component = new TextComponent(components.toArray(new BaseComponent[0]));
-			component.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
 			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(net.md_5.bungee.api.ChatColor.GOLD + "Click to use /expmilestones").create()));
 			component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/expmilestones"));
 			player.sendMessage(StringUtil.ChatWrapper.HORIZONTAL_LINE + ChatColor.RESET.toString());
@@ -198,7 +197,7 @@ public class ConfigUtils {
 			data.setCurrentProgress(0);
 			if(newLevel >= 29) data.setXpToNext(data.getLevel() * 300);
 			else data.setXpToNext(data.getLevel() * 200);
-			if(newLevel == 59) player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "MILESTONES MAXED!" + ChatColor.GREEN + " Open the EXP Milestones inventory using /expmilestones and reset your milestones to gain a STAR, and a potential cosmetic!");
+			if(newLevel == 59) player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "MILESTONES MAXED!" + ChatColor.YELLOW + " Open the EXP Milestones inventory using /expmilestones and reset your milestones to gain a STAR, and a potential cosmetic!");
 			data.getUnclaimed().add(data.getLevel() - 1);
 			gexp(player, amount - (prevNext - prevProgress));
 		}else{

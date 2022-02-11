@@ -49,10 +49,12 @@ import org.bukkit.inventory.EnchantingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.CachedServerIcon;
+import org.bukkit.util.Vector;
 import xyz.fallenmc.risenboss.main.RisenBoss;
 import xyz.fallenmc.risenboss.main.RisenMain;
 import xyz.fallenmc.risenboss.main.utils.RisenUtils;
@@ -339,7 +341,7 @@ public class Events implements Listener{
 						p.setFoodLevel(20);
 						Location location = p.getLocation();
 						if(!PlayerUtils.fighting.containsKey(uuid))
-							PlayerUtils.fighting.put(uuid, 11);
+							PlayerUtils.fighting.put(uuid, 0);
 						int incombat = PlayerUtils.fighting.get(uuid);
 						if(incombat > 0) PlayerUtils.fighting.put(uuid, incombat - 1);
 						if(location.getBlock().getType().equals(Material.LAVA) || location.getBlock().getType().equals(Material.STATIONARY_LAVA)){
@@ -401,6 +403,7 @@ public class Events implements Listener{
 		try{
 			if(HitboxListener.isInCafe(event.getEntity().getLocation()) || HitboxListener.isInSpawn(event.getEntity().getLocation())) event.setCancelled(true);
 			if(event.isCancelled()) return;
+			if(event.getDamager().getUniqueId().equals(event.getEntity().getUniqueId())) return;
 			CreeperTrove.executeTrove(event);
 			if(event.getDamage() == 0) return;
 			for(CustomEnch ce : CustomEnch.values()){
@@ -427,7 +430,6 @@ public class Events implements Listener{
 						EventsForScout.getInstance().daggerHit(event);
 						EventsForCorruptor.INSTANCE.t8Event(event);
 						EventsForCorruptor.INSTANCE.noMercy(event);
-						EventsForCorruptor.INSTANCE.t1Event(event);
 						EventsForWizard.INSTANCE.wizardt4(event);
 
 						EventsForWizard.INSTANCE.wizardt8(event);
@@ -470,6 +472,7 @@ public class Events implements Listener{
 		executePreKill(event);
 		if(event.getDamager() instanceof Arrow) arrowArray.remove(event.getDamager().getEntityId());
 	}
+
 
 	final Map<UUID, Pair<Integer, Integer>> portal = new HashMap<>(); //first: server tick when player entered portal, second: server tick when player last stepped in portal
 	Location wizardPortalSpawn = ConfigUtils.getSpawn("wizardPortalEntry");
@@ -561,14 +564,17 @@ public class Events implements Listener{
 		if (event.getEntity() instanceof Player && damager != null) {
 			Player player = (Player) event.getEntity();
 			Player killer = getPlayer(event.getDamager());
-			for(CustomEnch ce : CustomEnch.values()){
-				ce.onKill(event);
-			}
-			if(player.getHealth() - event.getDamage() < 0.1){
+			if(event.getFinalDamage() >= player.getHealth()){
 				event.setCancelled(true);
 				executeKill(player, killer);
 			}
 		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void exp(PlayerExpChangeEvent event){
+		System.out.println(event.getAmount());
+		event.setAmount(0);
 	}
 
 	public static void executeKill(Player player, Player killer) {
@@ -586,7 +592,9 @@ public class Events implements Listener{
 			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_HELMET));
 
 			player.setFireTicks(0);
-			player.sendMessage(ChatColor.RED + "You were killed by " + (killer == null ? ChatColor.GRAY + "no one! (seriously?)" : killer.getDisplayName()) + ChatColor.RED + " and lost your streak of " + ChatColor.AQUA + ks.get(player.getUniqueId()));
+			String message = ChatColor.YELLOW + "You were killed by " + (killer == null ? "no one" + ChatColor.GRAY + " (seriously?)" : killer.getDisplayName()) + ChatColor.YELLOW + "!";
+			if(ks.get(player.getUniqueId()) > 2) message += ChatColor.GRAY + "\nYou lost your streak of " + ChatColor.GOLD + ks.get(player.getUniqueId()) + ChatColor.GRAY + ".";
+			player.sendMessage(message);
 			callOnKill(player, killer);
 			if(RisenUtils.isBoss(player.getUniqueId()))
 				RisenMain.currentBoss.endBoss(RisenBoss.EndReason.BOSS_VANQUISHED);
@@ -610,8 +618,8 @@ public class Events implements Listener{
 					}
 				}
 			}
-			int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 50) + ks.get(player.getUniqueId()) * 5 + (random.nextInt(random.nextInt(40, 50), 200) * (Math.floorDiv(ks.get(killer.getUniqueId()), 2) + 1)) + 50;
-			int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 60) + ks.get(player.getUniqueId()) * 4 + (random.nextInt(random.nextInt(30, 40), 100) * (Math.floorDiv(ks.get(killer.getUniqueId()), 2) + 1)) + 50;
+			int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 50) + ks.get(player.getUniqueId()) * 5 + ((random.nextInt(1, 3) * 25) * ks.get(player.getUniqueId()) + 15);
+			int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 60) + ks.get(player.getUniqueId()) * 4 + ((random.nextInt(2, 4) * 40) * ks.get(player.getUniqueId()) + 20);
 			killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
 			ks.put(killer.getUniqueId(), ks.getOrDefault(killer.getUniqueId(), 0) + 1);
 			killer.playSound(killer.getLocation(), Sound.LEVEL_UP, 1, 4);
@@ -631,7 +639,7 @@ public class Events implements Listener{
 			Player killer = Bukkit.getPlayer(uuid);
 			if(event.getEntity() instanceof Player){
 				Player player = (Player) event.getEntity();
-				if(player.getHealth() - event.getDamage() < 0.1){
+				if(event.getFinalDamage() >= player.getHealth()){
 					event.setCancelled(true);
 					executeKill(player, killer);
 				}
@@ -639,7 +647,7 @@ public class Events implements Listener{
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDamage(EntityDamageEvent event){
 		if(!(event instanceof EntityDamageByEntityEvent)){
 			removeFallDMG(event);
@@ -651,19 +659,22 @@ public class Events implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void showMarker(EntityDamageEvent event){
 		double damage = event.getFinalDamage();
-		if(!event.isCancelled() && damage > 0){
-			boolean playerInvolved;
-			if(event instanceof EntityDamageByEntityEvent)
-				playerInvolved = ((EntityDamageByEntityEvent) event).getDamager() instanceof Player || event.getEntity() instanceof Player;
-			else playerInvolved = event.getEntity() instanceof Player;
-			if(playerInvolved){
-				String content = DMG_FORMATTER.format(damage);
-				if(damage > 15) content = ChatColor.RED + ChatColor.MAGIC.toString() + "A" + ChatColor.GOLD + ChatColor.BOLD + content + ChatColor.RED + ChatColor.MAGIC + "A";
-				else if(damage > 10) content = ChatColor.GOLD + ChatColor.BOLD.toString() + content;
-				else if(damage > 5) content = ChatColor.GOLD + content;
-				else content = ChatColor.GRAY + content;
-				Location center = event.getEntity().getLocation();
-				MiscUtils.showIndicator(content, center);
+		if(event.getEntity() instanceof Damageable){
+			if(!event.isCancelled() && damage > 0 && (damage < 100 && !(((Damageable) event.getEntity()).getHealth() > damage))){
+				boolean playerInvolved;
+				if(event instanceof EntityDamageByEntityEvent)
+					playerInvolved = ((EntityDamageByEntityEvent) event).getDamager() instanceof Player || event.getEntity() instanceof Player;
+				else playerInvolved = event.getEntity() instanceof Player;
+				if(playerInvolved){
+					String content = DMG_FORMATTER.format(damage);
+					if(damage > 15)
+						content = ChatColor.RED + ChatColor.MAGIC.toString() + "A" + ChatColor.GOLD + ChatColor.BOLD + content + ChatColor.RED + ChatColor.MAGIC + "A";
+					else if(damage > 10) content = ChatColor.GOLD + ChatColor.BOLD.toString() + content;
+					else if(damage > 5) content = ChatColor.GOLD + content;
+					else content = ChatColor.GRAY + content;
+					Location center = event.getEntity().getLocation();
+					MiscUtils.showIndicator(content, center);
+				}
 			}
 		}
 	}
@@ -682,9 +693,6 @@ public class Events implements Listener{
 				}
 			}catch(NullPointerException ignored){}
 		}
-		Cosmetic dSelected = Cosmetic.getSelected(player, Cosmetic.CosmeticType.DEATH_EFFECT);
-		if(dSelected != null) dSelected.activateDeath(player);
-
 		if(TravellerEvents.travelled.containsKey(player.getUniqueId())) TravellerEvents.travelled.get(player.getUniqueId()).clear();
 		if(killer == null) return;
 		// ---------------------------------------------------------------------
@@ -707,8 +715,6 @@ public class Events implements Listener{
 
 
 		StreakPolice.onKill(killer);
-		Cosmetic kSelected = Cosmetic.getSelected(killer, Cosmetic.CosmeticType.KILL_EFFECT);
-		if(kSelected != null) kSelected.activateKill(player);
 
 		if(ks.get(killer.getUniqueId()) >= 50 && !RisenMain.alreadyUsed.contains(killer.getUniqueId())){
 			String[] classes = new String[]{Key.SCOUT, Key.CORRUPTER, Key.TANK, Key.WIZARD};
@@ -720,6 +726,21 @@ public class Events implements Listener{
 				 }
 			}
 			if(allClassesMaxed) RisenUtils.activateBossReady(killer);
+		}
+	}
+
+	@EventHandler
+	public void enchant(FallenDeathEvent event){
+		for(CustomEnch ce : CustomEnch.values()){
+			ce.onKill(event);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void cosmetic(FallenDeathEvent event){
+		if(!event.isCancelled()){
+			Cosmetic kSelected = Cosmetic.getSelected(event.getKiller(), Cosmetic.CosmeticType.KILL_EFFECT);
+			if(kSelected != null) kSelected.activateKill(event.getPlayer());
 		}
 	}
 
@@ -745,7 +766,8 @@ public class Events implements Listener{
 					}
 				}.runTaskTimer(DesertMain.getInstance, 0, 2);
 				player.sendMessage(ChatColor.YELLOW + "You rise from the ashes!\n" + ChatColor.DARK_GRAY + "Consumed 1 Death Defiance");
-				ParticleEffect.FLAME.display(1, 10, 1, 0.2f, 200, player.getLocation(), 15);
+				player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 50, 2));
+				ParticleEffect.FLAME.display(1, 10, 1, 0.1f, 200, player.getLocation(), 15);
 				player.setHealth(player.getMaxHealth() * 0.2);
 				invincible.add(player.getUniqueId());
 				new BukkitRunnable() {
@@ -770,8 +792,9 @@ public class Events implements Listener{
 		ks.put(event.getPlayer().getUniqueId(), 0);
 		MilestonesUtil.confirming.remove(event.getPlayer().getUniqueId());
 		Rank rank = ConfigUtils.getRank(event.getPlayer());
+		Prefix title = ConfigUtils.getSelectedTitle(event.getPlayer());
 		if(rank != null)
-			event.setQuitMessage(rank.p.toString() + rank.c + " " + event.getPlayer().getName() + " just left. See you around!");
+			event.setQuitMessage((title == null ? "" : title + " ") + event.getPlayer().getDisplayName() + " just left. See you around!");
 		else event.setQuitMessage("");
 		portal.remove(event.getPlayer().getUniqueId());
 	}
@@ -797,10 +820,10 @@ public class Events implements Listener{
 	public void onJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
 		Location lobbySpawn = ConfigUtils.getSpawn("lobby");
-		p.teleport(lobbySpawn == null ? Bukkit.getWorlds().get(0).getSpawnLocation() : lobbySpawn);
+		p.teleport(lobbySpawn);
+		p.setVelocity(new Vector(0, 0, 0));
 		UUID uuid = p.getUniqueId();
 		String blockNotifPath = "players." + uuid + ".blocknotifications";
-		e.getPlayer().sendMessage("working");
 		if(!(main.getConfig().contains("players." + uuid))) {
 			main.getConfig().createSection("players." + uuid);
 			//init block notifications

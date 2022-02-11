@@ -24,10 +24,19 @@ public enum Cosmetic {
     EXPLOSION("Explosion Kill Effect", Material.TNT,  ChatColor.YELLOW + "Explode your enemies for the ultimate revenge!", CosmeticType.KILL_EFFECT){
         @Override
         public void activateKill(Player player){
-            ParticleEffect.EXPLOSION_LARGE.display(0f, 0f, 0f, 1, 10, player.getLocation(), 75);
+            ParticleEffect.EXPLOSION_NORMAL.display(0.5f, 0.5f, 0.5f, 0, 8, player.getLocation(), 75);
+            player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 10, 1.15f);
         }
     },
-    EMERALD_TRAIL("Emerald Sparkle Arrow Trail", Material.EMERALD_ORE, ChatColor.YELLOW + "A green, sparkling trail that follows your arrows for some extra style!", CosmeticType.ARROW_TRAIL, ChatColor.WHITE + "Unlocked with the purchase of " + ChatColor.GREEN + "SUPPORTER" + ChatColor.WHITE + "rank"){
+    LIGHTNING_STRIKE("Thor's Wrath", Material.IRON_AXE, ChatColor.YELLOW + "Your enemies feel the ultimate wrath of Thor raining down them as they perish.", CosmeticType.KILL_EFFECT){
+        final Color FIREWORK_COLOR = Color.fromRGB(255, 153, 0);
+        @Override
+        public void activateKill(Player player){
+            MiscUtils.spawnFirework(player.getLocation(), 0, false, false, FireworkEffect.Type.BALL, FIREWORK_COLOR);
+            player.getWorld().strikeLightningEffect(player.getLocation());
+        }
+    },
+    EMERALD_TRAIL("Emerald Sparkle Arrow Trail", Material.EMERALD_ORE, ChatColor.YELLOW + "A green, sparkling trail that follows your arrows for some extra style!", CosmeticType.ARROW_TRAIL, ChatColor.WHITE + "Unlocked with the purchase of " + ChatColor.GREEN + "SUPPORTER" + ChatColor.WHITE + " rank"){
         public void activateArrow(Arrow arrow, boolean fast){
             new BukkitRunnable() {
                 @Override
@@ -93,21 +102,6 @@ public enum Cosmetic {
                     }
                 }
             }.runTaskTimer(DesertMain.getInstance, 0, 1);
-        }
-    },
-
-    DEATH_MESSAGES("Death Messages", Material.MAP,  ChatColor.YELLOW + "Displays a random message to other players at the spot that you died!", CosmeticType.DEATH_EFFECT, true){
-        public void activateDeath(Player player){
-            ArmorStand stand = (ArmorStand) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
-            stand.setVisible(true);
-            stand.setMarker(true);
-            stand.setCustomName(deathMessages.get(ThreadLocalRandom.current().nextInt(deathMessages.size())));
-            new BukkitRunnable(){
-                @Override
-                public void run() {
-                    stand.remove();
-                }
-            }.runTaskLater(pl, 40);
         }
     },
     WATER_ARROWS("Water Arrows", Material.WATER_BUCKET, ChatColor.YELLOW + "Your arrows drip water as they whiz past your opponent!", CosmeticType.ARROW_TRAIL) {
@@ -225,8 +219,6 @@ public enum Cosmetic {
             noteColors[i] = new ParticleEffect.NoteColor(i * 3);
         }
     }
-
-
 
     static class CosmeticActivationException extends IllegalArgumentException{
         CosmeticActivationException(String message){super(message);}
@@ -356,7 +348,6 @@ public enum Cosmetic {
     public enum CosmeticType{
         PARTICLE_EFFECT("Particle Effect"),
         KILL_EFFECT("Kill Effect"),
-        DEATH_EFFECT("Death Effect"),
         STREAK_EFFECT("Streak Effect"),
         ARROW_TRAIL("Arrow Trail");
         public String displayName;

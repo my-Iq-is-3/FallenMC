@@ -43,12 +43,12 @@ public class HitboxCommand implements CommandExecutor, Listener {
                                     player.sendMessage(ChatColor.RED + "To close your active rectangle hitbox, give it a name with /hitbox rect <name>.");
                                     return true;
                                 }
-                                Location location = MiscUtils.floorToBlockLocation(player.getLocation());
+                                Location location = MiscUtils.roundLocation(player.getLocation());
                                 Hitbox hitbox = new BoxHitbox(hitboxAwait.get(player.getUniqueId()), location);
                                 checkoutHitbox(hitbox, args[1], player);
                             }else{
                                 player.sendMessage(ChatColor.GREEN + "Use /hitbox rect <name> at the next location.");
-                                hitboxAwait.put(player.getUniqueId(), MiscUtils.floorToBlockLocation(player.getLocation()));
+                                hitboxAwait.put(player.getUniqueId(), MiscUtils.roundLocation(player.getLocation()));
                             }
                         }else if(args[0].equalsIgnoreCase("sphere")){
                             if(args.length == 3){

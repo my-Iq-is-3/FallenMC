@@ -4,12 +4,14 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 public class EventsForTank implements Listener {
     public static EventsForTank getInstance(){
@@ -144,30 +147,26 @@ public class EventsForTank implements Listener {
                 if(!DesertMain.stomperStage.containsKey(clicker.getUniqueId())){
                     DesertMain.stomperStage.put(clicker.getUniqueId(), e.getClickedBlock());
                 }else if(DesertMain.stomperStage.get(clicker.getUniqueId()).equals(e.getClickedBlock())){
-                    Player closest = null;
+                    Damageable closest = null;
                     for(Player player : e.getClickedBlock().getWorld().getPlayers()){
                         if(closest == null){
                             if(clicker.getLocation().distance(player.getLocation()) <= 7 && !player.getUniqueId().equals(clicker.getUniqueId())){
                                 closest = player;
                             }
-                        }
-                        else{
+                        }else{
                             if(clicker.getLocation().distance(player.getLocation()) < clicker.getLocation().distance(closest.getLocation()) && clicker.getLocation().distance(player.getLocation()) <= 7 && !player.getUniqueId().equals(clicker.getUniqueId())){
-                                closest = player;
+                                closest = MiscUtils.canDamage(player);
                             }
                         }
                     }
                     if(closest != null) {
                         DesertMain.stomperCD.add(clicker.getUniqueId());
                         DesertMain.stomperStage.remove(clicker.getUniqueId());
-                        clicker.sendMessage(ChatColor.GOLD + "Damaged " + ChatColor.RED + closest.getName() + " for 4 damage!");
+                        clicker.sendMessage(ChatColor.GOLD + "Damaged " + ChatColor.RED + closest.getName() + ChatColor.GOLD + " for 4 true damage!");
                         clicker.playSound(clicker.getLocation(), Sound.ENDERDRAGON_HIT, 10, 1);
-                        if(closest.getHealth() <= 4){
-                            Events.executeKill(closest, clicker);
-                        }else{
-                            closest.setHealth(closest.getHealth() - 4);
-                            closest.setVelocity(closest.getVelocity().setY(2));
-                        }
+                        PlayerUtils.trueDamage(closest, 4, clicker);
+                        Vector velocity = closest.getVelocity();
+                        closest.setVelocity(velocity.setY(velocity.getY() + 2));
                         new BukkitRunnable() {
                             public void run() {
                                 DesertMain.stomperCD.remove(clicker.getUniqueId());

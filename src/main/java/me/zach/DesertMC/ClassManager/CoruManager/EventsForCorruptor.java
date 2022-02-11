@@ -7,6 +7,7 @@ import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
+import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -38,30 +39,20 @@ public class EventsForCorruptor implements Listener {
             }
         }
     }
+    @EventHandler
+    public void t1Event(FallenDeathEvent event) {
+        Player damager = event.getKiller();
+        if (ConfigUtils.getLevel("corrupter", damager) > 1 && ConfigUtils.findClass(damager).equals("corrupter")) {
+            DesertMain.ct1players.add(damager.getUniqueId());
+            new BukkitRunnable() {
 
-    public void t1Event(EntityDamageByEntityEvent event) {
-        PlayerInteractEvent event1;
-        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
-            Player damaged = (Player) event.getEntity();
-            Player damager = (Player) event.getDamager();
-            if (damaged.getHealth() - event.getDamage() < 0.1) {
-
-                if (ConfigUtils.getLevel("corrupter", damager) > 1 && ConfigUtils.findClass(damager).equals("corrupter")) {
-                    DesertMain.ct1players.add(damager.getUniqueId());
-                    new BukkitRunnable() {
-
-                        @Override
-                        public void run() {
-
-                            DesertMain.ct1players.remove(damager.getUniqueId());
-                        }
-
-                    }.runTaskLater(DesertMain.getInstance, 60);
+                @Override
+                public void run() {
+                    DesertMain.ct1players.remove(damager.getUniqueId());
                 }
 
-            }
+            }.runTaskLater(DesertMain.getInstance, 60);
         }
-
     }
 
     public void volcanicSword(EntityDamageByEntityEvent event) {

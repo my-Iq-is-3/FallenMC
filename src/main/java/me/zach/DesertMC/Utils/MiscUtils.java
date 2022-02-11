@@ -13,6 +13,9 @@ import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.structs.Pair;
 import me.zach.DesertMC.holo.Hologram;
+import net.minecraft.server.v1_8_R3.AttributeInstance;
+import net.minecraft.server.v1_8_R3.AttributeModifier;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -81,7 +84,7 @@ public class MiscUtils {
         fireworkMeta.setPower(power);
         firework.setFireworkMeta(fireworkMeta);
         if(power == 0){
-            Bukkit.getScheduler().runTask(DesertMain.getInstance, firework::detonate);
+            Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, firework::detonate, 2);
         }
         return firework;
     }
@@ -323,14 +326,14 @@ public class MiscUtils {
     }
 
     /**
-     * Floors the provided Location to its current block.
+     * Rounds the provided Location to the nearest whole x, y, and z.
      * @param location the Location to modify
      * @return the modified Location
      */
-    public static Location floorToBlockLocation(Location location){
-        location.setX(location.getBlockX());
-        location.setY(location.getBlockY());
-        location.setZ(location.getBlockZ());
+    public static Location roundLocation(Location location){
+        location.setX(Math.round(location.getX()));
+        location.setY(Math.round(location.getY()));
+        location.setZ(Math.round(location.getZ()));
         return location;
     }
 

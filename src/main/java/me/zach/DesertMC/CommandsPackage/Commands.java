@@ -21,6 +21,7 @@ import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
+import me.zach.DesertMC.cosmetics.CosmeticData;
 import me.zach.DesertMC.shops.ShopInventory;
 import me.zach.DesertMC.shops.ShopItem;
 import me.zach.DesertMC.cosmetics.Cosmetic;
@@ -43,6 +44,7 @@ public class Commands implements Listener, CommandExecutor {
 	Set<UUID> soulsCd = new HashSet<>();
 	Set<UUID> gemsCd = new HashSet<>();
 	Set<UUID> expCd = new HashSet<>();
+	final StringUtil.ChatWrapper COSMETIC_WRAPPER = new StringUtil.ChatWrapper('=', ChatColor.GOLD, true, true);
 	static final long GEMS_COOLDOWN_TICKS = 30 * 20 * 60; //30m
 	static final long SOULS_COOLDOWN_TICKS = 15 * 20 * 60; //15m
 	static final long BOOSTER_EXPIRATION_TICKS = 45 * 20 * 60; //45m
@@ -51,7 +53,8 @@ public class Commands implements Listener, CommandExecutor {
 	static{
 		ArrayList<String> colorsList = new ArrayList<>();
 		colorsList.add(ChatColor.GREEN + "With your rank, you can"  + ChatColor.YELLOW + " include " + ChatColor.AQUA + "colors " + ChatColor.GREEN + "in your messages!");
-		colorsList.add("Placing a color code in your messages will make any text after that color code your color!");
+		colorsList.add("Placing a color code in your messages will make any");
+		colorsList.add("text after that color code your color!");
 		colorsList.add(ChatColor.GRAY + "Colors:");
 		for(String name : RankEvents.friendlyCC.keySet()){
 			ChatColor color = RankEvents.friendlyCC.get(name);
@@ -181,7 +184,7 @@ public class Commands implements Listener, CommandExecutor {
 								toSet.grant(player);
 								toSet.select(player);
 							}else{
-								player.sendMessage(ChatColor.RED + "You haven't unlocked that cosmetic yet! To see your unlocked cosmetics and more, type /cosmetic to open the menu!");
+								player.sendMessage(ChatColor.RED + "You haven't unlocked that cosmetic yet!");
 							}
 						}else player.sendMessage(ChatColor.RED + "That cosmetic doesn't exist!");
 					}else if(args[0].equalsIgnoreCase("grant")){
@@ -198,13 +201,39 @@ public class Commands implements Listener, CommandExecutor {
 							Cosmetic selected = Cosmetic.getSelected(player, type);
 							String name = ChatColor.DARK_GRAY + "None";
 							if (selected != null) name = selected.displayName;
-							cList.add(ChatColor.AQUA + "  Selected " + type.displayName + ": " + ChatColor.GOLD + name);
+							cList.add(ChatColor.AQUA + " Selected " + type.displayName + ": " + ChatColor.GOLD + name);
 						}
-						StringUtil.ChatWrapper wrapper = new StringUtil.ChatWrapper('=', ChatColor.GOLD, true, true);
-						StringUtil.sendUncenteredWrappedMessage(player, wrapper, String.join("\n", cList));
+						String msg = COSMETIC_WRAPPER.wrap(StringUtil.mergeLinesWithoutColorsCarrying(cList));
+						player.sendMessage(msg);
+					}else if(args[0].equalsIgnoreCase("unlocked")){
+						Set<Cosmetic> unlocked = CosmeticData.get(player).getUnlocked();
+						if(unlocked.isEmpty()) player.sendMessage(ChatColor.YELLOW + "You haven't unlocked any cosmetics yet.");
+						else{
+							//sort cosmetics into different categories for each cosmetic type and send that to the player
+							Cosmetic.CosmeticType[] types = Cosmetic.CosmeticType.values();
+							List<Cosmetic>[] unlockedSorted = new List[types.length];
+							for(Cosmetic cosmetic : unlocked){
+								List<Cosmetic> bin = unlockedSorted[cosmetic.cosmeticType.ordinal()];
+								if(bin == null)
+									unlockedSorted[cosmetic.cosmeticType.ordinal()] = bin = new ArrayList<>();
+								bin.add(cosmetic);
+							}
+							List<String> message = new ArrayList<>();
+							message.add(StringUtil.getCenteredLine(ChatColor.GREEN + "Your unlocked cosmetics"));
+							for(int i = 0, unlockedSortedLength = unlockedSorted.length; i < unlockedSortedLength; i++){
+								message.add(ChatColor.YELLOW + " " + MiscUtils.makePlural(types[i].toString()) + ":");
+								List<Cosmetic> cosmetics = unlockedSorted[i];
+								if(cosmetics == null || cosmetics.isEmpty()) message.add(ChatColor.GRAY + "  " + StringUtil.BULLET + " None");
+								else{
+									for(Cosmetic cosmetic : cosmetics)
+										message.add(ChatColor.GRAY + "  " + StringUtil.BULLET + " " + cosmetic);
+								}
+							}
+							player.sendMessage(COSMETIC_WRAPPER.wrap(StringUtil.mergeLinesWithoutColorsCarrying(message)));
+						}
 					}
 				}else{
-					player.sendMessage(ChatColor.RED + "Invalid Usage! " + ChatColor.YELLOW + "Type /cosmetic to open the menu." + ChatColor.DARK_GRAY + "\nAdditionally, you can use the non-menu command: /cosmetic <set|list> <cosmetic to set>");
+					player.sendMessage(ChatColor.RED + "Invalid Usage! /cosmetic <set|list|unlocked> <cosmetic to set>");
 				}
 				return true;
 			}

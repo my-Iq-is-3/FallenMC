@@ -45,9 +45,9 @@ public class PlayerUtils implements Listener {
             }
         }
         if(victim.getHealth() <= dmg){
-            victim.damage(999, damager);
+            victim.damage(99999, damager);
         }else{
-            victim.damage(dmg, damager);
+            victim.setHealth(victim.getHealth() - dmg);
         }
     }
 }

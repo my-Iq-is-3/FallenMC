@@ -48,6 +48,8 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Maven: com.comphenix.protocol:ProtocolLib:4.7.0" level="project" />
+    <orderEntry type="library" name="Maven: net.bytebuddy:byte-buddy:1.11.0" level="project" />
     <orderEntry type="module-library">
       <library name="Maven: xyz.fallenmc:Databank:1.0">
         <CLASSES>

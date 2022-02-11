@@ -25,16 +25,16 @@ public class MilestonesUtil implements CommandExecutor {
     private static final List<ChatColor> starColors = Arrays.asList(ChatColor.YELLOW, ChatColor.BLUE, ChatColor.GREEN, ChatColor.LIGHT_PURPLE, ChatColor.DARK_GREEN, ChatColor.AQUA, ChatColor.DARK_AQUA, ChatColor.GOLD);
     public static final HashMap<Integer, Cosmetic> cosmetics = new HashMap<>();
     public static final Set<UUID> confirming = new HashSet<>();
-    public static final char STAR = '✪';
+    public static final char STAR = '\u272A';
     static{
         cosmetics.put(0, Cosmetic.EXPLOSION);
         cosmetics.put(1, Cosmetic.FLAMING_ARROWS);
         cosmetics.put(2, Cosmetic.EVERYTHING);
-        cosmetics.put(3, Cosmetic.DEATH_MESSAGES);
-        cosmetics.put(4, Cosmetic.MUSICAL_ARROWS);
-        cosmetics.put(5, Cosmetic.CUPID_ARROWS);
-        cosmetics.put(6, Cosmetic.WATER_ARROWS);
-        cosmetics.put(7, Cosmetic.RAINBOW);
+        cosmetics.put(3, Cosmetic.MUSICAL_ARROWS);
+        cosmetics.put(4, Cosmetic.CUPID_ARROWS);
+        cosmetics.put(5, Cosmetic.WATER_ARROWS);
+        cosmetics.put(6, Cosmetic.RAINBOW);
+        cosmetics.put(7, Cosmetic.LIGHTNING_STRIKE);
     }
 
     public static String getDisplayCase(Player player){
@@ -74,7 +74,7 @@ public class MilestonesUtil implements CommandExecutor {
         }else msgCompiler.add(ChatColor.GREEN.toString());
         TextComponent component = new TextComponent(TextComponent.fromLegacyText("Click to confirm your reset."));
         String displayCase = getDisplayCase(player);
-        String newCase = getDisplayCase(resets + 1, 0);
+        String newCase = getDisplayCase(resets + 1, 1);
         msgCompiler.add(Arrays.toString(StringUtil.getCenteredMessage(ChatColor.GRAY + "Display case upgrade: " + displayCase + ChatColor.DARK_GRAY + " ➞ " + newCase)));
         if(cosmetics.containsKey(resets))
             msgCompiler.add(Arrays.toString(StringUtil.getCenteredMessage(ChatColor.GOLD + "Cosmetic: " + cosmetics.get(resets))));
@@ -84,8 +84,8 @@ public class MilestonesUtil implements CommandExecutor {
         String bold = net.md_5.bungee.api.ChatColor.BOLD.toString();
         component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(yellow + "This will be your " + bold + (resets + 1) + MiscUtils.getOrdinalSuffix(resets + 1) + yellow + " reset.")));
         StringUtil.ChatWrapper wrapper = StringUtil.ChatWrapper.HORIZONTAL_LINE;
-        player.sendMessage(wrapper + "\n" + String.join("\n", msgCompiler));
         component.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
+        player.sendMessage(wrapper + "\n" + String.join("\n", msgCompiler));
         player.spigot().sendMessage(component);
         player.sendMessage("\n" + wrapper);
         confirming.add(player.getUniqueId());

@@ -7,6 +7,7 @@ import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
+import me.zach.DesertMC.events.FallenDeathEvent;
 import me.zach.databank.DBCore;
 import me.zach.databank.saver.Key;
 import me.zach.databank.saver.PlayerData;
@@ -324,7 +325,7 @@ public enum CustomEnch implements Listener {
 
     public void onHit(EntityDamageByEntityEvent event){}
 
-    public void onKill(EntityDamageByEntityEvent event){}
+    public void onKill(FallenDeathEvent event){}
 
     public void onShoot(ProjectileLaunchEvent event){}
 

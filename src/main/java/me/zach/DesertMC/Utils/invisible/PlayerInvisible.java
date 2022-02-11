@@ -1,24 +1,25 @@
 package me.zach.DesertMC.Utils.invisible;
 
-import net.minecraft.server.v1_8_R3.ItemStack;
-import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityEquipment;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListeningWhitelist;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.PacketListener;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.Utils.packet.wrappers.WrapperPlayServerEntityEquipment;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.UUID;
-
-import static org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack.asNMSCopy;
 
 public class PlayerInvisible implements Listener {
     public PlayerInvisible(Player player, Plugin plugin){
@@ -28,32 +29,60 @@ public class PlayerInvisible implements Listener {
 
     Plugin plugin;
     UUID uuid;
+    int entityId = getPlayer().getEntityId();
     boolean invisible = false;
+    PacketListener listener = new PacketListener() {
+        final ListeningWhitelist whitelist = ListeningWhitelist.newBuilder().types(WrapperPlayServerEntityEquipment.TYPE).build();
+        public void onPacketSending(PacketEvent event){
+            PacketContainer packet = event.getPacket();
+            if(invisible && packet.getType().equals(WrapperPlayServerEntityEquipment.TYPE)){
+                WrapperPlayServerEntityEquipment wrapper = new WrapperPlayServerEntityEquipment(packet);
+                if(wrapper.getEntityID() == entityId){
+                    wrapper.setItem(null);
+                    event.setPacket(wrapper.getHandle());
+                }
+            }
+        }
+
+        public void onPacketReceiving(PacketEvent event){
+
+        }
+
+        public ListeningWhitelist getSendingWhitelist(){
+            return whitelist;
+        }
+
+        public ListeningWhitelist getReceivingWhitelist(){
+            return null;
+        }
+
+        public Plugin getPlugin(){
+            return DesertMain.getInstance;
+        }
+    };
 
     public void setInvisible(boolean invisible){
         Player player = getPlayer();
         if(this.invisible != invisible){
             this.invisible = invisible;
+            WrapperPlayServerEntityEquipment[] packets = equipmentPackets(player, invisible);
             if(invisible){
-                player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 255, false, false));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE - 1000, 255, false, false));
                 Bukkit.getPluginManager().registerEvents(this, plugin);
+                sendPackets(packets);
+                ProtocolLibrary.getProtocolManager().addPacketListener(listener);
             }else{
                 player.removePotionEffect(PotionEffectType.INVISIBILITY);
                 HandlerList.unregisterAll(this);
-            }
-            PacketPlayOutEntityEquipment[] packets = equipmentPackets(player, invisible);
-            for(Player otherPlayer : Bukkit.getOnlinePlayers()){
-                sendPackets(packets, otherPlayer);
+                ProtocolLibrary.getProtocolManager().removePacketListener(listener);
+                sendPackets(packets);
             }
         }
     }
 
     @EventHandler
-    public void invisOnJoin(PlayerJoinEvent event){
-        Player joined = event.getPlayer();
-        if(!joined.getUniqueId().equals(uuid) && invisible){
-            sendPackets(equipmentPackets(this.getPlayer(), true), joined);
-        }
+    public void removeRenew(PlayerQuitEvent event){
+        setInvisible(false);
     }
 
     public boolean isInvisible(){
@@ -68,24 +97,28 @@ public class PlayerInvisible implements Listener {
         return uuid;
     }
 
-    private void sendPackets(Packet<?>[] packets, Player player){
+    private void sendPackets(WrapperPlayServerEntityEquipment[] packets, Player player){
+        for(WrapperPlayServerEntityEquipment packet : packets){
+            packet.sendPacket(player);
+        }
+    }
+
+    private void sendPackets(WrapperPlayServerEntityEquipment[] packets){
         for(Player otherPlayer : Bukkit.getOnlinePlayers()){
-            for(Packet<?> packet : packets){
-                ((CraftPlayer) otherPlayer).getHandle().playerConnection.sendPacket(packet);
+            if(!otherPlayer.getUniqueId().equals(uuid)){
+                sendPackets(packets, otherPlayer);
             }
         }
     }
 
-    private PacketPlayOutEntityEquipment[] equipmentPackets(Player player, boolean clear){
+    private WrapperPlayServerEntityEquipment[] equipmentPackets(Player player, boolean clear){
         PlayerInventory inv = player.getInventory();
-        //used constructor PacketPlayOutEntityEquipment(entity id, equipment slot (0 - held, 1 - boots, 2 - leggings, 3 - chestplate, 4 - helmet), item)
-        //learn more about 1.8 minecraft protocol @ https://wiki.vg/index.php?title=Protocol&oldid=7368
-        int eid = player.getEntityId();
-        return new PacketPlayOutEntityEquipment[]{
-                new PacketPlayOutEntityEquipment(eid, 1, clear ? null : asNMSCopy(inv.getBoots())),
-                new PacketPlayOutEntityEquipment(eid, 2, clear ? null : asNMSCopy(inv.getLeggings())),
-                new PacketPlayOutEntityEquipment(eid, 3, clear ? null : asNMSCopy(inv.getChestplate())),
-                new PacketPlayOutEntityEquipment(eid, 4, clear ? null : asNMSCopy(inv.getHelmet()))
+        return new WrapperPlayServerEntityEquipment[]{
+                WrapperPlayServerEntityEquipment.create(entityId, EnumWrappers.ItemSlot.MAINHAND, clear ? null : inv.getItemInHand()),
+                WrapperPlayServerEntityEquipment.create(entityId, EnumWrappers.ItemSlot.FEET, clear ? null : inv.getBoots()),
+                WrapperPlayServerEntityEquipment.create(entityId, EnumWrappers.ItemSlot.LEGS, clear ? null : inv.getLeggings()),
+                WrapperPlayServerEntityEquipment.create(entityId, EnumWrappers.ItemSlot.CHEST, clear ? null : inv.getChestplate()),
+                WrapperPlayServerEntityEquipment.create(entityId, EnumWrappers.ItemSlot.HEAD, clear ? null : inv.getHelmet())
         };
     }
 }

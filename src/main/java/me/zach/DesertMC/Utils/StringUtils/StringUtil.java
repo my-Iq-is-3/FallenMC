@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class StringUtil{
+    public static final char BULLET = '\u2022';
     public static final int LORE_LENGTH = 30;
     public static List<String> wrapLore(String string){
         StringBuilder sb = new StringBuilder(string);
@@ -45,7 +46,9 @@ public class StringUtil{
      * @author @SirSpoodles
      */
     public static String getCenteredLine(String message){
-        if(message == null || message.isEmpty()) return message;
+        if(message == null) return message;
+        message = message.trim();
+        if(message.isEmpty()) return message;
         int messagePxSize = 0;
         boolean previousCode = false;
         boolean isBold = false;
@@ -67,12 +70,12 @@ public class StringUtil{
         int toCompensate = CENTER_PX - halvedMessageSize;
         int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
         int compensated = 0;
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(ChatColor.RESET.toString());
         while(compensated < toCompensate){
             sb.append(" ");
             compensated += spaceLength;
         }
-        return sb + message + sb;
+        return sb + message + sb + ChatColor.RESET;
     }
 
     private static String[] getCenteredMessage(ChatWrapper wrapper, String... lines){
@@ -81,9 +84,8 @@ public class StringUtil{
             messageBuilder.add(getCenteredLine(message));
         }
         if(wrapper != null){
-            String centeredWrapper = getCenteredLine(wrapper.toString());
-            messageBuilder.add(0, centeredWrapper);
-            messageBuilder.add(centeredWrapper);
+            messageBuilder.add(0, wrapper.toString());
+            messageBuilder.add(wrapper.toString());
         }
         return messageBuilder.toArray(new String[0]);
     }
@@ -126,6 +128,10 @@ public class StringUtil{
             default:
                 return clazz;
         }
+    }
+
+    public static String mergeLinesWithoutColorsCarrying(Iterable<String> lines){
+        return String.join("\n" + ChatColor.RESET,  lines);
     }
 
     /**
