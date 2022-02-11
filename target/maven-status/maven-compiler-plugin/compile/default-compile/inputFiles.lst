@@ -4,6 +4,7 @@
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/DesertMain.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/Particle/ReflectionUtils.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/RankUtils/Rank.java
+/Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/packet/wrappers/AbstractPacket.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/hitbox/HitboxCommand.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/ClassManager/TankManager/TankTierMenu.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/ClassManager/ClassSelector.java
@@ -13,6 +14,7 @@
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/npcs/Kothy.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/PlayerUtils.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/CommandsPackage/Commands.java
+/Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/packet/wrappers/WrapperPlayServerEntityEquipment.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/StringUtils/StringUtil.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/MiscUtils.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/ActionBar/ActionBar.java
