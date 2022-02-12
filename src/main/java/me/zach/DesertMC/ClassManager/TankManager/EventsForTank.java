@@ -7,6 +7,7 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -14,6 +15,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -29,35 +31,28 @@ public class EventsForTank implements Listener {
         return new EventsForTank();
     }
 
-
-    public void t1Event(EntityDamageByEntityEvent event){
-        if(event.getDamager() instanceof Player){
-            Player damager = (Player) event.getDamager();
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void t1Event(FallenDeathEvent event){
+        if(!event.isCancelled()){
+            Player damager = event.getKiller();
             if(ConfigUtils.findClass(damager).equals("tank") && ConfigUtils.getLevel("tank",damager) > 1){
-                if(event.getEntity() instanceof Player){
-                    Player damagedEntity = (Player) event.getEntity();
-                    if(damagedEntity.getHealth() - event.getDamage() < 0.1){
-                        PotionEffectType type = PotionEffectType.DAMAGE_RESISTANCE;
-                        PotionEffect respot = new PotionEffect(type, 80, 0);
-                        damager.addPotionEffect(respot,true);
-                    }
-                }
+                PotionEffectType type = PotionEffectType.DAMAGE_RESISTANCE;
+                PotionEffect respot = new PotionEffect(type, 80, 0);
+                damager.addPotionEffect(respot,true);
             }
         }
 
     }
-
-    public void t5Event(EntityDamageByEntityEvent event){
-        if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
-            Player damager = (Player) event.getDamager();
-            Player damaged = (Player) event.getEntity();
-            if(damaged.getHealth() - event.getDamage() < 0.1){
-                if(ConfigUtils.findClass(damager).equals("tank") && ConfigUtils.getLevel("tank",damaged) > 4){
-                    PotionEffect vengance = new PotionEffect(PotionEffectType.WEAKNESS,40 ,3 );
-                    PotionEffect slow = new PotionEffect(PotionEffectType.SLOW,40 , 0);
-                    damager.addPotionEffect(vengance);
-                    damager.addPotionEffect(slow);
-                }
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void t5Event(FallenDeathEvent event){
+        if(!event.isCancelled()){
+            Player damager = event.getKiller();
+            Player damaged = event.getPlayer();
+            if(ConfigUtils.findClass(damaged).equals("tank") && ConfigUtils.getLevel("tank",damaged) > 5){
+                PotionEffect vengance = new PotionEffect(PotionEffectType.WEAKNESS,40 ,3);
+                PotionEffect slow = new PotionEffect(PotionEffectType.SLOW,40, 0);
+                damager.addPotionEffect(vengance, true);
+                damager.addPotionEffect(slow);
             }
         }
     }

@@ -55,30 +55,23 @@ public class EventsForScout implements Listener {
             }
         }
     }
-    
-    public void t1Event(EntityDamageByEntityEvent event){
-        if(event.getDamager() instanceof Player){
-            Player damager = (Player) event.getDamager();
-            if(ConfigUtils.findClass(damager).equals("scout") && ConfigUtils.getLevel("scout",damager) > 1){
-                if(event.getEntity() instanceof Player){
-                    Player damagedEntity = (Player) event.getEntity();
-                    if(damagedEntity.getHealth() - event.getDamage() < 0.1){
-                        PotionEffectType type = PotionEffectType.SPEED;
-                        PotionEffect speedpot = new PotionEffect(type, 80, 0);
-                        damager.addPotionEffect(speedpot,true);
-
-                    }
-                }
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void t1Event(FallenDeathEvent event){
+        Player damager = event.getKiller();
+        if(!event.isCancelled()){
+            if(ConfigUtils.findClass(damager).equals("scout") && ConfigUtils.getLevel("scout", damager) > 1){
+                PotionEffectType type = PotionEffectType.SPEED;
+                PotionEffect speedpot = new PotionEffect(type, 80, 0);
+                damager.addPotionEffect(speedpot, true);
             }
         }
-
     }
     @EventHandler(priority = EventPriority.MONITOR)
     public void t4Event(FallenDeathEvent event){
         if(!event.isCancelled()){
             Player damager = event.getKiller();
             if(damager != null && ConfigUtils.getLevel("scout", damager) > 4 && ConfigUtils.findClass(damager).equals("scout")){
-                PlayerUtils.addAbsorption(damager, 2);
+                PlayerUtils.addAbsorption(damager, 4);
             }
         }
     }

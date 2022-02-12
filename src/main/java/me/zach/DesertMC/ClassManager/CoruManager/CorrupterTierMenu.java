@@ -179,12 +179,12 @@ public class CorrupterTierMenu {
 			case 8:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- No Mercy Enchantment - Tier III");
-				glore.add(ChatColor.GREEN + " - Deal +5% damage.");
+				glore.add(ChatColor.GREEN + " - Deal +15% damage.");
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- No Mercy Enchantment - Tier III");
-				ylore.add(ChatColor.YELLOW + " - Deal +5% damage.");
+				ylore.add(ChatColor.YELLOW + " - Deal +15% damage.");
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - Deal +5% damage.");
+				rlore.add(ChatColor.RED + " - Deal 15% damage.");
 				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- No Mercy Enchantment - Tier III");
 				break;
 			case 9:

@@ -1,5 +1,6 @@
 package me.zach.DesertMC.Utils;
 
+import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.artifacts.gui.inv.ArtifactData;
@@ -45,7 +46,8 @@ public class PlayerUtils implements Listener {
             }
         }
         if(victim.getHealth() <= dmg){
-            victim.damage(99999, damager);
+            if(victim instanceof Player) Events.executeKill((Player) victim, damager instanceof Player ? (Player) damager : null);
+            else victim.setHealth(0);
         }else{
             victim.setHealth(victim.getHealth() - dmg);
         }

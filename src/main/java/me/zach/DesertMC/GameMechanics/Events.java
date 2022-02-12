@@ -33,6 +33,7 @@ import me.zach.DesertMC.events.FallenDeathEvent;
 import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.artifacts.gui.inv.items.CreeperTrove;
 import me.zach.databank.saver.Key;
+import me.zach.databank.saver.PlayerData;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
@@ -57,6 +58,7 @@ import org.bukkit.util.CachedServerIcon;
 import org.bukkit.util.Vector;
 import xyz.fallenmc.risenboss.main.RisenBoss;
 import xyz.fallenmc.risenboss.main.RisenMain;
+import xyz.fallenmc.risenboss.main.abilities.RisenAbility;
 import xyz.fallenmc.risenboss.main.utils.RisenUtils;
 
 import java.io.File;
@@ -344,8 +346,9 @@ public class Events implements Listener{
 							PlayerUtils.fighting.put(uuid, 0);
 						int incombat = PlayerUtils.fighting.get(uuid);
 						if(incombat > 0) PlayerUtils.fighting.put(uuid, incombat - 1);
+						PlayerData data = ConfigUtils.getData(p);
 						if(location.getBlock().getType().equals(Material.LAVA) || location.getBlock().getType().equals(Material.STATIONARY_LAVA)){
-							if(ConfigUtils.findClass(p).equals("corrupter") && ConfigUtils.getLevel("corrupter", p) > 7){
+							if(data.getCurrentClass().equals("corrupter") && data.getCorL() > 7){
 								if(p.getHealth() + 0.5 <= p.getMaxHealth()){
 									p.setHealth(p.getHealth() + 0.5);
 								}else if(p.getHealth() + 0.5 > p.getMaxHealth()){
@@ -353,6 +356,9 @@ public class Events implements Listener{
 								}
 								ParticleEffect.VILLAGER_HAPPY.display(1, 1, 1, 0, 50, location, 10);
 							}
+						}
+						if(data.getCurrentClass().equals("tank") && data.getTankL() > 5){
+							ParticleEffect.SPELL_WITCH.display(0, 1, 0, 1, 1, MiscUtils.indicatorLocation(location), 75);
 						}
 					}
 				}
@@ -372,6 +378,10 @@ public class Events implements Listener{
 								p.playSound(p.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
 							}
 						}
+					}
+					PlayerData data = ConfigUtils.getData(p);
+					if(p.getHealth() / p.getMaxHealth() < 0.25 && data.getArtifactData().magS()){
+						p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,10,0), true);
 					}
 				}
 				count++;
@@ -430,15 +440,10 @@ public class Events implements Listener{
 						EventsForScout.getInstance().daggerHit(event);
 						EventsForCorruptor.INSTANCE.t8Event(event);
 						EventsForCorruptor.INSTANCE.noMercy(event);
-						EventsForWizard.INSTANCE.wizardt4(event);
 
 						EventsForWizard.INSTANCE.wizardt8(event);
-						EventsForScout.getInstance().t1Event(event);
-						EventsForCorruptor.INSTANCE.volcanicSword(event);
 						EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
 						EventsForCorruptor.INSTANCE.corruptedSword(event);
-						EventsForTank.getInstance().t1Event(event);
-						EventsForTank.getInstance().t5Event(event);
 						EventsForTank.getInstance().t8Event(event);
 						EventsForTank.getInstance().fortify(event);
 						EventsForScout.getInstance().alert(event);
@@ -453,6 +458,7 @@ public class Events implements Listener{
 		}catch(NullPointerException ex){
 			ex.printStackTrace();
 		}
+
 		if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
 			Player damager = (Player) event.getDamager();
 			PlayerUtils.setFighting(damager);
@@ -470,7 +476,13 @@ public class Events implements Listener{
 			}
 		}
 		executePreKill(event);
-		if(event.getDamager() instanceof Arrow) arrowArray.remove(event.getDamager().getEntityId());
+		if(event.getDamager() instanceof Arrow)
+			arrowArray.remove(event.getDamager().getEntityId());
+	}
+
+	@EventHandler
+	public void explosionCancel(ExplosionPrimeEvent event){
+		event.setCancelled(true);
 	}
 
 
@@ -592,8 +604,8 @@ public class Events implements Listener{
 			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_HELMET));
 
 			player.setFireTicks(0);
-			String message = ChatColor.YELLOW + "You were killed by " + (killer == null ? "no one" + ChatColor.GRAY + " (seriously?)" : killer.getDisplayName()) + ChatColor.YELLOW + "!";
-			if(ks.get(player.getUniqueId()) > 2) message += ChatColor.GRAY + "\nYou lost your streak of " + ChatColor.GOLD + ks.get(player.getUniqueId()) + ChatColor.GRAY + ".";
+			String message = killer != null ? ChatColor.GRAY + "You were killed by " + killer.getDisplayName() + ChatColor.YELLOW + "." : ChatColor.YELLOW + "You died.";
+			if(ks.get(player.getUniqueId()) > 5) message += ChatColor.GRAY + "\nYour streak of " + ChatColor.AQUA + ks.get(player.getUniqueId()) + ChatColor.RED + " was lost!";
 			player.sendMessage(message);
 			callOnKill(player, killer);
 			if(RisenUtils.isBoss(player.getUniqueId()))

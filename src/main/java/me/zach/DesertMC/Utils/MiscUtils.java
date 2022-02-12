@@ -341,11 +341,19 @@ public class MiscUtils {
     private static final double INDICATOR_MAX_DISTANCE = 1.5;
 
     public static void showIndicator(String content, Location center){
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        Location location = center.clone().add(randomWithRandomSign(INDICATOR_MIN_DISTANCE, INDICATOR_MAX_DISTANCE, random), random.nextDouble(INDICATOR_MIN_DISTANCE,INDICATOR_MAX_DISTANCE), randomWithRandomSign(INDICATOR_MIN_DISTANCE, INDICATOR_MAX_DISTANCE, random));
+        Location location = indicatorLocation(center);
         Hologram holo = new Hologram(content, location);
         holo.create();
         Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, holo::remove, 15);
+    }
+
+    /**
+     *
+     * @return A location randomly deviated slightly from the center, ideal for a player.
+     */
+    public static Location indicatorLocation(Location center){
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        return center.clone().add(randomWithRandomSign(INDICATOR_MIN_DISTANCE, INDICATOR_MAX_DISTANCE, random), random.nextDouble(INDICATOR_MIN_DISTANCE,INDICATOR_MAX_DISTANCE), randomWithRandomSign(INDICATOR_MIN_DISTANCE, INDICATOR_MAX_DISTANCE, random));
     }
 
     public static double randomWithRandomSign(double origin, double bound){

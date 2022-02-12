@@ -12,6 +12,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -54,55 +55,44 @@ public class EventsForCorruptor implements Listener {
             }.runTaskLater(DesertMain.getInstance, 60);
         }
     }
-
-    public void volcanicSword(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-            Player killer = (Player) event.getDamager();
-            Player killed = (Player) event.getEntity();
-            if (killed.getHealth() - event.getDamage() < 0.1) {
-                if (!killer.getInventory().getItemInHand().getType().equals(Material.AIR)) {
-                    ItemStack item = killer.getInventory().getItemInHand();
-                    if (NBTUtil.getCustomAttrString(item, "ID").equals("VOLCANIC_SWORD")) {
-                        if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
-                            if (((Events.ks.get(killer.getUniqueId()) + 1) % 5) == 0) {
-                                for (Entity near : Bukkit.getOnlinePlayers()) {
-                                    if (near.getLocation().distance(killer.getLocation()) <= 5 && !near.equals(killer)) {
-                                        Location nearloc = near.getLocation();
-                                        Location eLoc = killer.getLocation();
-                                        Location newLoc = nearloc.subtract(eLoc);
-                                        Vector newV = newLoc.toVector().normalize().multiply(1.4);
-                                        newV.setY(2);
-                                        near.setVelocity(newV);
-                                        ParticleEffect.FLAME.display(0.5f,0.5f,0.5f,0.3f,100,killer.getLocation(),100);
-                                    }
-                                }
-                            }
-                        }else{
-                            killer.sendMessage(ChatColor.RED + "You are not high enough level to use this!");
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void volcanicSword(FallenDeathEvent event) {
+        Player killer = event.getKiller();
+        ItemStack item = killer.getInventory().getItemInHand();
+        if (!event.isCancelled() && NBTUtil.getCustomAttrString(item, "ID").equals("VOLCANIC_SWORD")) {
+            if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
+                if (((Events.ks.get(killer.getUniqueId()) + 1) % 5) == 0) {
+                    for (Entity near : Bukkit.getOnlinePlayers()) {
+                        if (near.getLocation().distance(killer.getLocation()) <= 5 && !near.equals(killer)) {
+                            Location nearloc = near.getLocation();
+                            Location eLoc = killer.getLocation();
+                            Location newLoc = nearloc.subtract(eLoc);
+                            Vector newV = newLoc.toVector().normalize().multiply(1.4);
+                            newV.setY(2);
+                            near.setVelocity(newV);
+                            ParticleEffect.FLAME.display(0.5f,0.5f,0.5f,0.3f,100,killer.getLocation(),100);
                         }
                     }
                 }
-
+            }else{
+                killer.sendMessage(ChatColor.RED + "You are not a high enough level to use this!");
             }
         }
     }
 
     public void noMercy(EntityDamageByEntityEvent event){
-        if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
+        if(!event.isCancelled() && event.getDamager() instanceof Player && event.getEntity() instanceof Player){
             Player damager = (Player) event.getDamager();
             Player damaged = (Player) event.getEntity();
-            if(damaged.getHealth() - event.getDamage() < 0.1){
-                if(damager.getInventory().getItemInHand().getType() != Material.AIR) {
-                    if (ConfigUtils.getLevel("corrupter", damager) > 6 && ConfigUtils.findClass(damager).equals("corrupter")) {
-                        ItemStack heldItemStack = damager.getInventory().getItemInHand();
-                        NBTItem hnbt = new NBTItem(heldItemStack);
-
-                        if (hnbt.getCompound("CustomAttributes").getCompound("enchantments") != null) {
-                            NBTCompound hnbtc = hnbt.getCompound("CustomAttributes").getCompound("enchantments");
-                            int nomercylvl = hnbtc.getInteger("no_mercy");
-                            if (nomercylvl > 0) {
-                                event.setDamage(damaged.getHealth()/damaged.getMaxHealth()<=0.5 ? ((2*nomercylvl)/100f)*event.getDamage() : event.getDamage());
-                            }
+            if(damager.getInventory().getItemInHand() != null && damager.getInventory().getItemInHand().getType() != Material.AIR) {
+                if (ConfigUtils.getLevel("corrupter", damager) > 6 && ConfigUtils.findClass(damager).equals("corrupter")) {
+                    ItemStack heldItemStack = damager.getInventory().getItemInHand();
+                    NBTItem hnbt = new NBTItem(heldItemStack);
+                    if (hnbt.getCompound("CustomAttributes").getCompound("enchantments") != null) {
+                        NBTCompound hnbtc = hnbt.getCompound("CustomAttributes").getCompound("enchantments");
+                        int nomercylvl = hnbtc.getInteger("no_mercy");
+                        if (nomercylvl > 0) {
+                            event.setDamage(damaged.getHealth()/damaged.getMaxHealth()<=0.5 ? (1 + 0.03 * nomercylvl) * event.getDamage() : event.getDamage());
                         }
                     }
                 }
@@ -114,7 +104,7 @@ public class EventsForCorruptor implements Listener {
         if(event.getDamager() instanceof Player){
             Player damager = (Player) event.getDamager();
             if(ConfigUtils.getLevel("corrupter",damager) > 8 && ConfigUtils.findClass(damager).equals("corrupter")){
-                event.setDamage(event.getDamage() * 1.05);
+                event.setDamage(event.getDamage() * 1.15);
             }
         }
     }
@@ -127,7 +117,6 @@ public class EventsForCorruptor implements Listener {
         new BukkitRunnable(){
             public void run(){
                 hf.remove(e.getUniqueId());
-                e.setFireTicks(0);
             }
         }.runTaskLater(DesertMain.getInstance, duration);
     }

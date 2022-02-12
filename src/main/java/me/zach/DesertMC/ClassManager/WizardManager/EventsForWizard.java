@@ -8,6 +8,7 @@ import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,6 +16,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
@@ -145,7 +147,7 @@ public class EventsForWizard implements Listener {
     @EventHandler
     public void wizardBlade(PlayerInteractAtEntityEvent e){
         try{
-            if(new NBTItem(e.getPlayer().getItemInHand()).getCompound("CustomAttributes").getString("ID").equals("WIZARD_BLADE")){
+            if(NBTUtil.getCustomAttrString(e.getPlayer().getItemInHand(), "ID").equals("WIZARD_BLADE")){
                 NBTItem bladeNbt = new NBTItem(e.getPlayer().getItemInHand());
                 if(e.getRightClicked() instanceof Player) {
                     if (bladeNbt.getCompound("CustomAttributes").getInteger("CHARGE") != 0) {
@@ -183,58 +185,26 @@ public class EventsForWizard implements Listener {
     }
 
 //  Stun
-    public void wizardt4(EntityDamageByEntityEvent event){
-        if(event.getEntity() instanceof Player){
-            Player killed = (Player) event.getEntity();
-            if(killed.getHealth() - event.getDamage() < 0.1){
-                if(event.getDamager() instanceof Arrow){
-                    Arrow arrow = (Arrow) event.getDamager();
-                    Player killer = (Player) arrow.getShooter();
-                    if(ConfigUtils.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.getLevel("wizard",killed) > 4){
-                        double random = (Math.random() * 100) + 1;
-                        if(random <= 10){
-                            killer.addPotionEffect(new PotionEffect(PotionEffectType.SLOW,60,10));
-                            killer.playSound(killer.getLocation(), Sound.ANVIL_BREAK,1f,2f);
-                            PotionEffect poison = new PotionEffect(PotionEffectType.POISON, 60, 1, false, false);
-                            killer.addPotionEffect(poison);
-                        }
-                    }
-                }else if(event.getDamager() instanceof Player){
-                    Player killer = (Player) event.getDamager();
-                    if(ConfigUtils.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.getLevel("wizard",killed) > 4){
-                        double random = (Math.random() * 100) + 1;
-                        if(random <= 10){
-                            float walkspeedbefore = killer.getWalkSpeed();
-                            float flySpeedBefore = killer.getFlySpeed();
-                            killer.setWalkSpeed(0);
-                            killer.setFlySpeed(0);
-                            killer.playSound(killer.getLocation(), Sound.ANVIL_BREAK,1f,2f);
-                            PotionEffect poison = new PotionEffect(PotionEffectType.POISON, 60, 1, false, false);
-                            killer.addPotionEffect(poison);
-                            new BukkitRunnable(){
-
-                                @Override
-                                public void run() {
-                                    killer.setWalkSpeed(walkspeedbefore);
-                                    killer.setFlySpeed(flySpeedBefore);
-                                }
-
-                            }.runTaskLater(DesertMain.getPlugin(DesertMain.class), 100);
-                        }
-                    }
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void wizardt4(FallenDeathEvent event){
+        if(!event.isCancelled()){
+            Player killed = event.getPlayer();
+            Player killer = event.getKiller();
+            if(ConfigUtils.findClass(killed).equalsIgnoreCase("wizard") && ConfigUtils.getLevel("wizard",killed) > 4){
+                if(Math.random() <= 0.1){
+                    killer.playSound(killer.getLocation(), Sound.ANVIL_BREAK,1f,2f);
+                    PotionEffect poison = new PotionEffect(PotionEffectType.POISON, 60, 1, false, false);
+                    PotionEffect slowness = new PotionEffect(PotionEffectType.SLOW, 100, 255, false, false);
+                    killer.addPotionEffect(poison);
+                    killer.addPotionEffect(slowness, true);
                 }
             }
         }
-
-
-
-
     }
 
 
 //  Last Stand
     public void wizardt8(EntityDamageByEntityEvent event){
-
         if(event.getEntity() instanceof Player){
             if(DesertMain.laststandcd.contains((Player)event.getEntity())) return;
             Player damaged = (Player) event.getEntity();

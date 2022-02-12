@@ -125,6 +125,7 @@ public class TankTierMenu {
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Vengance");
 				glore.add(ChatColor.DARK_GRAY + " Slowness 1 and Weakness 4 to your killer for 2s on death.");
+				glore.add(ChatColor.DARK_GRAY + " Spawns ambient, threatening purple particles");
 				glore.add(ChatColor.GREEN + " - Traveller");
 				glore.add(ChatColor.GREEN + " For every unique (non-air) block you've traveled, take an extra");
 				glore.add(ChatColor.GREEN + " 0.02% less damage. Resets upon death.");
@@ -135,6 +136,7 @@ public class TankTierMenu {
 				ylore.add(ChatColor.YELLOW + " 0.02% less damage. Resets upon death.");
 				ylore.add(ChatColor.YELLOW + " - Vengance");
 				ylore.add(ChatColor.DARK_GRAY + " Slowness 1 and Weakness 4 to your killer for 2s on death.");
+				ylore.add(ChatColor.DARK_GRAY + " Spawns ambient, threatening purple particles");
 
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Traveller");
@@ -142,6 +144,7 @@ public class TankTierMenu {
 				glore.add(ChatColor.GREEN + " 0.02% less damage. Resets upon death.");
 				rlore.add(ChatColor.RED + " - Vengance");
 				rlore.add(ChatColor.DARK_GRAY + " Slowness 1 and Weakness 4 to your killer for 2s on death.");
+				rlore.add(ChatColor.DARK_GRAY + " Spawns ambient, threatening purple particles");
 				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Stubborn Boots");
 				glore.add(ChatColor.DARK_GRAY + "While wearing, you are immune to the effects of the Magic Wand.");
 

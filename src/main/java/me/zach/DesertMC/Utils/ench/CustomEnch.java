@@ -93,7 +93,7 @@ public enum CustomEnch implements Listener {
     },
     NO_MERCY("No Mercy", "no_mercy", EnchantType.MELEE){
         String getDescription(int level){
-            return "Deal " + 3*level + "% more damage if your opponent is under half health";
+            return "Deal " + 3*level + "% more damage if your opponent is under half health.";
         }
     },
     ANTI_FOCUS("Anti-Focus", "anti_focus", EnchantType.ARMOR){

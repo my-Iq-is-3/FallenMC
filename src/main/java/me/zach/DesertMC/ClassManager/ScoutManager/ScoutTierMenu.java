@@ -113,17 +113,17 @@ public class ScoutTierMenu{
 				break;
 			case 4:
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - 1 Absorbtion heart on kill.");
+				glore.add(ChatColor.GREEN + " - +2 Absorbtion hearts on kill.");
 				glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.GREEN + "- Anti-Focus Enchantment - Tier I & II");
 				glore.add(ChatColor.GREEN + "§lSHOP UNLOCK§a - Scout Dagger");
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - 1 Absorbtion heart on kill.");
+				ylore.add(ChatColor.YELLOW + " - +2 Absorbtion hearts on kill.");
 				ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.YELLOW + " - Anti-Focus Enchantment - Tier I & II");
 				ylore.add(ChatColor.YELLOW + "§lSHOP UNLOCK§e - Scout Dagger");
 
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - 1 Absorbtion heart on kill.");
+				rlore.add(ChatColor.RED + " - +2 Absorbtion hearts on kill.");
 				rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.RED + " - Anti-Focus Enchantment - Tier I & II");
 				rlore.add(ChatColor.RED + "§lSHOP UNLOCK§c - Scout Dagger");
 				break;

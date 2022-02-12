@@ -39,7 +39,7 @@ public class DestroyerItem implements MythicalItem {
         lore.add(ChatColor.RED + "§lWARNING§c: This ability §lCAN §ckill you!");
         lore.add(" ");
         lore.add(ChatColor.GRAY + "Cooldown: " + ChatColor.RED + "10 Seconds");
-        lore.add(ChatColor.DARK_GRAY + "Created by its me, rtbob#9910");
+        lore.add(ChatColor.DARK_GRAY + "Created by llama");
 
         im.setLore(lore);
         item.setItemMeta(im);
