@@ -359,11 +359,7 @@ public class Events implements Listener{
 						PlayerData data = ConfigUtils.getData(p);
 						if(location.getBlock().getType().equals(Material.LAVA) || location.getBlock().getType().equals(Material.STATIONARY_LAVA)){
 							if(data.getCurrentClass().equals("corrupter") && data.getCorL() > 7){
-								if(p.getHealth() + 0.5 <= p.getMaxHealth()){
-									p.setHealth(p.getHealth() + 0.5);
-								}else if(p.getHealth() + 0.5 > p.getMaxHealth()){
-									p.setHealth(p.getMaxHealth());
-								}
+								p.heal(0.5f);
 								ParticleEffect.VILLAGER_HAPPY.display(1, 1, 1, 0, 50, location, 10);
 							}
 						}
@@ -803,7 +799,7 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void healthRegen(EntityRegainHealthEvent e){
-		if(e.getEntity() instanceof Player && (e.getRegainReason() != EntityRegainHealthEvent.RegainReason.MAGIC_REGEN && e.getRegainReason() != EntityRegainHealthEvent.RegainReason.MAGIC && e.getRegainReason() != EntityRegainHealthEvent.RegainReason.REGEN)){
+		if(e.getEntity() instanceof Player && (e.getRegainReason() != EntityRegainHealthEvent.RegainReason.MAGIC_REGEN && e.getRegainReason() != EntityRegainHealthEvent.RegainReason.MAGIC && e.getRegainReason() != EntityRegainHealthEvent.RegainReason.CUSTOM)){
 			e.setCancelled(true);
 		}
 	}
@@ -852,7 +848,7 @@ public class Events implements Listener{
 		double maxHealth = p.getMaxHealth();
 		double health = p.getHealth();
 		if(health < maxHealth)
-			p.heal(0.5f, EntityRegainHealthEvent.RegainReason.REGEN);
+			p.heal(0.5f);
 	}
 
 	@EventHandler
