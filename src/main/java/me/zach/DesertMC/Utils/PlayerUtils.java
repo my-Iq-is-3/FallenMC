@@ -5,11 +5,15 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.artifacts.gui.inv.ArtifactData;
 import net.minecraft.server.v1_8_R3.EntityLiving;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import xyz.fallenmc.risenboss.main.RisenMain;
+import xyz.fallenmc.risenboss.main.utils.RisenUtils;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -29,27 +33,67 @@ public class PlayerUtils implements Listener {
         else return fighting.get(p.getUniqueId()) == 0;
     }
 
-    public static void addAbsorption(Player player, float amount){
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        EntityLiving playerLiving = craftPlayer.getHandle();
-        playerLiving.setAbsorptionHearts(playerLiving.getAbsorptionHearts() + amount);
+    public static void addAbsorption(LivingEntity entity, float amount){
+        setAbsorption(entity, getAbsorption(entity) + amount);
+    }
+
+    public static void setAbsorption(LivingEntity entity, float amount){
+        CraftLivingEntity craftEntity = (CraftLivingEntity) entity;
+        EntityLiving entityLiving = craftEntity.getHandle();
+        entityLiving.setAbsorptionHearts(amount);
+    }
+
+    public static float getAbsorption(LivingEntity entity){
+        CraftLivingEntity craftEntity = (CraftLivingEntity) entity;
+        EntityLiving entityLiving = craftEntity.getHandle();
+        return entityLiving.getAbsorptionHearts();
+    }
+
+    public static double getTotalHealth(LivingEntity entity){
+        return entity.getHealth() + getAbsorption(entity);
+    }
+
+    /**
+     * Removes health accounting for absorption.
+     * @param entity The entity to remove the health from.
+     * @param health The amount of health to remove.
+     */
+    public static void removeHealthFromTotal(LivingEntity entity, double health){
+        float absorption = getAbsorption(entity);
+        if(absorption > 0){
+            float removed;
+            setAbsorption(entity, removed = (float) Math.min(absorption, health));
+            health -= removed;
+        }
+        if(health > 0) entity.setHealth(entity.getHealth() - health);
     }
 
     public static void trueDamage(Damageable victim, double dmg, Entity damager){
-        if(victim instanceof Player){
-            Player victimPlayer = (Player) victim;
-            ArtifactData vad = ConfigUtils.getAD(victimPlayer);
-            if(vad.getSelected().contains(10)){
-                double dmgsub = 15 * vad.rarities()[9].mult * 5; // 30
-                dmgsub /= 100; // 0.3
-                dmg -= dmgsub * dmg; // if its 10 its ~7
+        victim = MiscUtils.canDamage(victim);
+        if(victim != null){
+            if(victim instanceof Player){
+                Player victimPlayer = (Player) victim;
+                ArtifactData vad = ConfigUtils.getAD(victimPlayer);
+                if(vad.getSelected().contains(10)){
+                    double dmgsub = 15 * vad.rarities()[9].mult * 5; // 30
+                    dmgsub /= 100; // 0.3
+                    dmg -= dmgsub * dmg; // if its 10 its ~7
+                }
             }
-        }
-        if(victim.getHealth() <= dmg){
-            if(victim instanceof Player) Events.executeKill((Player) victim, damager instanceof Player ? (Player) damager : null);
-            else victim.setHealth(0);
-        }else{
-            victim.setHealth(victim.getHealth() - dmg);
+            if(getTotalHealth((LivingEntity) victim) <= dmg){
+                if(victim instanceof Player)
+                    Events.executeKill((Player) victim, damager instanceof Player ? (Player) damager : null);
+                else victim.setHealth(0);
+            }else{
+                removeHealthFromTotal((LivingEntity) victim, dmg);
+            }
+            MiscUtils.damageIndicator(dmg, damager, victim);
+            if(RisenUtils.isBoss(victim.getUniqueId())){
+                if(damager instanceof Player) RisenMain.currentBoss.bossDamage(damager.getUniqueId(), dmg);
+                else RisenMain.currentBoss.bossDamage(dmg);
+            }else if(damager != null && RisenUtils.isBoss(damager.getUniqueId())){
+                RisenMain.currentBoss.bossAttack(dmg);
+            }
         }
     }
 }

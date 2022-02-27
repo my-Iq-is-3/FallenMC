@@ -106,7 +106,7 @@ public class RankEvents implements Listener {
                 TitleUtils.addTitle(p, rank.p);
                 p.sendMessage(rank.c + "Wow, thank you so much for buying one of our ranks!! It helps support the server so much. You have our greatest gratitude, " + rank.c + p.getName() + "!\n");
                 p.playSound(p.getLocation(), Sound.ENDERDRAGON_DEATH, 7, 1);
-                p.sendTitle(new Title(rank.c + ChatColor.BOLD + "Thank you!", ChatColor.DARK_RED + "<3"));
+                p.sendTitle(rank.c + ChatColor.BOLD + "Thank you!", ChatColor.DARK_RED + "<3");
             }
         }
     }

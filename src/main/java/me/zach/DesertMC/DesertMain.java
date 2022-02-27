@@ -1,5 +1,6 @@
 package me.zach.DesertMC;
 
+import de.tr7zw.nbtapi.NBTEntity;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
 import me.zach.DesertMC.ClassManager.TankManager.EventsForTank;
@@ -26,10 +27,13 @@ import net.jitse.npclib.NPCLib;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -41,7 +45,7 @@ import java.util.*;
 public class DesertMain extends JavaPlugin implements Listener {
 	public static DesertMain getInstance;
 	public static final Set<UUID> ct1players = new HashSet<>();
-	public static final HashMap<UUID,UUID> lastdmgers = new HashMap<>();
+	public static final HashMap<UUID,UUID> lastdmgers = new HashMap<>(); //entity uuid, damager uuid. a player's last damager.
 	public static final Set<Player> laststandcd = new HashSet<>();
 	public static final Set<Player> mwcd = new HashSet<>();
 	public static final Set<UUID> slowed = new HashSet<>();
@@ -92,6 +96,13 @@ public class DesertMain extends JavaPlugin implements Listener {
 
 	public void onDisable(){
 		HitboxManager.saveAll(this);
+		for(World world : Bukkit.getWorlds()){
+			for(Entity entity : world.getEntities()){
+				if(entity instanceof Item){
+					entity.remove();
+				}
+			}
+		}
 	}
 
 	private void registerEvents(Plugin p){

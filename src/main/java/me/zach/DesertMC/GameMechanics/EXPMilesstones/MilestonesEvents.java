@@ -1,6 +1,8 @@
 package me.zach.DesertMC.GameMechanics.EXPMilesstones;
 
+import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -53,6 +55,17 @@ public class MilestonesEvents implements Listener {
                             }
                         }
                     }.runTaskTimer(DesertMain.getInstance, 15, 25);
+                }else{
+                    NBTItem nbt = new NBTItem(e.getCurrentItem());
+                    String id = NBTUtil.getCustomAttrString(nbt, "ID");
+                    Player p = (Player) e.getWhoClicked();
+                    if(id.equals("NEXT_PAGE")){
+                        int currentPage = nbt.getCompound("CustomAttributes").getInteger("CURRENT_PAGE");
+                        p.openInventory(MilestonesInventory.getInventory(p, currentPage + 1));
+                    }else if(id.equals("PREVIOUS_PAGE")){
+                        int currentPage = nbt.getCompound("CustomAttributes").getInteger("CURRENT_PAGE");
+                        p.openInventory(MilestonesInventory.getInventory(p, currentPage - 1));
+                    }
                 }
             }
         }

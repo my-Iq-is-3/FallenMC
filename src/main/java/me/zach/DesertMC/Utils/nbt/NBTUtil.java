@@ -9,15 +9,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class NBTUtil {
     public static String getCustomAttrString(ItemStack item, String key){
         if(item == null || item.getType() == Material.AIR) return "null";
         return getCustomAttrString(new NBTItem(item), key);
-    }
-
-    public static double getCustomAttrDouble(ItemStack item, String key){
-        return getCustomAttr(item, key, double.class);
     }
 
     public static int maxStackSize(ItemStack item){
@@ -30,8 +27,7 @@ public class NBTUtil {
     }
 
     public static String getCustomAttrString(NBTCompound nbt, String key){
-        String result = getCustomAttr(nbt, key, String.class);
-        return result != null ? result : "null";
+        return getCustomAttr(nbt, key, String.class, "null");
     }
 
     public static float getCustomAttrFloat(ItemStack item, String key, float defaultValue){
@@ -40,8 +36,7 @@ public class NBTUtil {
     }
 
     public static float getCustomAttrFloat(NBTCompound nbt, String key, float defaultValue){
-        Float result = getCustomAttr(nbt, key, float.class);
-        return result == null ? defaultValue : result;
+        return getCustomAttr(nbt, key, float.class, defaultValue);
     }
 
     public static boolean getCustomAttrBoolean(ItemStack item, String key){
@@ -50,9 +45,7 @@ public class NBTUtil {
     }
 
     public static boolean getCustomAttrBoolean(NBTCompound nbt, String key){
-        Boolean bool = getCustomAttr(nbt, key, Boolean.class);
-        if(bool == null) return false;
-        else return bool;
+        return getCustomAttr(nbt, key, boolean.class, false);
     }
 
     public static boolean hasCustomKey(NBTCompound nbt, String key){
@@ -62,14 +55,40 @@ public class NBTUtil {
     }
 
     public static <T> T getCustomAttr(NBTCompound nbt, String key, Class<T> type){
+        return getCustomAttr(nbt, key, type, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getCustomAttr(NBTCompound nbt, String key, Class<T> type, T defaultValue){
         NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
-        if(customAttributes == null) return null;
-        return customAttributes.getObject(key, type);
+        if(customAttributes == null) return defaultValue;
+        if(!customAttributes.hasKey(key)) return defaultValue;
+        Object result;
+        if(type == boolean.class) result = customAttributes.getBoolean(key);
+        else if(type == byte.class) result = customAttributes.getByte(key);
+        else if(type == short.class) result = customAttributes.getShort(key);
+        else if(type == int.class) result = customAttributes.getInteger(key);
+        else if(type == float.class) result = customAttributes.getFloat(key);
+        else if(type == double.class) result = customAttributes.getDouble(key);
+        else if(type == long.class) result = customAttributes.getLong(key);
+        else if(type == String.class) result = customAttributes.getString(key);
+        else if(type == byte[].class) result = customAttributes.getByteArray(key);
+        else if(type == int[].class) result = customAttributes.getIntArray(key);
+        else if(type == NBTCompound.class) result = customAttributes.getCompound(key);
+        else if(type == UUID.class) result = customAttributes.getUUID(key);
+        else if(type == ItemStack.class) result = customAttributes.getItemStack(key);
+        //whew, gotta catch my breath...
+        else result = customAttributes.getObject(key, type);
+        return result == null ? defaultValue : (T) result; //accounting for niche edge cases, like a boss (something something boxing something something)
+    }
+
+    public static <T> T getCustomAttr(ItemStack item, String key, Class<T> type, T defaultValue){
+        if(item == null || item.getType().equals(Material.AIR)) return defaultValue;
+        else return getCustomAttr(new NBTItem(item), key, type, defaultValue);
     }
 
     public static <T> T getCustomAttr(ItemStack item, String key, Class<T> type){
-        if(item == null || item.getType().equals(Material.AIR)) return null;
-        else return getCustomAttr(new NBTItem(item), key, type);
+        return getCustomAttr(item, key, type, null);
     }
 
     public static ItemStack setLives(ItemStack item, int lives){

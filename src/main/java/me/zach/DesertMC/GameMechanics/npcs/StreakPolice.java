@@ -46,7 +46,8 @@ public class StreakPolice extends NPCSuper {
         trueMeta.setDisplayName(ChatColor.GREEN + "Click to retrieve");
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GREEN + "Cough up 200 gems, and I'll give");
-        lore.add(ChatColor.GREEN + "your item back no problem. (breaks streak!)");
+        lore.add(ChatColor.GREEN + "your item back no problem.");
+        lore.add(ChatColor.RED + "Breaks streak!");
         trueMeta.setLore(lore);
         trueItem.setItemMeta(trueMeta);
         falseMeta.setDisplayName(ChatColor.RED + "Insert Token");

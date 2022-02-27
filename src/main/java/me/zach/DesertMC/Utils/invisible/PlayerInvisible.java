@@ -5,7 +5,6 @@ import com.comphenix.protocol.events.ListeningWhitelist;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.packet.wrappers.WrapperPlayServerEntityEquipment;
 import org.bukkit.Bukkit;
@@ -114,11 +113,11 @@ public class PlayerInvisible implements Listener {
     private WrapperPlayServerEntityEquipment[] equipmentPackets(Player player, boolean clear){
         PlayerInventory inv = player.getInventory();
         return new WrapperPlayServerEntityEquipment[]{
-                WrapperPlayServerEntityEquipment.create(entityId, EnumWrappers.ItemSlot.MAINHAND, clear ? null : inv.getItemInHand()),
-                WrapperPlayServerEntityEquipment.create(entityId, EnumWrappers.ItemSlot.FEET, clear ? null : inv.getBoots()),
-                WrapperPlayServerEntityEquipment.create(entityId, EnumWrappers.ItemSlot.LEGS, clear ? null : inv.getLeggings()),
-                WrapperPlayServerEntityEquipment.create(entityId, EnumWrappers.ItemSlot.CHEST, clear ? null : inv.getChestplate()),
-                WrapperPlayServerEntityEquipment.create(entityId, EnumWrappers.ItemSlot.HEAD, clear ? null : inv.getHelmet())
+                WrapperPlayServerEntityEquipment.create(entityId, 0, clear ? null : inv.getItemInHand()),
+                WrapperPlayServerEntityEquipment.create(entityId, 1, clear ? null : inv.getBoots()),
+                WrapperPlayServerEntityEquipment.create(entityId, 2, clear ? null : inv.getLeggings()),
+                WrapperPlayServerEntityEquipment.create(entityId, 3, clear ? null : inv.getChestplate()),
+                WrapperPlayServerEntityEquipment.create(entityId, 4, clear ? null : inv.getHelmet())
         };
     }
 }

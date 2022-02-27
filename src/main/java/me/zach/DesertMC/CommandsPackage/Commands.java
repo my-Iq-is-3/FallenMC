@@ -259,7 +259,7 @@ public class Commands implements Listener, CommandExecutor {
         				player.sendMessage(ChatColor.RED + "Invalid usage! Usage: /rank <player> <rank>");
         				return true;
 					}
-				}
+				}else player.sendMessage(ChatColor.RED + "Only admins can use this command.");
 			}
 
         	if(command.getName().equalsIgnoreCase("seizehelditem")){

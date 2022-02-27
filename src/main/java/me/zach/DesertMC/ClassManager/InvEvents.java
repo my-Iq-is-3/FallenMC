@@ -1,5 +1,6 @@
 package me.zach.DesertMC.ClassManager;
 
+import de.tr7zw.nbtapi.NBTItem;
 import me.gabriel.Traits.TraitsInventory;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
@@ -12,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -66,7 +68,7 @@ public class InvEvents implements Listener {
 			}
 			if(item.getType().equals(Material.BOW)) {
 				if(ConfigUtils.deductGems(player,100)){
-					player.getInventory().addItem(MiscUtils.generateItem(Material.BOW, "Bow", MiscUtils.asArrayList(ChatColor.GRAY + "A bow."), (byte) -1, 1, "BOW", 1));
+					player.getInventory().addItem(MiscUtils.generateItem(Material.BOW, ChatColor.WHITE + "Bow", MiscUtils.asArrayList(ChatColor.GRAY + "A bow."), (byte) -1, 1, "BOW", 1));
 					shop.updateInventory();
 				}
 			}
@@ -77,10 +79,14 @@ public class InvEvents implements Listener {
 					shop.updateInventory();
 				}
 			}
+			//TODO diamond sword
 				
 			if(item.getType().equals(Material.FISHING_ROD)) {
 				if(ConfigUtils.deductGems(player,50)){
-					player.getInventory().addItem(MiscUtils.generateItem(Material.FISHING_ROD, "Fishing Rod", MiscUtils.asArrayList(ChatColor.GRAY + "A fishing rod."), (byte) -1, 1, "FISHING_ROD", 10));
+					ItemStack rod = MiscUtils.generateItem(Material.FISHING_ROD, ChatColor.WHITE + "Fishing Rod", MiscUtils.asArrayList(ChatColor.GRAY + "A fishing rod."), (byte) -1, 1, "FISHING_ROD", 10);
+					NBTItem nbt = new NBTItem(rod);
+					NBTUtil.checkCustomAttr(nbt).setBoolean("USABLE", true);
+					player.getInventory().addItem(nbt.getItem());
 					shop.updateInventory();
 				}
 			}
@@ -94,8 +100,8 @@ public class InvEvents implements Listener {
 				
 			if(item.getType().equals(Material.IRON_BLOCK)) {
 				if(ConfigUtils.deductGems(player, 250)){
-					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_CHESTPLATE, "Iron Chestplate", new ArrayList<>(), (byte) -1, 1, "IRON_CHESTPLATE", 15));
-					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_HELMET, "Iron Helmet", new ArrayList<>(), (byte) -1, 1, "IRON_HELMET", 15));
+					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_CHESTPLATE, ChatColor.WHITE + "Iron Chestplate", new ArrayList<>(), (byte) -1, 1, "IRON_CHESTPLATE", 15));
+					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_HELMET,  ChatColor.WHITE + "Iron Helmet", new ArrayList<>(), (byte) -1, 1, "IRON_HELMET", 15));
 					shop.updateInventory();
 				}
 			}
@@ -103,8 +109,10 @@ public class InvEvents implements Listener {
 				
 				
 				if(item.getType().equals(Material.IRON_SWORD)) {
-						if(ConfigUtils.deductGems(player,125)){
-						player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_SWORD, "Iron Sword", MiscUtils.asArrayList(ChatColor.GRAY + "An iron sword."), (byte) -1, 1, "IRON_SWORD", 5));
+					if(ConfigUtils.deductGems(player,200)){
+						ItemStack sword = MiscUtils.generateItem(Material.IRON_SWORD, ChatColor.WHITE + "Iron Sword", MiscUtils.asArrayList(ChatColor.GRAY + "An especially shiny iron sword.", ChatColor.AQUA + "Sharpness II", ""), (byte) -1, 1, "IRON_SWORD", 5);
+						sword.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2);
+						player.getInventory().addItem(sword);
 						shop.updateInventory();
 					}
 				}

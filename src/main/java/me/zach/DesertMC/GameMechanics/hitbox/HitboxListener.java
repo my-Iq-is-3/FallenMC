@@ -12,4 +12,8 @@ public class HitboxListener {
         Hitbox cafeBlob = HitboxManager.get("cafe");
         return cafeBlob != null && cafeBlob.isInside(l);
     }
+
+    public static boolean isInSafeZone(Location location){
+        return isInCafe(location) && isInSpawn(location);
+    }
 }

@@ -37,20 +37,18 @@ import me.zach.databank.saver.PlayerData;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
-import org.bukkit.inventory.AnvilInventory;
-import org.bukkit.inventory.EnchantingInventory;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -58,26 +56,20 @@ import org.bukkit.util.CachedServerIcon;
 import org.bukkit.util.Vector;
 import xyz.fallenmc.risenboss.main.RisenBoss;
 import xyz.fallenmc.risenboss.main.RisenMain;
-import xyz.fallenmc.risenboss.main.abilities.RisenAbility;
 import xyz.fallenmc.risenboss.main.utils.RisenUtils;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
 public class Events implements Listener{
-	public static DecimalFormat DMG_FORMATTER = new DecimalFormat();
 	public static Set<UUID> invincible = new HashSet<>();
 	Plugin main = DesertMain.getInstance;
 	public static HashMap<UUID,Integer> ks = new HashMap<>();
 	public static HashMap<Integer, ItemStack> arrowArray = new HashMap<>();
 	static final HashMap<UUID, Float> blocking = new HashMap<>();
 	private CachedServerIcon nft = null;
-	static{
-		DMG_FORMATTER.setMaximumFractionDigits(1);
-	}
 	public Events(){
 		File serverDir = new File(".").getAbsoluteFile();
 		File nftFile = new File(serverDir, "nft.png");
@@ -102,8 +94,8 @@ public class Events implements Listener{
 			if(item != null && item.getType() != Material.AIR){
 				NBTItem nbt = new NBTItem(item);
 				if(NBTUtil.hasCustomKey(nbt, "LIVES")){
-					Integer lives = NBTUtil.getCustomAttr(nbt, "LIVES", Integer.class);
-					if(lives != null && lives - 1 <= 0){
+					int lives = NBTUtil.getCustomAttr(nbt, "LIVES", int.class);
+					if(lives - 1 <= 0){
 						inventory.clear(i);
 						player.sendMessage(ChatColor.RED + "Your " + item.getItemMeta().getDisplayName() + ChatColor.RED + " ran out of lives!");
 					}
@@ -130,7 +122,7 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void nft(ServerListPingEvent event){
-		if(nft != null && Math.random() < 0.02){
+		if(nft != null && Math.random() < 0.002){
 			event.setServerIcon(nft);
 		}
 	}
@@ -233,13 +225,48 @@ public class Events implements Listener{
 		}
 	}
 
-	@EventHandler
-	public void cancelAnvil(InventoryOpenEvent event){
-		if(event.getInventory() instanceof AnvilInventory){
-			Player player = (Player) event.getPlayer();
-			event.setCancelled(true);
-			player.openInventory(new FallenAnvilInventory().getInventory());
+	@EventHandler(priority = EventPriority.LOW)
+	public void craft(CraftItemEvent event){
+		event.setCancelled(true);
+	}
+
+	@EventHandler(priority = EventPriority.LOW)
+	public void use(PlayerInteractEvent event){
+		Player player = event.getPlayer();
+		ItemStack item = event.getItem();
+		Action action = event.getAction();
+		boolean isAdmin = MiscUtils.isAdmin(player);
+		boolean placeBlock = event.isBlockInHand() && action == Action.RIGHT_CLICK_BLOCK;
+		boolean destroyBlock = action == Action.LEFT_CLICK_BLOCK;
+		if(destroyBlock && isAdmin){
+			event.setUseInteractedBlock(Event.Result.DEFAULT);
+		}else if(placeBlock && isAdmin){
+			event.setUseItemInHand(Event.Result.DEFAULT);
+			event.setUseInteractedBlock(Event.Result.DEFAULT);
+		}else if((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) && NBTUtil.getCustomAttrBoolean(item, "USABLE")){
+			event.setUseItemInHand(Event.Result.DEFAULT);
+			event.setUseInteractedBlock(Event.Result.DENY);
+			player.setFoodLevel(19);
+		}else{
+			event.setUseInteractedBlock(Event.Result.DENY);
+			event.setUseItemInHand(Event.Result.DENY);
+			player.updateInventory();
 		}
+		if(action == Action.RIGHT_CLICK_BLOCK){
+			Block block = event.getClickedBlock();
+			if(block.getType() == Material.ANVIL){
+				player.openInventory(new FallenAnvilInventory().getInventory());
+			}else if(block.getType() == Material.ENCHANTMENT_TABLE){
+				RefineryInventory inv = RefineryUtils.instance.get(player.getUniqueId());
+				if(inv == null) RefineryUtils.instance.put(player.getUniqueId(), inv = new RefineryInventory());
+				inv.openRefineryInventory(player, false);
+			}
+		}
+	}
+
+	@EventHandler
+	public void cancelFish(PlayerFishEvent event){
+		if(!MiscUtils.isAdmin(event.getPlayer())) event.setCancelled(true);
 	}
 
 	public void travellerTank(EntityDamageByEntityEvent e){
@@ -248,7 +275,7 @@ public class Events implements Listener{
 			if(ConfigUtils.getLevel("tank", uuid) > 5 && ConfigUtils.findClass(uuid).equals("tank")){
 				Set<Block> blockSet = TravellerEvents.travelled.get(uuid);
 				if (blockSet != null) {
-					double multiplier = 1 - (blockSet.size() * 0.0002);
+					double multiplier = 1 - ((Math.floorDiv(blockSet.size(), 100) * 0.02));
 					e.setDamage(e.getDamage() * multiplier);
 				}
 			}
@@ -260,42 +287,39 @@ public class Events implements Listener{
 		if(ConfigUtils.findClass(uuid).equals("corrupter") && ConfigUtils.getLevel("corrupter", uuid) > 5){
 			Set<Block> blockSet = TravellerEvents.travelled.get(uuid);
 			if(blockSet != null){
-				double multiplier = 1 + blockSet.size() * 0.0002;
+				double multiplier = 1 + (Math.floorDiv(blockSet.size(), 100) * 0.02);
 				e.setDamage(e.getDamage() * multiplier);
 			}
 		}
 	}
 
-	@EventHandler
-	public void enchantRefinery(InventoryOpenEvent event){
-		if(event.getInventory() instanceof EnchantingInventory){
+	public void removeFallDMG(EntityDamageEvent event){
+		if(event.getCause().equals(EntityDamageEvent.DamageCause.FALL)){
 			event.setCancelled(true);
-			Player player = (Player) event.getPlayer();
-			RefineryInventory inv = RefineryUtils.instance.get(player.getUniqueId());
-			if(inv == null) RefineryUtils.instance.put(player.getUniqueId(), inv = new RefineryInventory());
-			inv.openRefineryInventory(player, false);
 		}
 	}
 
-	@EventHandler
-	public void onHitInWhileInvincible(EntityDamageByEntityEvent event) {
-		try {
-			if(event.getEntity() instanceof Player) {
-				Player p = (Player) event.getEntity();
-				UUID uuid = p.getUniqueId();
-				if(invincible.contains(uuid)) {
-					event.setCancelled(true);
+	@EventHandler(priority = EventPriority.LOW)
+	public void onDamage(EntityDamageEvent event){
+		if((!(event.getEntity() instanceof Damageable) || event.getEntity() instanceof Item) || MiscUtils.canDamage(event.getEntity()) != null){
+			if(!event.isCancelled() && event.getDamage() > 0){
+				try{
+					EventsForCorruptor.INSTANCE.fort4(event);
+					defenseMod(event);
+					removeFallDMG(event);
+					if(event.getCause() == EntityDamageEvent.DamageCause.VOID){
+						if(event.getEntity() instanceof Player){
+							executeKill(event);
+						}
+					}
+					if(event instanceof EntityDamageByEntityEvent){
+						onHit((EntityDamageByEntityEvent) event);
+					}
+				}finally{
+					executeKillCheck(event);
 				}
 			}
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@EventHandler
-	public void removeFallDMG(EntityDamageEvent event){
-		EventsForCorruptor.INSTANCE.fort4(event);
-		if(event.getCause().equals(EntityDamageEvent.DamageCause.FALL)){
+		}else{
 			event.setCancelled(true);
 		}
 	}
@@ -305,20 +329,6 @@ public class Events implements Listener{
 		Player player = event.getPlayer();
 		if(!MiscUtils.isAdmin(player)){
 			event.setCancelled(true);
-		}
-	}
-
-	@EventHandler
-	public void placeBlock(BlockPlaceEvent event){
-		if(!MiscUtils.isAdmin(event.getPlayer())) event.setCancelled(true);
-	}
-
-	@EventHandler
-	public void till(PlayerInteractEvent event){
-		if(event.getAction() == Action.RIGHT_CLICK_BLOCK){
-			if(event.getItem().getType().name().endsWith("HOE")){
-				event.setCancelled(true);
-			}
 		}
 	}
 
@@ -357,8 +367,13 @@ public class Events implements Listener{
 								ParticleEffect.VILLAGER_HAPPY.display(1, 1, 1, 0, 50, location, 10);
 							}
 						}
+					}
+				}
+				if(count % 10 == 0){
+					for(Player p : Bukkit.getOnlinePlayers()){
+						PlayerData data = ConfigUtils.getData(p);
 						if(data.getCurrentClass().equals("tank") && data.getTankL() > 5){
-							ParticleEffect.SPELL_WITCH.display(0, 1, 0, 1, 1, MiscUtils.indicatorLocation(location), 75);
+							ParticleEffect.SPELL_WITCH.display(0.7f, 0.7f, 0.7f, 0, 1, p.getLocation(), 75);
 						}
 					}
 				}
@@ -389,16 +404,6 @@ public class Events implements Listener{
 		}.runTaskTimer(main,0,1);
 	}
 
-	@EventHandler
-	public void eating(PlayerInteractEvent e) {
-		ItemStack item = e.getPlayer().getItemInHand();
-		if (item != null && NBTUtil.getCustomAttrString(item, "ID").endsWith("SNACK")) {
-			if (e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-				e.getPlayer().setFoodLevel(19);
-			}
-		}
-	}
-
 	public static Player getPlayer(Entity arrowOrPlayer) {
 		if (arrowOrPlayer instanceof Player) return (Player) arrowOrPlayer;
 		else if(arrowOrPlayer instanceof Arrow) return ((Arrow) arrowOrPlayer).getShooter() instanceof Player ? ((Player) ((Arrow) arrowOrPlayer).getShooter()) : null;
@@ -408,14 +413,12 @@ public class Events implements Listener{
 	// ---------------------------------------------------------------------------
 
 
-	@EventHandler
 	public void onHit(EntityDamageByEntityEvent event) {
 		try{
-			if(HitboxListener.isInCafe(event.getEntity().getLocation()) || HitboxListener.isInSpawn(event.getEntity().getLocation())) event.setCancelled(true);
 			if(event.isCancelled()) return;
 			if(event.getDamager().getUniqueId().equals(event.getEntity().getUniqueId())) return;
-			CreeperTrove.executeTrove(event);
-			if(event.getDamage() == 0) return;
+			if(!RisenUtils.isBoss(event.getDamager().getUniqueId())) CreeperTrove.executeTrove(event);
+			if(event.getFinalDamage() <= 0) return;
 			for(CustomEnch ce : CustomEnch.values()){
 				ce.onHit(event);
 			}
@@ -475,7 +478,7 @@ public class Events implements Listener{
 						DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
 			}
 		}
-		executePreKill(event);
+//		executePreKill(event);
 		if(event.getDamager() instanceof Arrow)
 			arrowArray.remove(event.getDamager().getEntityId());
 	}
@@ -485,6 +488,10 @@ public class Events implements Listener{
 		event.setCancelled(true);
 	}
 
+	@EventHandler
+	public void advancementCancel(PlayerAchievementAwardedEvent event){
+		event.setCancelled(true);
+	}
 
 	final Map<UUID, Pair<Integer, Integer>> portal = new HashMap<>(); //first: server tick when player entered portal, second: server tick when player last stepped in portal
 	Location wizardPortalSpawn = ConfigUtils.getSpawn("wizardPortalEntry");
@@ -571,124 +578,126 @@ public class Events implements Listener{
 		}
 	}
 
-	public void executePreKill(EntityDamageByEntityEvent event) {
-		Player damager = getPlayer(event.getDamager());
-		if (event.getEntity() instanceof Player && damager != null) {
-			Player player = (Player) event.getEntity();
-			Player killer = getPlayer(event.getDamager());
-			if(event.getFinalDamage() >= player.getHealth()){
-				event.setCancelled(true);
-				executeKill(player, killer);
-			}
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void dieFromVoid(FallenDeathEvent event){
+		if(event.getDamageCause() == EntityDamageEvent.DamageCause.VOID){
+			event.setCancelled(false);
 		}
 	}
 
+//	public void executePreKill(EntityDamageByEntityEvent event) {
+//		Player damager = getPlayer(event.getDamager());
+//		if (event.getEntity() instanceof Player && damager != null) {
+//			Player player = (Player) event.getEntity();
+//			Player killer = getPlayer(event.getDamager());
+//			if(event.getFinalDamage() >= player.getHealth()){
+//				event.setCancelled(true);
+//				executeKill(player, killer);
+//			}
+//		}
+//	}
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void exp(PlayerExpChangeEvent event){
-		System.out.println(event.getAmount());
 		event.setAmount(0);
 	}
 
-	public static void executeKill(Player player, Player killer) {
+	public static void executeKill(Player player, Player killer){
+		executeKill(player, killer, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+	}
+
+	public static void executeKill(Player player, Player killer, EntityDamageEvent.DamageCause cause) {
 		try {
-			FallenDeathEvent event = new FallenDeathEvent(player, killer, getItemUsed(killer));
+			FallenDeathEvent event = new FallenDeathEvent(player, killer, getItemUsed(killer), cause);
 			Bukkit.getPluginManager().callEvent(event);
 			if(event.isCancelled()) return;
-			Location spawn = ConfigUtils.getSpawn("lobby");
-			player.setHealth(player.getMaxHealth());
-			player.teleport(spawn);
-			player.getInventory().addItem(new ItemStack(Material.IRON_SWORD));
-			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_BOOTS));
-			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_CHESTPLATE));
-			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_LEGGINGS));
-			player.getInventory().addItem(new ItemStack(Material.CHAINMAIL_HELMET));
-
-			player.setFireTicks(0);
-			String message = killer != null ? ChatColor.GRAY + "You were killed by " + killer.getDisplayName() + ChatColor.YELLOW + "." : ChatColor.YELLOW + "You died.";
+			String message = killer != null ? ChatColor.GRAY + "You were killed by " + killer.getDisplayName() + ChatColor.GRAY + "." : ChatColor.YELLOW + "You died.";
 			if(ks.get(player.getUniqueId()) > 5) message += ChatColor.GRAY + "\nYour streak of " + ChatColor.AQUA + ks.get(player.getUniqueId()) + ChatColor.RED + " was lost!";
 			player.sendMessage(message);
 			callOnKill(player, killer);
 			if(RisenUtils.isBoss(player.getUniqueId()))
 				RisenMain.currentBoss.endBoss(RisenBoss.EndReason.BOSS_VANQUISHED);
 			DesertMain.snack.remove(player.getUniqueId());
-			ks.put(player.getUniqueId(), 0);
 			player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
-			if(killer == null) return;
-			ThreadLocalRandom random = ThreadLocalRandom.current();
-			int soulsgained = 0;
-			if (random.nextDouble() <= 0.2){
-				try {
-					if(NBTUtil.getCustomAttrString(killer.getInventory().getChestplate(), "ID").equals("LUCKY_CHESTPLATE"))
-						soulsgained = 2;
-					else{
+			if(killer != null){
+				ThreadLocalRandom random = ThreadLocalRandom.current();
+				int soulsgained = 0;
+				if(random.nextDouble() <= 0.2){
+					try{
+						if(NBTUtil.getCustomAttrString(killer.getInventory().getChestplate(), "ID").equals("LUCKY_CHESTPLATE"))
+							soulsgained = 2;
+						else{
+							soulsgained = 1;
+						}
+					}catch(Exception ex){
 						soulsgained = 1;
-					}
-				} catch (Exception ex) {
-					soulsgained = 1;
-					if (!(ex instanceof NullPointerException)) {
-						Bukkit.getConsoleSender().sendMessage("Error managing souls. Error:\n" + ex);
+						if(!(ex instanceof NullPointerException)){
+							Bukkit.getConsoleSender().sendMessage("Error managing souls. Error:\n" + ex);
+						}
 					}
 				}
+				int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 50) + (ks.get(player.getUniqueId()) * 15) + ((random.nextInt(1, 3) * 25) * ks.get(killer.getUniqueId()) + 15);
+				xpgained = Math.min(xpgained, 8500 + random.nextInt(500));
+				int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 60) + (ks.get(player.getUniqueId()) * 10) + ((random.nextInt(2, 4) * 40) * ks.get(killer.getUniqueId()) + 20);
+				gemsgained = Math.min(gemsgained, Math.min(gemsgained, 2500 + random.nextInt(500)));
+				killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
+				ks.put(killer.getUniqueId(), ks.getOrDefault(killer.getUniqueId(), 0) + 1);
+				killer.playSound(killer.getLocation(), Sound.LEVEL_UP, 1, 4);
+				killer.playSound(killer.getLocation(), Sound.BURP, 6, 1.3f);
+				killer.playSound(killer.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
+				ConfigUtils.addGems(killer, gemsgained);
+				ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
+				ConfigUtils.addSouls(killer, soulsgained);
 			}
-			int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 50) + ks.get(player.getUniqueId()) * 5 + ((random.nextInt(1, 3) * 25) * ks.get(player.getUniqueId()) + 15);
-			int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 60) + ks.get(player.getUniqueId()) * 4 + ((random.nextInt(2, 4) * 40) * ks.get(player.getUniqueId()) + 20);
-			killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
-			ks.put(killer.getUniqueId(), ks.getOrDefault(killer.getUniqueId(), 0) + 1);
-			killer.playSound(killer.getLocation(), Sound.LEVEL_UP, 1, 4);
-			killer.playSound(killer.getLocation(), Sound.BURP, 6, 1.3f);
-			killer.playSound(killer.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
-			ConfigUtils.addGems(killer, gemsgained);
-			ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
-			ConfigUtils.addSouls(killer, soulsgained);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}finally{
+			respawn(player);
 		}
 	}
 
-	private void executeUnexpectedKill(EntityDamageEvent event) throws NullPointerException {
+	public static void respawn(Player player){
+		Location spawn = ConfigUtils.getSpawn("lobby");
+		player.setHealth(player.getMaxHealth());
+		ks.put(player.getUniqueId(), 0);
+		player.teleport(spawn);
+		player.setVelocity(new Vector(0, 0, 0));
+		PlayerInventory inv = player.getInventory();
+		if(inv.getHelmet() == null) inv.setHelmet(MiscUtils.generateItem(Material.CHAINMAIL_HELMET, ChatColor.WHITE + "Chainmail Helmet", Collections.emptyList(), (byte) -1, 1, "CHAINMAIL_HELMET"));
+		if(inv.getChestplate() == null) inv.setChestplate(MiscUtils.generateItem(Material.CHAINMAIL_CHESTPLATE, ChatColor.WHITE + "Chainmail Chestplate", Collections.emptyList(), (byte) -1, 1, "CHAINMAIL_CHESTPLATE"));
+		if(inv.getLeggings() == null) inv.setLeggings(MiscUtils.generateItem(Material.CHAINMAIL_LEGGINGS, ChatColor.WHITE + "Chainmail Leggings", Collections.emptyList(), (byte) -1, 1, "CHAINMAIL_LEGGINGS"));
+		if(inv.getBoots() == null) inv.setBoots(MiscUtils.generateItem(Material.CHAINMAIL_BOOTS, ChatColor.WHITE + "Chainmail Boots", Collections.emptyList(), (byte) -1, 1, "CHAINMAIL_BOOTS"));
+		if(!inv.contains(Material.IRON_SWORD)) inv.addItem(MiscUtils.generateItem(Material.IRON_SWORD, ChatColor.WHITE + "Iron Sword", Collections.emptyList(), (byte) -1, 1, "IRON_SWORD"));
+		Bukkit.getScheduler().runTask(DesertMain.getInstance, () -> player.setFireTicks(0)); //idk, just don't ask
+		PlayerUtils.setAbsorption(player, 0);
+	}
+
+	private void executeKillCheck(EntityDamageEvent event) throws NullPointerException {
 		if(!event.isCancelled()){
-			UUID uuid = DesertMain.lastdmgers.get(event.getEntity().getUniqueId());
-			Player killer = Bukkit.getPlayer(uuid);
 			if(event.getEntity() instanceof Player){
 				Player player = (Player) event.getEntity();
-				if(event.getFinalDamage() >= player.getHealth()){
-					event.setCancelled(true);
-					executeKill(player, killer);
+				if(event.getFinalDamage() >= PlayerUtils.getTotalHealth(player)){
+					executeKill(event);
 				}
 			}
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onDamage(EntityDamageEvent event){
-		if(!(event instanceof EntityDamageByEntityEvent)){
-			removeFallDMG(event);
-			executeUnexpectedKill(event);
-		}
-		defenseMod(event);
+	private void executeKill(EntityDamageEvent event){
+		Entity entity = event.getEntity();
+		if(entity instanceof Player){
+			Player player = (Player) event.getEntity();
+			UUID uuid = DesertMain.lastdmgers.get(event.getEntity().getUniqueId());
+			Player killer = uuid == null ? null : Bukkit.getPlayer(uuid);
+			event.setCancelled(true);
+			executeKill(player, killer, event.getCause());
+		}else if(entity instanceof Damageable) ((Damageable) entity).setHealth(0);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void showMarker(EntityDamageEvent event){
-		double damage = event.getFinalDamage();
-		if(event.getEntity() instanceof Damageable){
-			if(!event.isCancelled() && damage > 0 && (damage < 100 && !(((Damageable) event.getEntity()).getHealth() > damage))){
-				boolean playerInvolved;
-				if(event instanceof EntityDamageByEntityEvent)
-					playerInvolved = ((EntityDamageByEntityEvent) event).getDamager() instanceof Player || event.getEntity() instanceof Player;
-				else playerInvolved = event.getEntity() instanceof Player;
-				if(playerInvolved){
-					String content = DMG_FORMATTER.format(damage);
-					if(damage > 15)
-						content = ChatColor.RED + ChatColor.MAGIC.toString() + "A" + ChatColor.GOLD + ChatColor.BOLD + content + ChatColor.RED + ChatColor.MAGIC + "A";
-					else if(damage > 10) content = ChatColor.GOLD + ChatColor.BOLD.toString() + content;
-					else if(damage > 5) content = ChatColor.GOLD + content;
-					else content = ChatColor.GRAY + content;
-					Location center = event.getEntity().getLocation();
-					MiscUtils.showIndicator(content, center);
-				}
-			}
-		}
+		if(!event.isCancelled() && event.getFinalDamage() > 0)
+			MiscUtils.damageIndicator(event.getFinalDamage(), event instanceof EntityDamageByEntityEvent ? ((EntityDamageByEntityEvent) event).getDamager() : null, event.getEntity());
 	}
 
 	private static void callOnKill(Player player, Player killer) {
@@ -794,7 +803,7 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void healthRegen(EntityRegainHealthEvent e){
-		if(e.getEntity() instanceof Player && (e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.SATIATED) || e.getRegainReason().equals(EntityRegainHealthEvent.RegainReason.EATING))){
+		if(e.getEntity() instanceof Player && (e.getRegainReason() != EntityRegainHealthEvent.RegainReason.MAGIC_REGEN && e.getRegainReason() != EntityRegainHealthEvent.RegainReason.MAGIC && e.getRegainReason() != EntityRegainHealthEvent.RegainReason.REGEN)){
 			e.setCancelled(true);
 		}
 	}
@@ -812,17 +821,40 @@ public class Events implements Listener{
 	}
 
 	@EventHandler
-	public void forScoreboard(PlayerJoinEvent e) {
+	public void lastDamagerRemove(FallenDeathEvent event){
+		DesertMain.lastdmgers.remove(event.getPlayer().getUniqueId());
+	}
+
+	@EventHandler
+	public void lastDamagerRemove(EntityDeathEvent event){
+		DesertMain.lastdmgers.remove(event.getEntity().getUniqueId());
+	}
+
+	@EventHandler
+	public void continual(PlayerJoinEvent e) {
 		final Player p = e.getPlayer();
 		new BukkitRunnable() {
+			int count = 0;
 			@Override
 			public void run() {
 				if(p.isOnline()){
 					FScoreboardManager.initialize(p);
+					if(count % 10 == 0 && (PlayerUtils.isIdle(p) || HitboxListener.isInSafeZone(p.getLocation()))){
+						tryRegen(p);
+					}
+					count++;
 				}else cancel();
 			}
 		}.runTaskTimer(DesertMain.getPlugin(DesertMain.class), 0, 5);
 	}
+
+	private static void tryRegen(Player p){
+		double maxHealth = p.getMaxHealth();
+		double health = p.getHealth();
+		if(health < maxHealth)
+			p.heal(0.5f, EntityRegainHealthEvent.RegainReason.REGEN);
+	}
+
 	@EventHandler
 	public void forKs(PlayerJoinEvent event){
 		ks.putIfAbsent(event.getPlayer().getUniqueId(), 0);
@@ -831,32 +863,43 @@ public class Events implements Listener{
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
 		Player p = e.getPlayer();
-		Location lobbySpawn = ConfigUtils.getSpawn("lobby");
-		p.teleport(lobbySpawn);
-		p.setVelocity(new Vector(0, 0, 0));
-		UUID uuid = p.getUniqueId();
-		String blockNotifPath = "players." + uuid + ".blocknotifications";
-		if(!(main.getConfig().contains("players." + uuid))) {
-			main.getConfig().createSection("players." + uuid);
-			//init block notifications
-			main.getConfig().set(blockNotifPath, true);
-			//save
-			main.saveConfig();
-			e.setJoinMessage(e.getPlayer().getName() + ChatColor.GOLD + " just joined for the first time, give them a warm welcome!");
-		}else{
-			Rank rank = ConfigUtils.getRank(e.getPlayer());
-			if(rank != null){
-				Prefix title = ConfigUtils.getSelectedTitle(e.getPlayer());
-				e.getPlayer().setDisplayName(rank.c + e.getPlayer().getName());
-				e.getPlayer().setPlayerListName(title != null ? title + " " + e.getPlayer().getDisplayName() : e.getPlayer().getDisplayName());
-				e.setJoinMessage(rank.p.toString() + rank.c + " " + e.getPlayer().getName() + " just joined.");
+		try{
+			UUID uuid = p.getUniqueId();
+			String blockNotifPath = "players." + uuid + ".blocknotifications";
+			if(!(main.getConfig().contains("players." + uuid))){
+				main.getConfig().createSection("players." + uuid);
+				//init block notifications
+				main.getConfig().set(blockNotifPath, true);
+				//save
+				main.saveConfig();
+				e.setJoinMessage(e.getPlayer().getName() + ChatColor.GOLD + " just joined for the first time, give them a warm welcome!");
+			}else{
+				Rank rank = ConfigUtils.getRank(e.getPlayer());
+				if(rank != null){
+					e.getPlayer().setDisplayName(rank.c + e.getPlayer().getName());
+					e.setJoinMessage(rank.p.toString() + rank.c + " " + e.getPlayer().getName() + " just joined.");
+				}else{
+					e.getPlayer().setDisplayName(ChatColor.GRAY + e.getPlayer().getName());
+					e.setJoinMessage("");
+				}
+				MiscUtils.refreshTablistName(e.getPlayer());
+				e.getPlayer().sendMessage(DesertMain.getWelcome());
 			}
-			else e.setJoinMessage("");
-			e.getPlayer().sendMessage(DesertMain.getWelcome());
+			if(main.getConfig().getBoolean(blockNotifPath))
+				TravellerEvents.blockNotifs.add(p.getUniqueId());
+			MilestonesUtil.refreshExpBar(p);
+			PlayerUtils.setAbsorption(p, 0);
+		}finally{
+			respawn(p);
 		}
-		if(main.getConfig().getBoolean(blockNotifPath))
-			TravellerEvents.blockNotifs.add(p.getUniqueId());
-		MilestonesUtil.refreshExpBar(p);
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void dropTimer(PlayerDropItemEvent event){
+		Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, () -> {
+			Item item = event.getItemDrop();
+			if(!item.isDead()) item.remove();
+		}, 10000);
 	}
 
 	@EventHandler
@@ -883,7 +926,7 @@ public class Events implements Listener{
 			if (NBTUtil.getCustomAttrString(event.getItem(), "ID").equals("PROTEIN_SNACK")){
 				if(ConfigUtils.findClass(player).equals("tank") && ConfigUtils.getLevel("tank", player) > 2){
 					if(!DesertMain.snack.containsKey(player.getUniqueId())) {
-						player.sendMessage(ChatColor.GREEN + "Powered up your next shot for +20% knockback!");
+						player.sendMessage(ChatColor.GREEN + "Powered up your next shot to hoist your opponent upwards!");
 						player.playSound(player.getLocation(), Sound.FIRE_IGNITE, 12, 1);
 						DesertMain.snack.put(player.getUniqueId(), "protein");
 					}else{
@@ -956,7 +999,9 @@ public class Events implements Listener{
 			}else if(DesertMain.snack.get(e.getDamager().getUniqueId()).equals("protein")){
 				DesertMain.snack.remove(e.getDamager().getUniqueId());
 				if(e.getDamager() instanceof Player){
-					e.getEntity().setVelocity(e.getEntity().getVelocity().multiply(1.2));
+					Entity entity = e.getEntity();
+					Vector velocity = entity.getVelocity();
+					entity.setVelocity(velocity.setY(velocity.getY() + 1));
 					((Player) e.getDamager()).playSound(e.getDamager().getLocation(), Sound.ANVIL_LAND, 10, 1.1f);
 				}
 			}

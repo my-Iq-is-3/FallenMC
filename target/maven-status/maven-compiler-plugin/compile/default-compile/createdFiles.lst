@@ -18,6 +18,7 @@ me/zach/DesertMC/GameMechanics/EXPMilesstones/MilestonesInventory$RewardsItem$2.
 me/zach/DesertMC/ClassManager/CoruManager/EventsForCorruptor$2.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ParticlePacket.class
 me/zach/DesertMC/ClassManager/TankManager/EventsForTank$1.class
+me/zach/DesertMC/Utils/packet/wrappers/WrapperPlayServerEntityTeleport.class
 me/zach/DesertMC/cosmetics/Cosmetic$1.class
 me/zach/DesertMC/Utils/ench/CustomEnch$3.class
 me/zach/DesertMC/Utils/Particle/ReflectionUtils.class

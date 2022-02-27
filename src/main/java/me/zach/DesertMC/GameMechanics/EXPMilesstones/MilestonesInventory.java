@@ -1,5 +1,7 @@
 package me.zach.DesertMC.GameMechanics.EXPMilesstones;
 
+import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTItem;
 import itempackage.Items;
 import me.gabriel.Traits.data.TraitsData;
 import me.zach.DesertMC.DesertMain;
@@ -31,17 +33,25 @@ public class MilestonesInventory implements Listener {
         empty.setItemMeta(emptyMeta);
     }
     public static Inventory getInventory(Player player){
+        return getInventory(player, 0);
+    }
+
+    public static Inventory getInventory(Player player, int page){
         int[] slots = {0, 9, 18, 27, 36, 37, 38, 29, 20, 11, 2, 3, 4, 13, 22, 31, 40, 41, 42, 33, 24, 15, 6, 7, 8, 17, 26, 35, 44};
+        if(page == 0) page = autoPage(player);
         Inventory inv = pl.getServer().createInventory(null, 54, "EXP Milestones");
+        MilestonesData data = MilestonesData.get(player);
+        //TODO pages
         for(int i = 0; i<inv.getSize(); i++){
             inv.setItem(i, empty);
         }
         for(int i = 0; i<slots.length; i++){
-            inv.setItem(slots[i], rewardsList(player, 0).get(i));
+            inv.setItem(slots[i], rewardsList(player, page).get(i));
         }
+        if(autoPage(player) > page) inv.setItem(inv.getSize() - 1, pageItem(true, page));
+        if(page > 1) inv.setItem(inv.getSize() - 9, pageItem(false,  page));
         ItemStack claimItem = new ItemStack(Material.BREWING_STAND_ITEM);
         ItemMeta claimMeta = claimItem.getItemMeta();
-        MilestonesData data = MilestonesData.get(player);
         if(data.getUnclaimed().isEmpty()){
             claimMeta.setDisplayName(ChatColor.RED + "Claim All Milestones");
             claimMeta.setLore(Collections.singletonList(ChatColor.RED + "You have no rewards to claim!"));
@@ -56,17 +66,26 @@ public class MilestonesInventory implements Listener {
         return inv;
     }
 
+    private static ItemStack pageItem(boolean forward, int currentPage){
+        ItemStack item = MiscUtils.generateItem(Material.ARROW, ChatColor.YELLOW + (forward ? "Next page" : "Previous page"), Collections.emptyList(), (byte) -1, 1, forward ? "NEXT_PAGE" : "PREVIOUS_PAGE");
+        NBTItem nbt = new NBTItem(item);
+        nbt.addCompound("CustomAttributes").setInteger("CURRENT_PAGE", currentPage);
+        return nbt.getItem();
+    }
+
+    private static int autoPage(Player p){
+        return Math.floorDiv(MilestonesData.get(p).getLevel() - 1, 29) + 1;
+    }
+
     /**
      *
      * @param p Target player
-     * @param page Page to open on. Set to 0 for default.
+     * @param page Page to open on.
      * @return returns a list of display items to be used in the milestones inventory
      */
     private static ArrayList<ItemStack> rewardsList(Player p, int page){
         ArrayList<ItemStack> list = new ArrayList<>();
-        if(page == 0){
-            page = Math.floorDiv(MilestonesData.get(p).getLevel() - 1, 29) + 1;
-        }else if(page < 0) throw new IllegalArgumentException("Page passed through rewardsList(Player p, int page) must be greater than or equal to 0!");
+        if(page <= 0) page = 1;
         if(page > 2) page = 2;
         for(int i = (page * 29) - 29; i<=page * 29; i++){
             list.add(new RewardsItem(i + 1, p));

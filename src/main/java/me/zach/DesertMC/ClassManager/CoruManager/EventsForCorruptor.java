@@ -40,10 +40,10 @@ public class EventsForCorruptor implements Listener {
             }
         }
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void t1Event(FallenDeathEvent event) {
         Player damager = event.getKiller();
-        if (ConfigUtils.getLevel("corrupter", damager) > 1 && ConfigUtils.findClass(damager).equals("corrupter")) {
+        if (!event.isCancelled() && ConfigUtils.getLevel("corrupter", damager) > 1 && ConfigUtils.findClass(damager).equals("corrupter")) {
             DesertMain.ct1players.add(damager.getUniqueId());
             new BukkitRunnable() {
 

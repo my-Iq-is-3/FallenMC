@@ -18,6 +18,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import xyz.fallenmc.risenboss.main.RisenMain;
+import xyz.fallenmc.risenboss.main.utils.RisenUtils;
 
 import java.util.*;
 
@@ -110,15 +112,17 @@ public class SimpleNPC implements Listener {
     @EventHandler
     public void interact(NPCInteractEvent event){
         if(this.npc != null && event.getNPC().getUniqueId().equals(npc.getUniqueId())){
-            System.out.println("click");
-            ClickResponse response = clickResponse(event);
-            if(!response.absorb){
-                Player player = event.getWhoClicked();
-                npcMessage(player, response.message);
-                player.playSound(player.getLocation(), clickSnd, 10, 1);
+            if(!RisenUtils.isBoss(event.getWhoClicked().getUniqueId())){
+                ClickResponse response = clickResponse(event);
+                if(!response.absorb){
+                    Player player = event.getWhoClicked();
+                    npcMessage(player, response.message);
+                    player.playSound(player.getLocation(), clickSnd, 10, 1);
+                }
             }
         }
     }
+
     //override with parameters needed to contruct your subclass (if any)
     public List<?> params(){
         return new ArrayList<>();

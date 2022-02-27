@@ -17,6 +17,18 @@ public class ActionBarUtils {
         }
     }
 
+    public static void sendActionBar(Player player, String message, int duration){
+        UUID uuid = player.getUniqueId();
+        if(!actionBars.containsKey(uuid)){
+            SimpleActionBar actionBar = new SimpleActionBar(message);
+            setActionBar(player, actionBar);
+            Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, () -> {
+                if(getActionBar(uuid) == actionBar)
+                    clearActionBar(player);
+            }, duration);
+        }
+    }
+
     public static void setActionBar(Player player, ActionBar actionBar){
         UUID uuid = player.getUniqueId();
         actionBars.put(uuid, actionBar);

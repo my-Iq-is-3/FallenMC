@@ -133,20 +133,20 @@ public class CorrupterTierMenu {
 				
 				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Traveller");
-				glore.add(ChatColor.GREEN + " For every unique (non-air) block travelled, deal an extra");
-				glore.add(ChatColor.GREEN + "0.02% damage. Resets upon death.");
+				glore.add(ChatColor.GREEN + " For every 100 unique blocks travelled, deal an extra");
+				glore.add(ChatColor.GREEN + " 2% damage. Resets upon death.");
 				glore.add(ChatColor.BOLD + "" + ChatColor.GREEN + "SHOP UNLOCK " + ChatColor.GREEN + "- Corrupter Leggings");
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Traveller");
-				ylore.add(ChatColor.YELLOW + " For every unique (non-air) block travelled, deal an extra");
-				ylore.add(ChatColor.YELLOW + "0.02% damage. Resets upon death");
+				ylore.add(ChatColor.YELLOW + " For every 100 unique blocks travelled, deal an extra");
+				ylore.add(ChatColor.YELLOW + " 2% damage. Resets upon death");
 				ylore.add(ChatColor.BOLD + "" + ChatColor.YELLOW + "SHOP UNLOCK " + ChatColor.YELLOW + "- Corrupter Leggings");
 
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				rlore.add(ChatColor.RED + " - Traveller");
-				rlore.add(ChatColor.RED + " For every unique (non-air) block travelled, deal an extra");
-				rlore.add(ChatColor.RED + "0.02% damage. Resets upon death.");
+				rlore.add(ChatColor.RED + " For every 100 unique blocks travelled, deal an extra");
+				rlore.add(ChatColor.RED + " 2% damage. Resets upon death.");
 				glore.add(ChatColor.BOLD + "" + ChatColor.RED + "SHOP UNLOCK " + ChatColor.RED + "- Corrupter Leggings");
 				break;
 			case 6:

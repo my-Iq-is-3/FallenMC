@@ -131,7 +131,7 @@ public class ConfigUtils {
 			if(level == 10){
 				String classMaxed = StringUtil.stylizeClass(classtoaddto).toUpperCase() + " CLASS MAXED";
 				String color = ChatColor.getLastColors(classMaxed);
-				player.sendTitle(new Title(classMaxed + "!"));
+				player.sendTitle(classMaxed + "!", "");
 				player.sendMessage(color + ChatColor.BOLD + ChatColor.stripColor(classMaxed) + color + " Congratulations!");
 				Inventory inventory = player.getInventory();
 				ItemStack fallenPiece = FALLEN_PIECES.get(classtoaddto).get();
@@ -143,7 +143,7 @@ public class ConfigUtils {
 				}
 			}else{
 				data.setClassXPR(classtoaddto,xprTiers[level - 1]);
-				player.sendTitle(new Title(ChatColor.WHITE.toString() + (level - 1) + " ➞ " + ChatColor.AQUA + ChatColor.BOLD + level, StringUtil.stylizeClass(classtoaddto) + " Class"));
+				player.sendTitle(ChatColor.WHITE.toString() + (level - 1) + " ➞ " + ChatColor.AQUA + ChatColor.BOLD + level, StringUtil.stylizeClass(classtoaddto) + " class");
 			}
 			data.setClassXP(classtoaddto,0);
 			data.setClassLevel(classtoaddto,level);

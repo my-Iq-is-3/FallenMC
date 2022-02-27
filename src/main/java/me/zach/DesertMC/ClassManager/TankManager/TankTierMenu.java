@@ -127,21 +127,21 @@ public class TankTierMenu {
 				glore.add(ChatColor.DARK_GRAY + " Slowness 1 and Weakness 4 to your killer for 2s on death.");
 				glore.add(ChatColor.DARK_GRAY + " Spawns ambient, threatening purple particles");
 				glore.add(ChatColor.GREEN + " - Traveller");
-				glore.add(ChatColor.GREEN + " For every unique (non-air) block you've traveled, take an extra");
-				glore.add(ChatColor.GREEN + " 0.02% less damage. Resets upon death.");
+				glore.add(ChatColor.GREEN + " For every 100 unique blocks travelled, take an extra");
+				glore.add(ChatColor.GREEN + " 2% less damage. Resets upon death.");
 
 				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				ylore.add(ChatColor.YELLOW + " - Traveller");
-				ylore.add(ChatColor.YELLOW + " For every unique (non-air) block you've traveled, take an extra");
-				ylore.add(ChatColor.YELLOW + " 0.02% less damage. Resets upon death.");
+				ylore.add(ChatColor.YELLOW + " For every 100 unique blocks travelled, take an extra");
+				ylore.add(ChatColor.YELLOW + " 2% less damage. Resets upon death.");
 				ylore.add(ChatColor.YELLOW + " - Vengance");
 				ylore.add(ChatColor.DARK_GRAY + " Slowness 1 and Weakness 4 to your killer for 2s on death.");
 				ylore.add(ChatColor.DARK_GRAY + " Spawns ambient, threatening purple particles");
 
 				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 				glore.add(ChatColor.GREEN + " - Traveller");
-				glore.add(ChatColor.GREEN + " For every unique block you've traveled, take an extra");
-				glore.add(ChatColor.GREEN + " 0.02% less damage. Resets upon death.");
+				glore.add(ChatColor.GREEN + " For every 100 unique blocks travelled, take an extra");
+				glore.add(ChatColor.GREEN + " 2% less damage. Resets upon death.");
 				rlore.add(ChatColor.RED + " - Vengance");
 				rlore.add(ChatColor.DARK_GRAY + " Slowness 1 and Weakness 4 to your killer for 2s on death.");
 				rlore.add(ChatColor.DARK_GRAY + " Spawns ambient, threatening purple particles");

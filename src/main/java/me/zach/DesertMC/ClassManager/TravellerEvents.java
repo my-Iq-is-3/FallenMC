@@ -40,30 +40,38 @@ public class TravellerEvents implements Listener {
                     if(ConfigUtils.getLevel(findClass(uuid), uuid) > 5) travelled.put(uuid, new HashSet<>());
                 }else{
                     Set<Block> blockSet = travelled.get(uuid);
+                    int prevSize = blockSet.size();
                     if(blockSet.add(block) && notifications(uuid)){
                         Player player = e.getPlayer();
-                        String actionBar = ChatColor.YELLOW + "Unique block travelled! Unique blocks travelled this run: " + ChatColor.GREEN + blockSet.size();
-                        if(blockSet.size() % 150 == 0){
+                        String actionBar = ChatColor.YELLOW + "Unique blocks travelled this run: " + ChatColor.GREEN + blockSet.size();
+                        if(prevSize % 200 == 0){
                             player.sendMessage(Prefix.SERVER + ChatColor.YELLOW.toString() + ChatColor.BOLD + " TIP: " + ChatColor.GRAY + "Toggle block notifications using /blocknotifications");
                         }
                         ActionBarUtils.sendActionBar(player, actionBar);
                     }
-
+                    Player player = e.getPlayer();
                     if(findClass(uuid).equalsIgnoreCase("scout")){
                         if(!scoutCounter.containsKey(uuid)) scoutCounter.put(uuid, 1);
-                        else if(scoutCounter.get(uuid) >= 20){
-                            Player player = e.getPlayer();
-                            player.setWalkSpeed(player.getWalkSpeed() + 0.001f);
+                        else if(scoutCounter.get(uuid) >= 100){
+                            player.setWalkSpeed(player.getWalkSpeed() + 0.004f);
+                            sendAchieved(ChatColor.AQUA.toString() + ChatColor.BOLD + "+2%" + ChatColor.AQUA + " move speed!", player); //TODO this
                             scoutCounter.remove(uuid);
                         }else scoutCounter.put(uuid, scoutCounter.get(uuid) + 1);
                     }else if(findClass(uuid).equalsIgnoreCase("wizard")){
                         if(!wizardCounter.containsKey(uuid)) wizardCounter.put(uuid, 1);
-                        else if(wizardCounter.get(uuid) >= 200){
-                            Player player = e.getPlayer();
-                            player.setMaxHealth(player.getMaxHealth() + 1);
-                            player.setHealth(player.getHealth() + 1);
+                        else if(wizardCounter.get(uuid) >= 250){
+                            player.setMaxHealth(player.getMaxHealth() + 2);
+                            player.setHealth(player.getHealth() + 2);
+                            sendAchieved(ChatColor.AQUA.toString() + ChatColor.BOLD + "+2" + ChatColor.RED + " max health!", player);
                             wizardCounter.remove(uuid);
                         }else wizardCounter.put(uuid, wizardCounter.get(uuid) + 1);
+                    }else if(findClass(uuid).equals("tank")){
+                        if(blockSet.size() % 100 == 0){
+                            sendAchieved(ChatColor.AQUA.toString() + ChatColor.BOLD + "+2% " + ChatColor.DARK_GREEN + "defense!", player);
+                        }
+                    }else if(findClass(uuid).equals("corrupter")){
+                        if(blockSet.size() % 100 == 0)
+                            sendAchieved(ChatColor.AQUA + ChatColor.BOLD.toString() + "+2% " + ChatColor.DARK_RED + "damage!", player);
                     }
                 }
             }
@@ -74,12 +82,21 @@ public class TravellerEvents implements Listener {
         if(TravellerEvents.travelled.containsKey(player.getUniqueId())){
             if(findClass(player).equalsIgnoreCase("scout")){
                 Set<Block> blocks = TravellerEvents.travelled.get(player.getUniqueId());
-                player.setWalkSpeed(player.getWalkSpeed() - (Math.floorDiv(blocks.size(), 20) * 0.001f));
+                player.setWalkSpeed(player.getWalkSpeed() - (Math.floorDiv(blocks.size(), 100) * 0.004f));
             }else if(findClass(player).equalsIgnoreCase("wizard")){
                 Set<Block> blocks = TravellerEvents.travelled.get(player.getUniqueId());
-                player.setMaxHealth(player.getMaxHealth() - Math.floorDiv(blocks.size(), 100));
+                player.setMaxHealth(player.getMaxHealth() - (Math.floorDiv(blocks.size(), 250) * 2));
             }
             TravellerEvents.travelled.remove(player.getUniqueId());
+            wizardCounter.remove(player.getUniqueId());
+            scoutCounter.remove(player.getUniqueId());
+        }
+    }
+
+    private void sendAchieved(String message, Player player){
+        if(notifications(player.getUniqueId())){
+            ActionBarUtils.sendActionBar(player, message, 50);
+            player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 10, 1);
         }
     }
 

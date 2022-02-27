@@ -3,38 +3,31 @@ package me.zach.DesertMC.Utils;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
-import de.tr7zw.nbtinjector.NBTInjector;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
+import me.zach.DesertMC.GameMechanics.hitbox.HitboxListener;
+import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
-import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.structs.Pair;
 import me.zach.DesertMC.holo.Hologram;
-import net.minecraft.server.v1_8_R3.AttributeInstance;
-import net.minecraft.server.v1_8_R3.AttributeModifier;
-import net.minecraft.server.v1_8_R3.GenericAttributes;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.craftbukkit.v1_8_R3.scheduler.CraftScheduler;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.permissions.Permissible;
-import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -45,6 +38,11 @@ public class MiscUtils {
     private static final Plugin pl = DesertMain.getInstance;
     public static final UUID UUID_DRMLEM = UUID.fromString("7f9ad03e-23ec-4648-91c8-2e0820318a8b");
     public static final UUID UUID_1IQ = UUID.fromString("a082eaf8-2e8d-4b23-a041-a33ba8d25d5d");
+    public static DecimalFormat DMG_FORMATTER = new DecimalFormat();
+    static{
+        MiscUtils.DMG_FORMATTER.setMaximumFractionDigits(1);
+    }
+
     public static void ootChestFanfare(Player player){
         player.playNote(player.getLocation(), Instrument.PIANO, natural(0, Tone.F));
         player.playNote(player.getLocation(), Instrument.PIANO, sharp(0, Tone.G));
@@ -137,9 +135,10 @@ public class MiscUtils {
     }
 
     public static Damageable canDamage(Entity entity){
-        if(Events.invincible.contains(entity.getUniqueId())) return null;
-        else if(entity instanceof Player) return ((Player) entity).getNoDamageTicks() == 0 ? (Damageable) entity : null;
-        return !(entity.spigot().isInvulnerable()) && entity instanceof Damageable ? (Damageable) entity : null;
+        Location location = entity.getLocation();
+        if(Events.invincible.contains(entity.getUniqueId()) || HitboxListener.isInSpawn(location) || HitboxListener.isInCafe(location)){
+            return null;
+        }else return !new NBTEntity(entity).getBoolean("Invulnerable") && entity instanceof Damageable ? (Damageable) entity : null;
     }
 
     public static boolean isAdmin(Player player){
@@ -217,6 +216,7 @@ public class MiscUtils {
             if(canEnchant) customAttributes.setBoolean("CAN_ENCHANT", true);
             customAttributes.setString("UUID", UUID.randomUUID().toString());
             if(hasLives){
+                nbt.setBoolean("Unbreakable", true);
                 item = NBTUtil.setLives(nbt.getItem(), lives);
             }else item = nbt.getItem();
         }
@@ -281,7 +281,7 @@ public class MiscUtils {
     }
 
     public static boolean trueEmpty(Block block){
-        return block.isEmpty() || block.getType() == Material.GRASS || block.getType() == Material.LONG_GRASS || block.getType() == Material.SNOW;
+        return block.isEmpty() || block.getType() == Material.LONG_GRASS || block.getType() == Material.SNOW;
     }
 
     public static String makePlural(String str){
@@ -297,6 +297,11 @@ public class MiscUtils {
         if(rank != null){
             return rank.c;
         }else return ChatColor.GRAY.toString();
+    }
+
+    public static void refreshTablistName(Player player){
+        Prefix title = ConfigUtils.getSelectedTitle(player);
+        player.setPlayerListName(title != null ? title + " " + player.getDisplayName() : player.getDisplayName());
     }
 
     public static ArrayList<Location> getCircle(Location center, double radius, int amount) {
@@ -354,6 +359,23 @@ public class MiscUtils {
     public static Location indicatorLocation(Location center){
         ThreadLocalRandom random = ThreadLocalRandom.current();
         return center.clone().add(randomWithRandomSign(INDICATOR_MIN_DISTANCE, INDICATOR_MAX_DISTANCE, random), random.nextDouble(INDICATOR_MIN_DISTANCE,INDICATOR_MAX_DISTANCE), randomWithRandomSign(INDICATOR_MIN_DISTANCE, INDICATOR_MAX_DISTANCE, random));
+    }
+
+    public static void damageIndicator(double damage, Entity damager, Entity entity){
+        if(damage > 0){
+            boolean playerInvolved;
+            playerInvolved = damager instanceof Player || entity instanceof Player;
+            if(playerInvolved){
+                String content = DMG_FORMATTER.format(damage);
+                if(damage > 15)
+                    content = ChatColor.RED + ChatColor.MAGIC.toString() + "A" + ChatColor.GOLD + ChatColor.BOLD + content + ChatColor.RED + ChatColor.MAGIC + "A";
+                else if(damage > 10) content = ChatColor.GOLD + ChatColor.BOLD.toString() + content;
+                else if(damage > 5) content = ChatColor.GOLD + content;
+                else content = ChatColor.GRAY + content;
+                Location center = entity.getLocation();
+                MiscUtils.showIndicator(content, center);
+            }
+        }
     }
 
     public static double randomWithRandomSign(double origin, double bound){

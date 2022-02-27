@@ -11,7 +11,8 @@ public enum Prefix {
     SERVER(ChatColor.BLUE,"[SERVER]",false),
     COOWNER(ChatColor.GOLD, "CO-OWNER", true),
     ADMIN(ChatColor.RED, "ADMIN", true),
-    NPC(ChatColor.GRAY, "(" + ChatColor.GREEN + "NPC" + ChatColor.GRAY + ")", false);
+    NPC(ChatColor.GRAY, "(" + ChatColor.GREEN + "NPC" + ChatColor.GRAY + ")", false),
+    RISEN_BOSS(ChatColor.RED, "RISEN BOSS", true);
 
 
 

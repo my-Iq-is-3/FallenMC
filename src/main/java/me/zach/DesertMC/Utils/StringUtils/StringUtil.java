@@ -10,12 +10,12 @@ import java.util.List;
 public class StringUtil{
     public static final char BULLET = '\u2022';
     public static final int LORE_LENGTH = 30;
-    public static List<String> wrapLore(String string){
+    public static List<String> wrapLore(String string, int length){
         StringBuilder sb = new StringBuilder(string);
         int i = 0;
         while(true){
             i = jumpToLineFeed(sb, i);
-            if(i + LORE_LENGTH > sb.length() || (i = sb.lastIndexOf(" ", i + LORE_LENGTH)) == -1) break;
+            if(i + length > sb.length() || (i = sb.lastIndexOf(" ", i + length)) == -1) break;
             if(sb.charAt(i) != '\n') sb.setCharAt(i, '\n');
         }
         //maintaining ChatColors since I'm pretty sure item lore doesn't carry them over through list entries
@@ -28,6 +28,10 @@ public class StringUtil{
             }
         }
         return splitLore;
+    }
+
+    public static List<String> wrapLore(String string){
+        return wrapLore(string, LORE_LENGTH);
     }
 
     private static int jumpToLineFeed(StringBuilder builder, int from){

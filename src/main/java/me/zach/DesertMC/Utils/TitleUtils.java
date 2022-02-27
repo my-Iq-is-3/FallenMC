@@ -18,6 +18,7 @@ public class TitleUtils {
         if(hasTitle(p, pr)){
             PlayerData data = ConfigUtils.getData(p);
             data.setTitle(pr);
+            MiscUtils.refreshTablistName(p);
             return true;
         }else return false;
     }
