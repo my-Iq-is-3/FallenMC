@@ -19,13 +19,15 @@ import org.bukkit.util.Vector;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Player cosmetic enum
+ */
 public enum Cosmetic {
-    //player cosmetic enum
     EXPLOSION("Explosion Kill Effect", Material.TNT,  ChatColor.YELLOW + "Explode your enemies for the ultimate revenge!", CosmeticType.KILL_EFFECT){
         @Override
         public void activateKill(Player player){
             ParticleEffect.EXPLOSION_NORMAL.display(0.5f, 0.5f, 0.5f, 0, 8, player.getLocation(), 75);
-            player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 10, 1.15f);
+            player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 10, 1.1f);
         }
     },
     LIGHTNING_STRIKE("Thor's Wrath", Material.IRON_AXE, ChatColor.YELLOW + "Your enemies feel the ultimate wrath of Thor raining down them as they perish.", CosmeticType.KILL_EFFECT){
@@ -36,7 +38,7 @@ public enum Cosmetic {
             player.getWorld().strikeLightningEffect(player.getLocation());
         }
     },
-    EMERALD_TRAIL("Emerald Sparkle Arrow Trail", Material.EMERALD_ORE, ChatColor.YELLOW + "A green, sparkling trail that follows your arrows for some extra style!", CosmeticType.ARROW_TRAIL, ChatColor.WHITE + "Unlocked with the purchase of " + ChatColor.GREEN + "SUPPORTER" + ChatColor.WHITE + " rank"){
+    EMERALD_TRAIL("Emerald Sparkle Arrows", Material.EMERALD_ORE, ChatColor.YELLOW + "A green, sparkling trail that follows your arrows for some extra style!", CosmeticType.ARROW_TRAIL, ChatColor.WHITE + "Unlocked with the purchase of " + ChatColor.GREEN + "SUPPORTER" + ChatColor.WHITE + " rank"){
         public void activateArrow(Arrow arrow, boolean fast){
             new BukkitRunnable() {
                 @Override

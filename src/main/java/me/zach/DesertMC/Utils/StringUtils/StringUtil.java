@@ -141,17 +141,31 @@ public class StringUtil{
     /**
      * Makes a string array into a series of items, with proper english grammar. Ex: The array {Tater tots, french fries, Power Wash Simulator 2000} would become the string "Tater tots, french fries, and Power Wash Simulator 2000".
      * @param strings The string array to be made into a series of items.
+     * @param color The default chatcolor.
      * @return The string array made into a series of items.
      */
-    public static String series(String... strings){
-        if(strings.length == 0) return "";
+    public static String series(ChatColor color, String... strings){
+        String colorString = color == null ? "" : color.toString();
+        if(strings.length == 0) return colorString + "";
         else if(strings.length == 1) return strings[0];
-        else if(strings.length == 2) return strings[0] + " and " + strings[1];
+        else if(strings.length == 2) return strings[0] + colorString + " and " + strings[1] + colorString;
         else{
             int last = strings.length - 1;
-            strings[last] = "and " + strings[last];
-            return String.join(", ", strings);
+            strings[last] = " and " +  strings[last];
+            return String.join(colorString + ", ", strings);
         }
+    }
+
+    public static String series(String... strings){
+        return series(null, strings);
+    }
+
+    public static String[] toStringArray(Object[] objects){
+        String[] strings = new String[objects.length];
+        for(int i = 0; i<objects.length; i++){
+            strings[i] = objects[i].toString();
+        }
+        return strings;
     }
 
     public static class ChatWrapper {

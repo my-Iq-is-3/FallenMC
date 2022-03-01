@@ -1,6 +1,11 @@
 package me.zach.DesertMC.GameMechanics;
 
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListeningWhitelist;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.PacketListener;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
@@ -26,6 +31,7 @@ import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import me.zach.DesertMC.Utils.packet.wrappers.WrapperPlayServerWindowItems;
 import me.zach.DesertMC.Utils.structs.Pair;
 import me.zach.DesertMC.anvil.FallenAnvilInventory;
 import me.zach.DesertMC.cosmetics.Cosmetic;
@@ -48,6 +54,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -59,6 +66,7 @@ import xyz.fallenmc.risenboss.main.RisenMain;
 import xyz.fallenmc.risenboss.main.utils.RisenUtils;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
@@ -69,6 +77,10 @@ public class Events implements Listener{
 	public static HashMap<UUID,Integer> ks = new HashMap<>();
 	public static HashMap<Integer, ItemStack> arrowArray = new HashMap<>();
 	static final HashMap<UUID, Float> blocking = new HashMap<>();
+	static final DecimalFormat wphFormat = new DecimalFormat();
+	static{
+		wphFormat.setMaximumFractionDigits(3);
+	}
 	private CachedServerIcon nft = null;
 	public Events(){
 		File serverDir = new File(".").getAbsoluteFile();
@@ -80,6 +92,51 @@ public class Events implements Listener{
 				e.printStackTrace();
 			}
 		}
+
+		PacketListener lmao = new PacketListener() {
+			final ListeningWhitelist whitelist = ListeningWhitelist.newBuilder().types(WrapperPlayServerWindowItems.TYPE).build();
+			public void onPacketSending(PacketEvent event){
+				WrapperPlayServerWindowItems packet = new WrapperPlayServerWindowItems(event.getPacket());
+				ItemStack[] items = packet.getSlotData();
+				boolean modified = false;
+				for(int i = 0; i<items.length; i++){
+					ItemStack item = items[i];
+					Double wph = NBTUtil.getCustomAttr(item, "WEIGHT_ADD", double.class);
+					if(wph != null){
+						System.out.println("wph was " + wph);
+						ItemMeta meta = item.getItemMeta();
+						List<String> lore = meta.getLore();
+						lore.add("");
+						lore.add(ChatColor.DARK_GRAY + "Weight add per hit: " + ChatColor.RED + wphFormat.format(wph) + "%"); //don't have a centralized item system? Fake it till you make it!
+						meta.setLore(lore);
+						item.setItemMeta(meta);
+						items[i] = item;
+						modified = true;
+					}
+				}
+				if(modified){
+					packet.setSlotData(items);
+					event.setPacket(packet.getHandle());
+				}
+			}
+
+			public void onPacketReceiving(PacketEvent event){
+
+			}
+
+			public ListeningWhitelist getSendingWhitelist(){
+				return whitelist;
+			}
+
+			public ListeningWhitelist getReceivingWhitelist(){
+				return ListeningWhitelist.EMPTY_WHITELIST;
+			}
+
+			public Plugin getPlugin(){
+				return DesertMain.getInstance;
+			}
+		};
+		ProtocolLibrary.getProtocolManager().addPacketListener(lmao);
 	}
 
 	public static ItemStack getItemUsed(Entity damager){
@@ -474,7 +531,6 @@ public class Events implements Listener{
 						DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
 			}
 		}
-//		executePreKill(event);
 		if(event.getDamager() instanceof Arrow)
 			arrowArray.remove(event.getDamager().getEntityId());
 	}
@@ -599,7 +655,7 @@ public class Events implements Listener{
 	}
 
 	public static void executeKill(Player player, Player killer){
-		executeKill(player, killer, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+		executeKill(player, killer, EntityDamageEvent.DamageCause.CUSTOM);
 	}
 
 	public static void executeKill(Player player, Player killer, EntityDamageEvent.DamageCause cause) {
@@ -611,8 +667,6 @@ public class Events implements Listener{
 			if(ks.get(player.getUniqueId()) > 5) message += ChatColor.GRAY + "\nYour streak of " + ChatColor.AQUA + ks.get(player.getUniqueId()) + ChatColor.RED + " was lost!";
 			player.sendMessage(message);
 			callOnKill(player, killer);
-			if(RisenUtils.isBoss(player.getUniqueId()))
-				RisenMain.currentBoss.endBoss(RisenBoss.EndReason.BOSS_VANQUISHED);
 			DesertMain.snack.remove(player.getUniqueId());
 			player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
 			if(killer != null){
@@ -666,9 +720,11 @@ public class Events implements Listener{
 		if(!inv.contains(Material.IRON_SWORD)) inv.addItem(MiscUtils.generateItem(Material.IRON_SWORD, ChatColor.WHITE + "Iron Sword", Collections.emptyList(), (byte) -1, 1, "IRON_SWORD"));
 		Bukkit.getScheduler().runTask(DesertMain.getInstance, () -> player.setFireTicks(0)); //idk, just don't ask
 		PlayerUtils.setAbsorption(player, 0);
+		if(RisenUtils.isBoss(player.getUniqueId()))
+			RisenMain.currentBoss.endBoss(RisenBoss.EndReason.BOSS_VANQUISHED);
 	}
 
-	private void executeKillCheck(EntityDamageEvent event) throws NullPointerException {
+	private static void executeKillCheck(EntityDamageEvent event) throws NullPointerException {
 		if(!event.isCancelled()){
 			if(event.getEntity() instanceof Player){
 				Player player = (Player) event.getEntity();
@@ -679,15 +735,22 @@ public class Events implements Listener{
 		}
 	}
 
-	private void executeKill(EntityDamageEvent event){
+	public static void executeKill(EntityDamageEvent event){
 		Entity entity = event.getEntity();
 		if(entity instanceof Player){
-			Player player = (Player) event.getEntity();
-			UUID uuid = DesertMain.lastdmgers.get(event.getEntity().getUniqueId());
-			Player killer = uuid == null ? null : Bukkit.getPlayer(uuid);
 			event.setCancelled(true);
-			executeKill(player, killer, event.getCause());
+			executeKill((Player) entity, event.getCause());
 		}else if(entity instanceof Damageable) ((Damageable) entity).setHealth(0);
+	}
+
+	public static void executeKill(Player dead){
+		executeKill(dead, EntityDamageByEntityEvent.DamageCause.CUSTOM);
+	}
+
+	public static void executeKill(Player dead, EntityDamageEvent.DamageCause cause){
+		UUID uuid = DesertMain.lastdmgers.get(dead.getUniqueId());
+		Player killer = uuid == null ? null : Bukkit.getPlayer(uuid);
+		executeKill(dead, killer, cause);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -887,6 +950,7 @@ public class Events implements Listener{
 			PlayerUtils.setAbsorption(p, 0);
 		}finally{
 			respawn(p);
+			p.updateInventory();
 		}
 	}
 

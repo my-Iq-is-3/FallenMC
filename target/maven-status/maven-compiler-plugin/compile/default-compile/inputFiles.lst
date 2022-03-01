@@ -36,6 +36,7 @@
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/npcs/StreakPolice.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/holo/HologramEvents.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/hitbox/Hitbox.java
+/Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/packet/wrappers/WrapperPlayServerWindowItems.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/shops/ShopInventory.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/ClassManager/TankManager/EventsForTank.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/debug/InfoDumper.java

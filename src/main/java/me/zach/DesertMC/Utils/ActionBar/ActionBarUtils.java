@@ -52,7 +52,7 @@ public class ActionBarUtils {
             for(Map.Entry<UUID, ActionBar> bar : actionBars.entrySet()){
                 sendActionBar0(Bukkit.getPlayer(bar.getKey()), bar.getValue().getMessage());
             }
-        }, 0, 50).getTaskId();
+        }, 0, 40).getTaskId();
     }
 
     protected static void sendActionBar0(Player player, String message){
