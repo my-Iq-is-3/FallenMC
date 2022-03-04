@@ -5,6 +5,7 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.artifacts.gui.inv.ArtifactData;
 import net.minecraft.server.v1_8_R3.EntityLiving;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Damageable;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.util.Vector;
 import xyz.fallenmc.risenboss.main.RisenMain;
 import xyz.fallenmc.risenboss.main.utils.RisenUtils;
 
@@ -95,5 +97,17 @@ public class PlayerUtils implements Listener {
                 RisenMain.currentBoss.bossAttack(dmg);
             }
         }
+    }
+
+    public static final double MIN_FOV = Math.PI / 2;
+
+    public static boolean canSeeTarget(LivingEntity looking, Location target){
+        return canSeeTarget(looking.getEyeLocation(), target);
+    }
+
+    public static boolean canSeeTarget(Location eyeLocation, Location targetInQuestion){
+        Vector line = eyeLocation.toVector().subtract(targetInQuestion.toVector());
+        double angle = eyeLocation.getDirection().angle(line);
+        return angle < MIN_FOV;
     }
 }

@@ -26,6 +26,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.logging.Level;
 
 import static org.bukkit.Note.Tone;
 //TODO refactor horrible class
@@ -248,7 +249,7 @@ public class SoulBroker extends NPCSuper implements Listener{
                         try{
                             price = calculateReducePrice(WPHtoRemove);
                         }catch(Exception exception){
-                            Bukkit.getConsoleSender().sendMessage(exception.getMessage());
+                            Bukkit.getLogger().log(Level.WARNING, "Exception while calculating WPH removal price,", exception);
                             p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
                             return;
                         }
@@ -315,7 +316,7 @@ public class SoulBroker extends NPCSuper implements Listener{
                         //if the player doesn't have enough gems, close the inventory, tell them they don't have enough gems, and play a sound
                         p.closeInventory();
                         p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
-                        npcMessage(p, "Hey, stop tryna cheap me out, I don't negotiate my rates. Get a few more souls then come back to me.");
+                        npcMessage(p, "Hey, stop tryna cheap me out. I don't negotiate my rates. Get a few more souls then come back to me.");
                     }
                 }else{
                     p.closeInventory();
@@ -338,9 +339,9 @@ public class SoulBroker extends NPCSuper implements Listener{
         ItemMeta bookMeta = book.getItemMeta();
         bookMeta.setDisplayName(ChatColor.YELLOW + "Weapon Details");
         bookMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        DecimalFormat formatter = new DecimalFormat("#.######");
+        DecimalFormat formatter = new DecimalFormat("#.#####");
         formatter.setRoundingMode(RoundingMode.HALF_EVEN);
-        ArrayList<String> lore = new ArrayList<>(Arrays.asList(ChatColor.YELLOW + "Weight Per Hit to remove: " + ChatColor.BLUE.toString() + formatter.format(WPHtoRemove),
+        ArrayList<String> lore = new ArrayList<>(Arrays.asList(ChatColor.YELLOW + "Weight Per Hit to remove: " + ChatColor.BLUE + formatter.format(WPHtoRemove),
                 ChatColor.YELLOW + "Use the buttons on the",
                 ChatColor.YELLOW + "left and right to modify this.",
                 ChatColor.YELLOW + "Item WPH after modification: " + (formatter.format(weaponWPH - WPHtoRemove)),

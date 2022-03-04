@@ -2,7 +2,6 @@ package me.zach.DesertMC.GameMechanics;
 
 
 import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.ListeningWhitelist;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
@@ -47,13 +46,17 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
@@ -504,7 +507,7 @@ public class Events implements Listener{
 						EventsForTank.getInstance().fortify(event);
 						EventsForScout.getInstance().alert(event);
 						EventsForTank.getInstance().bludgeon(event);
-						EventsForScout.getInstance().scoutBlade((Player)event.getDamager(), (Player) event.getEntity());
+						if(!event.isCancelled()) EventsForScout.getInstance().scoutBlade(event);
 						EventsForScout.getInstance().t8Event(event);
 					}
 				travellerCoru(event);
