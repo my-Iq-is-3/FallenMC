@@ -33,7 +33,6 @@ import java.util.Arrays;
 
 public class InvEvents implements Listener {
 
-	@SuppressWarnings("unused")
 	@EventHandler
 	public void shopClick(InventoryClickEvent event) {
 		ItemStack item = event.getCurrentItem();
@@ -100,8 +99,8 @@ public class InvEvents implements Listener {
 				
 			if(item.getType().equals(Material.IRON_BLOCK)) {
 				if(ConfigUtils.deductGems(player, 250)){
-					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_CHESTPLATE, ChatColor.WHITE + "Iron Chestplate", new ArrayList<>(), (byte) -1, 1, "IRON_CHESTPLATE", 15));
-					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_HELMET,  ChatColor.WHITE + "Iron Helmet", new ArrayList<>(), (byte) -1, 1, "IRON_HELMET", 15));
+					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_CHESTPLATE, ChatColor.WHITE + "Iron Chestplate", new ArrayList<>(), (byte) -1, 1, "IRON_CHESTPLATE", 5));
+					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_HELMET,  ChatColor.WHITE + "Iron Helmet", new ArrayList<>(), (byte) -1, 1, "IRON_HELMET", 5));
 					shop.updateInventory();
 				}
 			}
@@ -110,8 +109,8 @@ public class InvEvents implements Listener {
 				
 				if(item.getType().equals(Material.IRON_SWORD)) {
 					if(ConfigUtils.deductGems(player,200)){
-						ItemStack sword = MiscUtils.generateItem(Material.IRON_SWORD, ChatColor.WHITE + "Iron Sword", MiscUtils.asArrayList(ChatColor.GRAY + "An especially shiny iron sword.", ChatColor.AQUA + "Sharpness II", ""), (byte) -1, 1, "IRON_SWORD", 5);
-						sword.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 2);
+						ItemStack sword = MiscUtils.generateItem(Material.IRON_SWORD, ChatColor.WHITE + "Iron Sword", MiscUtils.asArrayList(ChatColor.GRAY + "An especially shiny iron sword.", ChatColor.GRAY + "Sharpness I"), (byte) -1, 1, "IRON_SWORD", 5);
+						sword.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
 						player.getInventory().addItem(sword);
 						shop.updateInventory();
 					}
@@ -144,7 +143,6 @@ public class InvEvents implements Listener {
 				case 30:
 					WizardTierMenu wtm = new WizardTierMenu(player);
 					wtm.openInventory();
-					
 					break;
 				case 32:
 					CorrupterTierMenu ctm = new CorrupterTierMenu(player);
@@ -160,10 +158,7 @@ public class InvEvents implements Listener {
 					break;
 				default:
 					break;
-					
 			}
-
-
 		}
 
 		if(classinv.getName().equals("Wizard Class")){

@@ -116,7 +116,7 @@ public class EventsForScout implements Listener {
                 return;
             }
             if(ConfigUtils.getLevel("scout", hitter) > 6 && ConfigUtils.findClass(hitter).equals("scout")){
-                if(!PlayerUtils.canSeeTarget(hitter.getEyeLocation(), hit.getLocation()) && !(DesertMain.scoutBladeCD.contains(hitter.getUniqueId()))){
+                if(!DesertMain.scoutBladeCD.contains(hitter.getUniqueId()) && !PlayerUtils.canSeeTarget(hitter, hit.getLocation())){
                     hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 255), true);
                     event.setDamage(event.getDamage() + 2);
                     UUID uuid = hitter.getUniqueId();

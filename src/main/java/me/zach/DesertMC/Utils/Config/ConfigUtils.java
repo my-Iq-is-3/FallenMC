@@ -195,7 +195,7 @@ public class ConfigUtils {
 			int prevProgress = data.getCurrentProgress();
 			int prevNext = data.getXpToNext();
 			data.setCurrentProgress(0);
-			if(newLevel >= 29) data.setXpToNext(data.getLevel() * 300);
+			if(newLevel >= 29) data.setXpToNext(data.getLevel() * 250);
 			else data.setXpToNext(data.getLevel() * 200);
 			if(newLevel == 59) player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "MILESTONES MAXED!" + ChatColor.YELLOW + " Open the EXP Milestones inventory using /expmilestones and reset your milestones to gain a STAR, and a potential cosmetic!");
 			data.getUnclaimed().add(data.getLevel() - 1);

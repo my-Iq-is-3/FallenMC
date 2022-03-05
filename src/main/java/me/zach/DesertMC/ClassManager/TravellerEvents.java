@@ -16,6 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import xyz.fallenmc.risenboss.main.utils.RisenUtils;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +34,7 @@ public class TravellerEvents implements Listener {
         Location to = e.getTo();
         Block block = to.clone().subtract(0, 1, 0).getBlock();
         if(block.getType().isSolid()){
-            if(!HitboxListener.isInCafe(to) && !HitboxListener.isInSpawn(to)){
+            if(!RisenUtils.isBoss(e.getPlayer().getUniqueId()) && !HitboxListener.isInCafe(to) && !HitboxListener.isInSpawn(to)){
                 UUID uuid = e.getPlayer().getUniqueId();
                 if(!travelled.containsKey(uuid)){
                     if(ConfigUtils.getLevel(findClass(uuid), uuid) > 5) travelled.put(uuid, new HashSet<>());

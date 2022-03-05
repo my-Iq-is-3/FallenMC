@@ -5,10 +5,12 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.*;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -55,27 +57,27 @@ public class EventsForCorruptor implements Listener {
             }.runTaskLater(DesertMain.getInstance, 60);
         }
     }
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void volcanicSword(FallenDeathEvent event) {
         Player killer = event.getKiller();
         ItemStack item = killer.getInventory().getItemInHand();
-        if (!event.isCancelled() && NBTUtil.getCustomAttrString(item, "ID").equals("VOLCANIC_SWORD")) {
+        if (NBTUtil.getCustomAttrString(item, "ID").equals("VOLCANIC_SWORD")) {
             if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
                 if (((Events.ks.get(killer.getUniqueId()) + 1) % 5) == 0) {
-                    for (Entity near : Bukkit.getOnlinePlayers()) {
-                        if (near.getLocation().distance(killer.getLocation()) <= 5 && !near.equals(killer)) {
-                            Location nearloc = near.getLocation();
-                            Location eLoc = killer.getLocation();
-                            Location newLoc = nearloc.subtract(eLoc);
-                            Vector newV = newLoc.toVector().normalize().multiply(1.4);
-                            newV.setY(2);
-                            near.setVelocity(newV);
-                            ParticleEffect.FLAME.display(0.5f,0.5f,0.5f,0.3f,100,killer.getLocation(),100);
-                        }
+                    Location eLoc = killer.getLocation();
+                    for (Damageable near : MiscUtils.getNearbyDamageables(killer, 15)) {
+                        near.damage(8, killer);
+                        Location nearloc = near.getLocation();
+                        Location newLoc = nearloc.subtract(eLoc);
+                        Vector newV = newLoc.toVector().normalize().multiply(1.4);
+                        newV.setY(newV.getY() + 1.7);
+                        near.setVelocity(newV);
                     }
+                    ParticleEffect.FLAME.display(0.5f,0.5f,0.5f,0.3f,100,killer.getLocation(),100);
+                    killer.getWorld().playSound(killer.getLocation(), Sound.EXPLODE, 15, 1);
                 }
             }else{
-                killer.sendMessage(ChatColor.RED + "You are not a high enough level to use this!");
+                killer.sendMessage(ChatColor.RED + "You must have the corrupter class selected and past level 3 to use this item!");
             }
         }
     }

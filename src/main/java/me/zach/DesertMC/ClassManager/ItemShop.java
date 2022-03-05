@@ -151,7 +151,7 @@ public class ItemShop {
 		swordMeta.addEnchant(Enchantment.DAMAGE_ALL, 2, true);
 		ArrayList<String> swordlore = new ArrayList<>();
 		swordlore.add(ChatColor.DARK_GRAY + "An especially shiny iron sword.");
-		swordlore.add(ChatColor.AQUA + "Sharpness II");
+		swordlore.add(ChatColor.AQUA + "Sharpness I");
 		swordlore.add("");
 		swordlore.add(ChatColor.DARK_GRAY + "Lasts: " + ChatColor.RED + "5" + ChatColor.GRAY + " lives");
 		swordMeta.setLore(swordlore);

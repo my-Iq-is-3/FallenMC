@@ -13,7 +13,7 @@ import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 
 public class CorrupterTierMenu {
-	Player player = null;
+	Player player;
 	public CorrupterTierMenu(Player player) {
 		this.player = player;
 	}

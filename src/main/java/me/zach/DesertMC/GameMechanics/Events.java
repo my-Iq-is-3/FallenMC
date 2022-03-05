@@ -3,8 +3,10 @@ package me.zach.DesertMC.GameMechanics;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListeningWhitelist;
+import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
+import com.comphenix.protocol.reflect.StructureModifier;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
@@ -99,27 +101,19 @@ public class Events implements Listener{
 		PacketListener lmao = new PacketListener() {
 			final ListeningWhitelist whitelist = ListeningWhitelist.newBuilder().types(WrapperPlayServerWindowItems.TYPE).build();
 			public void onPacketSending(PacketEvent event){
-				WrapperPlayServerWindowItems packet = new WrapperPlayServerWindowItems(event.getPacket());
-				ItemStack[] items = packet.getSlotData();
-				boolean modified = false;
+				StructureModifier<ItemStack[]> modifier = event.getPacket().getItemArrayModifier();
+				ItemStack[] items = modifier.read(0);
 				for(int i = 0; i<items.length; i++){
 					ItemStack item = items[i];
 					Double wph = NBTUtil.getCustomAttr(item, "WEIGHT_ADD", double.class);
 					if(wph != null){
-						System.out.println("wph was " + wph);
 						ItemMeta meta = item.getItemMeta();
 						List<String> lore = meta.getLore();
-						lore.add("");
-						lore.add(ChatColor.DARK_GRAY + "Weight add per hit: " + ChatColor.RED + wphFormat.format(wph) + "%"); //don't have a centralized item system? Fake it till you make it!
+						lore.add(ChatColor.DARK_GRAY + "Weight add per hit: " + ChatColor.GRAY + wphFormat.format(wph) + "%"); //don't have a centralized item system? Fake it till you make it!
 						meta.setLore(lore);
 						item.setItemMeta(meta);
 						items[i] = item;
-						modified = true;
 					}
-				}
-				if(modified){
-					packet.setSlotData(items);
-					event.setPacket(packet.getHandle());
 				}
 			}
 
@@ -303,7 +297,7 @@ public class Events implements Listener{
 		}else if(placeBlock && isAdmin){
 			event.setUseItemInHand(Event.Result.DEFAULT);
 			event.setUseInteractedBlock(Event.Result.DEFAULT);
-		}else if((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) && NBTUtil.getCustomAttrBoolean(item, "USABLE")){
+		}else if((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) && (NBTUtil.getCustomAttrBoolean(item, "USABLE") || item.getType().name().endsWith("SWORD"))){
 			event.setUseItemInHand(Event.Result.DEFAULT);
 			event.setUseInteractedBlock(Event.Result.DENY);
 			player.setFoodLevel(19);
@@ -672,6 +666,8 @@ public class Events implements Listener{
 			callOnKill(player, killer);
 			DesertMain.snack.remove(player.getUniqueId());
 			player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
+			if(RisenUtils.isBoss(player.getUniqueId()))
+				RisenMain.currentBoss.endBoss(RisenBoss.EndReason.BOSS_VANQUISHED);
 			if(killer != null){
 				ThreadLocalRandom random = ThreadLocalRandom.current();
 				int soulsgained = 0;
@@ -723,8 +719,7 @@ public class Events implements Listener{
 		if(!inv.contains(Material.IRON_SWORD)) inv.addItem(MiscUtils.generateItem(Material.IRON_SWORD, ChatColor.WHITE + "Iron Sword", Collections.emptyList(), (byte) -1, 1, "IRON_SWORD"));
 		Bukkit.getScheduler().runTask(DesertMain.getInstance, () -> player.setFireTicks(0)); //idk, just don't ask
 		PlayerUtils.setAbsorption(player, 0);
-		if(RisenUtils.isBoss(player.getUniqueId()))
-			RisenMain.currentBoss.endBoss(RisenBoss.EndReason.BOSS_VANQUISHED);
+		TravellerEvents.resetTraveller(player);
 	}
 
 	private static void executeKillCheck(EntityDamageEvent event) throws NullPointerException {
@@ -950,11 +945,10 @@ public class Events implements Listener{
 			if(main.getConfig().getBoolean(blockNotifPath))
 				TravellerEvents.blockNotifs.add(p.getUniqueId());
 			MilestonesUtil.refreshExpBar(p);
-			PlayerUtils.setAbsorption(p, 0);
 		}finally{
 			respawn(p);
-			p.updateInventory();
 		}
+		p.updateInventory();
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
