@@ -137,9 +137,10 @@ public class ConfigUtils {
 				ItemStack fallenPiece = FALLEN_PIECES.get(classtoaddto).get();
 				player.sendMessage(ChatColor.RED + "Your reward, a blessing: " + fallenPiece.getItemMeta().getDisplayName());
 				if(!inventory.addItem(fallenPiece).isEmpty()){
-					Item dropped = player.getWorld().dropItemNaturally(player.getLocation(), fallenPiece);
+					Location location = player.getLocation();
+					Item dropped = player.getWorld().dropItem(location, fallenPiece);
 					MiscUtils.setOwner(dropped, player);
-					player.sendMessage(ChatColor.DARK_GRAY + "Since the fallen deities could not find an open place in your inventory, they have decided to drop off your glorious prize at your current location.");
+					player.sendMessage(ChatColor.DARK_GRAY + "Since the fallen deities could not find an open place in your inventory, they have decided to drop off your glorious prize at your current location.\n" + ChatColor.DARK_GRAY + "Which is " + MiscUtils.cleanCoordinates(location) + ", for future reference.");
 				}
 			}else{
 				data.setClassXPR(classtoaddto,xprTiers[level - 1]);

@@ -43,6 +43,10 @@ public class MiscUtils {
         MiscUtils.DMG_FORMATTER.setMaximumFractionDigits(1);
     }
 
+    public static String cleanCoordinates(Location location){
+        return "(" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ")";
+    }
+
     public static void ootChestFanfare(Player player){
         player.playNote(player.getLocation(), Instrument.PIANO, natural(0, Tone.F));
         player.playNote(player.getLocation(), Instrument.PIANO, sharp(0, Tone.G));
