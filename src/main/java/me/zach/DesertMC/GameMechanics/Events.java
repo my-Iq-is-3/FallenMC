@@ -134,30 +134,7 @@ public class Events implements Listener{
 				return DesertMain.getInstance;
 			}
 		};
-		PacketListener debug = new PacketListener() {
-			final ListeningWhitelist whitelist = ListeningWhitelist.newBuilder().types(PacketType.Login.Client.CUSTOM_PAYLOAD, PacketType.Login.Client.ENCRYPTION_BEGIN, PacketType.Login.Client.START, PacketType.Login.Server.CUSTOM_PAYLOAD, PacketType.Login.Server.ENCRYPTION_BEGIN, PacketType.Login.Server.DISCONNECT, PacketType.Login.Server.SET_COMPRESSION, PacketType.Login.Server.SUCCESS).build();
-			public void onPacketSending(PacketEvent event){
-				System.out.println("Sent " + event.getPacket().getHandle().getClass().getSimpleName() + " to " + event.getPlayer().getAddress());
-			}
-
-			public void onPacketReceiving(PacketEvent event){
-				System.out.println("Sent " + event.getPacket().getHandle().getClass().getSimpleName() + " to " + event.getPlayer().getAddress());
-			}
-
-			public ListeningWhitelist getSendingWhitelist(){
-				return whitelist;
-			}
-
-			public ListeningWhitelist getReceivingWhitelist(){
-				return whitelist;
-			}
-
-			public Plugin getPlugin(){
-				return DesertMain.getInstance;
-			}
-		};
 		ProtocolLibrary.getProtocolManager().addPacketListener(lmao);
-		ProtocolLibrary.getProtocolManager().addPacketListener(debug);
 	}
 
 	public static ItemStack getItemUsed(Entity damager){
@@ -973,11 +950,6 @@ public class Events implements Listener{
 			respawn(p);
 		}
 		p.updateInventory();
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onJoin(AsyncPlayerPreLoginEvent event){
-		System.out.println("Join event cancelled for " + event.getAddress() + ": " + event.getLoginResult());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

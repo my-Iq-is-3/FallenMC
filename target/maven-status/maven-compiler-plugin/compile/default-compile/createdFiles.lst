@@ -90,7 +90,6 @@ me/zach/DesertMC/shops/ShopItem$PurchaseResponse.class
 me/zach/DesertMC/Utils/nbt/EnchantmentUtil.class
 me/zach/DesertMC/GameMechanics/hitbox/HitboxCommand.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ItemData.class
-me/zach/DesertMC/GameMechanics/Events$7.class
 me/zach/DesertMC/ClassManager/ItemShop.class
 me/zach/DesertMC/ClassManager/CoruManager/EventsForCorruptor$1.class
 me/zach/DesertMC/ClassManager/TankManager/TankTierMenu.class
