@@ -135,7 +135,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 				credits.add(new TextComponent(StringUtil.getCenteredLine((String) obj)));
 			}else if(obj instanceof UsedAPI){
 				UsedAPI api = (UsedAPI) obj;
-				TextComponent component = new TextComponent(ChatColor.DARK_GRAY + " -  " + ChatColor.AQUA + api.name + "/" + api.author);
+				TextComponent component = new TextComponent(ChatColor.DARK_GRAY + " -  " + ChatColor.AQUA + api.author + "/" + api.name);
 				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.AQUA + api.url.toString())));
 				component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, api.url.toString()));
 				credits.add(component);
