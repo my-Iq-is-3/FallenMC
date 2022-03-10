@@ -1,6 +1,5 @@
 package me.zach.DesertMC;
 
-import de.tr7zw.nbtapi.NBTEntity;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
 import me.zach.DesertMC.ClassManager.TankManager.EventsForTank;
@@ -19,11 +18,18 @@ import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BlobHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BoxHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.CircleHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
+import me.zach.DesertMC.Utils.ImportantPeople;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
+import me.zach.DesertMC.Utils.StringUtils.StringUtil;
+import me.zach.DesertMC.Utils.StringUtils.StringUtil.ChatWrapper;
+import me.zach.DesertMC.Utils.UsedAPI;
 import me.zach.DesertMC.Utils.gui.GUIManager;
 import me.zach.DesertMC.holo.HologramEvents;
 import net.jitse.npclib.NPCLib;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -38,8 +44,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.*;
+import java.util.List;
 
 
 public class DesertMain extends JavaPlugin implements Listener {
@@ -61,6 +69,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 	}
 
 	private static String welcome;
+	public static List<TextComponent> credits = new ArrayList<>();
 	private static NPCLib library;
 	public static Set<UUID> claiming = new HashSet<>();
 	public static final String[] NPC_PACKAGES = new String[]{"me.zach.DesertMC.GameMechanics.npcs", "xyz.fallenmc.shops.npcs.clazz"};
@@ -77,8 +86,9 @@ public class DesertMain extends JavaPlugin implements Listener {
 		loadConfig();
 		HitboxManager.loadAll(this);
 		loadNPCs();
+		Bukkit.getScheduler().runTask(this, this::loadCredits); //dont ask
 		welcome = RankEvents.colorMessage(MiscUtils.ensureDefault("server.welcome", ChatColor.AQUA + "Welcome to FallenMC! We hope you'll have fun.", this));
-		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram"};
+		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram", "credits"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
@@ -92,6 +102,52 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(events, this);
 		events.check(this);
 		Bukkit.getLogger().info("FallenMC onEnable success!");
+	}
+
+	public void loadCredits(){
+		Object[] raw = new Object[]{
+				ChatColor.GOLD + "Here's to all the wonderful people that",
+				ChatColor.GOLD + "made this server possible!",
+				"",
+				ChatColor.GOLD + ChatColor.BOLD.toString() + "Creators",
+				ImportantPeople.ARCHMLEM,
+				ImportantPeople.ONE_IQ,
+				"",
+				ChatColor.AQUA + "Build Team",
+				ImportantPeople.DAMPALIUS,
+				ImportantPeople.PHLOOPY,
+				ImportantPeople.EVERPIG,
+				ImportantPeople.LECTRO,
+				ImportantPeople.SHONEN,
+				"",
+				ChatColor.BLUE + "API Credits",
+				UsedAPI.BOSSBAR_API,
+				UsedAPI.NPCLIB,
+				UsedAPI.NBTAPI,
+				UsedAPI.PARTICLE,
+				"",
+				ChatColor.YELLOW + "And lastly, a very special thank you to all",
+				ChatColor.YELLOW + "the people that helped us along the way.",
+				ChatColor.GOLD + "Cheers!"
+		};
+		for(Object obj : raw){
+			if(obj instanceof String){
+				credits.add(new TextComponent(StringUtil.getCenteredLine((String) obj)));
+			}else if(obj instanceof UsedAPI){
+				UsedAPI api = (UsedAPI) obj;
+				TextComponent component = new TextComponent(ChatColor.DARK_GRAY + " -  " + ChatColor.AQUA + api.name + "/" + api.author);
+				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.AQUA + api.url.toString())));
+				component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, api.url.toString()));
+				credits.add(component);
+			}else if(obj instanceof ImportantPeople){
+				ImportantPeople person = (ImportantPeople) obj;
+				TextComponent component = new TextComponent(ChatColor.DARK_GRAY + " -  " + person.getServerName());
+				credits.add(component);
+			}
+		}
+		for(TextComponent component : credits){
+			component.setText(component.getText() + "\n" + ChatColor.RESET);
+		}
 	}
 
 	public void onDisable(){

@@ -13,11 +13,12 @@ import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.structs.Pair;
 import me.zach.DesertMC.holo.Hologram;
+import me.zach.databank.DBCore;
+import me.zach.databank.saver.PlayerData;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.*;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -30,14 +31,13 @@ import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 
 import static org.bukkit.Note.*;
 
 public class MiscUtils {
     private static final ItemStack emptyPane = generateItem(Material.STAINED_GLASS_PANE, " ", Collections.emptyList(), (byte) 7, 1);
     private static final Plugin pl = DesertMain.getInstance;
-    public static final UUID UUID_DRMLEM = UUID.fromString("7f9ad03e-23ec-4648-91c8-2e0820318a8b");
-    public static final UUID UUID_1IQ = UUID.fromString("a082eaf8-2e8d-4b23-a041-a33ba8d25d5d");
     public static DecimalFormat DMG_FORMATTER = new DecimalFormat();
     static{
         MiscUtils.DMG_FORMATTER.setMaximumFractionDigits(1);
@@ -298,9 +298,11 @@ public class MiscUtils {
 
     public static String getRankColor(UUID uuid){
         Rank rank = ConfigUtils.getRank(uuid);
-        if(rank != null){
-            return rank.c;
-        }else return ChatColor.GRAY.toString();
+        return getRankColor(rank);
+    }
+
+    public static String getRankColor(Rank rank){
+        return rank == null ? ChatColor.GRAY.toString() : rank.c;
     }
 
     public static void refreshTablistName(Player player){
@@ -324,7 +326,7 @@ public class MiscUtils {
     }
 
     public static boolean isCoolPerson(UUID uuid){
-        return uuid.equals(UUID_DRMLEM) || uuid.equals(UUID_1IQ);
+        return uuid.equals(ImportantPeople.ARCHMLEM.uuid) || uuid.equals(ImportantPeople.ONE_IQ.uuid);
     }
 
     public static void setOwner(Item item, Player owner){
@@ -449,18 +451,36 @@ public class MiscUtils {
         return new ArrayList<>(Arrays.asList(items));
     }
 
+    //an example converter
+    public static final Function<String, UUID> UUID_CONVERTER = UUID::fromString;
+
+    public static <B, A> Collection<A> convertCollection(Collection<B> before, Collection<A> newCollection, Function<B, A> converter){
+        for(B unconverted : before){
+            newCollection.add(converter.apply(unconverted));
+        }
+        return newCollection;
+    }
+
     public static <T> List<T> trimList(List<T> list, int trimTo){
         while(list.size() > trimTo) list.remove(list.size() - 1);
         return list;
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T ensureDefault(String path, T defaultValue, Plugin plugin){
+        return ensureDefault(path, defaultValue, plugin, false);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T ensureDefault(String path, T defaultValue, Plugin plugin, boolean isConfigurationSection){
         FileConfiguration config = plugin.getConfig();
         if(!config.contains(path)){
-            config.set(path, defaultValue);
+            if(isConfigurationSection) config.createSection(path, (Map<?, ?>) defaultValue);
+            else config.set(path, defaultValue);
             plugin.saveConfig();
             return defaultValue;
-        }else return (T) config.get(path);
+        }else{
+            if(isConfigurationSection) return (T) config.getConfigurationSection(path).getValues(true);
+            else return (T) config.get(path);
+        }
     }
 }

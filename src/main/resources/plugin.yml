@@ -90,6 +90,9 @@ commands:
  hologram:
   description: Grants a hologram wand, which can be used to spawn a hologram with the specified name.
   usage: /<command> <name>
+ credits:
+  description: Shows all the wonderful people whose hard work made this server possible.
+  usage: /<command>
 
 permissions:
  admin:

@@ -6,11 +6,6 @@ import me.zach.DesertMC.ClassManager.KothyMenu;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesInventory;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
-import me.zach.DesertMC.GameMechanics.hitbox.Hitbox;
-import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BlobHitbox;
-import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BoxHitbox;
-import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.CircleHitbox;
-import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
@@ -26,6 +21,7 @@ import me.zach.DesertMC.shops.ShopInventory;
 import me.zach.DesertMC.shops.ShopItem;
 import me.zach.DesertMC.cosmetics.Cosmetic;
 import me.zach.databank.saver.PlayerData;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -37,6 +33,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
 
@@ -94,6 +91,13 @@ public class Commands implements Listener, CommandExecutor {
 				}else{
 					player.sendMessage(ChatColor.RED + "You don't have permission to use this command");
 				}
+			}else if(command.getName().equalsIgnoreCase("credits")){
+				int color = ThreadLocalRandom.current().nextInt(StringUtil.FRIENDLY_COLORS.length);
+				StringUtil.ChatWrapper wrapper = new StringUtil.ChatWrapper('=', StringUtil.FRIENDLY_COLORS[color], true, true);
+				player.sendMessage(wrapper.toString());
+				player.spigot().sendMessage(DesertMain.credits.toArray(new BaseComponent[0]));
+				player.sendMessage(wrapper.toString());
+				return true;
 			}else if(command.getName().equalsIgnoreCase("booster")){
 				if(args.length > 0){
 					try{
@@ -124,8 +128,7 @@ public class Commands implements Listener, CommandExecutor {
 						}
 					}else return false;
 				}else player.sendMessage(ChatColor.RED + "You don't have permission to use this command!");
-			}
-        	if(command.getName().equalsIgnoreCase("setspawn")) {
+			}else if(command.getName().equalsIgnoreCase("setspawn")) {
         		if(MiscUtils.isAdmin(player)){
         			String type;
         			if(args.length == 0) type = "lobby";
@@ -136,15 +139,13 @@ public class Commands implements Listener, CommandExecutor {
         		}else{
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
 				}
-        	}
-
-        	if(command.getName().equalsIgnoreCase("blocknotifications")){
+        	}else if(command.getName().equalsIgnoreCase("blocknotifications")){
         		if(ConfigUtils.getLevel(ConfigUtils.findClass(player), player.getUniqueId()) > 5){
         			ConfigUtils.toggleBlockNotifications(player, false);
 				}else player.sendMessage(ChatColor.RED + "You have not unlocked the Traveller class tier yet!");
 			}
 
-        	if(command.getName().equalsIgnoreCase("colors")){
+        	else if(command.getName().equalsIgnoreCase("colors")){
         		if(ConfigUtils.getRank(player) != null){
 					player.sendMessage(colorsMessage);
         			return true;
@@ -154,7 +155,7 @@ public class Commands implements Listener, CommandExecutor {
 				}
 			}
 
-        	if(command.getName().equalsIgnoreCase("gems")){
+        	else if(command.getName().equalsIgnoreCase("gems")){
 				UUID uuid = player.getUniqueId();
 				if(gemsCd.add(uuid)){
 					player.sendMessage(ChatColor.GREEN + "Gave you 1000 gems");
@@ -163,7 +164,7 @@ public class Commands implements Listener, CommandExecutor {
 				}else player.sendMessage(ChatColor.RED + "This command is on cooldown!");
 			}
 
-        	if(command.getName().equalsIgnoreCase("souls")){
+        	else if(command.getName().equalsIgnoreCase("souls")){
 				UUID uuid = player.getUniqueId();
 				if(soulsCd.add(uuid)){
 					player.sendMessage(ChatColor.LIGHT_PURPLE + "Gave you 30 souls");
@@ -172,7 +173,7 @@ public class Commands implements Listener, CommandExecutor {
 				}else player.sendMessage(ChatColor.RED + "This command is on cooldown!");
 			}
 
-			if(command.getName().equalsIgnoreCase("cosmetic")){
+			else if(command.getName().equalsIgnoreCase("cosmetic")){
 				if(args.length >= 2){
 					if(args[0].equalsIgnoreCase("set")){
 						Cosmetic toSet = Cosmetic.getFromName(String.join(" ", args).replace("set ", ""));
@@ -513,7 +514,7 @@ public class Commands implements Listener, CommandExecutor {
         	}
         	
 
-        	if(command.getName().equalsIgnoreCase("speed")) {
+        	else if(command.getName().equalsIgnoreCase("speed")) {
         		if(args.length == 1) {
 	        		if(MiscUtils.isAdmin(player)) {
 	        			if(args[0].equalsIgnoreCase("reset")) {
@@ -542,7 +543,7 @@ public class Commands implements Listener, CommandExecutor {
 
         	
         	}
-        	if(command.getName().equalsIgnoreCase("invincible")) {
+        	else if(command.getName().equalsIgnoreCase("invincible")) {
         		if(MiscUtils.isAdmin(player)) {
 					if(!Events.invincible.contains(player.getUniqueId())) {
 						player.sendMessage(ChatColor.GREEN + "Made you invincible!");
@@ -555,7 +556,9 @@ public class Commands implements Listener, CommandExecutor {
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
         		}
         		
-        	}
+        	}else if(command.getName().equalsIgnoreCase("credits")){
+
+			}
         }
 		return true;
     }

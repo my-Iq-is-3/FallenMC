@@ -8,9 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class StringUtil{
+    public static final ChatColor[] FRIENDLY_COLORS = new ChatColor[]{ChatColor.GOLD, ChatColor.YELLOW, ChatColor.AQUA, ChatColor.GREEN, ChatColor.LIGHT_PURPLE, ChatColor.AQUA, ChatColor.RED};
     public static final char BULLET = '\u2022';
     public static final int LORE_LENGTH = 30;
-    public static List<String> wrapLore(String string, int length){
+    public static String wrap(String string, int length){
+        if(string == null || string.isEmpty()) return string;
         StringBuilder sb = new StringBuilder(string);
         int i = 0;
         while(true){
@@ -18,8 +20,12 @@ public class StringUtil{
             if(i + length > sb.length() || (i = sb.lastIndexOf(" ", i + length)) == -1) break;
             if(sb.charAt(i) != '\n') sb.setCharAt(i, '\n');
         }
+        return sb.toString();
+    }
+
+    public static List<String> wrapLore(String string, int length){
+        List<String> splitLore = new ArrayList<>(Arrays.asList(wrap(string, length).split("\n")));
         //maintaining ChatColors since I'm pretty sure item lore doesn't carry them over through list entries
-        List<String> splitLore = new ArrayList<>(Arrays.asList(sb.toString().split("\n")));
         if(splitLore.size() > 1){
             String lastColors = ChatColor.getLastColors(splitLore.get(0));
             for(int j = 1; j < splitLore.size(); lastColors = ChatColor.getLastColors(splitLore.get(j)), j++){
@@ -56,7 +62,6 @@ public class StringUtil{
         int messagePxSize = 0;
         boolean previousCode = false;
         boolean isBold = false;
-
         for(char c : message.toCharArray()){
             if(c == '§'){
                 previousCode = true;
@@ -69,7 +74,6 @@ public class StringUtil{
                 messagePxSize++;
             }
         }
-
         int halvedMessageSize = messagePxSize / 2;
         int toCompensate = CENTER_PX - halvedMessageSize;
         int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
@@ -80,6 +84,20 @@ public class StringUtil{
             compensated += spaceLength;
         }
         return sb + message + sb + ChatColor.RESET;
+    }
+
+    public static String[] getCenteredMessageSafe(String[] lines){
+        return getCenteredMessageSafe(String.join("\n", lines));
+    }
+
+    /**
+     *
+     * @return A centered message that is correctly wrapped.
+     */
+    public static String[] getCenteredMessageSafe(String lines){
+        if(lines.isEmpty()) return new String[0];
+        lines = wrap(lines, MAX_CHAT_LENGTH);
+        return getCenteredMessage(lines.split("\n"));
     }
 
     private static String[] getCenteredMessage(ChatWrapper wrapper, String... lines){

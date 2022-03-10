@@ -1,10 +1,8 @@
 package me.zach.DesertMC.GameMechanics;
 
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListeningWhitelist;
-import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
 import com.comphenix.protocol.reflect.StructureModifier;
@@ -795,7 +793,7 @@ public class Events implements Listener{
 
 		StreakPolice.onKill(killer);
 
-		if(ks.get(killer.getUniqueId()) >= 50 && !RisenMain.alreadyUsed.contains(killer.getUniqueId())){
+		if(ks.get(killer.getUniqueId()) == 50 && !RisenMain.alreadyUsed.contains(killer.getUniqueId())){
 			String[] classes = new String[]{Key.SCOUT, Key.CORRUPTER, Key.TANK, Key.WIZARD};
 			boolean allClassesMaxed = true;
 			for(String clazz : classes){

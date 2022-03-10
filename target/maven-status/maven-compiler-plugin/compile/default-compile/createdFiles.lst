@@ -2,6 +2,7 @@ me/zach/DesertMC/cosmetics/Cosmetic$7.class
 me/zach/DesertMC/ClassManager/TravellerEvents.class
 me/zach/DesertMC/Utils/RankUtils/Rank.class
 me/zach/DesertMC/Utils/ench/CustomEnch.class
+me/zach/DesertMC/Utils/UsedAPI.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect.class
 me/zach/DesertMC/mythicalitems/MythicalItem.class
 me/zach/DesertMC/cosmetics/Cosmetic$6$1.class
@@ -124,6 +125,7 @@ me/zach/DesertMC/DesertMain.class
 me/zach/DesertMC/GameMechanics/hitbox/hitboxes/CircleHitbox.class
 me/zach/DesertMC/cosmetics/Cosmetic$9.class
 me/zach/DesertMC/Utils/MiscUtils$3.class
+me/zach/DesertMC/Utils/ImportantPeople.class
 me/zach/DesertMC/Utils/ench/CustomEnch$6.class
 me/zach/DesertMC/cosmetics/CosmeticData.class
 me/zach/DesertMC/Utils/ench/EnchantType$1.class
