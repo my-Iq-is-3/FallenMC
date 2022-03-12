@@ -648,52 +648,59 @@ public class Events implements Listener{
 	}
 
 	public static void executeKill(Player player, Player killer, EntityDamageEvent.DamageCause cause) {
+		boolean cancelled = false;
 		try {
 			FallenDeathEvent event = new FallenDeathEvent(player, killer, getItemUsed(killer), cause);
-			Bukkit.getPluginManager().callEvent(event);
-			if(event.isCancelled()) return;
-			String message = killer != null ? ChatColor.GRAY + "You were killed by " + killer.getDisplayName() + ChatColor.GRAY + "." : ChatColor.YELLOW + "You died.";
-			if(ks.get(player.getUniqueId()) > 5) message += ChatColor.GRAY + "\nYour streak of " + ChatColor.AQUA + ks.get(player.getUniqueId()) + ChatColor.RED + " was lost!";
-			player.sendMessage(message);
-			callOnKill(player, killer);
-			DesertMain.snack.remove(player.getUniqueId());
-			player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
-			if(RisenUtils.isBoss(player.getUniqueId()))
-				RisenMain.currentBoss.endBoss(RisenBoss.EndReason.BOSS_VANQUISHED);
-			if(killer != null){
-				ThreadLocalRandom random = ThreadLocalRandom.current();
-				int soulsgained = 0;
-				if(random.nextDouble() <= 0.2){
-					try{
-						if(NBTUtil.getCustomAttrString(killer.getInventory().getChestplate(), "ID").equals("LUCKY_CHESTPLATE"))
-							soulsgained = 2;
-						else{
+			try{
+				Bukkit.getPluginManager().callEvent(event);
+			}finally{
+				cancelled = event.isCancelled();
+			}
+			if(!cancelled){
+				String message = killer != null ? ChatColor.GRAY + "You were killed by " + killer.getDisplayName() + ChatColor.GRAY + "." : ChatColor.YELLOW + "You died.";
+				if(ks.get(player.getUniqueId()) > 5)
+					message += ChatColor.GRAY + "\nYour streak of " + ChatColor.AQUA + ks.get(player.getUniqueId()) + ChatColor.RED + " was lost!";
+				player.sendMessage(message);
+				callOnKill(player, killer);
+				DesertMain.snack.remove(player.getUniqueId());
+				player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 0.5f);
+				if(RisenUtils.isBoss(player.getUniqueId()))
+					RisenMain.currentBoss.endBoss(RisenBoss.EndReason.BOSS_VANQUISHED);
+				if(killer != null){
+					ThreadLocalRandom random = ThreadLocalRandom.current();
+					int soulsgained = 0;
+					if(random.nextDouble() <= 0.2){
+						try{
+							if(NBTUtil.getCustomAttrString(killer.getInventory().getChestplate(), "ID").equals("LUCKY_CHESTPLATE"))
+								soulsgained = 2;
+							else{
+								soulsgained = 1;
+							}
+						}catch(Exception ex){
 							soulsgained = 1;
-						}
-					}catch(Exception ex){
-						soulsgained = 1;
-						if(!(ex instanceof NullPointerException)){
-							Bukkit.getConsoleSender().sendMessage("Error managing souls. Error:\n" + ex);
+							if(!(ex instanceof NullPointerException)){
+								Bukkit.getConsoleSender().sendMessage("Error managing souls. Error:\n" + ex);
+							}
 						}
 					}
+					int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 50) + (ks.get(player.getUniqueId()) * 15) + ((random.nextInt(1, 3) * 25) * ks.get(killer.getUniqueId()) + 15);
+					xpgained = Math.min(xpgained, 8500 + random.nextInt(500));
+					int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 60) + (ks.get(player.getUniqueId()) * 10) + ((random.nextInt(2, 4) * 40) * ks.get(killer.getUniqueId()) + 20);
+					gemsgained = Math.min(gemsgained, Math.min(gemsgained, 2500 + random.nextInt(500)));
+					killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
+					ks.put(killer.getUniqueId(), ks.getOrDefault(killer.getUniqueId(), 0) + 1);
+					killer.playSound(killer.getLocation(), Sound.LEVEL_UP, 1, 4);
+					killer.playSound(killer.getLocation(), Sound.BURP, 6, 1.3f);
+					killer.playSound(killer.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
+					ConfigUtils.addGems(killer, gemsgained);
+					ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
+					ConfigUtils.addSouls(killer, soulsgained);
 				}
-				int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 50) + (ks.get(player.getUniqueId()) * 15) + ((random.nextInt(1, 3) * 25) * ks.get(killer.getUniqueId()) + 15);
-				xpgained = Math.min(xpgained, 8500 + random.nextInt(500));
-				int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 60) + (ks.get(player.getUniqueId()) * 10) + ((random.nextInt(2, 4) * 40) * ks.get(killer.getUniqueId()) + 20);
-				gemsgained = Math.min(gemsgained, Math.min(gemsgained, 2500 + random.nextInt(500)));
-				killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
-				ks.put(killer.getUniqueId(), ks.getOrDefault(killer.getUniqueId(), 0) + 1);
-				killer.playSound(killer.getLocation(), Sound.LEVEL_UP, 1, 4);
-				killer.playSound(killer.getLocation(), Sound.BURP, 6, 1.3f);
-				killer.playSound(killer.getLocation(), Sound.SHOOT_ARROW, 7, 1.1f);
-				ConfigUtils.addGems(killer, gemsgained);
-				ConfigUtils.addXP(killer, ConfigUtils.findClass(killer), xpgained);
-				ConfigUtils.addSouls(killer, soulsgained);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally{
-			respawn(player);
+			if(!cancelled) respawn(player);
 		}
 	}
 
@@ -826,7 +833,6 @@ public class Events implements Listener{
 				player.playSound(location, Sound.PISTON_EXTEND, 10, 0.9f);
 				new BukkitRunnable() {
 					float tone = 0;
-
 					@Override
 					public void run(){
 						if(tone >= 2){
@@ -838,9 +844,9 @@ public class Events implements Listener{
 					}
 				}.runTaskTimer(DesertMain.getInstance, 0, 2);
 				player.sendMessage(ChatColor.YELLOW + "You rise from the ashes!\n" + ChatColor.DARK_GRAY + "Consumed 1 Death Defiance");
-				player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 50, 2));
+				player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 50, 1));
 				ParticleEffect.FLAME.display(1, 10, 1, 0.1f, 200, player.getLocation(), 15);
-				player.setHealth(player.getMaxHealth() * 0.2);
+				player.setHealth(player.getMaxHealth() * 0.4);
 				invincible.add(player.getUniqueId());
 				new BukkitRunnable() {
 					public void run(){
