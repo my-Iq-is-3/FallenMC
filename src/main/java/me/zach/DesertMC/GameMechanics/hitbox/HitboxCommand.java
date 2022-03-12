@@ -53,7 +53,7 @@ public class HitboxCommand implements CommandExecutor, Listener {
                         }else if(args[0].equalsIgnoreCase("sphere")){
                             if(args.length == 3){
                                 try{
-                                    checkoutHitbox(new CircleHitbox(player.getLocation(), Integer.parseInt(args[1])), args[1], player);
+                                    checkoutHitbox(new CircleHitbox(player.getLocation(), Integer.parseInt(args[1])), args[2], player);
                                 }catch(NumberFormatException ex){
                                     player.sendMessage(ChatColor.RED + "Invalid usage! Usage: /hitbox sphere <radius> <name>");
                                     return true;
@@ -98,7 +98,9 @@ public class HitboxCommand implements CommandExecutor, Listener {
                                 }else player.sendMessage(ChatColor.RED + "Usage: /hitbox blob <start|end|undo|clear> <start;name>");
                             }else player.sendMessage(ChatColor.RED + "Usage: /hitbox blob <start|end|undo|clear> <start;name>");
                         }
-                    }else return false;
+                    }else{
+                        player.sendMessage("Currently active hitboxes: " + HitboxManager.getAll());
+                    }
                 }else player.sendMessage(ChatColor.RED + "Only admins can use this command!");
             }
         }else sender.sendMessage("You must be a player to run this command.");

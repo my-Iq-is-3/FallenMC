@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public enum UsedAPI {
+    PROTOCOL("ProtocolLib", "dmulloy2 & aadnk", "https://github.com/dmulloy2/ProtocolLib"),
     NBTAPI("NBTAPI", "tr7zw", "https://github.com/tr7zw/Item-NBT-API"),
     NPCLIB("NPCLib", "JitseB", "https://github.com/JitseB/NPCLib"),
     BOSSBAR_API("BossBarAPI", "inventivetalent", "https://github.com/InventivetalentDev/BossBarAPI"),

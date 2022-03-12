@@ -14,6 +14,6 @@ public class HitboxListener {
     }
 
     public static boolean isInSafeZone(Location location){
-        return isInCafe(location) && isInSpawn(location);
+        return isInCafe(location) || isInSpawn(location);
     }
 }

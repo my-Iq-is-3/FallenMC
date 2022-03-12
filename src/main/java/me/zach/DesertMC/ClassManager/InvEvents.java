@@ -1,5 +1,6 @@
 package me.zach.DesertMC.ClassManager;
 
+import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import me.gabriel.Traits.TraitsInventory;
 import me.zach.DesertMC.DesertMain;
@@ -29,6 +30,7 @@ import xyz.fallenmc.risenboss.main.inventories.BossActivationInventory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 
 public class InvEvents implements Listener {
@@ -40,7 +42,6 @@ public class InvEvents implements Listener {
 		Player player = (Player) event.getWhoClicked();
 		ItemStack[] updater = inv.getContents();
 		int balance = ConfigUtils.getGems(player);
-
 		ItemShop shop = new ItemShop(player);
 
 		if (inv.getName().startsWith("Kothy")) {
@@ -67,7 +68,11 @@ public class InvEvents implements Listener {
 			}
 			if(item.getType().equals(Material.BOW)) {
 				if(ConfigUtils.deductGems(player,100)){
-					player.getInventory().addItem(MiscUtils.generateItem(Material.BOW, ChatColor.WHITE + "Bow", MiscUtils.asArrayList(ChatColor.GRAY + "A bow."), (byte) -1, 1, "BOW", 1));
+					ItemStack bow = MiscUtils.generateItem(Material.BOW, ChatColor.WHITE + "Bow", MiscUtils.asArrayList(ChatColor.GRAY + "A bow."), (byte) -1, 1, "BOW", 1);
+					NBTItem nbt = new NBTItem(bow);
+					NBTCompound comp = NBTUtil.checkCustomAttr(nbt);
+					comp.setBoolean("USABLE", true);
+					player.getInventory().addItem(nbt.getItem());
 					shop.updateInventory();
 				}
 			}
@@ -92,7 +97,11 @@ public class InvEvents implements Listener {
 				
 			if(item.getType().equals(Material.GOLDEN_APPLE)) {
 				if(ConfigUtils.deductGems(player,75)){
-					player.getInventory().addItem(new ItemStack(Material.GOLDEN_APPLE));
+					ItemStack goldenApple = MiscUtils.generateItem(Material.GOLDEN_APPLE, ChatColor.WHITE + "Golden Apple", Collections.emptyList(), (byte) -1, 1);
+					NBTItem nbt = new NBTItem(goldenApple);
+					NBTCompound comp = NBTUtil.checkCustomAttr(nbt);
+					comp.setBoolean("USABLE", true);
+					player.getInventory().addItem(nbt.getItem());
 					shop.updateInventory();
 				}
 			}

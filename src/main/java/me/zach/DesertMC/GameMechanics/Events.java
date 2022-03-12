@@ -289,8 +289,8 @@ public class Events implements Listener{
 		ItemStack item = event.getItem();
 		Action action = event.getAction();
 		boolean isAdmin = MiscUtils.isAdmin(player);
-		boolean placeBlock = event.isBlockInHand() && action == Action.RIGHT_CLICK_BLOCK;
-		boolean destroyBlock = action == Action.LEFT_CLICK_BLOCK;
+		boolean placeBlock = event.isBlockInHand() && action == Action.RIGHT_CLICK_BLOCK && player.getGameMode() == GameMode.CREATIVE;
+		boolean destroyBlock = action == Action.LEFT_CLICK_BLOCK && player.getGameMode() == GameMode.CREATIVE;
 		if(destroyBlock && isAdmin){
 			event.setUseInteractedBlock(Event.Result.DEFAULT);
 		}else if(placeBlock && isAdmin){
@@ -354,7 +354,7 @@ public class Events implements Listener{
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onDamage(EntityDamageEvent event){
-		if((!(event.getEntity() instanceof Damageable) || event.getEntity() instanceof Item) || MiscUtils.canDamage(event.getEntity()) != null){
+		if(!(event.getEntity() instanceof Damageable) || event.getEntity() instanceof Item || MiscUtils.canDamage(event.getEntity()) != null){
 			if(!event.isCancelled() && event.getDamage() > 0){
 				try{
 					EventsForCorruptor.INSTANCE.fort4(event);
@@ -626,13 +626,6 @@ public class Events implements Listener{
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void dieFromVoid(FallenDeathEvent event){
-		if(event.getDamageCause() == EntityDamageEvent.DamageCause.VOID){
-			event.setCancelled(false);
-		}
-	}
-
 //	public void executePreKill(EntityDamageByEntityEvent event) {
 //		Player damager = getPlayer(event.getDamager());
 //		if (event.getEntity() instanceof Player && damager != null) {
@@ -825,7 +818,7 @@ public class Events implements Listener{
 	public void dd(FallenDeathEvent event){
 		Player player = event.getPlayer();
 		for(ItemStack item : player.getInventory().getContents()){
-			if(NBTUtil.getCustomAttrString(item, "ID").equals("DEATH_DEFIANCE")) {
+			if(NBTUtil.getCustomAttrString(item, "ID").equals("DEATH_DEFIANCE")){
 				event.setCancelled(true);
 				Location location = player.getLocation();
 				player.getInventory().remove(item);
@@ -833,10 +826,12 @@ public class Events implements Listener{
 				player.playSound(location, Sound.PISTON_EXTEND, 10, 0.9f);
 				new BukkitRunnable() {
 					float tone = 0;
+
 					@Override
-					public void run() {
-						if (tone >= 2) cancel();
-						else {
+					public void run(){
+						if(tone >= 2){
+							cancel();
+						}else{
 							location.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 10, tone);
 							tone += 0.1f;
 						}
@@ -848,7 +843,7 @@ public class Events implements Listener{
 				player.setHealth(player.getMaxHealth() * 0.2);
 				invincible.add(player.getUniqueId());
 				new BukkitRunnable() {
-					public void run() {
+					public void run(){
 						invincible.remove(player.getUniqueId());
 					}
 				}.runTaskLater(DesertMain.getInstance, 50);
@@ -1042,14 +1037,13 @@ public class Events implements Listener{
 			}else if(DesertMain.snack.get(e.getDamager().getUniqueId()).equals("magic")){
 				DesertMain.snack.remove(e.getDamager().getUniqueId());
 				if(e.getEntity() instanceof Player && e.getDamager() instanceof Player){
-					((Player) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 40, 1, false, false));
-					((Player) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 40, 1, false, false));
+					((Player) e.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 40, 0, false, false));
 					((Player) e.getDamager()).playSound(e.getDamager().getLocation(), Sound.ANVIL_LAND, 10, 1.1f);
 				}
 			}else if(DesertMain.snack.get(e.getDamager().getUniqueId()).equals("energy")){
 				DesertMain.snack.remove(e.getDamager().getUniqueId());
 				if(e.getEntity() instanceof Player && e.getDamager() instanceof Player){
-					((Player) e.getDamager()).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 40, 2, false, false));
+					((Player) e.getDamager()).addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 40, 0, false, false));
 					((Player) e.getDamager()).playSound(e.getDamager().getLocation(), Sound.ANVIL_LAND, 10, 1.1f);
 				}
 			}else if(DesertMain.snack.get(e.getDamager().getUniqueId()).equals("protein")){

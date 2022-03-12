@@ -140,7 +140,7 @@ public class MiscUtils {
 
     public static Damageable canDamage(Entity entity){
         Location location = entity.getLocation();
-        if(Events.invincible.contains(entity.getUniqueId()) || HitboxListener.isInSpawn(location) || HitboxListener.isInCafe(location)){
+        if(Events.invincible.contains(entity.getUniqueId()) || HitboxListener.isInSafeZone(location)){
             return null;
         }else return !new NBTEntity(entity).getBoolean("Invulnerable") && entity instanceof Damageable ? (Damageable) entity : null;
     }

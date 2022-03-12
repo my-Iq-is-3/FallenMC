@@ -1,35 +1,34 @@
 package me.zach.DesertMC;
 
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
+import me.zach.DesertMC.ClassManager.InvEvents;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
 import me.zach.DesertMC.ClassManager.TankManager.EventsForTank;
 import me.zach.DesertMC.ClassManager.TravellerEvents;
+import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.CommandsPackage.Commands;
 import me.zach.DesertMC.CommandsPackage.ItemCommand;
-import me.zach.DesertMC.ClassManager.InvEvents;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesEvents;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesOverride;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.Events;
-import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.GameMechanics.NPCStructure.SavedNPC;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxCommand;
+import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BlobHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BoxHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.CircleHitbox;
-import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.Utils.ImportantPeople;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
-import me.zach.DesertMC.Utils.StringUtils.StringUtil.ChatWrapper;
 import me.zach.DesertMC.Utils.UsedAPI;
 import me.zach.DesertMC.Utils.gui.GUIManager;
 import me.zach.DesertMC.holo.HologramEvents;
 import net.jitse.npclib.NPCLib;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -44,10 +43,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.*;
-import java.util.List;
 
 
 public class DesertMain extends JavaPlugin implements Listener {
@@ -121,6 +118,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 				ImportantPeople.SHONEN,
 				"",
 				ChatColor.BLUE + "API Credits",
+				UsedAPI.PROTOCOL,
 				UsedAPI.BOSSBAR_API,
 				UsedAPI.NPCLIB,
 				UsedAPI.NBTAPI,
@@ -145,7 +143,8 @@ public class DesertMain extends JavaPlugin implements Listener {
 				credits.add(component);
 			}
 		}
-		for(TextComponent component : credits){
+		for(int i = 0; i<credits.size() - 1; i++){
+			TextComponent component = credits.get(i);
 			component.setText(component.getText() + "\n" + ChatColor.RESET);
 		}
 	}

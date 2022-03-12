@@ -26,7 +26,7 @@ public enum Cosmetic {
     EXPLOSION("Explosion Kill Effect", Material.TNT,  ChatColor.YELLOW + "Explode your enemies for the ultimate revenge!", CosmeticType.KILL_EFFECT){
         @Override
         public void activateKill(Player player){
-            ParticleEffect.EXPLOSION_NORMAL.display(0.5f, 0.5f, 0.5f, 0, 8, player.getLocation(), 75);
+            ParticleEffect.EXPLOSION_LARGE.display(0.5f, 0.5f, 0.5f, 0, 3, player.getLocation(), 75);
             player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 10, 1.1f);
         }
     },
