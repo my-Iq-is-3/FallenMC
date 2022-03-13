@@ -287,15 +287,15 @@ public class Events implements Listener{
 		Player player = event.getPlayer();
 		ItemStack item = event.getItem();
 		Action action = event.getAction();
-		boolean isAdmin = MiscUtils.isAdmin(player);
-		boolean placeBlock = event.isBlockInHand() && action == Action.RIGHT_CLICK_BLOCK && player.getGameMode() == GameMode.CREATIVE;
-		boolean destroyBlock = action == Action.LEFT_CLICK_BLOCK && player.getGameMode() == GameMode.CREATIVE;
+		boolean isCreative = player.getGameMode() == GameMode.CREATIVE;
+		boolean placeBlock = event.isBlockInHand() && action == Action.RIGHT_CLICK_BLOCK;
+		boolean destroyBlock = action == Action.LEFT_CLICK_BLOCK;
 		if(item == null){
 			event.setUseItemInHand(Event.Result.DENY);
 			event.setUseInteractedBlock(Event.Result.DENY);
-		}else if(destroyBlock && isAdmin){
+		}else if(destroyBlock && isCreative){
 			event.setUseInteractedBlock(Event.Result.DEFAULT);
-		}else if(placeBlock && isAdmin){
+		}else if(placeBlock && isCreative){
 			event.setUseItemInHand(Event.Result.DEFAULT);
 			event.setUseInteractedBlock(Event.Result.DEFAULT);
 		}else if((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) && (NBTUtil.getCustomAttrBoolean(item, "USABLE") || item.getType().name().endsWith("SWORD"))){

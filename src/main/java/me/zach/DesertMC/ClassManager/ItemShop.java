@@ -24,9 +24,7 @@ public class ItemShop {
 	public ItemShop(Player player) {
 		this.player = player;
 	}
-	
-	
-	
+
 	public void updateInventory() {
 		int balance = ConfigUtils.getGems(player);
 		for(int i=0;i<36;i++) {

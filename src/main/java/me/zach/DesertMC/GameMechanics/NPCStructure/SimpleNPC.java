@@ -96,7 +96,6 @@ public class SimpleNPC implements Listener {
             if(!npc.isShown(player)) npc.show(player);
         }else if(queueReload != null){
             createNPC(queueReload);
-            npc.show(player);
             queueReload = null;
         }
     }

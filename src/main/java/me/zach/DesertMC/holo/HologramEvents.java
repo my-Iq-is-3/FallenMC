@@ -36,9 +36,8 @@ public class HologramEvents implements Listener {
         ItemStack item = player.getItemInHand();
         if(item != null){
             Entity entity = event.getRightClicked();
-            NBTItem nbt = new NBTItem(item);
-            if(NBTUtil.getCustomAttrString(nbt, "ID").equals("HOLOGRAM_WAND")){
-                String name = getName(NBTUtil.getCustomAttrString(nbt, "HOLOGRAM_NAME"));
+            if(NBTUtil.getCustomAttrString(item, "ID").equals("HOLOGRAM_WAND")){
+                String name = getName(NBTUtil.getCustomAttrString(item, "HOLOGRAM_NAME"));
                 new Hologram(name, entity).create();
             }
         }

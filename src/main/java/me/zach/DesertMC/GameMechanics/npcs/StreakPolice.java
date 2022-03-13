@@ -65,7 +65,6 @@ public class StreakPolice extends NPCSuper {
                 ChatColor.GRAY + "Click me to recover your seized items");
     }
 
-
     public static void onHit(EntityDamageByEntityEvent e){
         Player p = (Player) e.getDamager();
         UUID uuid = p.getUniqueId();
@@ -92,9 +91,6 @@ public class StreakPolice extends NPCSuper {
         }catch(NullPointerException ignored){}
     }
 
-
-
-
     public static boolean roll(ItemStack weapon){
         double weight = NBTUtil.getCustomAttr(weapon, "WEIGHT", float.class);
         if(weight == 0) return false;
@@ -104,14 +100,12 @@ public class StreakPolice extends NPCSuper {
     }
 
     public static void onKill(Player player){
-        if(!weightQueue.containsKey(player.getUniqueId())){
-            Bukkit.getConsoleSender().sendMessage("Hmm, something went wrong. It looks like the player that just got a kill (" + player.getName() + ", " + player.getUniqueId() + ") wasn't registered in the item weight queue. FIX ME GABE");
-        }else{
-            HashMap<String, Double> itemsandhits = weightQueue.get(player.getUniqueId());
+        HashMap<String, Double> itemsandhits = weightQueue.get(player.getUniqueId());
+        if(itemsandhits != null){
             ArrayList<String> toRemove = new ArrayList<>();
             List<String> keyList = new ArrayList<>(itemsandhits.keySet());
             for(String targetId : keyList){
-                for(int a = 0; a<player.getInventory().getContents().length; a++){
+                for(int a = 0; a < player.getInventory().getContents().length; a++){
                     ItemStack item = player.getInventory().getContents()[a];
                     if(new NBTItem(item).getCompound("CustomAttributes").getString("UUID").equals(targetId)){
                         NBTItem nbt = new NBTItem(item);
