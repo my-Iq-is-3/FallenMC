@@ -507,7 +507,6 @@ public class Events implements Listener{
 						EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
 						EventsForCorruptor.INSTANCE.corruptedSword(event);
 						EventsForTank.getInstance().t8Event(event);
-						EventsForTank.getInstance().fortify(event);
 						EventsForScout.getInstance().alert(event);
 						EventsForTank.getInstance().bludgeon(event);
 						if(!event.isCancelled()) EventsForScout.getInstance().scoutBlade(event);

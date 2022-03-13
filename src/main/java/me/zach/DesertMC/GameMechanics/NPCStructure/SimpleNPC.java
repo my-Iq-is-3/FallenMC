@@ -93,7 +93,7 @@ public class SimpleNPC implements Listener {
     public void showOnJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
         if(npc != null){
-            npc.show(player);
+            if(!npc.isShown(player)) npc.show(player);
         }else if(queueReload != null){
             createNPC(queueReload);
             npc.show(player);

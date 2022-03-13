@@ -6,6 +6,7 @@ import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.PlayerUtils;
+import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.Bukkit;
@@ -67,32 +68,17 @@ public class EventsForTank implements Listener {
         }
     }
 
-    public void fortify(EntityDamageByEntityEvent event){
+    /**
+     *
+     * @deprecated No longer in use. Tank already has 2 enchantments
+     */
+    @Deprecated
+    private void fortify(EntityDamageByEntityEvent event){
         if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
             Player damaged = (Player) event.getEntity();
 
             ItemStack[] armor = damaged.getInventory().getArmorContents();
             int level = 0;
-
-            for(ItemStack armorA : armor){
-                if(armorA != null){
-                    NBTItem nbtarmor = new NBTItem(armorA);
-                    try{
-                        if(nbtarmor.getCompound("CustomAttributes").getCompound("enchantments").getInteger("fortify") <= 2) {
-                            if(ConfigUtils.getLevel("tank", damaged) > 4) {
-                                level += nbtarmor.getCompound("CustomAttributes").getCompound("enchantments").getInteger("fortify");
-                            }
-                        }else{
-                            if(nbtarmor.getCompound("CustomAttributes").getCompound("enchantments").getInteger("fortify") == 3){
-                                if(ConfigUtils.getLevel("tank", damaged) > 7) {
-                                    level += nbtarmor.getCompound("CustomAttributes").getCompound("enchantments").getInteger("fortify");
-                                }
-                            }
-                        }
-                    }catch(NullPointerException ignored){}
-
-                }
-            }
 
 
             event.setDamage(event.getDamage() - event.getDamage()*(0.01*level));
