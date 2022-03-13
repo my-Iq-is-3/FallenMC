@@ -290,14 +290,15 @@ public class Events implements Listener{
 		boolean isCreative = player.getGameMode() == GameMode.CREATIVE;
 		boolean placeBlock = event.isBlockInHand() && action == Action.RIGHT_CLICK_BLOCK;
 		boolean destroyBlock = action == Action.LEFT_CLICK_BLOCK;
-		if(item == null){
-			event.setUseItemInHand(Event.Result.DENY);
-			event.setUseInteractedBlock(Event.Result.DENY);
-		}else if(destroyBlock && isCreative){
+		if(destroyBlock && isCreative){
 			event.setUseInteractedBlock(Event.Result.DEFAULT);
+			event.setUseItemInHand(Event.Result.DEFAULT);
 		}else if(placeBlock && isCreative){
 			event.setUseItemInHand(Event.Result.DEFAULT);
 			event.setUseInteractedBlock(Event.Result.DEFAULT);
+		}else if(item == null){
+			event.setUseItemInHand(Event.Result.DENY);
+			event.setUseInteractedBlock(Event.Result.DENY);
 		}else if((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) && (NBTUtil.getCustomAttrBoolean(item, "USABLE") || item.getType().name().endsWith("SWORD"))){
 			event.setUseItemInHand(Event.Result.DEFAULT);
 			event.setUseInteractedBlock(Event.Result.DENY);
