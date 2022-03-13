@@ -76,7 +76,7 @@ public enum CustomEnch implements Listener {
     },
     EXTRAVERT(EnchantType.ARMOR){
         String getDescription(int level){
-            return "Take " + 0.5*level + "% less damage per person within a 25 block radius.";
+            return "Take " + 0.3*level + "% less damage per person within a 25 block radius.";
         }
 
         @Override
@@ -86,7 +86,7 @@ public enum CustomEnch implements Listener {
                 if(!CustomEnch.validatePlayer(player,Key.CORRUPTER,4)) return;
                 int lvl = getTotalArmorLevel(player);
                 if(lvl > 0){
-                    event.setDamage(event.getDamage()*(1-(MiscUtils.getNearbyEntities(Player.class,player,25).size()*lvl*0.5)));
+                    event.setDamage(event.getDamage()*(1-(MiscUtils.getNearbyEntities(Player.class,player,25).size()*lvl*0.3)));
                 }
             }
         }
