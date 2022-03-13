@@ -62,7 +62,9 @@ public class NBTUtil {
     public static <T> T getCustomAttr(NBTCompound nbt, String key, Class<T> type, T defaultValue){
         NBTCompound customAttributes = nbt.getCompound("CustomAttributes");
         if(customAttributes == null) return defaultValue;
-        if(!customAttributes.hasKey(key)) return defaultValue;
+        if(!customAttributes.hasKey(key)){
+            return defaultValue;
+        }
         Object result;
         if(type == boolean.class) result = customAttributes.getBoolean(key);
         else if(type == byte.class) result = customAttributes.getByte(key);
@@ -71,7 +73,9 @@ public class NBTUtil {
         else if(type == float.class) result = customAttributes.getFloat(key);
         else if(type == double.class) result = customAttributes.getDouble(key);
         else if(type == long.class) result = customAttributes.getLong(key);
-        else if(type == String.class) result = customAttributes.getString(key);
+        else if(type == String.class){
+            result = customAttributes.getString(key);
+        }
         else if(type == byte[].class) result = customAttributes.getByteArray(key);
         else if(type == int[].class) result = customAttributes.getIntArray(key);
         else if(type == NBTCompound.class) result = customAttributes.getCompound(key);

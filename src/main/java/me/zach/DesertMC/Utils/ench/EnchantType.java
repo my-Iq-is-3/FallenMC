@@ -28,6 +28,10 @@ public enum EnchantType {
 
     public abstract boolean isOfType(ItemStack item);
 
+    public String toString(){
+        return name;
+    }
+
     private final String name;
 
     /**

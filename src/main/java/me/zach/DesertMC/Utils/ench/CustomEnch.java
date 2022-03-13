@@ -21,6 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +37,6 @@ public enum CustomEnch implements Listener {
 
         @Override
         public void onHit(EntityDamageByEntityEvent event) {
-            Bukkit.broadcastMessage("turtle1");
             if(event.getEntity() instanceof Player){
                 Player player = (Player) event.getEntity();
                 if(!CustomEnch.validatePlayer(player, Key.TANK,4)) return;
@@ -50,7 +50,7 @@ public enum CustomEnch implements Listener {
                     public void run(){
                         // 100
                         // 100-(100*0.1)
-                        player.setVelocity(player.getVelocity().subtract(player.getVelocity().multiply(lvl/100)));
+                        player.setVelocity(player.getVelocity().multiply(1 - (lvl * 0.01)));
                     }
                 }.runTaskLater(DesertMain.getInstance,2);
             }
@@ -58,7 +58,7 @@ public enum CustomEnch implements Listener {
     },
     CRUEL_BLOW("Cruel Blow", "cruel_blow", EnchantType.MELEE, EnchantType.BOW){
         String getDescription(int level){
-            return "Deal " + level + " additional damage if the attack deals more than 30% of your opponents max health";
+            return "Deal " + level + " additional damage if your attack deals more than 30% of your opponents max health.";
         }
 
         @Override
@@ -76,7 +76,7 @@ public enum CustomEnch implements Listener {
     },
     EXTRAVERT(EnchantType.ARMOR){
         String getDescription(int level){
-            return "Take " + 0.1*level + "% less damage per person within a 5 block radius.";
+            return "Take " + 0.5*level + "% less damage per person within a 25 block radius.";
         }
 
         @Override
@@ -86,7 +86,7 @@ public enum CustomEnch implements Listener {
                 if(!CustomEnch.validatePlayer(player,Key.CORRUPTER,4)) return;
                 int lvl = getTotalArmorLevel(player);
                 if(lvl > 0){
-                    event.setDamage(event.getDamage()*(1-(MiscUtils.getNearbyEntities(Player.class,player,5,5,5).size()*lvl*0.01)));
+                    event.setDamage(event.getDamage()*(1-(MiscUtils.getNearbyEntities(Player.class,player,25).size()*lvl*0.5)));
                 }
             }
         }
@@ -98,7 +98,7 @@ public enum CustomEnch implements Listener {
     },
     ANTI_FOCUS("Anti-Focus", "anti_focus", EnchantType.ARMOR){
         String getDescription(int level){
-            return "Take " + 0.3*level + "% less dmg if your opponent is sprinting";
+            return "Take " + NUM_FORMATTER.format(0.7*level) + "% less damage if your opponent is sprinting.";
         }
 
         @Override
@@ -111,13 +111,13 @@ public enum CustomEnch implements Listener {
                 // current dmg = 10
                 // for a 10% dmg reduction
                 // 10*(1-(1/10) = 9
-                if(player.isSprinting()) event.setDamage(event.getDamage()*(1-(getTotalArmorLevel(player)*0.01)));
+                if(player.isSprinting()) event.setDamage(event.getDamage()*(1-(getTotalArmorLevel(player)*0.7)));
             }
         }
     },
     SPIRIT_GUARD("Spirit Guard","spirit_guard", EnchantType.MELEE){
         String getDescription(int level){
-            return 8*level + "% chance to heal " + 0.3*level + " hp when blocking hits";
+            return 8*level + "% chance to heal " + NUM_FORMATTER.format(0.3 * level) + " hp when blocking hits";
         }
 
         @Override
@@ -197,6 +197,10 @@ public enum CustomEnch implements Listener {
             MiscUtils.spawnFirework(loc, 0, false, false, Color.WHITE, FireworkEffect.Type.BALL, Color.BLUE, Color.WHITE);
         }
     };
+    private static final DecimalFormat NUM_FORMATTER = new DecimalFormat();
+    static{
+        NUM_FORMATTER.setMaximumFractionDigits(1);
+    }
 
     abstract String getDescription(int level);
 
@@ -290,7 +294,9 @@ public enum CustomEnch implements Listener {
     }
 
     public static CustomEnch fromID(String id){
+        System.out.println("id = " + id);
         for(CustomEnch ce : CustomEnch.values()){
+            System.out.println("checking " + ce.id);
             if(ce.id.equals(id)){
                 return ce;
             }
@@ -320,7 +326,7 @@ public enum CustomEnch implements Listener {
     private static boolean validatePlayer(Entity p, String clazz, int lv){
         if(!(p instanceof Player)) return false;
         PlayerData data = DBCore.getInstance().getSaveManager().getData(p.getUniqueId());
-        return data.getClassLevel(clazz) > lv && data.getCurrentClass().equals(clazz);
+        return data.getClassLevel(clazz) > lv;
     }
 
     public void onHit(EntityDamageByEntityEvent event){}

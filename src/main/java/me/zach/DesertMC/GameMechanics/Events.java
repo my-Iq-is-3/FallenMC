@@ -53,11 +53,10 @@ import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
@@ -103,7 +102,7 @@ public class Events implements Listener{
 				StructureModifier<ItemStack[]> modifier = event.getPacket().getItemArrayModifier();
 				ItemStack[] items = modifier.read(0);
 				for(int i = 0; i<items.length; i++){
-					ItemStack item = items[i];
+					ItemStack item = items[i].clone();
 					Double wph = NBTUtil.getCustomAttr(item, "WEIGHT_ADD", double.class);
 					if(wph != null){
 						ItemMeta meta = item.getItemMeta();
@@ -291,7 +290,10 @@ public class Events implements Listener{
 		boolean isAdmin = MiscUtils.isAdmin(player);
 		boolean placeBlock = event.isBlockInHand() && action == Action.RIGHT_CLICK_BLOCK && player.getGameMode() == GameMode.CREATIVE;
 		boolean destroyBlock = action == Action.LEFT_CLICK_BLOCK && player.getGameMode() == GameMode.CREATIVE;
-		if(destroyBlock && isAdmin){
+		if(item == null){
+			event.setUseItemInHand(Event.Result.DENY);
+			event.setUseInteractedBlock(Event.Result.DENY);
+		}else if(destroyBlock && isAdmin){
 			event.setUseInteractedBlock(Event.Result.DEFAULT);
 		}else if(placeBlock && isAdmin){
 			event.setUseItemInHand(Event.Result.DEFAULT);
@@ -314,6 +316,14 @@ public class Events implements Listener{
 				if(inv == null) RefineryUtils.instance.put(player.getUniqueId(), inv = new RefineryInventory());
 				inv.openRefineryInventory(player, false);
 			}
+		}
+	}
+
+	@EventHandler
+	public void inventoryOpen(InventoryOpenEvent event){
+		Inventory inv = event.getInventory();
+		if(inv instanceof AnvilInventory || inv instanceof EnchantingInventory){
+			event.setCancelled(true);
 		}
 	}
 

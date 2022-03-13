@@ -17,10 +17,13 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Collections;
 
 public class FallenAnvilInventory implements GUIHolder {
+    //TODO special enchant combination, enchant glints?
     Inventory inventory = Bukkit.getServer().createInventory(this, 36, "Apply Enchantments");
     ItemStack greenPane = MiscUtils.getEmptyPane(DyeColor.LIME.getData());
     ItemStack redPane = MiscUtils.getEmptyPane(DyeColor.RED.getData());
     final int buttonSlot = 22;
+    final int playerItemSlot = 12;
+    final int bookSlot = 14;
     ItemStack trueItem = MiscUtils.generateItem(Material.STAINED_GLASS, ChatColor.GREEN + "Click to apply!", Collections.emptyList(), DyeColor.LIME.getData(), 1);
     ItemStack falseItem = MiscUtils.generateItem(Material.STAINED_GLASS, ChatColor.RED + "Insert necessary items!", StringUtil.wrapLore(ChatColor.RED + "To apply enchantments, first insert an item and a compatible enchanted book!"), DyeColor.RED.getData(), 1);
     ItemStack playerItem = null;
@@ -32,8 +35,8 @@ public class FallenAnvilInventory implements GUIHolder {
             inventory.setItem(i, MiscUtils.getEmptyPane());
         }
         setEdges(redPane);
-        inventory.clear(12);
-        inventory.clear(14);
+        inventory.clear(playerItemSlot);
+        inventory.clear(bookSlot);
         inventory.setItem(buttonSlot, falseItem);
     }
 
@@ -64,11 +67,11 @@ public class FallenAnvilInventory implements GUIHolder {
         event.setCancelled(true);
         Inventory playerInv = player.getInventory();
         boolean refresh = true;
-        if(clickedItem == playerItem){
+        if(slot == playerItemSlot){
             inventory.clear(slot);
             playerInv.addItem(playerItem);
             playerItem = null;
-        }else if(clickedItem == book){
+        }else if(slot == bookSlot){
             inventory.clear(slot);
             playerInv.addItem(book);
             book = null;
@@ -84,8 +87,8 @@ public class FallenAnvilInventory implements GUIHolder {
 
     public void bottomInventoryClick(Player player, Inventory playerInventory, int slot, ItemStack clickedItem, ClickType clickType, InventoryClickEvent event){
         event.setCancelled(true);
-        boolean isBook = NBTUtil.getCustomAttrBoolean(clickedItem, "CAN_ENCHANT");
-        boolean isPlayerItem = !isBook && NBTUtil.getCustomAttrString(clickedItem, "ID").equals("ENCHANTED_BOOK");
+        boolean isPlayerItem = NBTUtil.getCustomAttrBoolean(clickedItem, "CAN_ENCHANT");
+        boolean isBook = !isPlayerItem && NBTUtil.getCustomAttrString(clickedItem, "ID").equals("ENCHANTED_BOOK");
         if(isBook || isPlayerItem){
             playerInventory.clear(slot);
             ItemStack storedCorresponding = isBook ? book : playerItem;
@@ -95,13 +98,14 @@ public class FallenAnvilInventory implements GUIHolder {
             }
             if(isBook) book = clickedItem;
             else playerItem = clickedItem;
-            this.inventory.setItem(isBook ? 14 : 12, clickedItem);
+            this.inventory.setItem(isBook ? bookSlot : playerItemSlot, clickedItem);
             refresh();
         }
     }
 
     private void refresh(){
         enchant = CustomEnch.fromID(NBTUtil.getCustomAttrString(book, "ENCH_ID"));
+        System.out.println(enchant);
         if(canCombine()){
             this.inventory.setItem(buttonSlot, trueItem);
             setEdges(greenPane);
@@ -112,7 +116,7 @@ public class FallenAnvilInventory implements GUIHolder {
     }
 
     private ItemStack combine(){
-        int level = NBTUtil.getCustomAttr(book, "ENCH_LEVEL", int.class);
+        int level = NBTUtil.getCustomAttr(book, "REAL_LEVEL", int.class);
         ItemStack combined = enchant.apply(playerItem, level);
         inventory.remove(playerItem);
         playerItem = null;
@@ -122,10 +126,10 @@ public class FallenAnvilInventory implements GUIHolder {
     }
 
     private boolean canCombine(){
-        if(book != null || playerItem != null) return false;
+        if(book == null || playerItem == null) return false;
         else if(enchant != null){
             for(EnchantType type : enchant.types){
-                if(type.isOfType(playerItem)) return true;
+                if(type.isOfType(playerItem) && NBTUtil.getCustomAttr(book, "REAL_LEVEL", int.class) > enchant.getLevel(playerItem)) return true;
             }
             return false;
         }else return false;
