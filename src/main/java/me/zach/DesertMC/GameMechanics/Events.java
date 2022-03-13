@@ -330,7 +330,9 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void cancelFish(PlayerFishEvent event){
-		if(!MiscUtils.isAdmin(event.getPlayer())) event.setCancelled(true);
+		if(event.getState() == PlayerFishEvent.State.CAUGHT_FISH || event.getState() == PlayerFishEvent.State.CAUGHT_ENTITY){
+			event.setCancelled(true);
+		}
 	}
 
 	public void travellerTank(EntityDamageByEntityEvent e){
@@ -384,14 +386,6 @@ public class Events implements Listener{
 				}
 			}
 		}else{
-			event.setCancelled(true);
-		}
-	}
-
-	@EventHandler
-	public void breakBlock(BlockBreakEvent event){
-		Player player = event.getPlayer();
-		if(!MiscUtils.isAdmin(player)){
 			event.setCancelled(true);
 		}
 	}
