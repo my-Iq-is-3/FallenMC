@@ -26,6 +26,7 @@ import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -486,8 +487,7 @@ public class Commands implements Listener, CommandExecutor {
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
 				}
 			}
-        	
-        	if(command.getName().equalsIgnoreCase("setks")){
+        	else if(command.getName().equalsIgnoreCase("setks")){
         		if(!MiscUtils.isAdmin(player)){
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
         			return false;
@@ -503,8 +503,7 @@ public class Commands implements Listener, CommandExecutor {
         			player.sendMessage(ChatColor.RED + "Please enter a valid number.");
 				}
 			}
-
-        	if(command.getName().equalsIgnoreCase("kothy")) {
+        	else if(command.getName().equalsIgnoreCase("kothy")) {
         		if(MiscUtils.isAdmin(player)){
 					KothyMenu kot = new KothyMenu(player);
 					player.openInventory(kot.getInventory());
@@ -512,8 +511,6 @@ public class Commands implements Listener, CommandExecutor {
         			player.sendMessage(ChatColor.RED + "Only admins can use this command. Talk to Kothy at the cafe!");
 				}
         	}
-        	
-
         	else if(command.getName().equalsIgnoreCase("speed")) {
         		if(args.length == 1) {
 	        		if(MiscUtils.isAdmin(player)) {
@@ -556,8 +553,22 @@ public class Commands implements Listener, CommandExecutor {
         			player.sendMessage(ChatColor.RED + "Only admins can use this command.");
         		}
         		
-        	}else if(command.getName().equalsIgnoreCase("credits")){
-
+        	}else if(command.getName().equalsIgnoreCase("entityremoval")){
+				if(MiscUtils.isAdmin(player)){
+					if(args.length > 0){
+						String name = ChatColor.stripColor(String.join(" ", args));
+						for(World world : Bukkit.getWorlds()){
+							for(Entity entity : world.getEntities()){
+								if(entity.getCustomName() != null){
+									if(ChatColor.stripColor(entity.getCustomName()).equals(name)){
+										entity.remove();
+										player.sendMessage(ChatColor.GREEN + " - Removed " + entity.getType().getName() + " \"" + entity.getCustomName() + ChatColor.GREEN + "\"");
+									}
+								}
+							}
+						}
+					}else return false;
+				}
 			}
         }
 		return true;

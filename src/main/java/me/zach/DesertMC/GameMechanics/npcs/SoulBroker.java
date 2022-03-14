@@ -161,7 +161,8 @@ public class SoulBroker extends NPCSuper implements Listener{
                         p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
                     } else {
                         //Checking if it is the extracted CustomAttributes compound
-                        if (!(nbt instanceof NBTItem)) {
+                        if (!(nbt instanceof NBTItem) && nbt != null) {
+
                             //checking if it has a price value
                             if (nbt.hasKey("PRICE")) {
                                 int price = nbt.getInteger("PRICE");

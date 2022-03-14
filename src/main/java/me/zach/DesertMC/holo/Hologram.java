@@ -43,6 +43,10 @@ public class Hologram {
         return stand;
     }
 
+    public ArmorStand getStand(){
+        return stand;
+    }
+
     public void remove(){
         if(riding != null) riding.eject();
         stand.remove();

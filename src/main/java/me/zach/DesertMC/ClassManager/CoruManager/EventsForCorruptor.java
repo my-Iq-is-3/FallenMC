@@ -64,17 +64,19 @@ public class EventsForCorruptor implements Listener {
         if (NBTUtil.getCustomAttrString(item, "ID").equals("VOLCANIC_SWORD")) {
             if(ConfigUtils.findClass(killer).equals("corrupter") && ConfigUtils.getLevel("corrupter", killer) > 3){
                 if (((Events.ks.get(killer.getUniqueId()) + 1) % 5) == 0) {
-                    Location eLoc = killer.getLocation();
-                    for (Damageable near : MiscUtils.getNearbyDamageables(killer, 15)) {
-                        near.damage(8, killer);
-                        Location nearloc = near.getLocation();
-                        Location newLoc = nearloc.subtract(eLoc);
-                        Vector newV = newLoc.toVector().normalize().multiply(1.4);
-                        newV.setY(newV.getY() + 1.7);
-                        near.setVelocity(newV);
-                    }
-                    ParticleEffect.FLAME.display(0.5f,0.5f,0.5f,0.3f,100,killer.getLocation(),100);
-                    killer.getWorld().playSound(killer.getLocation(), Sound.EXPLODE, 15, 1);
+                    Bukkit.getScheduler().runTask(DesertMain.getInstance, () -> { //avoids infinite loop
+                        Location eLoc = killer.getLocation();
+                        for (Damageable near : MiscUtils.getNearbyDamageables(killer, 15)) {
+                            near.damage(15, killer);
+                            Location nearloc = near.getLocation();
+                            Location newLoc = nearloc.subtract(eLoc);
+                            Vector newV = newLoc.toVector().normalize().multiply(1.4);
+                            newV.setY(newV.getY() + 1.7);
+                            near.setVelocity(newV);
+                        }
+                        ParticleEffect.FLAME.display(0.5f,0.5f,0.5f,0.3f,100,killer.getLocation(),100);
+                        killer.getWorld().playSound(killer.getLocation(), Sound.EXPLODE, 15, 1);
+                    });
                 }
             }else{
                 killer.sendMessage(ChatColor.RED + "You must have the corrupter class selected and past level 3 to use this item!");

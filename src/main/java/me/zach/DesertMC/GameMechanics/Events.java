@@ -183,7 +183,7 @@ public class Events implements Listener{
 		ItemStack itemUsed = getItemUsed(event.getDamager());
 		if(event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK){
 			double damage = event.getDamage();
-			if(itemUsed != null){
+			if(itemUsed != null && itemUsed.getType() != Material.AIR){
 				NBTItem nbt = new NBTItem(itemUsed);
 				float dmgMod = NBTUtil.getCustomAttrFloat(nbt, "ATTACK", 1);
 				if(dmgMod != 1) event.setDamage(damage * dmgMod);
@@ -316,6 +316,8 @@ public class Events implements Listener{
 				RefineryInventory inv = RefineryUtils.instance.get(player.getUniqueId());
 				if(inv == null) RefineryUtils.instance.put(player.getUniqueId(), inv = new RefineryInventory());
 				inv.openRefineryInventory(player, false);
+			}else if(block.getType() == Material.ENDER_CHEST){
+				event.setUseInteractedBlock(Event.Result.ALLOW);
 			}
 		}
 	}
@@ -330,7 +332,7 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void cancelFish(PlayerFishEvent event){
-		if(event.getState() == PlayerFishEvent.State.CAUGHT_FISH || event.getState() == PlayerFishEvent.State.CAUGHT_ENTITY){
+		if(event.getState() == PlayerFishEvent.State.CAUGHT_FISH){
 			event.setCancelled(true);
 		}
 	}

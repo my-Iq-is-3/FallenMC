@@ -349,11 +349,12 @@ public class MiscUtils {
     }
 
     private static final double INDICATOR_MIN_DISTANCE = 0.3;
-    private static final double INDICATOR_MAX_DISTANCE = 1.5;
+    private static final double INDICATOR_MAX_DISTANCE = 1.4;
 
     public static void showIndicator(String content, Location center){
         Location location = indicatorLocation(center);
         Hologram holo = new Hologram(content, location);
+        new NBTEntity(holo.getStand()).setBoolean("Indicator", true);
         holo.create();
         Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, holo::remove, 15);
     }

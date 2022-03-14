@@ -1,5 +1,6 @@
 package me.zach.DesertMC;
 
+import de.tr7zw.nbtapi.NBTEntity;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.InvEvents;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
@@ -85,7 +86,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		loadNPCs();
 		Bukkit.getScheduler().runTask(this, this::loadCredits); //dont ask
 		welcome = RankEvents.colorMessage(MiscUtils.ensureDefault("server.welcome", ChatColor.AQUA + "Welcome to FallenMC! We hope you'll have fun.", this));
-		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram", "credits"};
+		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram", "credits", "entityremoval"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
@@ -99,6 +100,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(events, this);
 		events.check(this);
 		Bukkit.getLogger().info("FallenMC onEnable success!");
+		wipeIndicators();
 	}
 
 	public void loadCredits(){
@@ -158,6 +160,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 				}
 			}
 		}
+		wipeIndicators();
 	}
 
 	private void registerEvents(Plugin p){
@@ -198,6 +201,18 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getConsoleSender().sendMessage("commands registered");
 
 	}
+
+	private void wipeIndicators(){
+		for(World world : Bukkit.getWorlds()){
+			for(Entity entity : world.getEntities()){
+				Boolean indicator = new NBTEntity(entity).getBoolean("Indicator");
+				if(indicator != null && indicator){
+					entity.remove();
+				}
+			}
+		}
+	}
+
 	private void loadConfig() {
 		getConfig().options().copyDefaults(true);
 		saveConfig();

@@ -93,6 +93,9 @@ commands:
  credits:
   description: Shows all the wonderful people whose hard work made this server possible.
   usage: /<command>
+ entityremoval:
+  description: Removes a specific entity by custom name. Colors ignored.
+  usage: /<command> <name of entity>
 
 permissions:
  admin:
