@@ -562,7 +562,7 @@ public class Commands implements Listener, CommandExecutor {
 								if(entity.getCustomName() != null){
 									if(ChatColor.stripColor(entity.getCustomName()).equals(name)){
 										entity.remove();
-										player.sendMessage(ChatColor.GREEN + " - Removed " + entity.getType().getName() + " \"" + entity.getCustomName() + ChatColor.GREEN + "\"");
+										player.sendMessage(ChatColor.GREEN + "- Removed " + entity.getType().getName() + " \"" + entity.getCustomName() + ChatColor.GREEN + "\"");
 									}
 								}
 							}

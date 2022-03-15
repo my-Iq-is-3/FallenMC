@@ -70,8 +70,8 @@ public class StreakPolice extends NPCSuper {
         UUID uuid = p.getUniqueId();
         ItemStack item = p.getItemInHand();
         try{
-            if(!NBTUtil.hasCustomKey(item, "WEIGHT")) return;
-            double weight = NBTUtil.getCustomAttr(item, "WEIGHT", double.class);
+            if(!NBTUtil.hasCustomKey(item, "WEIGHT_ADD")) return;
+            double weight = NBTUtil.getCustomAttr(item, "WEIGHT_ADD", double.class);
             boolean madeNew = false;
             HashMap<String, Double> itemsandhits;
             if(weightQueue.containsKey(uuid)) {
