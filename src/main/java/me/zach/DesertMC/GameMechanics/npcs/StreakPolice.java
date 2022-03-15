@@ -27,10 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static me.zach.DesertMC.DesertMain.weightQueue;
@@ -60,7 +57,7 @@ public class StreakPolice extends NPCSuper {
 
     public StreakPolice(){
         super(ChatColor.AQUA + "Streak Police", SKIN_ID,
-                "To retrieve items that I have taken, all you gotta do is give me the token and " + ChatColor.GREEN + "100 Bones-" + ChatColor.WHITE + " sorry, " + ChatColor.GREEN + "100 Gems" + ChatColor.WHITE + ". I'm also gonna have to reset your streak.",
+                "To retrieve items that I've taken, all you gotta do is give me the token and " + ChatColor.GREEN + "100 Bones-" + ChatColor.WHITE + " sorry, " + ChatColor.GREEN + "100 Gems" + ChatColor.WHITE + ". I'm also gonna have to reset your streak.",
                 Sound.WOLF_BARK,
                 ChatColor.GRAY + "Click me to recover your seized items");
     }
@@ -92,7 +89,7 @@ public class StreakPolice extends NPCSuper {
     }
 
     public static boolean roll(ItemStack weapon){
-        double weight = NBTUtil.getCustomAttr(weapon, "WEIGHT", float.class);
+        double weight = NBTUtil.getCustomAttr(weapon, "WEIGHT", double.class);
         if(weight == 0) return false;
         ThreadLocalRandom random = ThreadLocalRandom.current();
         double roll = random.nextDouble(0, 100);
@@ -101,26 +98,25 @@ public class StreakPolice extends NPCSuper {
 
     public static void onKill(Player player){
         HashMap<String, Double> itemsandhits = weightQueue.get(player.getUniqueId());
-        if(itemsandhits != null){
+        if(itemsandhits != null && !itemsandhits.isEmpty()){
             ArrayList<String> toRemove = new ArrayList<>();
-            List<String> keyList = new ArrayList<>(itemsandhits.keySet());
+            Set<String> keyList = itemsandhits.keySet();
             for(String targetId : keyList){
                 for(int a = 0; a < player.getInventory().getContents().length; a++){
                     ItemStack item = player.getInventory().getContents()[a];
-                    if(new NBTItem(item).getCompound("CustomAttributes").getString("UUID").equals(targetId)){
+                    if(NBTUtil.getCustomAttrString(item, "UUID").equals(targetId)){
                         NBTItem nbt = new NBTItem(item);
-                        NBTCompound compound = nbt.getCompound("CustomAttributes");
-                        double weight = compound.getDouble("WEIGHT");
-                        compound.setDouble("WEIGHT", weight + itemsandhits.get(targetId));
+                        Double weight = NBTUtil.getCustomAttr(nbt, "WEIGHT", double.class, null);
+                        if(weight == null) continue;
+                        nbt.getCompound("CustomAttributes").setDouble("WEIGHT", weight + itemsandhits.get(targetId));
                         toRemove.add(targetId);
-                        Bukkit.getConsoleSender().sendMessage(toRemove.toString());
                         player.getInventory().setItem(a, nbt.getItem());
                         if(roll(item)){
                             player.getInventory().setItem(a, seize(item));
-                            player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 7, 1);
-                            player.playSound(player.getLocation(), Sound.ANVIL_LAND, 10, 1);
-                            StringUtil.sendCenteredWrappedMessage(player, new StringUtil.ChatWrapper('-', ChatColor.RED, true, false), ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!");
-                            Bukkit.getConsoleSender().sendMessage(item.getItemMeta().getDisplayName() + ChatColor.RESET + " seized with weight " + weight);
+                            player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 10, 1);
+                            player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 10, 1);
+                            StringUtil.sendCenteredWrappedMessage(player, new StringUtil.ChatWrapper(' ', ChatColor.RED, true, false), ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!");
+                            Bukkit.getLogger().info(item.getItemMeta().getDisplayName() + " seized with weight " + weight);
                         }
                         break;
                     }
