@@ -90,6 +90,7 @@ public enum CustomEnch implements Listener {
                     double damage = event.getDamage();
                     List<Player> nearby = MiscUtils.getNearbyEntities(Player.class, player, 25);
                     double multiplier = 1 - ((lvl * 0.3) * nearby.size());
+                    System.out.println("multiplier: " + multiplier);
                     event.setDamage(damage * multiplier);
                 }
             }
@@ -102,7 +103,7 @@ public enum CustomEnch implements Listener {
     },
     ANTI_FOCUS("Anti-Focus", "anti_focus", EnchantType.ARMOR){
         String getDescription(int level){
-            return "Take " + NUM_FORMATTER.format(0.7*level) + "% less damage if your opponent is sprinting.";
+            return "Take " + NUM_FORMATTER.format(1.3*level) + "% less damage if your opponent is sprinting.";
         }
 
         @Override
@@ -115,7 +116,7 @@ public enum CustomEnch implements Listener {
                 // current dmg = 10
                 // for a 10% dmg reduction
                 // 10*(1-(1/10) = 9
-                if(player.isSprinting()) event.setDamage(event.getDamage()*(1-(getTotalArmorLevel(player)*0.7)));
+                if(player.isSprinting()) event.setDamage(event.getDamage()*(1-(getTotalArmorLevel(player)*0*1.3)));
             }
         }
     },
