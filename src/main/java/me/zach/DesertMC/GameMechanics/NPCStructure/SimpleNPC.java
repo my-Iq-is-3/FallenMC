@@ -100,14 +100,6 @@ public class SimpleNPC implements Listener {
         }
     }
 
-    public void saveCurrent(Plugin plugin){
-        List<SavedNPC> savedNPCs = SavedNPC.stored(plugin);
-        SavedNPC saved = new SavedNPC(this); //if this throws an exception, you have to run .createNPC() on this NPCSuper object first.
-        savedNPCs.add(saved);
-        plugin.getConfig().set(SavedNPC.PATH, savedNPCs);
-        plugin.saveConfig();
-    }
-
     @EventHandler
     public void interact(NPCInteractEvent event){
         if(this.npc != null && event.getNPC().getUniqueId().equals(npc.getUniqueId())){

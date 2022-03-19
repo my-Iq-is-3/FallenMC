@@ -2,6 +2,7 @@ package me.zach.DesertMC.GameMechanics.npcs;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import me.zach.DesertMC.CommandsPackage.NPCCommand;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
@@ -91,6 +92,10 @@ public class StreakPolice extends NPCSuper {
     public static boolean roll(ItemStack weapon){
         double weight = NBTUtil.getCustomAttr(weapon, "WEIGHT", double.class);
         if(weight == 0) return false;
+        else return roll(weight);
+    }
+
+    public static boolean roll(double weight){
         ThreadLocalRandom random = ThreadLocalRandom.current();
         double roll = random.nextDouble(0, 100);
         return roll <= weight;
@@ -108,10 +113,11 @@ public class StreakPolice extends NPCSuper {
                         NBTItem nbt = new NBTItem(item);
                         Double weight = NBTUtil.getCustomAttr(nbt, "WEIGHT", double.class, null);
                         if(weight == null) continue;
-                        nbt.getCompound("CustomAttributes").setDouble("WEIGHT", weight + itemsandhits.get(targetId));
+                        weight += itemsandhits.get(targetId);
+                        nbt.getCompound("CustomAttributes").setDouble("WEIGHT", weight);
                         toRemove.add(targetId);
                         player.getInventory().setItem(a, nbt.getItem());
-                        if(roll(item)){
+                        if(roll(weight)){
                             player.getInventory().setItem(a, seize(item));
                             player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 10, 1);
                             player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 10, 1);

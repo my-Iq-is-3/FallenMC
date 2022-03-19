@@ -268,7 +268,7 @@ public class Commands implements Listener, CommandExecutor {
         		if(MiscUtils.isAdmin(player)){
         			try{
 
-        				Player target = Bukkit.getServer().getPlayerExact(args[0]);
+        				Player target = Bukkit.getServer().getPlayer(args[0]);
         				PlayerInventory targetInv = target.getInventory();
         				ItemStack seizedItem = StreakPolice.seize(targetInv.getItemInHand());
         				int itemSeizeSlot = targetInv.getHeldItemSlot();
@@ -301,59 +301,7 @@ public class Commands implements Listener, CommandExecutor {
 				}else{
         			player.sendMessage(ChatColor.RED + "You don't have permission to use this command");
 				}
-			}
-        	if(command.getName().equalsIgnoreCase("spawnnpc")){
-        		if(MiscUtils.isAdmin(player)){
-					if(args.length > 1){
-						boolean save;
-						if(args[0].equalsIgnoreCase("true")) save = true;
-						else if(args[0].equalsIgnoreCase("false")) save = false;
-						else return false;
-						StringBuilder className = new StringBuilder();
-						String[] npcNameArr = new String[args.length - 1];
-						System.arraycopy(args, 1, npcNameArr, 0, npcNameArr.length);
-						for(String npcNameWord : npcNameArr) className.append(StringUtil.capitalizeFirst(npcNameWord));
-						for(String pack : DesertMain.NPC_PACKAGES){
-							try{
-								@SuppressWarnings("unchecked")
-								Class<? extends NPCSuper> npcClass = (Class<? extends NPCSuper>) Class.forName(pack + "." + className);
-								NPCSuper npcObj = npcClass.newInstance();
-								npcObj.createNPC(player.getLocation());
-								if(save){
-									try{
-										npcObj.saveCurrent(mainpl);
-										player.sendMessage(ChatColor.GREEN + "NPC successfully saved.");
-									}catch(Exception ex){
-										player.sendMessage(ChatColor.RED + "There was an error saving your NPC.");
-										Bukkit.getLogger().log(Level.WARNING, "Couldn't save NPC " + className + ":", ex);
-									}
-								}
-								return true;
-							}catch(Exception ex){
-								if(ex instanceof ClassCastException){
-									player.sendMessage(ChatColor.RED + "The file or your requested NPC was loaded, but it wasn't the correct type to be initialized as an NPC. Please inform a developer about this immediately, if you're not one. If you are one, get off your lazy ass and get crackin' fixing this error!");
-									Bukkit.getLogger().log(Level.SEVERE, "Problem casting NPC " + pack + "." + className + " to NPCSuper", ex);
-									return true;
-								}else if(ex instanceof InstantiationException || ex instanceof IllegalAccessException){
-									Bukkit.getLogger().log(Level.WARNING, "Error spawning NPC " + pack + "." + className, ex);
-									player.sendMessage(ChatColor.RED + "We encountered an error spawning your NPC. If this keeps happening, please alert a server dev.");
-									return true;
-								}else if(!(ex instanceof ClassNotFoundException)){
-									player.sendMessage(ChatColor.RED + "An unknown error occurred loading your NPC.");
-									Bukkit.getLogger().log(Level.WARNING, "Could not spawn NPC " + className, ex);
-								}
-							}
-						}
-						player.sendMessage(ChatColor.RED + "Sorry, that NPC wasn't found.");
-						return true;
-					}else{
-						return false;
-					}
-				}else{
-        			player.sendMessage(ChatColor.RED + "Sorry, you don't have access to that command.");
-				}
-			}
-        	if(command.getName().equalsIgnoreCase("hideplayer")){
+			}else if(command.getName().equalsIgnoreCase("hideplayer")){
         		if(MiscUtils.isAdmin(player)){
         			try{
         				player.hidePlayer(Bukkit.getPlayer(args[0]));

@@ -48,7 +48,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.entity.*;
@@ -101,18 +100,22 @@ public class Events implements Listener{
 			public void onPacketSending(PacketEvent event){
 				StructureModifier<ItemStack[]> modifier = event.getPacket().getItemArrayModifier();
 				ItemStack[] items = modifier.read(0);
+				boolean changed = false;
 				for(int i = 0; i<items.length; i++){
 					ItemStack item = items[i].clone();
 					Double wph = NBTUtil.getCustomAttr(item, "WEIGHT_ADD", double.class);
 					if(wph != null){
 						ItemMeta meta = item.getItemMeta();
 						List<String> lore = meta.getLore();
+						lore.add("");
 						lore.add(ChatColor.DARK_GRAY + "Weight add per hit: " + ChatColor.GRAY + wphFormat.format(wph) + "%"); //don't have a centralized item system? Fake it till you make it!
 						meta.setLore(lore);
 						item.setItemMeta(meta);
 						items[i] = item;
+						changed = true;
 					}
 				}
+				if(changed) modifier.write(0, items);
 			}
 
 			public void onPacketReceiving(PacketEvent event){
@@ -168,6 +171,7 @@ public class Events implements Listener{
 			Arrow arrow = (Arrow) entity;
 			if(arrow.isDead() || arrow.isOnGround() || new NBTEntity(arrow).getBoolean("inGround")){
 				arrowArray.remove(arrow.getEntityId());
+				Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, arrow::remove, 50);
 			}
 		}
 	}
@@ -486,17 +490,17 @@ public class Events implements Listener{
 						event.setCancelled(true);
 						return;
 					}
+					ArtifactEvents.hitEvent(event);
+				EventsForScout.getInstance().daggerHit(event);
 					if (event.getEntity() instanceof Player) {
 						attackMod(event);
 						if (DesertMain.ct1players.contains(event.getDamager().getUniqueId())) {
 							event.setDamage(event.getDamage() * 1.1);
 						}
 						StreakPolice.onHit(event);
-						ArtifactEvents.hitEvent(event);
 
 						EventsForCorruptor.INSTANCE.corruptedSword(event);
 
-						EventsForScout.getInstance().daggerHit(event);
 						EventsForCorruptor.INSTANCE.t8Event(event);
 						EventsForCorruptor.INSTANCE.noMercy(event);
 

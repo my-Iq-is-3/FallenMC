@@ -6,6 +6,7 @@ import me.gabriel.Traits.TraitsInventory;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.MiscUtils;
+import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.artifacts.gui.inv.ArtifactsBag;
 import me.zach.databank.saver.PlayerData;
@@ -122,6 +123,14 @@ public class InvEvents implements Listener {
 						sword.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
 						player.getInventory().addItem(sword);
 						shop.updateInventory();
+					}
+				}else if(NBTUtil.getCustomAttrString(item, "ID").equals("STURDY_BOW")){
+					if(ConfigUtils.deductGems(player, 1000)){
+						ItemStack sturdyBow = MiscUtils.generateItem(Material.BOW, ChatColor.WHITE + "Sturdy Bow", StringUtil.wrapLore(ChatColor.GRAY + "A quality-crafted, permanent bow. Enchantable.", 33), (byte) -1, 1, "STURDY_BOW", true);
+						NBTItem sturdyNBT = new NBTItem(sturdyBow);
+						sturdyNBT.setBoolean("Unbreakable", true);
+						NBTUtil.checkCustomAttr(sturdyNBT).setBoolean("USABLE", true);
+						player.getInventory().addItem(sturdyNBT.getItem());
 					}
 				}
 		}

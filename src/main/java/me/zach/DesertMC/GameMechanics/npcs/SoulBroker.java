@@ -2,6 +2,7 @@ package me.zach.DesertMC.GameMechanics.npcs;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import me.zach.DesertMC.CommandsPackage.NPCCommand;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;

@@ -66,16 +66,14 @@ public class NBTUtil {
             return defaultValue;
         }
         Object result;
-        if(type == boolean.class) result = customAttributes.getBoolean(key);
-        else if(type == byte.class) result = customAttributes.getByte(key);
-        else if(type == short.class) result = customAttributes.getShort(key);
-        else if(type == int.class) result = customAttributes.getInteger(key);
-        else if(type == float.class) result = customAttributes.getFloat(key);
-        else if(type == double.class) result = customAttributes.getDouble(key);
-        else if(type == long.class) result = customAttributes.getLong(key);
-        else if(type == String.class){
-            result = customAttributes.getString(key);
-        }
+        if(type == boolean.class || type == Boolean.class) result = customAttributes.getBoolean(key);
+        else if(type == byte.class || type == Byte.class) result = customAttributes.getByte(key);
+        else if(type == short.class || type == Short.class) result = customAttributes.getShort(key);
+        else if(type == int.class || type == Integer.class) result = customAttributes.getInteger(key);
+        else if(type == float.class || type == Float.class) result = customAttributes.getFloat(key);
+        else if(type == double.class || type == Double.class) result = customAttributes.getDouble(key);
+        else if(type == long.class || type == Long.class) result = customAttributes.getLong(key);
+        else if(type == String.class) result = customAttributes.getString(key);
         else if(type == byte[].class) result = customAttributes.getByteArray(key);
         else if(type == int[].class) result = customAttributes.getIntArray(key);
         else if(type == NBTCompound.class) result = customAttributes.getCompound(key);

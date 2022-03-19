@@ -8,6 +8,7 @@ import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.events.FallenDeathEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
@@ -78,16 +79,18 @@ public class EventsForScout implements Listener {
         }
     }
 
+    public static final double MAX_DAGGER_DISTANCE = 1.7 * 1.7;
     public void daggerHit(EntityDamageByEntityEvent event){
         if(!event.isCancelled() && event.getDamager() instanceof Player && event.getEntity() instanceof LivingEntity){
             Player damager = (Player) event.getDamager();
             LivingEntity damaged = (LivingEntity) event.getEntity();
-            if(NBTUtil.getCustomAttrString(damaged.getEquipment().getItemInHand(), "ID").equals("SCOUT_DAGGER")){
+            if(NBTUtil.getCustomAttrString(damager.getEquipment().getItemInHand(), "ID").equals("SCOUT_DAGGER")){
                 event.setCancelled(true);
                 if(ConfigUtils.findClass(damager).equals("scout") && ConfigUtils.getLevel("scout", damager) > 4){
-                    if(damager.getLocation().distanceSquared(damaged.getLocation()) <= 1){
+                    double distance = damager.getLocation().distanceSquared(damaged.getLocation());
+                    if(distance <= MAX_DAGGER_DISTANCE){
                         event.setCancelled(false);
-                        //damage bonus is handled by the ATTACK nbt tag
+                        event.setDamage(event.getDamage() * 2);
                     }
                 }else{
                     damager.sendMessage(ChatColor.RED + "You must have the Scout class selected and past level 4 to use this item!");

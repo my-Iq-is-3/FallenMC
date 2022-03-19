@@ -32,6 +32,7 @@ me/zach/DesertMC/GameMechanics/npcs/StreakPolice$StreakPoliceInventory.class
 me/zach/DesertMC/CommandsPackage/ItemCommand.class
 me/zach/DesertMC/ScoreboardManager/FScoreboardManager.class
 me/zach/DesertMC/cosmetics/Cosmetic$5$1.class
+me/zach/DesertMC/CommandsPackage/NPCCommand.class
 me/zach/DesertMC/mythicalitems/items/DestroyerItem.class
 me/zach/DesertMC/GameMechanics/hitbox/HitboxManager.class
 me/zach/DesertMC/ClassManager/ScoutManager/EventsForScout.class

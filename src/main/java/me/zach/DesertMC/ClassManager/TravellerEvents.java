@@ -40,12 +40,11 @@ public class TravellerEvents implements Listener {
                     if(ConfigUtils.getLevel(findClass(uuid), uuid) > 5) travelled.put(uuid, new HashSet<>());
                 }else{
                     Set<Block> blockSet = travelled.get(uuid);
-                    int prevSize = blockSet.size();
                     if(blockSet.add(block)){
                         Player player = e.getPlayer();
                         if(notifications(uuid)){
                             String actionBar = ChatColor.YELLOW + "Unique blocks travelled this run: " + ChatColor.GREEN + blockSet.size();
-                            if(prevSize % 200 == 0){
+                            if(blockSet.size() == 250){
                                 player.sendMessage(Prefix.SERVER + ChatColor.YELLOW.toString() + ChatColor.BOLD + " TIP: " + ChatColor.GRAY + "Toggle block notifications using /blocknotifications");
                             }
                             ActionBarUtils.sendActionBar(player, actionBar);
@@ -53,7 +52,7 @@ public class TravellerEvents implements Listener {
                         if(findClass(uuid).equalsIgnoreCase("scout")){
                             if(blockSet.size() % 100 == 0){
                                 player.setWalkSpeed(player.getWalkSpeed() + 0.004f);
-                                sendAchieved(ChatColor.AQUA.toString() + ChatColor.BOLD + "+2%" + ChatColor.AQUA + " move speed!", player); //TODO this
+                                sendAchieved(ChatColor.AQUA.toString() + ChatColor.BOLD + "+2%" + ChatColor.AQUA + " move speed!", player);
                             }
                         }else if(findClass(uuid).equalsIgnoreCase("wizard")){
                             if(blockSet.size() % 250 == 0){

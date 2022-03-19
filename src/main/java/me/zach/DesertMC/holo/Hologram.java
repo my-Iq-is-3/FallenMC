@@ -50,6 +50,7 @@ public class Hologram {
     public void remove(){
         if(riding != null) riding.eject();
         stand.remove();
+        riding = null;
         stand = null;
     }
 

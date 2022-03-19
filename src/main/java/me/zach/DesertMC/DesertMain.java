@@ -9,16 +9,21 @@ import me.zach.DesertMC.ClassManager.TravellerEvents;
 import me.zach.DesertMC.ClassManager.WizardManager.EventsForWizard;
 import me.zach.DesertMC.CommandsPackage.Commands;
 import me.zach.DesertMC.CommandsPackage.ItemCommand;
+import me.zach.DesertMC.CommandsPackage.NPCCommand;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesEvents;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesOverride;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.GameMechanics.NPCStructure.SavedNPC;
+import me.zach.DesertMC.GameMechanics.NPCStructure.SimpleNPC;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxCommand;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BlobHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BoxHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.CircleHitbox;
+import me.zach.DesertMC.GameMechanics.npcs.Kothy;
+import me.zach.DesertMC.GameMechanics.npcs.SoulBroker;
+import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
 import me.zach.DesertMC.Utils.ImportantPeople;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
@@ -32,13 +37,13 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -83,13 +88,19 @@ public class DesertMain extends JavaPlugin implements Listener {
 		ConfigurationSerialization.registerClass(BlobHitbox.class);
 		loadConfig();
 		HitboxManager.loadAll(this);
+		registerNPCs();
 		loadNPCs();
 		Bukkit.getScheduler().runTask(this, this::loadCredits); //dont ask
 		welcome = RankEvents.colorMessage(MiscUtils.ensureDefault("server.welcome", ChatColor.AQUA + "Welcome to FallenMC! We hope you'll have fun.", this));
-		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "spawnnpc", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram", "credits", "entityremoval"};
+		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram", "credits", "entityremoval"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
+
+		PluginCommand npcCommand = getCommand("spawnnpc");
+		NPCCommand obj = new NPCCommand();
+		npcCommand.setExecutor(obj);
+		npcCommand.setTabCompleter(obj);
 		HitboxCommand hitboxCommand = new HitboxCommand();
 		getCommand("hitbox").setExecutor(hitboxCommand);
 		Bukkit.getPluginManager().registerEvents(hitboxCommand, this);
@@ -100,7 +111,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(events, this);
 		events.check(this);
 		Bukkit.getLogger().info("FallenMC onEnable success!");
-		wipeIndicators();
+		wipeEntities();
 	}
 
 	public void loadCredits(){
@@ -160,7 +171,13 @@ public class DesertMain extends JavaPlugin implements Listener {
 				}
 			}
 		}
-		wipeIndicators();
+		wipeEntities();
+	}
+
+	private void registerNPCs(){
+		NPCCommand.registerNPC("Kothy", Kothy::new);
+		NPCCommand.registerNPC("StreakPolice", StreakPolice::new);
+		NPCCommand.registerNPC("SoulBroker", SoulBroker::new);
 	}
 
 	private void registerEvents(Plugin p){
@@ -179,16 +196,12 @@ public class DesertMain extends JavaPlugin implements Listener {
 	}
 
 	private void loadNPCs(){
-		System.out.println("1");
 		List<SavedNPC> npcs = SavedNPC.stored(this);
-		System.out.println("loop");
 		Bukkit.getConsoleSender().sendMessage("spawning npcs...");
 		for(SavedNPC savedNPC : npcs){
-			System.out.println("loc");
-			Location location = savedNPC.location;
-			System.out.println("createnpc");
-			savedNPC.npc.createNPC(savedNPC.location);
-			Bukkit.getLogger().info("Spawned " + ChatColor.stripColor(savedNPC.npc.name) + " from config at (" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ() + ")");
+			SimpleNPC npc = savedNPC.constructNPC();
+			npc.createNPC(savedNPC.location);
+			Bukkit.getLogger().info("Spawned " + ChatColor.stripColor(npc.name) + " from config at " + MiscUtils.cleanCoordinates(savedNPC.location));
 		}
 		Bukkit.getConsoleSender().sendMessage("npcs spawned");
 	}
@@ -199,12 +212,13 @@ public class DesertMain extends JavaPlugin implements Listener {
 			getCommand(s).setExecutor(file);
 		}
 		Bukkit.getConsoleSender().sendMessage("commands registered");
-
 	}
 
-	private void wipeIndicators(){
+	private void wipeEntities(){
 		for(World world : Bukkit.getWorlds()){
 			for(Entity entity : world.getEntities()){
+				EntityType type = entity.getType();
+				if(type == EntityType.DROPPED_ITEM || type == EntityType.ARROW) entity.remove();
 				Boolean indicator = new NBTEntity(entity).getBoolean("Indicator");
 				if(indicator != null && indicator){
 					entity.remove();

@@ -2,7 +2,11 @@ package me.zach.DesertMC.ClassManager;
 
 import java.util.ArrayList;
 
+import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.MiscUtils;
+import me.zach.DesertMC.Utils.StringUtils.StringUtil;
+import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -47,7 +51,7 @@ public class ItemShop {
 		ItemStack bow = new ItemStack(Material.BOW);
 		ItemMeta bowM = bow.getItemMeta();
 		bowM.setDisplayName(ChatColor.WHITE + "Bow");
-		ArrayList<String> bowLore = new ArrayList<String>();
+		ArrayList<String> bowLore = new ArrayList<>();
 		bowLore.add(ChatColor.DARK_GRAY + "Click to buy a bow that lasts " + ChatColor.RED + "1" + ChatColor.DARK_GRAY + " life");
 		bowLore.add("");
 		bowLore.add(ChatColor.WHITE + "Cost:" + ChatColor.GREEN + " 100 Gems");
@@ -59,8 +63,12 @@ public class ItemShop {
 		bowM.setLore(bowLore);
 		bow.setItemMeta(bowM);
 		shop.setItem(10, bow);
-	
-		
+
+		ItemStack sturdyBow = MiscUtils.generateItem(Material.BOW, ChatColor.WHITE + "Sturdy Bow", StringUtil.wrapLore(ChatColor.DARK_GRAY + "A quality-crafted, permanent bow. Enchantable.\n\n" + ChatColor.WHITE + "Cost: " + ChatColor.GREEN + "1000 gems\n" + (balance >= 1000 ? ChatColor.GREEN + "Click to buy!" : ChatColor.RED + "Can't afford!"), 33), (byte) -1, 1, "STURDY_BOW", true);
+		ItemMeta bowMeta = sturdyBow.getItemMeta();
+		bowMeta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 1, true);
+		sturdyBow.setItemMeta(bowMeta);
+		shop.setItem(28, sturdyBow);
 		//fishing rod
 		//-----------------------------------------------------
 		ItemStack frod = new ItemStack(Material.FISHING_ROD);

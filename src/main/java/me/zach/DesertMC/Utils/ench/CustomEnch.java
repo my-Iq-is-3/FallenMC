@@ -24,6 +24,7 @@ import org.bukkit.util.Vector;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -198,8 +199,12 @@ public enum CustomEnch implements Listener {
         }
     };
     private static final DecimalFormat NUM_FORMATTER = new DecimalFormat();
+    private static final HashMap<String, CustomEnch> ID_MAP = new HashMap<>();
     static{
         NUM_FORMATTER.setMaximumFractionDigits(1);
+        for(CustomEnch ench : values()){
+            ID_MAP.put(ench.id, ench);
+        }
     }
 
     abstract String getDescription(int level);
@@ -294,14 +299,7 @@ public enum CustomEnch implements Listener {
     }
 
     public static CustomEnch fromID(String id){
-        System.out.println("id = " + id);
-        for(CustomEnch ce : CustomEnch.values()){
-            System.out.println("checking " + ce.id);
-            if(ce.id.equals(id)){
-                return ce;
-            }
-        }
-        return null;
+        return ID_MAP.get(id);
     }
 
     public static NBTCompound getEnch(NBTItem nbti){

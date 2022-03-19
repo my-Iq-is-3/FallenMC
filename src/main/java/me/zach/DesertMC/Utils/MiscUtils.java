@@ -337,6 +337,21 @@ public class MiscUtils {
     }
 
     /**
+     *
+     * @return A list of strings derived from {@code wideTarget}, only if the start of them matches the start of {@code current}.
+     */
+    public static List<String> narrowTabComplete(String current, Collection<String> wideTarget){
+        if(wideTarget.isEmpty() || current.isEmpty()) return new ArrayList<>(wideTarget);
+        List<String> product = new ArrayList<>();
+        for(String string : wideTarget){
+            if(string.toLowerCase().startsWith(current.toLowerCase())){
+                product.add(string);
+            }
+        }
+        return product;
+    }
+
+    /**
      * Rounds the provided Location to the nearest whole x, y, and z.
      * @param location the Location to modify
      * @return the modified Location
@@ -354,8 +369,8 @@ public class MiscUtils {
     public static void showIndicator(String content, Location center){
         Location location = indicatorLocation(center);
         Hologram holo = new Hologram(content, location);
-        new NBTEntity(holo.getStand()).setBoolean("Indicator", true);
         holo.create();
+        new NBTEntity(holo.getStand()).setBoolean("Indicator", true);
         Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, holo::remove, 15);
     }
 
