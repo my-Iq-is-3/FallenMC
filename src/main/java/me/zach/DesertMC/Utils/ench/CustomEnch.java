@@ -87,7 +87,10 @@ public enum CustomEnch implements Listener {
                 if(!CustomEnch.validatePlayer(player,Key.CORRUPTER,4)) return;
                 int lvl = getTotalArmorLevel(player);
                 if(lvl > 0){
-                    event.setDamage(event.getDamage()*(1-(MiscUtils.getNearbyEntities(Player.class,player,25).size()*lvl*0.3)));
+                    double damage = event.getDamage();
+                    List<Player> nearby = MiscUtils.getNearbyEntities(Player.class, player, 25);
+                    double multiplier = 1 - ((lvl * 0.3) * nearby.size());
+                    event.setDamage(damage * multiplier);
                 }
             }
         }

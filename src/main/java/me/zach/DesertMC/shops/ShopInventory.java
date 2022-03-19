@@ -66,10 +66,12 @@ public class ShopInventory implements GUIHolder {
     public void inventoryClick(Player player, int slot, ItemStack clickedItem, ClickType clickType, InventoryClickEvent event){
         event.setCancelled(true);
         ShopItem correspondingShopItem = storefront.get(slot);
-        int amount = 1;
-        if(purchase(correspondingShopItem, amount)){ //maybe I'll make custom amount buying in the future; I have the framework for it, so it should be pretty easy
-            updateShopItems();
-            inventory.setItem(INV_SIZE - 1, MiscUtils.getGemsItem(data.getGems()));
+        if(correspondingShopItem != null){
+            int amount = 1;
+            if(purchase(correspondingShopItem, amount)){ //maybe I'll make custom amount buying in the future; I have the framework for it, so it should be pretty easy
+                updateShopItems();
+                inventory.setItem(INV_SIZE - 1, MiscUtils.getGemsItem(data.getGems()));
+            }
         }
     }
 
