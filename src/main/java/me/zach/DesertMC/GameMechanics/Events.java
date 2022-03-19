@@ -153,7 +153,7 @@ public class Events implements Listener{
 					if(lives - 1 <= 0){
 						inventory.clear(i);
 						player.sendMessage(ChatColor.RED + "Your " + item.getItemMeta().getDisplayName() + ChatColor.RED + " ran out of lives!");
-					}
+					}else inventory.setItem(i, NBTUtil.setLives(item, lives - 1));
 				}
 			}
 		}
@@ -669,7 +669,7 @@ public class Events implements Listener{
 			if(!cancelled){
 				String message = killer != null ? ChatColor.GRAY + "You were killed by " + killer.getDisplayName() + ChatColor.GRAY + "." : ChatColor.YELLOW + "You died.";
 				if(ks.get(player.getUniqueId()) > 5)
-					message += ChatColor.GRAY + "\nYour streak of " + ChatColor.AQUA + ks.get(player.getUniqueId()) + ChatColor.RED + " was lost!";
+					message += ChatColor.RED + "\nYour streak of " + ChatColor.AQUA + ks.get(player.getUniqueId()) + ChatColor.RED + " was lost!";
 				player.sendMessage(message);
 				callOnKill(player, killer);
 				DesertMain.snack.remove(player.getUniqueId());

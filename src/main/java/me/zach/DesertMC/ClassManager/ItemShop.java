@@ -128,7 +128,7 @@ public class ItemShop {
 		packLore.add(ChatColor.DARK_GRAY + "Contents: ");
 		packLore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " x1 Iron Helmet");
 		packLore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " x1 Iron Chestplate");
-		packLore.add(ChatColor.GRAY + "All items: " + ChatColor.RED + "15" + ChatColor.GRAY + " lives");
+		packLore.add(ChatColor.GRAY + "All items: " + ChatColor.RED + "5" + ChatColor.GRAY + " lives");
 		ipackMeta.setLore(packLore);
 		itemPackage.setItemMeta(ipackMeta);
 		addLore(itemPackage, 250, packLore, player);

@@ -21,9 +21,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -77,7 +77,7 @@ public enum CustomEnch implements Listener {
     },
     EXTRAVERT(EnchantType.ARMOR){
         String getDescription(int level){
-            return "Take " + 0.3*level + "% less damage per person within a 25 block radius.";
+            return "Take " + NUM_FORMATTER.format(0.3*level) + "% less damage per person within a 25 block radius.";
         }
 
         @Override
@@ -202,6 +202,7 @@ public enum CustomEnch implements Listener {
     private static final HashMap<String, CustomEnch> ID_MAP = new HashMap<>();
     static{
         NUM_FORMATTER.setMaximumFractionDigits(1);
+        NUM_FORMATTER.setRoundingMode(RoundingMode.HALF_EVEN);
         for(CustomEnch ench : values()){
             ID_MAP.put(ench.id, ench);
         }
@@ -226,7 +227,7 @@ public enum CustomEnch implements Listener {
     }
 
     CustomEnch(EnchantType... types){
-        this.name = capitalizeEnum(this.name()).replace("_"," ");
+        this.name = MiscUtils.capitalizeEnum(this.name()).replace("_"," ");
         this.id = this.name().toLowerCase();
         this.types = types;
         checkTypeLength();
@@ -310,15 +311,6 @@ public enum CustomEnch implements Listener {
             enchs = nbti.addCompound("CustomAttributes").addCompound("enchantments");
         }
         return enchs;
-    }
-
-    private static String capitalizeEnum(String str) {
-        String[] words = str.toLowerCase().split("_");
-        for(int i = 0; i< words.length; i++){
-            String capital = StringUtil.capitalizeFirst(words[i]);
-            words[i] = capital;
-        }
-        return String.join(" ", words);
     }
 
     private static boolean validatePlayer(Entity p, String clazz, int lv){

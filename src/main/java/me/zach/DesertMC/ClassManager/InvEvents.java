@@ -67,7 +67,7 @@ public class InvEvents implements Listener {
 			if (item == null || !item.hasItemMeta()) {
 				return;
 			}
-			if(item.getType().equals(Material.BOW)) {
+			if(item.getType().equals(Material.BOW) && !item.getItemMeta().hasEnchant(Enchantment.PROTECTION_ENVIRONMENTAL)) {
 				if(ConfigUtils.deductGems(player,100)){
 					ItemStack bow = MiscUtils.generateItem(Material.BOW, ChatColor.WHITE + "Bow", MiscUtils.asArrayList(ChatColor.GRAY + "A bow."), (byte) -1, 1, "BOW", 1);
 					NBTItem nbt = new NBTItem(bow);

@@ -2,7 +2,6 @@ package me.zach.DesertMC.ClassManager.WizardManager;
 
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
-import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
@@ -13,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,7 +23,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -52,28 +49,21 @@ public class EventsForWizard implements Listener {
 
 //  Invisibility
     public void wizardt1(Player killer) {
+        if (ConfigUtils.findClass(killer).equals("wizard") && ConfigUtils.getLevel("wizard", killer) > 1) {
+            for (Player player : killer.getWorld().getPlayers()) {
+                if(!NBTUtil.getCustomAttrString(player.getInventory().getHelmet(), "ID").equals("SCOUT_GOGGLES"))
+                    player.hidePlayer(killer, false);
+            }
+            new BukkitRunnable() {
 
-
-
-                if (ConfigUtils.findClass(killer).equals("wizard") && ConfigUtils.getLevel("wizard", killer) > 1) {
+                @Override
+                public void run() {
                     for (Player player : killer.getWorld().getPlayers()) {
-                        if(!NBTUtil.getCustomAttrString(player.getInventory().getHelmet(), "ID").equals("SCOUT_GOGGLES"))
-                            player.hidePlayer(killer, false);
+                        if(!player.canSee(killer)) player.showPlayer(killer);
                     }
-
-                    new BukkitRunnable() {
-
-                        @Override
-                        public void run() {
-                            for (Player player : killer.getWorld().getPlayers()) {
-                                if(!player.canSee(killer)) player.showPlayer(killer);
-                            }
-                        }
-                    }.runTaskLater(DesertMain.getInstance, 40);
                 }
-
-
-
+            }.runTaskLater(DesertMain.getInstance, 40);
+        }
     }
 //  MW Hit
     public void magicWandHit(Player damaged, Player damager) {
@@ -111,21 +101,20 @@ public class EventsForWizard implements Listener {
                 if(ConfigUtils.findClass(damager).equals("wizard")){
                     if(ConfigUtils.getLevel("wizard",damager) > 3 && ConfigUtils.getLevel("wizard",damager) <= 7){
                         if(randint <= 3){
-                            damager.sendMessage(ChatColor.RED + "You gave " + damaged.getName() + " " + ChatColor.GREEN + "" + allpotionEffects[randint].getType().toString());
+                            damager.sendMessage(ChatColor.RED + "You gave " + damaged.getName() + " " + ChatColor.GREEN + "" + MiscUtils.potionEffectToString(allpotionEffects[randint]));
                             ParticleEffect.VILLAGER_HAPPY.display(0.5f,0.5f,0.5f,0,30,damaged.getLocation().add(0,0.5,0), 5);
                         }else {
                             ParticleEffect.REDSTONE.display(0.5f,0.5f,0.5f,0,30,damaged.getLocation().add(0,0.5,0),5);
-                            damager.sendMessage(ChatColor.RED + "You gave " + damaged.getName() + " " + ChatColor.RED + "" + allpotionEffects[randint].getType().toString());
+                            damager.sendMessage(ChatColor.RED + "You gave " + damaged.getName() + " " + ChatColor.RED + "" + MiscUtils.potionEffectToString(allpotionEffects[randint]));
                         }
                         damaged.addPotionEffect(allpotionEffects[randint]);
                     }else if(ConfigUtils.getLevel("wizard",damager) > 7){
                         ParticleEffect.REDSTONE.display(0.5f,0.5f,0.5f,0,30,damaged.getLocation().add(0,0.5,0),5);
                         damaged.addPotionEffect(badpoteff[randint1]);
-                        damager.sendMessage(ChatColor.RED + "You gave " + damaged.getName() + " " + ChatColor.RED + "" + allpotionEffects[randint1].getType().toString());
+                        damager.sendMessage(ChatColor.RED + "You gave " + damaged.getName() + " " + ChatColor.RED + "" + MiscUtils.potionEffectToString(allpotionEffects[randint1]));
                     }else{
                         damager.sendMessage(ChatColor.RED + "You can't use this ability!");
                     }
-
                     DesertMain.mwcd.add(damager);
                     new BukkitRunnable(){
 
@@ -135,8 +124,6 @@ public class EventsForWizard implements Listener {
                         }
                     }.runTaskLater(DesertMain.getInstance, 100);
                 }
-
-
             }
         }
 

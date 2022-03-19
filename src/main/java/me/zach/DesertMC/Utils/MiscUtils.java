@@ -25,6 +25,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Field;
@@ -336,6 +337,10 @@ public class MiscUtils {
         nbt.setString("OWNER", owner.getUniqueId().toString());
     }
 
+    public static String potionEffectToString(PotionEffect potionEffect){
+        return capitalizeEnum(potionEffect.getType().getName()) + " " + potionEffect.getAmplifier() + 1;
+    }
+
     /**
      *
      * @return A list of strings derived from {@code wideTarget}, only if the start of them matches the start of {@code current}.
@@ -498,5 +503,14 @@ public class MiscUtils {
             if(isConfigurationSection) return (T) config.getConfigurationSection(path).getValues(true);
             else return (T) config.get(path);
         }
+    }
+
+    public static String capitalizeEnum(String str) {
+        String[] words = str.toLowerCase().split("_");
+        for(int i = 0; i< words.length; i++){
+            String capital = StringUtil.capitalizeFirst(words[i]);
+            words[i] = capital;
+        }
+        return String.join(" ", words);
     }
 }
