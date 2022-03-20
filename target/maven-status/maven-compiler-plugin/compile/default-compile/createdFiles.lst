@@ -45,6 +45,7 @@ me/zach/DesertMC/cosmetics/Cosmetic$CosmeticType.class
 me/zach/DesertMC/cosmetics/Cosmetic$5.class
 me/zach/DesertMC/cosmetics/Cosmetic$CosmeticActivationException.class
 me/zach/DesertMC/Utils/ench/EnchantType$2.class
+me/zach/DesertMC/Utils/packet/wrappers/WrapperPlayClientUseEntity.class
 me/zach/DesertMC/GameMechanics/Events$4.class
 me/zach/DesertMC/ClassManager/CoruManager/EventsForCorruptor.class
 me/zach/DesertMC/Utils/Particle/ReflectionUtils$DataType.class
@@ -92,6 +93,7 @@ me/zach/DesertMC/shops/ShopItem$PurchaseResponse.class
 me/zach/DesertMC/Utils/nbt/EnchantmentUtil.class
 me/zach/DesertMC/GameMechanics/hitbox/HitboxCommand.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ItemData.class
+me/zach/DesertMC/GameMechanics/Events$7.class
 me/zach/DesertMC/ClassManager/ItemShop.class
 me/zach/DesertMC/ClassManager/CoruManager/EventsForCorruptor$1.class
 me/zach/DesertMC/ClassManager/TankManager/TankTierMenu.class

@@ -1,6 +1,7 @@
 package me.zach.DesertMC.GameMechanics;
 
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListeningWhitelist;
 import com.comphenix.protocol.events.PacketEvent;
@@ -31,6 +32,7 @@ import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import me.zach.DesertMC.Utils.packet.wrappers.WrapperPlayClientUseEntity;
 import me.zach.DesertMC.Utils.packet.wrappers.WrapperPlayServerWindowItems;
 import me.zach.DesertMC.Utils.structs.Pair;
 import me.zach.DesertMC.anvil.FallenAnvilInventory;
@@ -107,6 +109,7 @@ public class Events implements Listener{
 					if(wph != null){
 						ItemMeta meta = item.getItemMeta();
 						List<String> lore = meta.getLore();
+						if(lore == null) continue;
 						lore.add("");
 						lore.add(ChatColor.DARK_GRAY + "Weight add per hit: " + ChatColor.GRAY + wphFormat.format(wph) + "%"); //don't have a centralized item system? Fake it till you make it!
 						meta.setLore(lore);
@@ -134,6 +137,33 @@ public class Events implements Listener{
 				return DesertMain.getInstance;
 			}
 		};
+		PacketListener tokenAttack = new PacketListener() {
+			final ListeningWhitelist whitelist = ListeningWhitelist.newBuilder().types(WrapperPlayClientUseEntity.TYPE).build();
+			public void onPacketSending(PacketEvent event){
+
+			}
+
+			public void onPacketReceiving(PacketEvent event){
+				Player player = event.getPlayer();
+				ItemStack item = player.getItemInHand();
+				if(NBTUtil.getCustomAttrString(item, "ID").equals("TOKEN")){
+					event.setCancelled(true);
+				}
+			}
+
+			public ListeningWhitelist getSendingWhitelist(){
+				return ListeningWhitelist.EMPTY_WHITELIST;
+			}
+
+			public ListeningWhitelist getReceivingWhitelist(){
+				return whitelist;
+			}
+
+			public Plugin getPlugin(){
+				return null;
+			}
+		};
+		ProtocolLibrary.getProtocolManager().addPacketListener(tokenAttack);
 		ProtocolLibrary.getProtocolManager().addPacketListener(lmao);
 	}
 

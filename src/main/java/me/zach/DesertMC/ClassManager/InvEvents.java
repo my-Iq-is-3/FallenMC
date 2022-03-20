@@ -14,6 +14,7 @@ import me.zach.databank.saver.SaveManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -75,6 +76,7 @@ public class InvEvents implements Listener {
 					comp.setBoolean("USABLE", true);
 					player.getInventory().addItem(nbt.getItem());
 					shop.updateInventory();
+					player.playSound(player.getLocation(), Sound.NOTE_PLING, 10, 1.2f);
 				}
 			}
 				
@@ -82,6 +84,7 @@ public class InvEvents implements Listener {
 				if(ConfigUtils.deductGems(player,30)){
 					player.getInventory().addItem(new ItemStack(Material.ARROW,10));
 					shop.updateInventory();
+					player.playSound(player.getLocation(), Sound.NOTE_PLING, 10, 1.2f);
 				}
 			}
 			//TODO diamond sword
@@ -93,6 +96,7 @@ public class InvEvents implements Listener {
 					NBTUtil.checkCustomAttr(nbt).setBoolean("USABLE", true);
 					player.getInventory().addItem(nbt.getItem());
 					shop.updateInventory();
+					player.playSound(player.getLocation(), Sound.NOTE_PLING, 10, 1.2f);
 				}
 			}
 				
@@ -105,6 +109,7 @@ public class InvEvents implements Listener {
 					comp.removeKey("UUID");
 					player.getInventory().addItem(nbt.getItem());
 					shop.updateInventory();
+					player.playSound(player.getLocation(), Sound.NOTE_PLING, 10, 1.2f);
 				}
 			}
 				
@@ -113,27 +118,30 @@ public class InvEvents implements Listener {
 					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_CHESTPLATE, ChatColor.WHITE + "Iron Chestplate", new ArrayList<>(), (byte) -1, 1, "IRON_CHESTPLATE", 5));
 					player.getInventory().addItem(MiscUtils.generateItem(Material.IRON_HELMET,  ChatColor.WHITE + "Iron Helmet", new ArrayList<>(), (byte) -1, 1, "IRON_HELMET", 5));
 					shop.updateInventory();
+					player.playSound(player.getLocation(), Sound.NOTE_PLING, 10, 1.2f);
 				}
 			}
 				
 				
 				
-				if(item.getType().equals(Material.IRON_SWORD)) {
-					if(ConfigUtils.deductGems(player,200)){
-						ItemStack sword = MiscUtils.generateItem(Material.IRON_SWORD, ChatColor.WHITE + "Iron Sword", MiscUtils.asArrayList(ChatColor.GRAY + "An especially shiny iron sword.", ChatColor.GRAY + "Sharpness I"), (byte) -1, 1, "IRON_SWORD", 5);
-						sword.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
-						player.getInventory().addItem(sword);
-						shop.updateInventory();
-					}
-				}else if(NBTUtil.getCustomAttrString(item, "ID").equals("STURDY_BOW")){
-					if(ConfigUtils.deductGems(player, 1000)){
-						ItemStack sturdyBow = MiscUtils.generateItem(Material.BOW, ChatColor.WHITE + "Sturdy Bow", StringUtil.wrapLore(ChatColor.GRAY + "A quality-crafted, permanent bow. Enchantable.", 33), (byte) -1, 1, "STURDY_BOW", true);
-						NBTItem sturdyNBT = new NBTItem(sturdyBow);
-						sturdyNBT.setBoolean("Unbreakable", true);
-						NBTUtil.checkCustomAttr(sturdyNBT).setBoolean("USABLE", true);
-						player.getInventory().addItem(sturdyNBT.getItem());
-					}
+			if(item.getType().equals(Material.IRON_SWORD)) {
+				if(ConfigUtils.deductGems(player,200)){
+					ItemStack sword = MiscUtils.generateItem(Material.IRON_SWORD, ChatColor.WHITE + "Iron Sword", MiscUtils.asArrayList(ChatColor.GRAY + "An especially shiny iron sword.", ChatColor.GRAY + "Sharpness I"), (byte) -1, 1, "IRON_SWORD", 5);
+					sword.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
+					player.getInventory().addItem(sword);
+					shop.updateInventory();
+					player.playSound(player.getLocation(), Sound.NOTE_PLING, 10, 1.2f);
 				}
+			}else if(NBTUtil.getCustomAttrString(item, "ID").equals("STURDY_BOW")){
+				if(ConfigUtils.deductGems(player, 1000)){
+					ItemStack sturdyBow = MiscUtils.generateItem(Material.BOW, ChatColor.WHITE + "Sturdy Bow", StringUtil.wrapLore(ChatColor.GRAY + "A quality-crafted, permanent bow. Enchantable.", 33), (byte) -1, 1, "STURDY_BOW", true);
+					NBTItem sturdyNBT = new NBTItem(sturdyBow);
+					sturdyNBT.setBoolean("Unbreakable", true);
+					NBTUtil.checkCustomAttr(sturdyNBT).setBoolean("USABLE", true);
+					player.getInventory().addItem(sturdyNBT.getItem());
+					player.playSound(player.getLocation(), Sound.NOTE_PLING, 10, 1.2f);
+				}
+			}
 		}
 	
 	}
