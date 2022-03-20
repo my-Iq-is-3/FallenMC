@@ -306,7 +306,7 @@ public class Commands implements Listener, CommandExecutor {
 				ItemStack item = MiscUtils.generateItem(Material.WOOD_AXE, ChatColor.WHITE + "WorldEdit Wand", StringUtil.wrapLore(ChatColor.GRAY + "\nA usable WorldEdit wand.\nRight click: first selection\nLeft click: second selection"), (byte) -1, 1, "WORLDEDIT_WAND");
 				NBTItem nbt = new NBTItem(item);
 				NBTUtil.checkCustomAttr(nbt).setBoolean("USABLE", true);
-				player.getInventory().addItem(item);
+				player.getInventory().addItem(nbt.getItem());
 			} if(command.getName().equalsIgnoreCase("hideplayer")){
         		if(MiscUtils.isAdmin(player)){
         			try{
