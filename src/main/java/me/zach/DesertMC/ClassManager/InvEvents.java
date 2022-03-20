@@ -98,7 +98,7 @@ public class InvEvents implements Listener {
 				
 			if(item.getType().equals(Material.GOLDEN_APPLE)) {
 				if(ConfigUtils.deductGems(player,75)){
-					ItemStack goldenApple = MiscUtils.generateItem(Material.GOLDEN_APPLE, ChatColor.WHITE + "Golden Apple", Collections.emptyList(), (byte) -1, 1);
+					ItemStack goldenApple = MiscUtils.generateItem(Material.GOLDEN_APPLE, ChatColor.WHITE + "Golden Apple", Collections.emptyList(), (byte) -1, 1, "GOLDEN_APPLE");
 					NBTItem nbt = new NBTItem(goldenApple);
 					NBTCompound comp = NBTUtil.checkCustomAttr(nbt);
 					comp.setBoolean("USABLE", true);

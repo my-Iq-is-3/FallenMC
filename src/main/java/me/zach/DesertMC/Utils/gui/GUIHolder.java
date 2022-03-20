@@ -15,6 +15,5 @@ public interface GUIHolder extends InventoryHolder {
     default void inventoryClose(Player player, Inventory inventory, InventoryCloseEvent event){}
     default void inventoryClick(Player player, int slot, ItemStack clickedItem, ClickType clickType, InventoryClickEvent event){}
     default void bottomInventoryClick(Player player, Inventory inventory, int slot, ItemStack clickedItem, ClickType clickType, InventoryClickEvent event){event.setCancelled(true);}
-
     default boolean cancelPickup(PlayerPickupItemEvent event){return true;}
 }

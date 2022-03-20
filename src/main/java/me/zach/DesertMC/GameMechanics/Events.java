@@ -766,6 +766,19 @@ public class Events implements Listener{
 			MiscUtils.damageIndicator(event.getFinalDamage(), event instanceof EntityDamageByEntityEvent ? ((EntityDamageByEntityEvent) event).getDamager() : null, event.getEntity());
 	}
 
+	@EventHandler
+	public void gapple(PlayerItemConsumeEvent event){
+		ItemStack item = event.getItem();
+		if(NBTUtil.getCustomAttrString(item, "ID").equals("GOLDEN_APPLE")){
+			event.setCancelled(true);
+			Player player = event.getPlayer();
+			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 140, 1), false);
+			player.addAbsorption(4);
+			player.heal(7);
+			player.getInventory().remove(item);
+		}
+	}
+
 	private static void callOnKill(Player player, Player killer) {
 		checkItemLives(player);
 		PlayerUtils.setIdle(player);
@@ -833,37 +846,40 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void dd(FallenDeathEvent event){
-		Player player = event.getPlayer();
-		for(ItemStack item : player.getInventory().getContents()){
-			if(NBTUtil.getCustomAttrString(item, "ID").equals("DEATH_DEFIANCE")){
-				event.setCancelled(true);
-				Location location = player.getLocation();
-				player.getInventory().remove(item);
-				player.playSound(location, Sound.DIG_STONE, 10, 1);
-				player.playSound(location, Sound.PISTON_EXTEND, 10, 0.9f);
-				new BukkitRunnable() {
-					float tone = 0;
-					@Override
-					public void run(){
-						if(tone >= 2){
-							cancel();
-						}else{
-							location.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 10, tone);
-							tone += 0.1f;
+		if(!(event.getDamageCause() == EntityDamageEvent.DamageCause.VOID)){
+			Player player = event.getPlayer();
+			for(ItemStack item : player.getInventory().getContents()){
+				if(NBTUtil.getCustomAttrString(item, "ID").equals("DEATH_DEFIANCE")){
+					event.setCancelled(true);
+					Location location = player.getLocation();
+					player.getInventory().remove(item);
+					player.playSound(location, Sound.DIG_STONE, 10, 1);
+					player.playSound(location, Sound.PISTON_EXTEND, 10, 0.9f);
+					new BukkitRunnable() {
+						float tone = 0;
+
+						@Override
+						public void run(){
+							if(tone >= 2){
+								cancel();
+							}else{
+								location.getWorld().playSound(player.getLocation(), Sound.ORB_PICKUP, 10, tone);
+								tone += 0.1f;
+							}
 						}
-					}
-				}.runTaskTimer(DesertMain.getInstance, 0, 2);
-				player.sendMessage(ChatColor.YELLOW + "You rise from the ashes!\n" + ChatColor.DARK_GRAY + "Consumed 1 Death Defiance");
-				player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 50, 1));
-				ParticleEffect.FLAME.display(1, 10, 1, 0.1f, 200, player.getLocation(), 15);
-				player.setHealth(player.getMaxHealth() * 0.4);
-				invincible.add(player.getUniqueId());
-				new BukkitRunnable() {
-					public void run(){
-						invincible.remove(player.getUniqueId());
-					}
-				}.runTaskLater(DesertMain.getInstance, 50);
-				break;
+					}.runTaskTimer(DesertMain.getInstance, 0, 2);
+					player.sendMessage(ChatColor.YELLOW + "You rise from the ashes!\n" + ChatColor.DARK_GRAY + "Consumed 1 Death Defiance");
+					player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 50, 1));
+					ParticleEffect.FLAME.display(1, 10, 1, 0.1f, 200, player.getLocation(), 15);
+					player.setHealth(player.getMaxHealth() * 0.4);
+					invincible.add(player.getUniqueId());
+					new BukkitRunnable() {
+						public void run(){
+							invincible.remove(player.getUniqueId());
+						}
+					}.runTaskLater(DesertMain.getInstance, 50);
+					break;
+				}
 			}
 		}
 	}
