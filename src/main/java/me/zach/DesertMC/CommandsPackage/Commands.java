@@ -16,6 +16,7 @@ import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
+import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.cosmetics.CosmeticData;
 import me.zach.DesertMC.shops.ShopInventory;
 import me.zach.DesertMC.shops.ShopItem;
@@ -301,7 +302,12 @@ public class Commands implements Listener, CommandExecutor {
 				}else{
         			player.sendMessage(ChatColor.RED + "You don't have permission to use this command");
 				}
-			}else if(command.getName().equalsIgnoreCase("hideplayer")){
+			}else if(command.getName().equalsIgnoreCase("wand")){
+				ItemStack item = MiscUtils.generateItem(Material.WOOD_AXE, ChatColor.WHITE + "WorldEdit Wand", StringUtil.wrapLore(ChatColor.GRAY + "\nA usable WorldEdit wand.\nRight click: first selection\nLeft click: second selection"), (byte) -1, 1, "WORLDEDIT_WAND");
+				NBTItem nbt = new NBTItem(item);
+				NBTUtil.checkCustomAttr(nbt).setBoolean("USABLE", true);
+				player.getInventory().addItem(item);
+			} if(command.getName().equalsIgnoreCase("hideplayer")){
         		if(MiscUtils.isAdmin(player)){
         			try{
         				player.hidePlayer(Bukkit.getPlayer(args[0]));

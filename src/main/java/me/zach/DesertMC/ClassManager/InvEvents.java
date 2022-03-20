@@ -102,6 +102,7 @@ public class InvEvents implements Listener {
 					NBTItem nbt = new NBTItem(goldenApple);
 					NBTCompound comp = NBTUtil.checkCustomAttr(nbt);
 					comp.setBoolean("USABLE", true);
+					comp.removeKey("UUID");
 					player.getInventory().addItem(nbt.getItem());
 					shop.updateInventory();
 				}
