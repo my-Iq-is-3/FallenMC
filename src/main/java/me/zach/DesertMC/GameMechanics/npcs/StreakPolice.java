@@ -258,12 +258,14 @@ public class StreakPolice extends NPCSuper {
         @Override
         public void bottomInventoryClick(Player player, Inventory bottomInv, int slot, ItemStack clickedItem, ClickType clickType, InventoryClickEvent event){
             event.setCancelled(true);
-            ItemStack token = inventory.getItem(4);
-            if(NBTUtil.getCustomAttrString(token, "ID").equals("TOKEN")){
-                if(token != null)
-                    bottomInv.addItem(token);
-                inventory.setItem(4, clickedItem);
+            if(NBTUtil.getCustomAttrString(clickedItem, "ID").equals("TOKEN")){
+                ItemStack token = inventory.getItem(4);
+                if(NBTUtil.getCustomAttrString(token, "ID").equals("TOKEN")){
+                    if(token != null)
+                        bottomInv.addItem(token);
+                }
                 bottomInv.clear(slot);
+                inventory.setItem(4, clickedItem);
                 inventory.setItem(22, trueItem);
             }
         }
