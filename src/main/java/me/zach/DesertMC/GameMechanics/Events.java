@@ -775,7 +775,9 @@ public class Events implements Listener{
 			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 140, 1), false);
 			player.addAbsorption(4);
 			player.heal(7);
-			player.getInventory().remove(item);
+			Inventory inv = player.getInventory();
+			int index = MiscUtils.indexOf(inv.getContents(), item);
+			inv.setItem(index, MiscUtils.decrementItem(item));
 		}
 	}
 

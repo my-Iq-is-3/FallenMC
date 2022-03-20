@@ -341,6 +341,13 @@ public class MiscUtils {
         return capitalizeEnum(potionEffect.getType().getName()) + " " + potionEffect.getAmplifier() + 1;
     }
 
+    public static ItemStack decrementItem(ItemStack item){
+        int amount = item.getAmount();
+        if(amount > 1) item.setAmount(amount - 1);
+        else item = null;
+        return item;
+    }
+
     /**
      *
      * @return A list of strings derived from {@code wideTarget}, only if the start of them matches the start of {@code current}.
