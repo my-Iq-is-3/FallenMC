@@ -244,16 +244,21 @@ public class Commands implements Listener, CommandExecutor {
         		if(MiscUtils.isAdmin(player)){
         			if(args.length == 2){
         				try{
-							Rank rank = Rank.valueOf(args[1]);
-        					if(rank == Rank.COOWNER || rank == Rank.ADMIN){
-								if(!MiscUtils.isCoolPerson(player.getUniqueId())){
-									player.sendMessage(ChatColor.RED + "Nice try. You can't give other people COOWNER or ADMIN.");
-									return true;
+							Player target = Bukkit.getPlayer(args[1]);
+							if(target != null){
+								Rank rank = Rank.valueOf(args[1].toUpperCase());
+								if(rank == Rank.COOWNER || rank == Rank.ADMIN){
+									if(!MiscUtils.isCoolPerson(player.getUniqueId())){
+										player.sendMessage(ChatColor.RED + "Nice try. You can't give other people COOWNER or ADMIN.");
+										return true;
+									}
 								}
+								PlayerData data = ConfigUtils.getData(target);
+								data.setRank(rank);
+								player.sendMessage(ChatColor.GREEN + "Rank set successfully.");
+							}else{
+								player.sendMessage(ChatColor.RED + "That player wasn't found. Usage: /rank <player> <rank>");
 							}
-        					PlayerData data = ConfigUtils.getData(player);
-							data.setRank(rank);
-        					player.sendMessage(ChatColor.GREEN + "Rank set successfully.");
 						}catch(IllegalArgumentException noRankFound){
         					player.sendMessage(ChatColor.RED + "Rank not found! Usage: /rank <player> <rank>");
         					return true;

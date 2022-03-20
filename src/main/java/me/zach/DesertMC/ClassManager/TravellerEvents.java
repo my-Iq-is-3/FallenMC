@@ -5,6 +5,7 @@ import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.Utils.ActionBar.ActionBarUtils;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -31,17 +32,19 @@ public class TravellerEvents implements Listener {
     public static final Set<UUID> blockNotifs = new HashSet<>();
     @EventHandler(priority = EventPriority.MONITOR)
     public void blockGet(PlayerMoveEvent e){
+        Player player = e.getPlayer();
         Location to = e.getTo();
         Block block = to.clone().subtract(0, 1, 0).getBlock();
+        boolean safeZone = HitboxListener.isInSafeZone(to);
+        boolean safeZoneBefore = HitboxListener.isInSafeZone(e.getFrom());
         if(block.getType().isSolid()){
-            if(!RisenUtils.isBoss(e.getPlayer().getUniqueId()) && !HitboxListener.isInCafe(to) && !HitboxListener.isInSpawn(to)){
-                UUID uuid = e.getPlayer().getUniqueId();
+            if(!RisenUtils.isBoss(player.getUniqueId()) && !safeZone){
+                UUID uuid = player.getUniqueId();
                 if(!travelled.containsKey(uuid)){
                     if(ConfigUtils.getLevel(findClass(uuid), uuid) > 5) travelled.put(uuid, new HashSet<>());
                 }else{
                     Set<Block> blockSet = travelled.get(uuid);
                     if(blockSet.add(block)){
-                        Player player = e.getPlayer();
                         if(notifications(uuid)){
                             String actionBar = ChatColor.YELLOW + "Unique blocks travelled this run: " + ChatColor.GREEN + blockSet.size();
                             if(blockSet.size() == 250){
@@ -71,6 +74,10 @@ public class TravellerEvents implements Listener {
                     }
                 }
             }
+        }
+        if(safeZone && !safeZoneBefore && !PlayerUtils.isIdle(player)){
+            e.setTo(e.getFrom());
+            player.playSound(e.getFrom(), Sound.NOTE_BASS, 10, 1);
         }
     }
 

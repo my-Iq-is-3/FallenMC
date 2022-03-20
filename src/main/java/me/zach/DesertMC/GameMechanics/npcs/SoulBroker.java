@@ -292,9 +292,9 @@ public class SoulBroker extends NPCSuper implements Listener{
                 }
             }else if(meta.getDisplayName().equals(ChatColor.YELLOW + "Weapon Details")){
                 NBTItem nbt = new NBTItem(item);
-                if(nbt.getCompound("CustomAttributes").getInteger("PRICE") > 0) {
+                if(nbt.getCompound("CustomAttributes").getInteger("PRICE") > 0){
                     if (ConfigUtils.deductSouls(p, nbt.getInteger("PRICE"))) {
-                        //if the player has enough gems, subtract the gems and remove the WPH from their weapon.
+                        //if the player has enough souls, subtract the gems and remove the WPH from their weapon.
                         NBTItem weaponNBT = new NBTItem(inv.getItem(4));
                         weaponNBT.getCompound("CustomAttributes").setDouble("WEIGHT_ADD", weaponNBT.getCompound("CustomAttributes").getDouble("WEIGHT_ADD") - nbt.getCompound("CustomAttributes").getDouble("WPH_TO_REMOVE"));
                         inv.clear(4);
@@ -317,7 +317,7 @@ public class SoulBroker extends NPCSuper implements Listener{
                     } else {
                         //if the player doesn't have enough gems, close the inventory, tell them they don't have enough gems, and play a sound
                         p.closeInventory();
-                        p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
+                        p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1.1f);
                         npcMessage(p, "Hey, stop tryna cheap me out. I don't negotiate my rates. Get a few more souls then come back to me.");
                     }
                 }else{
