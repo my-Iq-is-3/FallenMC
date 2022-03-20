@@ -96,8 +96,9 @@ public class ItemShop {
 		gmeta.setDisplayName(ChatColor.GOLD + "Golden Apple");
 		glore.add(ChatColor.DARK_GRAY + "A golden apple that is consumed");
 		glore.add(ChatColor.DARK_GRAY + "on eat.");
-		glore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " Regen II for 5 seconds");
-		glore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " Absorption I for 2 minutes (" + ChatColor.YELLOW + "❤❤" + ChatColor.DARK_GRAY + ")");
+		glore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " Regen II for 2s");
+		glore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " +7 HP");
+		glore.add(ChatColor.RED + " -" + ChatColor.DARK_GRAY + " 2 hearts absorption (" + ChatColor.YELLOW + "❤❤" + ChatColor.DARK_GRAY + ")");
 		glore.add("");
 		glore.add(ChatColor.WHITE + "Cost: " + ChatColor.GREEN + "75 Gems");
 		if(balance >= 75) {

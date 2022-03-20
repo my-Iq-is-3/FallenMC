@@ -144,19 +144,23 @@ public class Events implements Listener{
 
 	public static void checkItemLives(Player player){
 		Inventory inventory = player.getInventory();
-		for(int i = 0; i<inventory.getSize(); i++){
-			ItemStack item = inventory.getItem(i);
+		boolean modified = false;
+		ItemStack[] contents = inventory.getContents();
+		for(int i = 0; i<contents.length; i++){
+			ItemStack item = contents[i];
 			if(item != null && item.getType() != Material.AIR){
 				NBTItem nbt = new NBTItem(item);
 				if(NBTUtil.hasCustomKey(nbt, "LIVES")){
 					int lives = NBTUtil.getCustomAttr(nbt, "LIVES", int.class);
 					if(lives - 1 <= 0){
-						inventory.clear(i);
+						contents[i] = null;
 						player.sendMessage(ChatColor.RED + "Your " + item.getItemMeta().getDisplayName() + ChatColor.RED + " ran out of lives!");
-					}else inventory.setItem(i, NBTUtil.setLives(item, lives - 1));
+					}else contents[i] = NBTUtil.setLives(item, lives - 1);
+					modified = true;
 				}
 			}
 		}
+		if(modified) inventory.setContents(contents);
 	}
 
 	@EventHandler
@@ -772,8 +776,8 @@ public class Events implements Listener{
 		if(NBTUtil.getCustomAttrString(item, "ID").equals("GOLDEN_APPLE")){
 			event.setCancelled(true);
 			Player player = event.getPlayer();
-			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 140, 1), false);
-			player.addAbsorption(4);
+			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 40, 1), false);
+			if(player.getAbsorption() < 4) player.setAbsorption(4);
 			player.heal(7);
 			Inventory inv = player.getInventory();
 			int index = MiscUtils.indexOf(inv.getContents(), item);
