@@ -121,7 +121,7 @@ public class StreakPolice extends NPCSuper {
                             player.getInventory().setItem(a, seize(item));
                             player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 10, 1);
                             player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 10, 1);
-                            StringUtil.sendCenteredWrappedMessage(player, new StringUtil.ChatWrapper(' ', ChatColor.RED, true, false), ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!");
+                            StringUtil.sendCenteredMessage(player,"", ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!", "");
                             Bukkit.getLogger().info(item.getItemMeta().getDisplayName() + " seized with weight " + weight);
                         }
                         break;

@@ -331,10 +331,10 @@ public class MiscUtils {
     }
 
     public static void setOwner(Item item, Player owner){
-        item.setCustomName(MiscUtils.getRankColor(owner) + owner.getName() + "'s " + ChatColor.WHITE + item.getItemStack().getItemMeta().getDisplayName());
+        item.setCustomName(owner.getDisplayName() + "'s " + ChatColor.WHITE + item.getItemStack().getItemMeta().getDisplayName());
         item.setCustomNameVisible(true);
         NBTEntity nbt = new NBTEntity(item);
-        nbt.setString("OWNER", owner.getUniqueId().toString());
+        nbt.setString("Owner", owner.getUniqueId().toString());
     }
 
     public static String potionEffectToString(PotionEffect potionEffect){

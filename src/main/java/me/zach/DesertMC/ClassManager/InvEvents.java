@@ -188,7 +188,7 @@ public class InvEvents implements Listener {
 			}
 		}
 
-		if(classinv.getName().equals("Wizard Class")){
+		if(classinv.getName().startsWith("Wizard Class") && classinv.getName().equals("Wizard Class")){
 			event.setCancelled(true);
 			if(item.getType().equals(Material.STAINED_GLASS)){
 				ConfigUtils.setClass(player, "wizard");
@@ -196,25 +196,25 @@ public class InvEvents implements Listener {
 			}
 		}
 
-		if(classinv.getName().equals("Scout Class")){
+		if(classinv.getName().startsWith("Scout Class")){
 			event.setCancelled(true);
-			if(item.getType().equals(Material.STAINED_GLASS)){
+			if(item.getType().equals(Material.STAINED_GLASS) && classinv.getName().equals("Scout Class")){
 				ConfigUtils.setClass(player, "scout");
 				new ScoutTierMenu(player).openInventory();
 			}
 		}
 
-		if(classinv.getName().equals("Tank Class")){
+		if(classinv.getName().startsWith("Tank Class")){
 			event.setCancelled(true);
-			if(item.getType().equals(Material.STAINED_GLASS)){
+			if(item.getType().equals(Material.STAINED_GLASS) && classinv.getName().equals("Tank Class")){
 				ConfigUtils.setClass(player, "tank");
 				new TankTierMenu(player).openInventory();
 			}
 		}
 
-		if(classinv.getName().equals("Corrupter Class")){
+		if(classinv.getName().startsWith("Corrupter Class")){
 			event.setCancelled(true);
-			if(item.getType().equals(Material.STAINED_GLASS)){
+			if(item.getType().equals(Material.STAINED_GLASS) && classinv.getName().equals("Corrupter Class")){
 				ConfigUtils.setClass(player, "corrupter");
 				new CorrupterTierMenu(player).openInventory();
 			}

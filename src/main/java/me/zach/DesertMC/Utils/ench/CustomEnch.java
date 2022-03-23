@@ -33,7 +33,7 @@ import static org.bukkit.Material.AIR;
 public enum CustomEnch implements Listener {
     TURTLE("Turtle", "turtle", EnchantType.ARMOR) {
         String getDescription(int level){
-            return "Grants a " + level + "% knockback reduction when attacked.";
+            return "Grants a " + NUM_FORMATTER.format(level * 1.5) + "% knockback reduction when attacked.";
         }
 
         @Override
@@ -51,7 +51,7 @@ public enum CustomEnch implements Listener {
                     public void run(){
                         // 100
                         // 100-(100*0.1)
-                        player.setVelocity(player.getVelocity().multiply(1 - (lvl * 0.01)));
+                        player.setVelocity(player.getVelocity().multiply(1 - (lvl * 0.015)));
                     }
                 }.runTaskLater(DesertMain.getInstance,2);
             }

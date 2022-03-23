@@ -2,7 +2,11 @@ package me.zach.DesertMC.CommandsPackage;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import me.zach.DesertMC.ClassManager.CoruManager.CorrupterTierMenu;
 import me.zach.DesertMC.ClassManager.KothyMenu;
+import me.zach.DesertMC.ClassManager.ScoutManager.ScoutTierMenu;
+import me.zach.DesertMC.ClassManager.TankManager.TankTierMenu;
+import me.zach.DesertMC.ClassManager.WizardManager.WizardTierMenu;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesInventory;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
@@ -16,6 +20,7 @@ import me.zach.DesertMC.Utils.RankUtils.RankEvents;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.TitleUtils;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
+import me.zach.DesertMC.Utils.gui.GUIHolder;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.cosmetics.CosmeticData;
 import me.zach.DesertMC.shops.ShopInventory;
@@ -30,6 +35,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
@@ -62,12 +71,26 @@ public class Commands implements Listener, CommandExecutor {
 		}
 		colorsMessage = StringUtil.getCenteredWrappedMessage(new StringUtil.ChatWrapper('-', ChatColor.WHITE, true, true), colorsList.toArray(new String[0]));
 	}
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player) {
         	Player player = ((Player) sender);
         	Plugin mainpl = DesertMain.getInstance;
-			if(command.getName().equalsIgnoreCase("shoptest")){
+			if(command.getName().equalsIgnoreCase("tiermenu")){
+				if(args.length == 1){
+					String clazz = args[0];
+					if(clazz.equalsIgnoreCase("scout")){
+						player.openInventory(new ScoutTierMenu(player).getInventory(true));
+					}else if(clazz.equalsIgnoreCase("tank")){
+						player.openInventory(new TankTierMenu(player).getInventory(true));
+					}else if(clazz.equalsIgnoreCase("corrupter")){
+						player.openInventory(new CorrupterTierMenu(player).getInventory(true));
+					}else if(clazz.equalsIgnoreCase("wizard")){
+						player.openInventory(new WizardTierMenu(player).getInventory(true));
+					}else return false;
+				}else return false;
+			}else if(command.getName().equalsIgnoreCase("shoptest")){
 				if(MiscUtils.isAdmin(player)){
 					if(args.length > 0){
 						ShopItem[] items = new ShopItem[args.length];
@@ -239,8 +262,7 @@ public class Commands implements Listener, CommandExecutor {
 					player.sendMessage(ChatColor.RED + "Invalid Usage! /cosmetic <set|list|unlocked> <cosmetic to set>");
 				}
 				return true;
-			}
-        	if(command.getName().equalsIgnoreCase("rank")){
+			}else if(command.getName().equalsIgnoreCase("rank")){
         		if(MiscUtils.isAdmin(player)){
         			if(args.length == 2){
         				try{

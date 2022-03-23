@@ -106,13 +106,13 @@ public class EventsForTank implements Listener {
                 if (ConfigUtils.getLevel("tank", damager) > 3 && ConfigUtils.findClass(damager).equals("tank")) {
                     for (ItemStack item : damaged.getInventory().getArmorContents()) {
                         if (item != null) {
-                            if (!item.getType().equals(Material.AIR) && !item.getType().toString().startsWith("CHAINMAIL")) {
+                            if (!item.getType().equals(Material.AIR) && !item.getType().name().startsWith("CHAINMAIL")) {
                                 extradamage += 1;
                             }
                         }
                     }
-                }
-                e.setDamage(e.getDamage() + extradamage);
+                }else damager.sendMessage(ChatColor.RED + "You must have the Tank class equipped and past level 3 to fully use this item!");
+                if(extradamage > 0) e.setDamage(e.getDamage() + extradamage);
             }
         }
     }
@@ -160,7 +160,7 @@ public class EventsForTank implements Listener {
                 }else{
                     DesertMain.stomperStage.remove(clicker.getUniqueId());
                 }
-            }
+            }else e.getPlayer().sendMessage(ChatColor.RED + "You must have the Tank class selected and past level 6 to use this item!");
         }
     }
 

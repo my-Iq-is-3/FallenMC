@@ -44,7 +44,7 @@ public class SoulBroker extends NPCSuper implements Listener{
     static ItemMeta decreaseMeta = decrease.getItemMeta();
     static Set<UUID> dontGiveItemOnClose = new HashSet<>();
     static{
-        //creating some unchanging items statically to save on processing power (yeah right past me)
+        //creating some unchanging items statically to save on processing power (yeah right, past me)
         ItemMeta clearMeta = clear.getItemMeta();
         paneMeta.setDisplayName(" ");
         pane.setItemMeta(paneMeta);
@@ -59,17 +59,17 @@ public class SoulBroker extends NPCSuper implements Listener{
         reduce.setItemMeta(reduceMeta);
 
         decreaseMeta.setDisplayName(ChatColor.GREEN + "Decrease WPH to remove");
-        decreaseMeta.setLore(Arrays.asList(ChatColor.GRAY + "Current Increment: " + ChatColor.BLUE + "0.00005%", ChatColor.GRAY + "Right click to cycle increments"));
+        decreaseMeta.setLore(Arrays.asList(ChatColor.GRAY + "Current Increment: " + ChatColor.BLUE + "0.0005%", ChatColor.GRAY + "Right click to cycle increments"));
         decrease.setItemMeta(decreaseMeta);
         NBTItem decreaseNBT = new NBTItem(decrease);
-        decreaseNBT.addCompound("CustomAttributes").setDouble("INCREMENT", 0.00005);
+        decreaseNBT.addCompound("CustomAttributes").setDouble("INCREMENT", 0.0005);
         decrease = decreaseNBT.getItem();
 
         increaseMeta.setDisplayName(ChatColor.GREEN + "Increase WPH to remove");
-        increaseMeta.setLore(Arrays.asList(ChatColor.GRAY + "Current Increment: " + ChatColor.BLUE + "0.00005%", ChatColor.GRAY + "Right click to cycle increments"));
+        increaseMeta.setLore(Arrays.asList(ChatColor.GRAY + "Current Increment: " + ChatColor.BLUE + "0.0005%", ChatColor.GRAY + "Right click to cycle increments"));
         increase.setItemMeta(increaseMeta);
         NBTItem increaseNBT = new NBTItem(increase);
-        increaseNBT.addCompound("CustomAttributes").setDouble("INCREMENT", 0.00005);
+        increaseNBT.addCompound("CustomAttributes").setDouble("INCREMENT", 0.0005);
         increase = increaseNBT.getItem();
     }
 
@@ -84,7 +84,7 @@ public class SoulBroker extends NPCSuper implements Listener{
     }
 
     public static int calculateReducePrice(double WPHtoRemove) throws Exception{
-        long price = Math.round((WPHtoRemove / 0.00005) * 15);
+        long price = Math.round((WPHtoRemove / 0.0005) * 15);
         if(price > Integer.MAX_VALUE) throw new Exception(ChatColor.RED + "Price calculated too high!");
         return (int) price;
     }
@@ -137,7 +137,7 @@ public class SoulBroker extends NPCSuper implements Listener{
                         ItemMeta newClearMeta = newClear.getItemMeta();
                         List<String> nLore = newClearMeta.getLore();
                         //calculating the price
-                        int price = (int) (15 * (nbt.getDouble("WEIGHT_ADD") / 0.01));
+                        int price = 300;
                         //adding it to the lore, and replacing the old "(Add an item to view cost)" string
                         nLore.set(3, nLore.get(3).replaceAll("\\(Add an item to view cost\\)", ChatColor.BLUE.toString() + price));
                         //creating an NBTItem for the clear item, and then setting the "PRICE" value with the integer we have already calculated
@@ -163,7 +163,6 @@ public class SoulBroker extends NPCSuper implements Listener{
                     } else {
                         //Checking if it is the extracted CustomAttributes compound
                         if (!(nbt instanceof NBTItem) && nbt != null) {
-
                             //checking if it has a price value
                             if (nbt.hasKey("PRICE")) {
                                 int price = nbt.getInteger("PRICE");
@@ -258,7 +257,7 @@ public class SoulBroker extends NPCSuper implements Listener{
                         //iterating through the book lore and updating some lines
                         inv.setItem(13, getBook(p, weaponWPH, WPHtoRemove, price));
                     }else if(e.getClick().equals(ClickType.RIGHT)){
-                        DecimalFormat formatter = new DecimalFormat("#.#####");
+                        DecimalFormat formatter = new DecimalFormat("#.####");
                         formatter.setRoundingMode(RoundingMode.HALF_EVEN);
                         if(increment * 10 > 0.05){
                             List<String> newLore = item.getItemMeta().getLore();
@@ -292,8 +291,9 @@ public class SoulBroker extends NPCSuper implements Listener{
                 }
             }else if(meta.getDisplayName().equals(ChatColor.YELLOW + "Weapon Details")){
                 NBTItem nbt = new NBTItem(item);
-                if(nbt.getCompound("CustomAttributes").getInteger("PRICE") > 0){
-                    if (ConfigUtils.deductSouls(p, nbt.getInteger("PRICE"))) {
+                int price = NBTUtil.getCustomAttr(nbt, "PRICE", int.class, 0);
+                if(price > 0){
+                    if (ConfigUtils.deductSouls(p, price)) {
                         //if the player has enough souls, subtract the gems and remove the WPH from their weapon.
                         NBTItem weaponNBT = new NBTItem(inv.getItem(4));
                         weaponNBT.getCompound("CustomAttributes").setDouble("WEIGHT_ADD", weaponNBT.getCompound("CustomAttributes").getDouble("WEIGHT_ADD") - nbt.getCompound("CustomAttributes").getDouble("WPH_TO_REMOVE"));
@@ -341,7 +341,7 @@ public class SoulBroker extends NPCSuper implements Listener{
         ItemMeta bookMeta = book.getItemMeta();
         bookMeta.setDisplayName(ChatColor.YELLOW + "Weapon Details");
         bookMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        DecimalFormat formatter = new DecimalFormat("#.#####");
+        DecimalFormat formatter = new DecimalFormat("#.####");
         formatter.setRoundingMode(RoundingMode.HALF_EVEN);
         ArrayList<String> lore = new ArrayList<>(Arrays.asList(ChatColor.YELLOW + "Weight Per Hit to remove: " + ChatColor.BLUE + formatter.format(WPHtoRemove),
                 ChatColor.YELLOW + "Use the buttons on the",

@@ -262,9 +262,9 @@ public class Events implements Listener{
 		Item item = event.getItem();
 		String uuid = event.getPlayer().getUniqueId().toString();
 		NBTEntity nbt = new NBTEntity(item);
-		String owner = NBTUtil.getCustomAttrString(nbt, "OWNER");
-		if(!owner.equals("null") && !owner.equals(uuid)){
-			event.setCancelled(item.getTicksLived() < 3000);
+		String owner = nbt.getString("Owner");
+		if(owner != null && !owner.equals(uuid)){
+			event.setCancelled(item.getTicksLived() < 999999);
 		}
 	}
 
@@ -337,7 +337,7 @@ public class Events implements Listener{
 		}else if(item == null){
 			event.setUseItemInHand(Event.Result.DENY);
 			event.setUseInteractedBlock(Event.Result.DENY);
-		}else if((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) && (NBTUtil.getCustomAttrBoolean(item, "USABLE") || item.getType().name().endsWith("SWORD"))){
+		}else if((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) && ((NBTUtil.getCustomAttrBoolean(item, "USABLE") && !HitboxListener.isInSafeZone(player.getLocation())) || item.getType().name().endsWith("SWORD"))){
 			event.setUseItemInHand(Event.Result.DEFAULT);
 			event.setUseInteractedBlock(Event.Result.DENY);
 			player.setFoodLevel(19);

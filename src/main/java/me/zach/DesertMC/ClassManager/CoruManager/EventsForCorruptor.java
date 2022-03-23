@@ -136,12 +136,14 @@ public class EventsForCorruptor implements Listener {
             Player hitter = (Player) event.getDamager();
             if(hitter.getInventory().getItemInHand() != null){
                 if(NBTUtil.getCustomAttrString(hitter.getInventory().getItemInHand(),"ID").equals("CORRUPTED_SWORD")){
-                    UUID uuid = hitter.getUniqueId();
-                    if(combo.containsKey(uuid)) {
-                        event.setDamage(event.getDamage() * (1 + combo.get(uuid)));
-                        combo.put(uuid, combo.get(uuid) + 0.25);
-                        hitter.playSound(hitter.getLocation(), Sound.NOTE_PLING, 10, 1 + (float) (combo.get(uuid) / 2));
-                    }else combo.put(uuid, 0.25);
+                    if(ConfigUtils.getLevel("corrupter", hitter.getUniqueId()) > 6 && ConfigUtils.findClass(hitter.getUniqueId()).equals("corrupter")){
+                        UUID uuid = hitter.getUniqueId();
+                        if(combo.containsKey(uuid)){
+                            event.setDamage(event.getDamage() * (1 + combo.get(uuid)));
+                            combo.put(uuid, combo.get(uuid) + 0.25);
+                            hitter.playSound(hitter.getLocation(), Sound.NOTE_PLING, 10, 1 + (float) (combo.get(uuid) / 2));
+                        }else combo.put(uuid, 0.25);
+                    }else hitter.sendMessage(ChatColor.RED + "You must have the corrupter class selected and past level 6 to fully use this item!");
                 }
             }
             combo.remove(event.getEntity().getUniqueId());

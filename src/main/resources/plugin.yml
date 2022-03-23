@@ -84,6 +84,9 @@ commands:
  wand:
   description: Grants a usable world edit wand. Admins only!
   usage: /<command>
+ tiermenu:
+  description: Opens your rewards tier menu for a specific class, or your current class if not provided.
+  usage: /<command> <optional;class>
  shoptest:
   description: Tests the server's new, fancy and programmatic Shop system. Admins only!
   usage: /<command> <material1> <material2>...

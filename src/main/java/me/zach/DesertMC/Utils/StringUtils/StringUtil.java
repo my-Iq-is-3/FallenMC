@@ -140,16 +140,17 @@ public class StringUtil{
         return upperChar + str.substring(1);
     }
 
+    public static String getClassColor(String clazz){
+        if(clazz.equalsIgnoreCase("corrupter")) return ChatColor.RED.toString();
+        else if(clazz.equalsIgnoreCase("wizard")) return ChatColor.BLUE.toString();
+        else if(clazz.equalsIgnoreCase("scout")) return ChatColor.AQUA.toString();
+        else if(clazz.equalsIgnoreCase("tank")) return ChatColor.DARK_GREEN.toString();
+        else return ChatColor.WHITE.toString();
+    }
+
     public static String stylizeClass(String clazz){
-         clazz = capitalizeFirst(clazz);
-        switch(clazz){
-            case "Corrupter": return ChatColor.RED + clazz;
-            case "Wizard": return ChatColor.BLUE + clazz;
-            case "Scout": return ChatColor.AQUA + clazz;
-            case "Tank": return ChatColor.DARK_GREEN + clazz;
-            default:
-                return clazz;
-        }
+        clazz = capitalizeFirst(clazz);
+        return getClassColor(clazz) + clazz;
     }
 
     public static String mergeLinesWithoutColorsCarrying(Iterable<String> lines){
@@ -189,8 +190,6 @@ public class StringUtil{
     public static class ChatWrapper {
         public static final ChatWrapper HORIZONTAL_LINE = new ChatWrapper('-', ChatColor.GREEN, true, false);
         public static final ChatWrapper THICK_HORIZONTAL_LINE = new ChatWrapper('-', ChatColor.GREEN, true, true);
-                
-
         public final char character;
         public final ChatColor color;
         private final String wrapper;

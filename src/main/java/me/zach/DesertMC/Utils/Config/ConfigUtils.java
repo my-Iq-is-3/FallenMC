@@ -130,9 +130,9 @@ public class ConfigUtils {
 			level++;
 			if(level == 10){
 				String classMaxed = StringUtil.stylizeClass(classtoaddto).toUpperCase() + " CLASS MAXED";
-				String color = ChatColor.getLastColors(classMaxed);
+				String color = StringUtil.getClassColor(classtoaddto);
 				player.sendTitle(classMaxed + "!", "");
-				player.sendMessage(color + ChatColor.BOLD + ChatColor.stripColor(classMaxed) + color + " Congratulations!");
+				player.sendMessage(color + "Congrats, your " + StringUtil.capitalizeFirst(classtoaddto) + " class is " + ChatColor.BOLD + "MAXED OUT" + color + "!");
 				Inventory inventory = player.getInventory();
 				ItemStack fallenPiece = FALLEN_PIECES.get(classtoaddto).get();
 				player.sendMessage(ChatColor.RED + "Your reward, a blessing: " + fallenPiece.getItemMeta().getDisplayName());
@@ -145,6 +145,20 @@ public class ConfigUtils {
 			}else{
 				data.setClassXPR(classtoaddto,xprTiers[level - 1]);
 				player.sendTitle(ChatColor.WHITE.toString() + (level - 1) + " ➞ " + ChatColor.AQUA + ChatColor.BOLD + level, StringUtil.stylizeClass(classtoaddto) + " class");
+				String capital = StringUtil.capitalizeFirst(classtoaddto);
+				String color = StringUtil.getClassColor(classtoaddto);
+				TextComponent[] components = new TextComponent[]{new TextComponent(""), new TextComponent(color + ChatColor.BOLD + "CLASS LEVEL UP!"), new TextComponent(color + "Click here to view your " + capital + " class progression!"), new TextComponent("")};
+				ClickEvent click = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tiermenu " + classtoaddto);
+				HoverEvent hover = new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.YELLOW + "Click to run " + click.getValue()));
+				for(TextComponent component : components){
+					String text = component.getText();
+					component.setText(text + "\n" + ChatColor.RESET);
+					if(!text.isEmpty()){
+						component.setHoverEvent(hover);
+						component.setClickEvent(click);
+					}
+				}
+				player.sendMessage(components);
 			}
 			data.setClassXP(classtoaddto,0);
 			data.setClassLevel(classtoaddto,level);
@@ -258,7 +272,7 @@ public class ConfigUtils {
 
 	public static void addXP(Player player, String classtoaddto, int amount) {
 		if(DesertMain.booster.containsKey(player.getUniqueId())) amount = Math.round(amount * DesertMain.booster.get(player.getUniqueId()));
-		cexp(player, classtoaddto, amount);
 		gexp(player, amount);
+		cexp(player, classtoaddto, amount);
 	}
 }

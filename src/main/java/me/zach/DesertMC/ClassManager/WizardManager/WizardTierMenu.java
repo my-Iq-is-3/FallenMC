@@ -15,14 +15,17 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 public class WizardTierMenu {
 	Player player;
 	public WizardTierMenu(Player player) {
-		
 		this.player = player;
 	}
 	
-	Inventory inventory = DesertMain.getInstance.getServer().createInventory(null, 27, "Wizard Class");
-
+	Inventory inventory;
 
 	public void openInventory() {
+		player.openInventory(getInventory(false));
+	}
+
+	public Inventory getInventory(boolean ghost){
+		inventory = DesertMain.getInstance.getServer().createInventory(null, 27, ghost ? "Wizard Class Rewards" : "Wizard Class");
 		for(int i = 0;i<27;i++) {
 			ItemStack empty = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 15);
 			ItemMeta em = empty.getItemMeta();
@@ -36,8 +39,8 @@ public class WizardTierMenu {
 		nsm.setDisplayName(ChatColor.GREEN + "Wizard Class");
 		ArrayList<String> nsml = new ArrayList<String>();
 
-		nsml.add("");
-		nsml.add(ChatColor.YELLOW + "Click " + ChatColor.DARK_GRAY + "to select the " + ChatColor.YELLOW + "Wizard " + ChatColor.DARK_GRAY + "Class!");
+		if(ghost) nsml.add(ChatColor.YELLOW + "Visit Kothy at the cafe!");
+		else nsml.add(ChatColor.YELLOW + "Click " + ChatColor.DARK_GRAY + "to select the " + ChatColor.YELLOW + "Wizard " + ChatColor.DARK_GRAY + "Class!");
 		nsm.setLore(nsml);
 		nselected.setItemMeta(nsm);
 
@@ -55,7 +58,7 @@ public class WizardTierMenu {
 			ItemStack greenlevel = new ItemStack(Material.STAINED_GLASS_PANE,1, (byte)5);
 			ItemStack redlevel = new ItemStack(Material.STAINED_GLASS_PANE,1, (byte)14);
 			ItemStack yellowlevel = new ItemStack(Material.STAINED_GLASS_PANE,1, (byte)4);
-			
+
 			ItemMeta ymeta = yellowlevel.getItemMeta();
 			ItemMeta rmeta = redlevel.getItemMeta();
 			ItemMeta gmeta = greenlevel.getItemMeta();
@@ -63,154 +66,154 @@ public class WizardTierMenu {
 			ArrayList<String> ylore = new ArrayList<String>();
 			ArrayList<String> glore = new ArrayList<String>();
 			ArrayList<String> rlore = new ArrayList<String>();
-			
+
 			ymeta.setDisplayName(ChatColor.YELLOW + "Wizard Tier " + level);
 			ylore.add(ChatColor.DARK_GRAY + "" + ChatColor.ITALIC + "Current Level");
-			
-			
-			
+
+
+
 			rmeta.setDisplayName(ChatColor.RED + "Wizard Tier " + level);
-			
-			
+
+
 			gmeta.setDisplayName(ChatColor.GREEN + "Wizard Tier " + level);
-			
+
 
 			switch (level) {
-			case 1:
-				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - Invisibility & invulnerability for 2s on kill.");
-				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - Full invisibility & invulnerability for 2s on kill.");
-				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - Full invisibility & invulnerability for 2s on kill.");
-				break;
-			case 2:
-				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - Unlock the " + ChatColor.BOLD + "Wizard Shop.");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Magic Snack");
-				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - Unlock the " + ChatColor.BOLD + "Wizard Shop.");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Magic Snack");
-				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - Unlock the " + ChatColor.BOLD + "Wizard Shop.");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Magic Snack");
-				break;
-			case 3:
-				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + " SHOP UNLOCK" + ChatColor.GREEN + " - Magic Wand ");
-				glore.add(ChatColor.DARK_GRAY + "(When you hit an enemy with this wand, ");
-				glore.add(ChatColor.DARK_GRAY + "there is a 40% chance for them to get a good effect, ");
-				glore.add(ChatColor.DARK_GRAY + "and a 60% chance for them to receive a bad effect).");
-				
-				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + " SHOP UNLOCK" + ChatColor.YELLOW + " - Magic Wand ");
-				ylore.add(ChatColor.DARK_GRAY + "(When you hit an enemy with this wand, ");
-				ylore.add(ChatColor.DARK_GRAY + "there is a 40% chance for them to get a good effect, ");
-				ylore.add(ChatColor.DARK_GRAY + "and a 60% chance for them to receive a bad effect).");
-				
-				
-				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + " SHOP UNLOCK" + ChatColor.RED + " - Magic Wand ");
-				rlore.add(ChatColor.DARK_GRAY + "(When you hit an enemy with this wand, ");
-				rlore.add(ChatColor.DARK_GRAY + "there is a 40% chance for them to get a good effect, ");
-				rlore.add(ChatColor.DARK_GRAY + "and a 60% chance for them to receive a bad effect).");
-				
-				break;
-			case 4:
-				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - On death, 10% chance for your killer");
-				glore.add(ChatColor.GREEN + " will be frozen for 3 seconds and get a poison effect (also 3s)");
-				glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.GREEN + " - Alert enchantment - Tier I & II");
-				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - On death, 10% chance for your killer");
-				ylore.add(ChatColor.YELLOW + "will be frozen for 3 seconds and get a poison effect (also 3s)");
-				ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.YELLOW + " - Alert enchantment - Tier I & II");
-				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - On death, 10% chance for your killer");
-				rlore.add(ChatColor.RED + "will be frozen for 3 seconds and get a poison effect (also 3s)");
-				rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Alert enchantment - Tier I & II");
-				break;
-			case 5:
-				
-				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - Traveller");
-				glore.add(ChatColor.GREEN + " Every 250 unique blocks travelled, gain +1 heart Max HP.");
-				glore.add(ChatColor.GREEN + " Resets upon death.");
+				case 1:
+					glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					glore.add(ChatColor.GREEN + " - Invisibility & invulnerability for 2s on kill.");
+					ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					ylore.add(ChatColor.YELLOW + " - Full invisibility & invulnerability for 2s on kill.");
+					rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					rlore.add(ChatColor.RED + " - Full invisibility & invulnerability for 2s on kill.");
+					break;
+				case 2:
+					glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					glore.add(ChatColor.GREEN + " - Unlock the " + ChatColor.BOLD + "Wizard Shop.");
+					glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Magic Snack");
+					ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					ylore.add(ChatColor.YELLOW + " - Unlock the " + ChatColor.BOLD + "Wizard Shop.");
+					ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Magic Snack");
+					rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					rlore.add(ChatColor.RED + " - Unlock the " + ChatColor.BOLD + "Wizard Shop.");
+					rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Magic Snack");
+					break;
+				case 3:
+					glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + " SHOP UNLOCK" + ChatColor.GREEN + " - Magic Wand ");
+					glore.add(ChatColor.DARK_GRAY + "(When you hit an enemy with this wand, ");
+					glore.add(ChatColor.DARK_GRAY + "there is a 40% chance for them to get a good effect, ");
+					glore.add(ChatColor.DARK_GRAY + "and a 60% chance for them to receive a bad effect).");
 
-				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - Traveller");
-				ylore.add(ChatColor.YELLOW + " Every 250 unique blocks travelled, gain +1 heart Max HP.");
-				ylore.add(ChatColor.YELLOW + " Resets upon death.");
-				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - Traveller");
-				rlore.add(ChatColor.RED + " Every 250 unique blocks travelled, gain +1 heart Max HP.");
-				rlore.add(ChatColor.RED + " Resets upon death.");
-				break;
-			case 6:
-				
-				
-				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Lucky Chestplate");
-				glore.add(ChatColor.DARK_GRAY + "(Doubles your souls while worn)");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Wizard Blade");
-				glore.add(ChatColor.DARK_GRAY + "(Charge this sword up by getting a kills. Depending on");
-				glore.add(ChatColor.DARK_GRAY + "how much the sword is charged up, release the charge on a player by right clicking them.)");
+					ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + " SHOP UNLOCK" + ChatColor.YELLOW + " - Magic Wand ");
+					ylore.add(ChatColor.DARK_GRAY + "(When you hit an enemy with this wand, ");
+					ylore.add(ChatColor.DARK_GRAY + "there is a 40% chance for them to get a good effect, ");
+					ylore.add(ChatColor.DARK_GRAY + "and a 60% chance for them to receive a bad effect).");
 
-				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Lucky Chestplate");
-				ylore.add(ChatColor.DARK_GRAY + "(Doubles your souls while worn)");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Wizard Blade");
-				ylore.add(ChatColor.DARK_GRAY + "(Charge this sword up by getting a kills. Depending on");
-				ylore.add(ChatColor.DARK_GRAY + "how much the sword is charged up, release the charge on a player by right clicking them.)");
-				
-				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Lucky Chestplate");
-				rlore.add(ChatColor.DARK_GRAY + "(Doubles your souls while worn)");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Wizard Blade");
-				rlore.add(ChatColor.DARK_GRAY + "(Charge this sword up by getting a kills. Depending on");
-				rlore.add(ChatColor.DARK_GRAY + "how much the sword is charged up, release the charge on a player by right clicking them.)");
-				break;
-				
-				
-			case 7:
-				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.GREEN + " - Alert enchantment - Tier III");
-				glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.GREEN + "- Ethereal enchantment - Tier I & II");
-				glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "MAGIC REFINERY " + ChatColor.GREEN + "- Now the magic wand only applies");
-				glore.add(ChatColor.GREEN + "bad effects to your enemy.");
-				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.YELLOW + " - Alert enchantment - Tier III");
-				ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.YELLOW + "- Ethereal enchantment - Tier I & II");
-				ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "MAGIC REFINERY " + ChatColor.YELLOW + "- Now the magic wand only applies");
-				ylore.add(ChatColor.YELLOW + "bad effects to your enemy.");
-				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Alert enchantment - Tier III");
-				rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + "- Ethereal enchantment - Tier I & II");
-				rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "MAGIC REFINERY " + ChatColor.RED + "- Now the magic wand only applies");
-				rlore.add(ChatColor.RED + "bad effects to your enemy.");
-				break;
-			case 8:
-				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.GREEN + " - On reaching 2 Hearts or less, gain Speed 1 and Resistance 1 for 3 seconds.");
-				glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.GREEN + "- Ethereal enchantment - Tier III");
-				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.YELLOW + " - On reaching 2 Hearts or less, gain Speed 1 and Resistance 1.");
-				ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.YELLOW + "- Ethereal enchantment - Tier III");
-				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + " - On reaching 2 Hearts or less, gain Speed 1 and Resistance 1.");
-				rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + "- Ethereal enchantment - Tier III");
-				break;
-			case 9:
-				glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				glore.add(ChatColor.RED + "F" + ChatColor.GOLD + "A" + ChatColor.YELLOW + "L" + ChatColor.GREEN + "L" + ChatColor.BLUE + "E" + ChatColor.LIGHT_PURPLE + "N" + ChatColor.RED + " HELMET");
-				ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				ylore.add(ChatColor.RED + "F" + ChatColor.GOLD + "A" + ChatColor.YELLOW + "L" + ChatColor.GREEN + "L" + ChatColor.BLUE + "E" + ChatColor.LIGHT_PURPLE + "N" + ChatColor.RED + " HELMET");
-				rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-				rlore.add(ChatColor.RED + "???");
-				break;
+
+					rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					rlore.add(ChatColor.RED + "" + ChatColor.BOLD + " SHOP UNLOCK" + ChatColor.RED + " - Magic Wand ");
+					rlore.add(ChatColor.DARK_GRAY + "(When you hit an enemy with this wand, ");
+					rlore.add(ChatColor.DARK_GRAY + "there is a 40% chance for them to get a good effect, ");
+					rlore.add(ChatColor.DARK_GRAY + "and a 60% chance for them to receive a bad effect).");
+
+					break;
+				case 4:
+					glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					glore.add(ChatColor.GREEN + " - On death, 10% chance for your killer");
+					glore.add(ChatColor.GREEN + " will be frozen for 3 seconds and get a poison effect (also 3s)");
+					glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.GREEN + " - Alert enchantment - Tier I & II");
+					ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					ylore.add(ChatColor.YELLOW + " - On death, 10% chance for your killer");
+					ylore.add(ChatColor.YELLOW + "will be frozen for 3 seconds and get a poison effect (also 3s)");
+					ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.YELLOW + " - Alert enchantment - Tier I & II");
+					rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					rlore.add(ChatColor.RED + " - On death, 10% chance for your killer");
+					rlore.add(ChatColor.RED + "will be frozen for 3 seconds and get a poison effect (also 3s)");
+					rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Alert enchantment - Tier I & II");
+					break;
+				case 5:
+
+					glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					glore.add(ChatColor.GREEN + " - Traveller");
+					glore.add(ChatColor.GREEN + " Every 250 unique blocks travelled, gain +1 heart Max HP.");
+					glore.add(ChatColor.GREEN + " Resets upon death.");
+
+					ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					ylore.add(ChatColor.YELLOW + " - Traveller");
+					ylore.add(ChatColor.YELLOW + " Every 250 unique blocks travelled, gain +1 heart Max HP.");
+					ylore.add(ChatColor.YELLOW + " Resets upon death.");
+					rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					rlore.add(ChatColor.RED + " - Traveller");
+					rlore.add(ChatColor.RED + " Every 250 unique blocks travelled, gain +1 heart Max HP.");
+					rlore.add(ChatColor.RED + " Resets upon death.");
+					break;
+				case 6:
+
+
+					glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					glore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Lucky Chestplate");
+					glore.add(ChatColor.DARK_GRAY + "(Doubles your souls while worn)");
+					glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.GREEN + " - Wizard Blade");
+					glore.add(ChatColor.DARK_GRAY + "(Charge this sword up by getting a kills. Depending on");
+					glore.add(ChatColor.DARK_GRAY + "how much the sword is charged up, release the charge on a player by right clicking them.)");
+
+					ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					ylore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Lucky Chestplate");
+					ylore.add(ChatColor.DARK_GRAY + "(Doubles your souls while worn)");
+					ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.YELLOW + " - Wizard Blade");
+					ylore.add(ChatColor.DARK_GRAY + "(Charge this sword up by getting a kills. Depending on");
+					ylore.add(ChatColor.DARK_GRAY + "how much the sword is charged up, release the charge on a player by right clicking them.)");
+
+					rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Lucky Chestplate");
+					rlore.add(ChatColor.DARK_GRAY + "(Doubles your souls while worn)");
+					rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK" + ChatColor.RED + " - Wizard Blade");
+					rlore.add(ChatColor.DARK_GRAY + "(Charge this sword up by getting a kills. Depending on");
+					rlore.add(ChatColor.DARK_GRAY + "how much the sword is charged up, release the charge on a player by right clicking them.)");
+					break;
+
+
+				case 7:
+					glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.GREEN + " - Alert enchantment - Tier III");
+					glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.GREEN + "- Ethereal enchantment - Tier I & II");
+					glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "MAGIC REFINERY " + ChatColor.GREEN + "- Now the magic wand only applies");
+					glore.add(ChatColor.GREEN + "bad effects to your enemy.");
+					ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.YELLOW + " - Alert enchantment - Tier III");
+					ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.YELLOW + "- Ethereal enchantment - Tier I & II");
+					ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "MAGIC REFINERY " + ChatColor.YELLOW + "- Now the magic wand only applies");
+					ylore.add(ChatColor.YELLOW + "bad effects to your enemy.");
+					rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + " - Alert enchantment - Tier III");
+					rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + "- Ethereal enchantment - Tier I & II");
+					rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "MAGIC REFINERY " + ChatColor.RED + "- Now the magic wand only applies");
+					rlore.add(ChatColor.RED + "bad effects to your enemy.");
+					break;
+				case 8:
+					glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					glore.add(ChatColor.GREEN + " - On reaching 2 Hearts or less, gain Speed 1 and Resistance 1 for 3 seconds.");
+					glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.GREEN + "- Ethereal enchantment - Tier III");
+					ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					ylore.add(ChatColor.YELLOW + " - On reaching 2 Hearts or less, gain Speed 1 and Resistance 1.");
+					ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.YELLOW + "- Ethereal enchantment - Tier III");
+					rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					rlore.add(ChatColor.RED + " - On reaching 2 Hearts or less, gain Speed 1 and Resistance 1.");
+					rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK" + ChatColor.RED + "- Ethereal enchantment - Tier III");
+					break;
+				case 9:
+					glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					glore.add(ChatColor.RED + "F" + ChatColor.GOLD + "A" + ChatColor.YELLOW + "L" + ChatColor.GREEN + "L" + ChatColor.BLUE + "E" + ChatColor.LIGHT_PURPLE + "N" + ChatColor.RED + " HELMET");
+					ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					ylore.add(ChatColor.RED + "F" + ChatColor.GOLD + "A" + ChatColor.YELLOW + "L" + ChatColor.GREEN + "L" + ChatColor.BLUE + "E" + ChatColor.LIGHT_PURPLE + "N" + ChatColor.RED + " HELMET");
+					rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
+					rlore.add(ChatColor.RED + "???");
+					break;
 
 			}
-			
+
 			ymeta.setLore(ylore);
 			gmeta.setLore(glore);
 			rmeta.setLore(rlore);
@@ -232,7 +235,6 @@ public class WizardTierMenu {
 		}else{
 			inventory.setItem(22,nselected);
 		}
-		player.openInventory(inventory);
+		return inventory;
 	}
-
 }

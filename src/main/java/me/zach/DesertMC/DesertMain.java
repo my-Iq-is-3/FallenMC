@@ -1,6 +1,7 @@
 package me.zach.DesertMC;
 
 import de.tr7zw.nbtapi.NBTEntity;
+import de.tr7zw.nbtinjector.NBTInjector;
 import me.zach.DesertMC.ClassManager.CoruManager.EventsForCorruptor;
 import me.zach.DesertMC.ClassManager.InvEvents;
 import me.zach.DesertMC.ClassManager.ScoutManager.EventsForScout;
@@ -92,7 +93,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		loadNPCs();
 		Bukkit.getScheduler().runTask(this, this::loadCredits); //dont ask
 		welcome = RankEvents.colorMessage(MiscUtils.ensureDefault("server.welcome", ChatColor.AQUA + "Welcome to FallenMC! We hope you'll have fun.", this));
-		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram", "credits", "entityremoval", "wand"};
+		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "showplayer", "selecttitle", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram", "credits", "entityremoval", "wand", "tiermenu"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
@@ -218,10 +219,13 @@ public class DesertMain extends JavaPlugin implements Listener {
 		for(World world : Bukkit.getWorlds()){
 			for(Entity entity : world.getEntities()){
 				EntityType type = entity.getType();
-				if(type == EntityType.DROPPED_ITEM || type == EntityType.ARROW) entity.remove();
-				Boolean indicator = new NBTEntity(entity).getBoolean("Indicator");
-				if(indicator != null && indicator){
+				if((type == EntityType.DROPPED_ITEM && !new NBTEntity(entity).hasKey("Owner")) || type == EntityType.ARROW){
 					entity.remove();
+				}else{
+					Boolean indicator = new NBTEntity(entity).getBoolean("Indicator");
+					if(indicator != null && indicator){
+						entity.remove();
+					}
 				}
 			}
 		}
@@ -231,6 +235,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 	}
+
 	public static NPCLib getNPCLib(){
 		return library;
 	}
