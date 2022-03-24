@@ -58,7 +58,7 @@ public class SimpleNPC implements Listener {
         NPC npc = library.createNPC(text);
         npc.setLocation(loc);
         SimpleNPC.this.npc = npc;
-        MineSkinFetcher.fetchSkinFromIdSync(id, new MineSkinFetcher.Callback() {
+        MineSkinFetcher.fetchSkinFromIdAsync(id, new MineSkinFetcher.Callback() {
             @Override
             public void call(Skin skin) {
                 npc.setSkin(skin);

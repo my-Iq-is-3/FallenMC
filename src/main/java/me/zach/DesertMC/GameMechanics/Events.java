@@ -263,9 +263,12 @@ public class Events implements Listener{
 		String uuid = event.getPlayer().getUniqueId().toString();
 		NBTEntity nbt = new NBTEntity(item);
 		String owner = nbt.getString("Owner");
-		if(owner != null && !owner.equals(uuid)){
-			event.setCancelled(item.getTicksLived() < 999999);
+		System.out.println("cancelled before: " + event.isCancelled());
+		if(owner != null && !owner.isEmpty() && !owner.equals(uuid)){
+			System.out.println("Owner: " + owner);
+			event.setCancelled(item.getTicksLived() < 99999999);
 		}
+		System.out.println("cancelled after: " + event.isCancelled());
 	}
 
 	@EventHandler

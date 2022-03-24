@@ -80,21 +80,23 @@ public class EventsForScout implements Listener {
     }
 
     public static final double MAX_DAGGER_DISTANCE = 2 * 2;
+    public static final double DAGGER_INEFFECTIVE_FACTOR = 0.3;
     public void daggerHit(EntityDamageByEntityEvent event){
         if(!event.isCancelled() && event.getDamager() instanceof Player && event.getEntity() instanceof LivingEntity){
             Player damager = (Player) event.getDamager();
             LivingEntity damaged = (LivingEntity) event.getEntity();
             if(NBTUtil.getCustomAttrString(damager.getEquipment().getItemInHand(), "ID").equals("SCOUT_DAGGER")){
-                event.setCancelled(true);
                 if(ConfigUtils.findClass(damager).equals("scout") && ConfigUtils.getLevel("scout", damager) > 4){
                     double distance = damager.getLocation().distanceSquared(damaged.getLocation());
                     if(distance <= MAX_DAGGER_DISTANCE){
-                        event.setCancelled(false);
                         event.setDamage(event.getDamage() * 2);
-                    }
+                        damager.playSound(damager.getLocation(), Sound.PISTON_EXTEND, 10, 1.2f);
+                    }else event.setDamage(event.getDamage() * DAGGER_INEFFECTIVE_FACTOR);
                 }else{
+                    event.setDamage(event.getDamage() * DAGGER_INEFFECTIVE_FACTOR);
                     damager.sendMessage(ChatColor.RED + "You must have the Scout class selected and past level 4 to use this item!");
                     damager.playSound(damager.getLocation(), Sound.NOTE_BASS, 10, 1);
+                    event.setCancelled(true);
                 }
             }
         }
@@ -119,17 +121,10 @@ public class EventsForScout implements Listener {
                 return;
             }
             if(ConfigUtils.getLevel("scout", hitter) > 6 && ConfigUtils.findClass(hitter).equals("scout")){
-                if(!DesertMain.scoutBladeCD.contains(hitter.getUniqueId()) && !PlayerUtils.canSeeTarget(hitter, hit.getLocation())){
+                if(PlayerUtils.isIdle(hit.getUniqueId())){
                     hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 255), true);
                     event.setDamage(event.getDamage() + 2);
-                    UUID uuid = hitter.getUniqueId();
-                    DesertMain.scoutBladeCD.add(uuid);
-                    new BukkitRunnable() {
-                        @Override
-                        public void run(){
-                            DesertMain.scoutBladeCD.remove(uuid);
-                        }
-                    }.runTaskLater(DesertMain.getInstance, 340);
+                    hitter.getWorld().playSound(hit.getLocation(), Sound.ITEM_BREAK, 10, 1.15f);
                 }
             }else{
                 hitter.sendMessage(ChatColor.RED + "You must have the scout class selected and past level 6 to fully use this item!");

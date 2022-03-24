@@ -37,6 +37,7 @@ public class GUIManager implements Listener {
             }else{
                 Player player = (Player) event.getWhoClicked();
                 Inventory topInventory = player.getOpenInventory().getTopInventory();
+                if(topInventory == null) return;
                 InventoryHolder topInventoryHolder = topInventory.getHolder();
                 if(topInventoryHolder instanceof GUIHolder){
                     ((GUIHolder) topInventoryHolder).bottomInventoryClick((Player) event.getWhoClicked(),

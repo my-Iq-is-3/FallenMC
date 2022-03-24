@@ -101,7 +101,6 @@ me/zach/DesertMC/cosmetics/Cosmetic$8.class
 me/zach/DesertMC/GameMechanics/hitbox/HitboxListener.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ParticleDataException.class
 me/zach/DesertMC/Utils/gui/GUIHolder.class
-me/zach/DesertMC/ClassManager/ScoutManager/EventsForScout$1.class
 me/zach/DesertMC/ClassManager/KothyMenu.class
 me/zach/DesertMC/GameMechanics/Events$5.class
 me/zach/DesertMC/ClassManager/CoruManager/CorrupterTierMenu.class

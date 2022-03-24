@@ -31,8 +31,12 @@ public class PlayerUtils implements Listener {
     public static void setIdle(Player p){fighting.put(p.getUniqueId(),0);}
 
     public static boolean isIdle(Player p){
-        if(!fighting.containsKey(p.getUniqueId())) return true;
-        else return fighting.get(p.getUniqueId()) == 0;
+        return isIdle(p.getUniqueId());
+    }
+
+    public static boolean isIdle(UUID uuid){
+        if(!fighting.containsKey(uuid)) return true;
+        else return fighting.get(uuid) == 0;
     }
 
     public static void addAbsorption(LivingEntity entity, float amount){
