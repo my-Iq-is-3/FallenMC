@@ -180,13 +180,13 @@ public class TankTierMenu {
 					break;
 				case 8:
 					glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-					glore.add(ChatColor.GREEN + " - +5% damage while crouching.");
+					glore.add(ChatColor.GREEN + " - -20% damage while crouching.");
 					glore.add(ChatColor.GREEN + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.GREEN + "- Cruel Blow Enchantment - Tier III");
 					ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-					ylore.add(ChatColor.YELLOW + " - +5% damage while crouching.");
+					ylore.add(ChatColor.YELLOW + " - -20% damage while crouching.");
 					ylore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.YELLOW + "- Cruel Blow Enchantment - Tier III");
 					rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-					rlore.add(ChatColor.RED + " - +5% damage while crouching.");
+					rlore.add(ChatColor.RED + " - -20% damage while crouching.");
 					rlore.add(ChatColor.RED + "" + ChatColor.BOLD + "SHOP UNLOCK " + ChatColor.RED + "- Cruel Blow Enchantment - Tier III");
 					break;
 				case 9:

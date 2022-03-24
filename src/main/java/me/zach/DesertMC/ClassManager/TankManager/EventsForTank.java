@@ -1,12 +1,9 @@
 package me.zach.DesertMC.ClassManager.TankManager;
 
-import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
-import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.PlayerUtils;
-import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.Bukkit;
@@ -58,11 +55,11 @@ public class EventsForTank implements Listener {
         }
     }
     public void t8Event(EntityDamageByEntityEvent event){
-        if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
-            Player damager = (Player) event.getDamager();
-            if(ConfigUtils.getLevel("tank",damager) > 7 && ConfigUtils.findClass(damager).equals("tank")){
-                if(damager.isSneaking()){
-                    event.setDamage(event.getDamage() * 1.05);
+        if(event.getEntity() instanceof Player){
+            Player damaged = (Player) event.getEntity();
+            if(ConfigUtils.getLevel("tank",damaged) > 8 && ConfigUtils.findClass(damaged).equals("tank")){
+                if(damaged.isSneaking()){
+                    event.setDamage(event.getDamage() * 0.8);
                 }
             }
         }

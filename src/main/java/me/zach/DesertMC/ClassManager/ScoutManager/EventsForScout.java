@@ -104,7 +104,7 @@ public class EventsForScout implements Listener {
         if(event.getDamager() instanceof Player){
             Player damager = (Player) event.getDamager();
             if(ConfigUtils.findClass(damager).equals("scout") && ConfigUtils.getLevel("scout",damager) > 8){
-                if(damager.isSprinting()) event.setDamage(event.getDamage() * 1.2);
+                if(damager.isSprinting()) event.setDamage(event.getDamage() * 1.15);
             }
         }
     }

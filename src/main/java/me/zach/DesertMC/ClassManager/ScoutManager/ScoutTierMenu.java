@@ -166,13 +166,13 @@ public class ScoutTierMenu{
 					break;
 				case 8:
 					glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-					glore.add(ChatColor.GREEN + " - Deal +20% damage while sprinting.");
+					glore.add(ChatColor.GREEN + " - Deal +15% damage while sprinting.");
 					glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.GREEN + "- Spirit Guard Enchantment - Tier III");
 					ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-					ylore.add(ChatColor.YELLOW + " - Deal +20% damage while sprinting."); //TODO this isn't OP enough
+					ylore.add(ChatColor.YELLOW + " - Deal +15% damage while sprinting.");
 					ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.YELLOW + "- Spirit Guard Enchantment - Tier III");
 					rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
-					rlore.add(ChatColor.RED + " - Deal +20% damage while sprinting.");
+					rlore.add(ChatColor.RED + " - Deal +15% damage while sprinting.");
 					rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.RED + "- Spirit Guard Enchantment - Tier III");
 					break;
 				case 9:

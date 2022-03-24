@@ -16,6 +16,7 @@ import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -132,6 +133,7 @@ public class ConfigUtils {
 				String classMaxed = StringUtil.stylizeClass(classtoaddto).toUpperCase() + " CLASS MAXED";
 				String color = StringUtil.getClassColor(classtoaddto);
 				player.sendTitle(classMaxed + "!", "");
+				player.playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 10, 1);
 				player.sendMessage(color + "Congrats, your " + StringUtil.capitalizeFirst(classtoaddto) + " class is " + ChatColor.BOLD + "MAXED OUT" + color + "!");
 				Inventory inventory = player.getInventory();
 				ItemStack fallenPiece = FALLEN_PIECES.get(classtoaddto).get();
@@ -145,6 +147,7 @@ public class ConfigUtils {
 			}else{
 				data.setClassXPR(classtoaddto,xprTiers[level - 1]);
 				player.sendTitle(ChatColor.WHITE.toString() + (level - 1) + " ➞ " + ChatColor.AQUA + ChatColor.BOLD + level, StringUtil.stylizeClass(classtoaddto) + " class");
+				player.playSound(player.getLocation(), Sound.LEVEL_UP, 10, (float) 0.9);
 				String capital = StringUtil.capitalizeFirst(classtoaddto);
 				String color = StringUtil.getClassColor(classtoaddto);
 				TextComponent[] components = new TextComponent[]{new TextComponent(""), new TextComponent(color + ChatColor.BOLD + "CLASS LEVEL UP!"), new TextComponent(color + "Click here to view your " + capital + " class progression!"), new TextComponent("")};
@@ -152,7 +155,7 @@ public class ConfigUtils {
 				HoverEvent hover = new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.YELLOW + "Click to run " + click.getValue()));
 				for(TextComponent component : components){
 					String text = component.getText();
-					component.setText(text + "\n" + ChatColor.RESET);
+					component.setText(StringUtil.getCenteredLine(text) + "\n" + ChatColor.RESET);
 					if(!text.isEmpty()){
 						component.setHoverEvent(hover);
 						component.setClickEvent(click);

@@ -240,7 +240,7 @@ public enum CustomEnch implements Listener {
     public ItemStack getBook(int level){
         ItemStack book = MiscUtils.generateItem(Material.ENCHANTED_BOOK,
                 ChatColor.BLUE + name + " " + level,
-                StringUtil.wrapLore(ChatColor.GRAY + getDescription(level) + "\n" + ChatColor.DARK_GRAY + "Can be applied to " + StringUtil.series(StringUtil.toStringArray(types))),
+                StringUtil.wrapLore(ChatColor.GRAY + getDescription(level) + "\n\n" + ChatColor.GRAY + "Base level: " + ChatColor.BLUE + level + "\n" + ChatColor.DARK_GRAY + "Can be applied to " + StringUtil.series(StringUtil.toStringArray(types))),
                 (byte) -1,
                 1,
                 "ENCHANTED_BOOK");
