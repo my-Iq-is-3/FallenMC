@@ -1,6 +1,7 @@
 package me.zach.DesertMC.Utils.ench;
 
 import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTEntity;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
@@ -33,7 +34,7 @@ import static org.bukkit.Material.AIR;
 public enum CustomEnch implements Listener {
     TURTLE("Turtle", "turtle", EnchantType.ARMOR) {
         String getDescription(int level){
-            return "Grants a " + NUM_FORMATTER.format(level * 1.5) + "% knockback reduction when attacked.";
+            return "Grants a " + NUM_FORMATTER.format(level * 0.7) + "% knockback reduction when attacked.";
         }
 
         @Override
@@ -51,9 +52,9 @@ public enum CustomEnch implements Listener {
                     public void run(){
                         // 100
                         // 100-(100*0.1)
-                        player.setVelocity(player.getVelocity().multiply(1 - (lvl * 0.015)));
+                        player.setVelocity(player.getVelocity().multiply(1 - (lvl * 0.007)));
                     }
-                }.runTaskLater(DesertMain.getInstance,2);
+                }.runTask(DesertMain.getInstance);
             }
         }
     },
@@ -77,7 +78,7 @@ public enum CustomEnch implements Listener {
     },
     EXTRAVERT(EnchantType.ARMOR){
         String getDescription(int level){
-            return "Take " + NUM_FORMATTER.format(0.3*level) + "% less damage per person within a 25 block radius.";
+            return "Take " + NUM_FORMATTER.format(0.3*level) + "% less damage per person within a 15 block radius.";
         }
 
         @Override
@@ -88,7 +89,7 @@ public enum CustomEnch implements Listener {
                 int lvl = getTotalArmorLevel(player);
                 if(lvl > 0){
                     double damage = event.getDamage();
-                    List<Player> nearby = MiscUtils.getNearbyEntities(Player.class, player, 25);
+                    List<Player> nearby = MiscUtils.getNearbyEntities(Player.class, player, 15);
                     double multiplier = 1 - ((lvl * 0.3) * nearby.size());
                     System.out.println("multiplier: " + multiplier);
                     event.setDamage(damage * multiplier);
@@ -174,12 +175,13 @@ public enum CustomEnch implements Listener {
                             break;
                         }else{
                             Bukkit.broadcastMessage("e6");
-                            List<Player> nearby = MiscUtils.getNearbyEntities(Player.class,event.getEntity(),0.5);
+                            List<Damageable> nearby = MiscUtils.getNearbyDamageables(event.getEntity(),0.5);
                             Bukkit.broadcastMessage("e6n: " + nearby);
                             if(!nearby.isEmpty() && nearby.get(0) != null && !nearby.get(0).equals(shooter)){
                                 Bukkit.broadcastMessage("e6.1a = " + event.getEntity().getLocation());
-                                event.getEntity().teleport(nearby.get(0).getLocation());
 
+                                new NBTEntity(event.getEntity()).setBoolean("LeftOwner", true);
+                                event.getEntity().teleport(nearby.get(0).getLocation());
                                 spawnEtherealFW(current);
                                 break;
                             }

@@ -286,7 +286,7 @@ public class MiscUtils {
     }
 
     public static boolean trueEmpty(Block block){
-        return block.isEmpty() || block.getType() == Material.LONG_GRASS || block.getType() == Material.SNOW;
+        return !block.getType().isSolid();
     }
 
     public static String makePlural(String str){
@@ -432,8 +432,13 @@ public class MiscUtils {
         }
     }
 
-    public static int getCurrentTick() throws IllegalAccessException {
-        return tickField.getInt(Bukkit.getScheduler());
+    public static int getCurrentTick() {
+        try{
+            return tickField.getInt(Bukkit.getScheduler());
+        }catch(IllegalAccessException e){
+            e.printStackTrace();
+            return 50;
+        }
     }
 
     public static int getEmpties(Inventory inventory){

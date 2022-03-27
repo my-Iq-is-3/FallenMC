@@ -1,5 +1,7 @@
 package me.zach.DesertMC.anvil;
 
+import de.tr7zw.nbtapi.NBTCompound;
+import me.ench.main.SpecialEnchant;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
@@ -105,7 +107,6 @@ public class FallenAnvilInventory implements GUIHolder {
 
     private void refresh(){
         enchant = CustomEnch.fromID(NBTUtil.getCustomAttrString(book, "ENCH_ID"));
-        System.out.println(enchant);
         if(canCombine()){
             this.inventory.setItem(buttonSlot, trueItem);
             setEdges(greenPane);

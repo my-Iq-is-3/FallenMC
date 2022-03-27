@@ -96,7 +96,6 @@ public class EventsForScout implements Listener {
                     event.setDamage(event.getDamage() * DAGGER_INEFFECTIVE_FACTOR);
                     damager.sendMessage(ChatColor.RED + "You must have the Scout class selected and past level 4 to use this item!");
                     damager.playSound(damager.getLocation(), Sound.NOTE_BASS, 10, 1);
-                    event.setCancelled(true);
                 }
             }
         }

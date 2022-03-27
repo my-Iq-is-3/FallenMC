@@ -55,7 +55,7 @@ public class SoulBroker extends NPCSuper implements Listener{
         clear.setItemMeta(clearMeta);
         ItemMeta reduceMeta = reduce.getItemMeta();
         reduceMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "Reduce Weight Per Hit");
-        reduceMeta.setLore(Arrays.asList(ChatColor.YELLOW + "Reduce the amount weight added to", ChatColor.YELLOW + "an item each time you hit a player.", "", ChatColor.YELLOW + "Cost: " + ChatColor.BLUE + "15" + ChatColor.LIGHT_PURPLE + " Souls" + ChatColor.YELLOW + " per " + ChatColor.BLUE + "0.00005%"));
+        reduceMeta.setLore(Arrays.asList(ChatColor.YELLOW + "Reduce the amount weight added to", ChatColor.YELLOW + "an item each time you hit a player.", "", ChatColor.YELLOW + "Cost: " + ChatColor.BLUE + "15" + ChatColor.LIGHT_PURPLE + " Souls" + ChatColor.YELLOW + " per " + ChatColor.BLUE + "0.0005%"));
         reduce.setItemMeta(reduceMeta);
 
         decreaseMeta.setDisplayName(ChatColor.GREEN + "Decrease WPH to remove");
@@ -262,13 +262,13 @@ public class SoulBroker extends NPCSuper implements Listener{
                         if(increment * 10 > 0.05){
                             List<String> newLore = item.getItemMeta().getLore();
                             newLore.remove(0);
-                            newLore.add(0, ChatColor.GRAY + "Current increment: " + ChatColor.BLUE + formatter.format(0.00005) + "%");
+                            newLore.add(0, ChatColor.GRAY + "Current increment: " + ChatColor.BLUE + formatter.format(0.0005) + "%");
                             ItemMeta newMeta = item.getItemMeta();
                             newMeta.setLore(newLore);
                             item.setItemMeta(newMeta);
                             p.playSound(p.getLocation(), Sound.NOTE_PLING, 10, 1.1f);
                             NBTItem newNBT = new NBTItem(item);
-                            newNBT.getCompound("CustomAttributes").setDouble("INCREMENT", 0.00005);
+                            newNBT.getCompound("CustomAttributes").setDouble("INCREMENT", 0.0005);
                             if(ifIncrease) inv.setItem(17, newNBT.getItem());
                             else inv.setItem(9, newNBT.getItem());
                         }else{

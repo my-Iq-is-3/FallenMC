@@ -81,7 +81,7 @@ public class PlayerUtils implements Listener {
                 Player victimPlayer = (Player) victim;
                 ArtifactData vad = ConfigUtils.getAD(victimPlayer);
                 if(vad.getSelected().contains(10)){
-                    double dmgsub = 15 * vad.rarities()[9].mult * 5; // 30
+                    double dmgsub = vad.rarities()[9].mult * 10; // 30
                     dmgsub /= 100; // 0.3
                     dmg -= dmgsub * dmg; // if its 10 its ~7
                 }

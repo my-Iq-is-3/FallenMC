@@ -5,6 +5,7 @@ import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.Utils.ActionBar.ActionBarUtils;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -46,7 +47,7 @@ public class TravellerEvents implements Listener {
                     Set<Block> blockSet = travelled.get(uuid);
                     if(blockSet.add(block)){
                         if(notifications(uuid)){
-                            String actionBar = ChatColor.YELLOW + "Unique blocks travelled this run: " + ChatColor.GREEN + blockSet.size();
+                            String actionBar = ChatColor.YELLOW + "Blocks travelled this run: " + ChatColor.GREEN + blockSet.size();
                             if(blockSet.size() == 250){
                                 player.sendMessage(Prefix.SERVER + ChatColor.YELLOW.toString() + ChatColor.BOLD + " TIP: " + ChatColor.GRAY + "Toggle block notifications using /blocknotifications");
                             }
@@ -78,20 +79,14 @@ public class TravellerEvents implements Listener {
         if(safeZone && !safeZoneBefore && !PlayerUtils.isIdle(player)){
             e.setTo(e.getFrom());
             player.playSound(e.getFrom(), Sound.NOTE_BASS, 10, 1);
+            if(MiscUtils.getCurrentTick() % 20 == 0){
+                player.sendMessage(ChatColor.RED + "You can't go there while fighting!");
+            }
         }
     }
 
     public static void resetTraveller(Player player){
-        if(TravellerEvents.travelled.containsKey(player.getUniqueId())){
-            if(findClass(player).equalsIgnoreCase("scout")){
-                Set<Block> blocks = TravellerEvents.travelled.get(player.getUniqueId());
-                player.setWalkSpeed(player.getWalkSpeed() - (Math.floorDiv(blocks.size(), 100) * 0.004f));
-            }else if(findClass(player).equalsIgnoreCase("wizard")){
-                Set<Block> blocks = TravellerEvents.travelled.get(player.getUniqueId());
-                player.setMaxHealth(player.getMaxHealth() - (Math.floorDiv(blocks.size(), 250) * 2));
-            }
-            TravellerEvents.travelled.remove(player.getUniqueId());
-        }
+        TravellerEvents.travelled.remove(player.getUniqueId());
     }
 
     private void sendAchieved(String message, Player player){

@@ -510,6 +510,8 @@ public class Events implements Listener{
 	// ---------------------------------------------------------------------------
 
 
+
+
 	public void onHit(EntityDamageByEntityEvent event) {
 		try{
 			if(event.isCancelled()) return;
@@ -613,14 +615,10 @@ public class Events implements Listener{
 								portal.remove(player.getUniqueId()); //scrappy
 								cancel();
 							}else{
-								try{
-									if(MiscUtils.getCurrentTick() - portalTicks > 3){
-										if(portal.remove(uuid) != null)
-											player.playSound(player.getLocation(), Sound.NOTE_BASS, 10, 0.9f);
-										cancel();
-									}
-								}catch(IllegalAccessException e){
-									e.printStackTrace();
+								if(MiscUtils.getCurrentTick() - portalTicks > 3){
+									if(portal.remove(uuid) != null)
+										player.playSound(player.getLocation(), Sound.NOTE_BASS, 10, 0.9f);
+									cancel();
 								}
 							}
 						}else{
@@ -766,6 +764,15 @@ public class Events implements Listener{
 		Bukkit.getScheduler().runTask(DesertMain.getInstance, () -> player.setFireTicks(0)); //idk, just don't ask
 		PlayerUtils.setAbsorption(player, 0);
 		TravellerEvents.resetTraveller(player);
+		for(Player other : Bukkit.getOnlinePlayers()){
+			if(!other.getUniqueId().equals(player.getUniqueId())){
+				if(!other.canSee(player)) other.showPlayer(player);
+			}
+		}
+		for(PotionEffect potionEffect : player.getActivePotionEffects()){
+			player.removePotionEffect(potionEffect.getType());
+		}
+		me.gabriel.Traits.Events.reapply(player);
 	}
 
 	private static void executeKillCheck(EntityDamageEvent event) throws NullPointerException {
@@ -940,6 +947,7 @@ public class Events implements Listener{
 			event.setQuitMessage((title == null ? "" : title + " ") + event.getPlayer().getDisplayName() + " just left. See you around!");
 		else event.setQuitMessage("");
 		portal.remove(event.getPlayer().getUniqueId());
+		executeKill(event.getPlayer());
 	}
 
 	@EventHandler
