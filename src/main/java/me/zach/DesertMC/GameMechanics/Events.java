@@ -83,7 +83,8 @@ public class Events implements Listener{
 	static final HashMap<UUID, Float> blocking = new HashMap<>();
 	static final DecimalFormat wphFormat = new DecimalFormat();
 	static{
-		wphFormat.setMaximumFractionDigits(3);
+		wphFormat.setMaximumFractionDigits(4);
+
 	}
 	private CachedServerIcon nft = null;
 	public Events(){
@@ -100,25 +101,21 @@ public class Events implements Listener{
 		PacketListener lmao = new PacketListener() {
 			final ListeningWhitelist whitelist = ListeningWhitelist.newBuilder().types(WrapperPlayServerWindowItems.TYPE).build();
 			public void onPacketSending(PacketEvent event){
-				StructureModifier<ItemStack[]> modifier = event.getPacket().getItemArrayModifier();
-				ItemStack[] items = modifier.read(0);
-				boolean changed = false;
-				for(int i = 0; i<items.length; i++){
-					ItemStack item = items[i].clone();
-					Double wph = NBTUtil.getCustomAttr(item, "WEIGHT_ADD", double.class);
-					if(wph != null){
-						ItemMeta meta = item.getItemMeta();
-						List<String> lore = meta.getLore();
-						if(lore == null) continue;
-						lore.add("");
-						lore.add(ChatColor.DARK_GRAY + "Weight add per hit: " + ChatColor.GRAY + wphFormat.format(wph) + "%"); //don't have a centralized item system? Fake it till you make it!
-						meta.setLore(lore);
-						item.setItemMeta(meta);
-						items[i] = item;
-						changed = true;
+				if(event.getPacketType() == WrapperPlayServerWindowItems.TYPE){
+					StructureModifier<ItemStack[]> modifier = event.getPacket().getItemArrayModifier();
+					ItemStack[] items = modifier.read(0);
+					boolean changed = false;
+					for(int i = 0; i < items.length; i++){
+						ItemStack item = items[i];
+						ItemStack newItem = applyChanges(item);
+						if(newItem != item){
+							items[i] = newItem;
+							changed = true;
+						}
 					}
+					if(changed) modifier.write(0, items);
 				}
-				if(changed) modifier.write(0, items);
+
 			}
 
 			public void onPacketReceiving(PacketEvent event){
@@ -135,6 +132,24 @@ public class Events implements Listener{
 
 			public Plugin getPlugin(){
 				return DesertMain.getInstance;
+			}
+
+			private ItemStack applyChanges(ItemStack start){
+				if(start == null || start.getType() == Material.AIR || !start.hasItemMeta() || !start.getItemMeta().hasLore()) return start;
+				else start = start.clone();
+				NBTItem nbt = new NBTItem(start);
+				Double wph = NBTUtil.getCustomAttr(nbt, "WEIGHT_ADD", Double.class);
+				Double weight = NBTUtil.getCustomAttr(nbt, "WEIGHT", Double.class);
+				if(wph != null && weight != null){
+					ItemMeta meta = start.getItemMeta();
+					List<String> lore = meta.getLore();
+					lore.add("");
+					lore.add(ChatColor.DARK_GRAY + "Current weight: " + ChatColor.GRAY + wphFormat.format(weight) + "%");
+					lore.add(ChatColor.DARK_GRAY + "Weight add per hit: " + ChatColor.GRAY + wphFormat.format(wph) + "%"); //don't have a centralized item system? Fake it till you make it!
+					meta.setLore(lore);
+					start.setItemMeta(meta);
+					return start;
+				}else return start;
 			}
 		};
 		PacketListener tokenAttack = new PacketListener() {
