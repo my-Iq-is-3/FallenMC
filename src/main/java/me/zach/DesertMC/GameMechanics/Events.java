@@ -75,6 +75,8 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
+import static com.comphenix.protocol.PacketType.Play.Server.SET_SLOT;
+
 public class Events implements Listener{
 	public static Set<UUID> invincible = new HashSet<>();
 	Plugin main = DesertMain.getInstance;
@@ -99,7 +101,7 @@ public class Events implements Listener{
 		}
 
 		PacketListener lmao = new PacketListener() {
-			final ListeningWhitelist whitelist = ListeningWhitelist.newBuilder().types(WrapperPlayServerWindowItems.TYPE).build();
+			final ListeningWhitelist whitelist = ListeningWhitelist.newBuilder().types(WrapperPlayServerWindowItems.TYPE, SET_SLOT).build();
 			public void onPacketSending(PacketEvent event){
 				if(event.getPacketType() == WrapperPlayServerWindowItems.TYPE){
 					StructureModifier<ItemStack[]> modifier = event.getPacket().getItemArrayModifier();
@@ -114,8 +116,14 @@ public class Events implements Listener{
 						}
 					}
 					if(changed) modifier.write(0, items);
+				}else if(event.getPacketType() == SET_SLOT){
+					StructureModifier<ItemStack> modifier = event.getPacket().getItemModifier();
+					ItemStack item = modifier.read(0);
+					ItemStack newItem = applyChanges(item);
+					if(newItem != item){
+						modifier.write(0, newItem);
+					}
 				}
-
 			}
 
 			public void onPacketReceiving(PacketEvent event){
