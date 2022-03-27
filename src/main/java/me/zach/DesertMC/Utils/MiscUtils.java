@@ -143,7 +143,10 @@ public class MiscUtils {
         Location location = entity.getLocation();
         if(Events.invincible.contains(entity.getUniqueId()) || HitboxListener.isInSafeZone(location)){
             return null;
-        }else return !new NBTEntity(entity).getBoolean("Invulnerable") && entity instanceof Damageable ? (Damageable) entity : null;
+        }else{
+            NBTEntity nbt = new NBTEntity(entity);
+            return entity instanceof Damageable && !nbt.getBoolean("Invulnerable") && !nbt.getBoolean("NoAI") ? (Damageable) entity : null;
+        }
     }
 
     public static boolean isAdmin(Player player){

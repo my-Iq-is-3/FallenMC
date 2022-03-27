@@ -140,9 +140,9 @@ public class EventsForCorruptor implements Listener {
                         UUID uuid = hitter.getUniqueId();
                         if(combo.containsKey(uuid)){
                             event.setDamage(event.getDamage() * (1 + combo.get(uuid)));
-                            combo.put(uuid, combo.get(uuid) + 0.25);
-                            hitter.playSound(hitter.getLocation(), Sound.NOTE_PLING, 10, 1 + (float) (combo.get(uuid) / 2));
-                        }else combo.put(uuid, 0.25);
+                            combo.put(uuid, combo.get(uuid) + 0.2);
+                            hitter.playSound(hitter.getLocation(), Sound.NOTE_BASS, 10, 1 + (float) (combo.get(uuid) / 2));
+                        }else combo.put(uuid, 0.2);
                     }else hitter.sendMessage(ChatColor.RED + "You must have the corrupter class selected and past level 6 to fully use this item!");
                 }
             }
