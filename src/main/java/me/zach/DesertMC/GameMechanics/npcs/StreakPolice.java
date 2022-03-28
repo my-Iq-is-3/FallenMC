@@ -144,7 +144,7 @@ public class StreakPolice extends NPCSuper {
             ItemMeta meta = item.getItemMeta();
             meta.setLore(lore);
             String name = meta.getDisplayName();
-            meta.setDisplayName(ChatColor.RED + "Seized " + name);
+            meta.setDisplayName(ChatColor.RED + "Seized " + ChatColor.stripColor(name));
             item.setItemMeta(meta);
             NBTItem nbt = new NBTItem(item);
             NBTCompound compound = nbt.getCompound("CustomAttributes");
@@ -166,14 +166,6 @@ public class StreakPolice extends NPCSuper {
         tokenMeta.setDisplayName(tokenMeta.getDisplayName().replaceAll( "Seized ", ""));
         List<String> lore = tokenNBT.getCompound("CustomAttributes").getStringList("PREV_LORE");
         String prevID = NBTUtil.getCustomAttrString(tokenNBT, "PREV_ID");
-        String wString = ChatColor.GRAY + "Weight: " + ChatColor.GREEN + "0";
-        for (int i = 0; i < lore.size(); i++) {
-            String line = lore.get(i);
-            if (line.contains("Weight: ")) {
-                lore.set(i, wString);
-                break;
-            }
-        }
         tokenMeta.setLore(lore);
         token.setItemMeta(tokenMeta);
         tokenNBT = new NBTItem(token);

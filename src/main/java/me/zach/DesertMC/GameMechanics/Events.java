@@ -610,7 +610,7 @@ public class Events implements Listener{
 	private static final int PORTAL_CIRCLE_DENSITY = 15;
 	private static final int PARTICLE_CHANGE_POINT = PORTAL_TIME - PORTAL_TIME / 4; //when the particles switch from the spiral effect to the line shoot effect
 	@EventHandler
-	public void portal(PlayerPortalEvent event) throws IllegalAccessException {
+	public void portal(PlayerPortalEvent event){
 		PlayerTeleportEvent.TeleportCause cause = event.getCause();
 		event.setCancelled(true);
 		if(cause == PlayerTeleportEvent.TeleportCause.END_PORTAL){
@@ -741,9 +741,10 @@ public class Events implements Listener{
 							}
 						}
 					}
-					int xpgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 50) + (ks.get(player.getUniqueId()) * 15) + ((random.nextInt(1, 3) * 25) * ks.get(killer.getUniqueId()) + 15);
-					xpgained = Math.min(xpgained, 8500 + random.nextInt(500));
-					int gemsgained = (ConfigUtils.getLevel(ConfigUtils.findClass(player), player) * 60) + (ks.get(player.getUniqueId()) * 10) + ((random.nextInt(2, 4) * 40) * ks.get(killer.getUniqueId()) + 20);
+					int leveldiff = Math.max((ConfigUtils.getLevel(ConfigUtils.findClass(player), player) - ConfigUtils.getLevel(ConfigUtils.findClass(killer), killer)), 1);
+					int xpgained = (leveldiff * 80) + (ks.get(player.getUniqueId()) * 15) + ((random.nextInt(1, 3) * 25) * ks.get(killer.getUniqueId()) + 15);
+					xpgained = Math.min(xpgained, 6500 + random.nextInt(500));
+					int gemsgained = (leveldiff * 60) + (ks.get(player.getUniqueId()) * 10) + ((random.nextInt(2, 4) * 40) * ks.get(killer.getUniqueId()) + 20);
 					gemsgained = Math.min(gemsgained, Math.min(gemsgained, 2500 + random.nextInt(500)));
 					killer.sendMessage(ChatColor.GREEN + "You killed " + ChatColor.YELLOW + player.getName() + ChatColor.DARK_GRAY + " (" + ChatColor.DARK_GRAY + "+" + ChatColor.BLUE + xpgained + " EXP" + ChatColor.DARK_GRAY + ", +" + ChatColor.GREEN + gemsgained + " Gems" + ChatColor.DARK_GRAY + ", +" + ChatColor.LIGHT_PURPLE + soulsgained + " Souls" + ChatColor.DARK_GRAY + ")");
 					ks.put(killer.getUniqueId(), ks.getOrDefault(killer.getUniqueId(), 0) + 1);
