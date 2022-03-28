@@ -160,33 +160,6 @@ public class Events implements Listener{
 				}else return start;
 			}
 		};
-		PacketListener tokenAttack = new PacketListener() {
-			final ListeningWhitelist whitelist = ListeningWhitelist.newBuilder().types(WrapperPlayClientUseEntity.TYPE).build();
-			public void onPacketSending(PacketEvent event){
-
-			}
-
-			public void onPacketReceiving(PacketEvent event){
-				Player player = event.getPlayer();
-				ItemStack item = player.getItemInHand();
-				if(NBTUtil.getCustomAttrString(item, "ID").equals("TOKEN")){
-					event.setCancelled(true);
-				}
-			}
-
-			public ListeningWhitelist getSendingWhitelist(){
-				return ListeningWhitelist.EMPTY_WHITELIST;
-			}
-
-			public ListeningWhitelist getReceivingWhitelist(){
-				return whitelist;
-			}
-
-			public Plugin getPlugin(){
-				return null;
-			}
-		};
-		ProtocolLibrary.getProtocolManager().addPacketListener(tokenAttack);
 		ProtocolLibrary.getProtocolManager().addPacketListener(lmao);
 	}
 

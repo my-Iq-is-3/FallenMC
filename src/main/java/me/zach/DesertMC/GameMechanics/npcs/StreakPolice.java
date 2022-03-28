@@ -8,6 +8,7 @@ import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.gui.GUIHolder;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
@@ -135,48 +136,18 @@ public class StreakPolice extends NPCSuper {
     }
 
     public static ItemStack seize(ItemStack item){
-        try{
-            ItemStack prevItem = item.clone();
-            item.setType(Material.DOUBLE_PLANT);
-            ArrayList<String> lore = new ArrayList<>();
-            lore.add(ChatColor.RED + "This item was SEIZED! Take it to");
-            lore.add(ChatColor.RED + "the Streak Police to get it back.");
-            ItemMeta meta = item.getItemMeta();
-            meta.setLore(lore);
-            String name = meta.getDisplayName();
-            meta.setDisplayName(ChatColor.RED + "Seized " + ChatColor.stripColor(name));
-            item.setItemMeta(meta);
-            NBTItem nbt = new NBTItem(item);
-            NBTCompound compound = nbt.getCompound("CustomAttributes");
-            compound.setDouble("WEIGHT", 0.00);
-            compound.setObject("PREV_LORE", prevItem.getItemMeta().getLore());
-            compound.setString("PREV_MATERIAL", prevItem.getType().toString());
-            compound.setString("PREV_ID",NBTUtil.getCustomAttrString(prevItem, "ID"));
-            compound.setString("ID", "TOKEN");
-            return nbt.getItem();
-        }catch(NullPointerException n){
-            throw new NullPointerException("An item that was requested to be seized did not have the proper NBT. Item: " + item.toString());
-        }
+        ItemStack newItem = MiscUtils.generateItem(Material.DOUBLE_PLANT, ChatColor.RED + "Seized " + item.getItemMeta().getDisplayName(), StringUtil.wrapLore(ChatColor.GRAY + "This item was " + ChatColor.RED + "SEIZED" + ChatColor.GRAY + "!\nTake it to the Streak Police in the Cafe to get it back!"), (byte) -1, 1, "TOKEN");
+        NBTItem newNBT = new NBTItem(newItem);
+        NBTCompound customAttr = NBTUtil.checkCustomAttr(newNBT);
+        customAttr.setItemStack("PREV_ITEM", item);
+        return newNBT.getItem();
     }
 
     public static ItemStack retrieveItem(ItemStack token){
         NBTItem tokenNBT = new NBTItem(token);
-        token.setType(Material.valueOf(NBTUtil.getCustomAttrString(tokenNBT, "PREV_MATERIAL")));
-        ItemMeta tokenMeta = token.getItemMeta();
-        tokenMeta.setDisplayName(tokenMeta.getDisplayName().replaceAll( "Seized ", ""));
-        List<String> lore = tokenNBT.getCompound("CustomAttributes").getStringList("PREV_LORE");
-        String prevID = NBTUtil.getCustomAttrString(tokenNBT, "PREV_ID");
-        tokenMeta.setLore(lore);
-        token.setItemMeta(tokenMeta);
-        tokenNBT = new NBTItem(token);
-        tokenNBT.getCompound("CustomAttributes").setString("ID", prevID);
-        //wiping PREVs
-        NBTCompound tokenComp = tokenNBT.getCompound("CustomAttributes");
-        tokenComp.removeKey("PREV_MATERIAL");
-        tokenComp.removeKey("PREV_LORE");
-        tokenComp.removeKey("PREV_ID");
-        tokenComp.setDouble("WEIGHT", 0.00);
-        return tokenNBT.getItem();
+        NBTCompound customAttr = tokenNBT.getCompound("CustomAttributes");
+        Objects.requireNonNull(customAttr, "CustomAttributes when retrieving seized item cannot be null");
+        return customAttr.getItemStack("PREV_ITEM");
     }
 
     public Inventory getStartInventory(NPCInteractEvent event){
