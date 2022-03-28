@@ -435,6 +435,7 @@ public class Events implements Listener{
 	public void onDamage(EntityDamageEvent event){
 		if(!(event.getEntity() instanceof Damageable) || event.getEntity() instanceof Item || MiscUtils.canDamage(event.getEntity()) != null){
 			if(!event.isCancelled() && event.getDamage() > 0){
+				boolean killed = false;
 				try{
 					EventsForCorruptor.INSTANCE.fort4(event);
 					defenseMod(event);
@@ -442,17 +443,27 @@ public class Events implements Listener{
 					if(event.getCause() == EntityDamageEvent.DamageCause.VOID){
 						if(event.getEntity() instanceof Player){
 							executeKill(event);
+							killed = true;
 						}
-					}
-					if(event instanceof EntityDamageByEntityEvent){
+					}else if(event instanceof EntityDamageByEntityEvent){
 						onHit((EntityDamageByEntityEvent) event);
 					}
+				}catch(Exception ex){
+					ex.printStackTrace();
 				}finally{
-					executeKillCheck(event);
+					if(!killed) executeKillCheck(event);
 				}
 			}
 		}else{
 			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void setPlayerFighting(EntityDamageEvent event){
+		Entity entity = event.getEntity();
+		if(!event.isCancelled() && entity instanceof Player){
+			PlayerUtils.setFighting((Player) entity);
 		}
 	}
 
@@ -539,13 +550,9 @@ public class Events implements Listener{
 		try{
 			if(event.isCancelled()) return;
 			if(event.getDamager().getUniqueId().equals(event.getEntity().getUniqueId())) return;
-			if(!RisenUtils.isBoss(event.getDamager().getUniqueId())) CreeperTrove.executeTrove(event);
 			if(event.getFinalDamage() <= 0) return;
 			for(CustomEnch ce : CustomEnch.values()){
 				ce.onHit(event);
-			}
-			if (event.getEntity() instanceof Player) {
-				PlayerUtils.setFighting((Player) event.getEntity());
 			}
 			if (event.getDamager() instanceof Player) {
 					if (NBTUtil.getCustomAttrString(((Player) event.getDamager()).getItemInHand(), "ID").equals("TOKEN")){
@@ -581,23 +588,6 @@ public class Events implements Listener{
 			}
 		}catch(NullPointerException ex){
 			ex.printStackTrace();
-		}
-
-		if(event.getDamager() instanceof Player && event.getEntity() instanceof Player){
-			Player damager = (Player) event.getDamager();
-			PlayerUtils.setFighting(damager);
-			if (event.getEntity() instanceof Player)
-				if (!event.getEntity().getUniqueId().equals(event.getDamager().getUniqueId()))
-					DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), damager.getUniqueId());
-		}else if(event.getDamager() instanceof Arrow){
-			Arrow damager = (Arrow) event.getDamager();
-			if(damager.getShooter() instanceof Player){
-				Player shooter = (Player) damager.getShooter();
-				PlayerUtils.setFighting(shooter);
-				if (event.getEntity() instanceof Player)
-					if (!shooter.getUniqueId().equals(event.getEntity().getUniqueId()))
-						DesertMain.lastdmgers.put(event.getEntity().getUniqueId(), shooter.getUniqueId());
-			}
 		}
 		if(event.getDamager() instanceof Arrow)
 			arrowArray.remove(event.getDamager().getEntityId());
