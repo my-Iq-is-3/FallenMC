@@ -123,7 +123,7 @@ public class StreakPolice extends NPCSuper {
                             player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 10, 1);
                             player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 10, 1);
                             StringUtil.sendCenteredMessage(player,"", ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!", "");
-                            Bukkit.getLogger().info(item.getItemMeta().getDisplayName() + " seized with weight " + weight);
+                            Bukkit.getLogger().info(player.getName() + "'s " + item.getItemMeta().getDisplayName() + " seized with weight " + weight);
                         }
                         break;
                     }
@@ -145,8 +145,7 @@ public class StreakPolice extends NPCSuper {
 
     public static ItemStack retrieveItem(ItemStack token){
         NBTItem tokenNBT = new NBTItem(token);
-        NBTCompound customAttr = tokenNBT.getCompound("CustomAttributes");
-        Objects.requireNonNull(customAttr, "CustomAttributes when retrieving seized item cannot be null");
+        NBTCompound customAttr = Objects.requireNonNull(tokenNBT.getCompound("CustomAttributes"), "CustomAttributes when retrieving seized item cannot be null");
         return customAttr.getItemStack("PREV_ITEM");
     }
 
@@ -186,7 +185,7 @@ public class StreakPolice extends NPCSuper {
                 } else if (clickedItem.isSimilar(trueItem)) {
                     int gems = ConfigUtils.getGems(player);
                     if(ConfigUtils.deductGems(player, 200)) {
-                        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Player " + player.getName() + " recovered a seized item with " + gems + "gems.");
+                        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Player " + player.getName() + " recovered a seized item with " + gems + " gems.");
                         if (player.getInventory().firstEmpty() == -1) {
                             player.getInventory().addItem(inventory.getItem(4));
                             inventory.clear(4);

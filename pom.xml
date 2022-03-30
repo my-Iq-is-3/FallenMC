@@ -16,7 +16,7 @@
         <dependency>
             <groupId>com.github.CobbleSword.NachoSpigot</groupId>
             <artifactId>api</artifactId>
-            <version>c00180190e</version>
+            <version>fd5204e8b5</version>
         </dependency>
         <dependency>
             <groupId>me.gabriel</groupId>

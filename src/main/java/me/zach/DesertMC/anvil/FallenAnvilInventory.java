@@ -1,6 +1,8 @@
 package me.zach.DesertMC.anvil;
 
 import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.NBTList;
 import me.ench.main.SpecialEnchant;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
@@ -16,7 +18,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class FallenAnvilInventory implements GUIHolder {
     //TODO special enchant combination, enchant glints?
@@ -117,8 +121,19 @@ public class FallenAnvilInventory implements GUIHolder {
     }
 
     private ItemStack combine(){
-        int level = NBTUtil.getCustomAttr(book, "REAL_LEVEL", int.class);
+        NBTItem bookNBT = new NBTItem(book);
+        int level = NBTUtil.getCustomAttr(bookNBT, "REAL_LEVEL", int.class);
         ItemStack combined = enchant.apply(playerItem, level);
+        String enchId = NBTUtil.getCustomAttr(bookNBT, "SPECIAL_ENCH_ID", String.class);
+        if(enchId != null){
+            NBTItem itemNBT = new NBTItem(playerItem);
+            List<String> specials = itemNBT.getCompound("CustomAttributes").getStringList("Special");
+            if(specials == null) specials = new ArrayList<>();
+            specials.add(enchId);
+            if(!(specials instanceof NBTList))
+                itemNBT.getCompound("CustomAttributes").setObject("Special", specials);
+            combined = itemNBT.getItem();
+        }
         inventory.remove(playerItem);
         playerItem = null;
         inventory.remove(book);

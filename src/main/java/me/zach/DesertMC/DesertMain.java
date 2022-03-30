@@ -196,6 +196,10 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getConsoleSender().sendMessage("events registered");
 	}
 
+	public static void registerEventsSafely(Listener listener){
+		Bukkit.getScheduler().runTask(getInstance, () -> Bukkit.getPluginManager().registerEvents(listener, getInstance));
+	}
+
 	private void loadNPCs(){
 		List<SavedNPC> npcs = SavedNPC.stored(this);
 		Bukkit.getConsoleSender().sendMessage("spawning npcs...");

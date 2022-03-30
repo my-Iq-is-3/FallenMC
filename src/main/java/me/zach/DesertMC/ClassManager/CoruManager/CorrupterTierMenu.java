@@ -138,19 +138,19 @@ public class CorrupterTierMenu {
 					glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 					glore.add(ChatColor.GREEN + " - Traveller");
 					glore.add(ChatColor.GREEN + " For every 100 unique blocks travelled, deal an extra");
-					glore.add(ChatColor.GREEN + " 2% damage. Resets upon death.");
+					glore.add(ChatColor.GREEN + " 1% damage. Resets upon death.");
 					glore.add(ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.GREEN + "- Corrupter Leggings");
 
 					ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 					ylore.add(ChatColor.YELLOW + " - Traveller");
 					ylore.add(ChatColor.YELLOW + " For every 100 unique blocks travelled, deal an extra");
-					ylore.add(ChatColor.YELLOW + " 2% damage. Resets upon death");
+					ylore.add(ChatColor.YELLOW + " 1% damage. Resets upon death");
 					ylore.add(ChatColor.YELLOW + ChatColor.BOLD.toString() + "SHOP UNLOCK "  + ChatColor.YELLOW + "- Corrupter Leggings");
 
 					rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 					rlore.add(ChatColor.RED + " - Traveller");
 					rlore.add(ChatColor.RED + " For every 100 unique blocks travelled, deal an extra");
-					rlore.add(ChatColor.RED + " 2% damage. Resets upon death.");
+					rlore.add(ChatColor.RED + " 1% damage. Resets upon death.");
 					rlore.add(ChatColor.RED + ChatColor.BOLD.toString() + "SHOP UNLOCK " + ChatColor.RED + "- Corrupter Leggings");
 					break;
 				case 6:

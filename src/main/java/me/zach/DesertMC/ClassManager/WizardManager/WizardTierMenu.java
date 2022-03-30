@@ -137,16 +137,16 @@ public class WizardTierMenu {
 
 					glore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 					glore.add(ChatColor.GREEN + " - Traveller");
-					glore.add(ChatColor.GREEN + " Every 250 unique blocks travelled, gain +1 heart Max HP.");
+					glore.add(ChatColor.GREEN + " Every 500 unique blocks travelled, gain +1 heart Max HP.");
 					glore.add(ChatColor.GREEN + " Resets upon death.");
 
 					ylore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 					ylore.add(ChatColor.YELLOW + " - Traveller");
-					ylore.add(ChatColor.YELLOW + " Every 250 unique blocks travelled, gain +1 heart Max HP.");
+					ylore.add(ChatColor.YELLOW + " Every 500 unique blocks travelled, gain +1 heart Max HP.");
 					ylore.add(ChatColor.YELLOW + " Resets upon death.");
 					rlore.add(ChatColor.DARK_GRAY + "Rewards Summary: ");
 					rlore.add(ChatColor.RED + " - Traveller");
-					rlore.add(ChatColor.RED + " Every 250 unique blocks travelled, gain +1 heart Max HP.");
+					rlore.add(ChatColor.RED + " Every 500 unique blocks travelled, gain +1 heart Max HP.");
 					rlore.add(ChatColor.RED + " Resets upon death.");
 					break;
 				case 6:

@@ -76,6 +76,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
 import static com.comphenix.protocol.PacketType.Play.Server.SET_SLOT;
+import static com.comphenix.protocol.PacketType.Play.Server.WINDOW_ITEMS;
 
 public class Events implements Listener{
 	public static Set<UUID> invincible = new HashSet<>();
@@ -100,10 +101,11 @@ public class Events implements Listener{
 			}
 		}
 
-		PacketListener lmao = new PacketListener() {
-			final ListeningWhitelist whitelist = ListeningWhitelist.newBuilder().types(WrapperPlayServerWindowItems.TYPE, SET_SLOT).build();
+		PacketListener tooltips = new PacketListener() {
+			final ListeningWhitelist whitelist = ListeningWhitelist.newBuilder().types(WINDOW_ITEMS, SET_SLOT).build();
 			public void onPacketSending(PacketEvent event){
-				if(event.getPacketType() == WrapperPlayServerWindowItems.TYPE){
+				if(event.getPlayer().getGameMode() == GameMode.CREATIVE) return; //some weird inconsistencies with the creative inventory that I don't want to deal with
+				if(event.getPacketType() == WINDOW_ITEMS){
 					StructureModifier<ItemStack[]> modifier = event.getPacket().getItemArrayModifier();
 					ItemStack[] items = modifier.read(0);
 					boolean changed = false;
@@ -153,14 +155,14 @@ public class Events implements Listener{
 					List<String> lore = meta.getLore();
 					lore.add("");
 					lore.add(ChatColor.DARK_GRAY + "Current weight: " + ChatColor.GRAY + wphFormat.format(weight) + "%");
-					lore.add(ChatColor.DARK_GRAY + "Weight add per hit: " + ChatColor.GRAY + wphFormat.format(wph) + "%"); //don't have a centralized item system? Fake it till you make it!
+					lore.add(ChatColor.DARK_GRAY + "Weight add per hit: " + ChatColor.GRAY + wphFormat.format(wph) + "%");
 					meta.setLore(lore);
 					start.setItemMeta(meta);
 					return start;
 				}else return start;
 			}
 		};
-		ProtocolLibrary.getProtocolManager().addPacketListener(lmao);
+		ProtocolLibrary.getProtocolManager().addPacketListener(tooltips);
 	}
 
 	public static ItemStack getItemUsed(Entity damager){
@@ -380,7 +382,7 @@ public class Events implements Listener{
 			if(ConfigUtils.getLevel("tank", uuid) > 5 && ConfigUtils.findClass(uuid).equals("tank")){
 				Set<Block> blockSet = TravellerEvents.travelled.get(uuid);
 				if (blockSet != null) {
-					double multiplier = 1 - ((Math.floorDiv(blockSet.size(), 100) * 0.02));
+					double multiplier = 1 - Math.floorDiv(blockSet.size(), 100) * 0.01;
 					e.setDamage(e.getDamage() * multiplier);
 				}
 			}
@@ -392,7 +394,7 @@ public class Events implements Listener{
 		if(ConfigUtils.findClass(uuid).equals("corrupter") && ConfigUtils.getLevel("corrupter", uuid) > 5){
 			Set<Block> blockSet = TravellerEvents.travelled.get(uuid);
 			if(blockSet != null){
-				double multiplier = 1 + (Math.floorDiv(blockSet.size(), 100) * 0.02);
+				double multiplier = 1 + (Math.floorDiv(blockSet.size(), 100) * 0.01);
 				e.setDamage(e.getDamage() * multiplier);
 			}
 		}

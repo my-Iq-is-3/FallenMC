@@ -31,7 +31,7 @@ import static me.zach.DesertMC.Utils.Config.ConfigUtils.findClass;
 public class TravellerEvents implements Listener {
     public static final HashMap<UUID, Set<Block>> travelled = new HashMap<>();
     public static final Set<UUID> blockNotifs = new HashSet<>();
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGH)
     public void blockGet(PlayerMoveEvent e){
         Player player = e.getPlayer();
         Location to = e.getTo();
@@ -55,22 +55,22 @@ public class TravellerEvents implements Listener {
                         }
                         if(findClass(uuid).equalsIgnoreCase("scout")){
                             if(blockSet.size() % 100 == 0){
-                                player.setWalkSpeed(player.getWalkSpeed() + 0.004f);
-                                sendAchieved(ChatColor.AQUA.toString() + ChatColor.BOLD + "+2%" + ChatColor.AQUA + " move speed!", player);
+                                player.setWalkSpeed(player.getWalkSpeed() + 0.002f);
+                                sendAchieved(ChatColor.AQUA.toString() + ChatColor.BOLD + "+1%" + ChatColor.AQUA + " move speed!", player);
                             }
                         }else if(findClass(uuid).equalsIgnoreCase("wizard")){
-                            if(blockSet.size() % 250 == 0){
+                            if(blockSet.size() % 500 == 0){
                                 player.setMaxHealth(player.getMaxHealth() + 2);
                                 player.setHealth(player.getHealth() + 2);
                                 sendAchieved(ChatColor.AQUA.toString() + ChatColor.BOLD + "+2" + ChatColor.RED + " max health!", player);
                             }
                         }else if(findClass(uuid).equals("tank")){
                             if(blockSet.size() % 100 == 0){
-                                sendAchieved(ChatColor.AQUA.toString() + ChatColor.BOLD + "+2% " + ChatColor.DARK_GREEN + "defense!", player);
+                                sendAchieved(ChatColor.AQUA.toString() + ChatColor.BOLD + "+1% " + ChatColor.DARK_GREEN + "defense!", player);
                             }
                         }else if(findClass(uuid).equals("corrupter")){
                             if(blockSet.size() % 100 == 0)
-                                sendAchieved(ChatColor.AQUA + ChatColor.BOLD.toString() + "+2% " + ChatColor.DARK_RED + "damage!", player);
+                                sendAchieved(ChatColor.AQUA + ChatColor.BOLD.toString() + "+1% " + ChatColor.DARK_RED + "damage!", player);
                         }
                     }
                 }

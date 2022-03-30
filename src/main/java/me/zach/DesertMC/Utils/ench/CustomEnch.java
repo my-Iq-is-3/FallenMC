@@ -14,9 +14,11 @@ import me.zach.databank.saver.Key;
 import me.zach.databank.saver.PlayerData;
 import org.bukkit.*;
 import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -32,29 +34,20 @@ import java.util.concurrent.ThreadLocalRandom;
 import static org.bukkit.Material.AIR;
 
 public enum CustomEnch implements Listener {
-    TURTLE("Turtle", "turtle", EnchantType.ARMOR) {
+    TURTLE("Turtle", "turtle", true, EnchantType.ARMOR) {
         String getDescription(int level){
             return "Grants a " + NUM_FORMATTER.format(level * 0.7) + "% knockback reduction when attacked.";
         }
 
-        @Override
-        public void onHit(EntityDamageByEntityEvent event) {
-            if(event.getEntity() instanceof Player){
-                Player player = (Player) event.getEntity();
-                if(!CustomEnch.validatePlayer(player, Key.TANK,4)) return;
-                Bukkit.broadcastMessage(player.toString());
-                Bukkit.broadcastMessage("turtle2");
-                int lvl = getTotalArmorLevel(player);
-                Bukkit.broadcastMessage("found level");
-                Bukkit.broadcastMessage("turtle lvl = " + lvl);
-                if(lvl < 1) return;
-                new BukkitRunnable(){
-                    public void run(){
-                        // 100
-                        // 100-(100*0.1)
-                        player.setVelocity(player.getVelocity().multiply(1 - (lvl * 0.007)));
-                    }
-                }.runTask(DesertMain.getInstance);
+        @EventHandler
+        public void onKnockback(PlayerVelocityEvent event){
+            if(event.fromPlayerBeingAttacked() && !event.isCancelled()){
+                Player player = event.getPlayer();
+                int level = getTotalArmorLevel(player);
+                if(level > 0){
+                    Vector newVelo = event.getVelocity().multiply(1 - (level * 0.007));
+                    event.setVelocity(newVelo);
+                }
             }
         }
     },
@@ -226,17 +219,26 @@ public enum CustomEnch implements Listener {
     }
 
     CustomEnch(String name, String id, EnchantType... types){
+        this(name, id, false, types);
+    }
+
+    CustomEnch(String name, String id, boolean registerEvents, EnchantType... types){
         this.name = name;
         this.id = id;
         this.types = types;
         checkTypeLength();
+        if(registerEvents) Bukkit.getPluginManager().registerEvents(this, DesertMain.getInstance);
     }
 
-    CustomEnch(EnchantType... types){
+    CustomEnch(boolean registerEvents, EnchantType... types){
         this.name = MiscUtils.capitalizeEnum(this.name()).replace("_"," ");
         this.id = this.name().toLowerCase();
         this.types = types;
         checkTypeLength();
+        if(registerEvents) DesertMain.registerEventsSafely(this);
+    }
+    CustomEnch(EnchantType... types){
+        this(false, types);
     }
 
     public ItemStack getBook(int level){
@@ -301,7 +303,6 @@ public enum CustomEnch implements Listener {
         m = item.getItemMeta();
         m.setLore(lore);
         item.setItemMeta(m);
-        Bukkit.broadcastMessage(new NBTItem(item).toString());
         return item;
     }
 
