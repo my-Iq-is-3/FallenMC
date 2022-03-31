@@ -17,16 +17,18 @@ public class ActionBarUtils {
         }
     }
 
-    public static void sendActionBar(Player player, String message, int duration){
+    public static void sendActionBar(Player player, ActionBar bar, int duration){
         UUID uuid = player.getUniqueId();
         if(!actionBars.containsKey(uuid)){
-            SimpleActionBar actionBar = new SimpleActionBar(message);
-            setActionBar(player, actionBar);
+            setActionBar(player, bar);
             Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, () -> {
-                if(getActionBar(uuid) == actionBar)
-                    clearActionBar(player);
+                if(getActionBar(uuid) == bar) clearActionBar(player);
             }, duration);
         }
+    }
+
+    public static void sendActionBar(Player player, String message, int duration){
+        sendActionBar(player, new SimpleActionBar(message), duration);
     }
 
     public static void setActionBar(Player player, ActionBar actionBar){
@@ -50,7 +52,9 @@ public class ActionBarUtils {
     private static void init(){
         task = Bukkit.getScheduler().runTaskTimer(DesertMain.getInstance, () -> {
             for(Map.Entry<UUID, ActionBar> bar : actionBars.entrySet()){
-                sendActionBar0(Bukkit.getPlayer(bar.getKey()), bar.getValue().getMessage());
+                Player player = Bukkit.getPlayer(bar.getKey());
+                if(!player.isOnline()) clearActionBar(player);
+                else sendActionBar0(player, bar.getValue().getMessage());
             }
         }, 0, 40).getTaskId();
     }
