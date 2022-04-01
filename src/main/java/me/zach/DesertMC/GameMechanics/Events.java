@@ -77,6 +77,7 @@ import java.util.logging.Level;
 
 import static com.comphenix.protocol.PacketType.Play.Server.SET_SLOT;
 import static com.comphenix.protocol.PacketType.Play.Server.WINDOW_ITEMS;
+import static me.zach.DesertMC.DesertMain.lastdmgers;
 
 public class Events implements Listener{
 	public static Set<UUID> invincible = new HashSet<>();
@@ -526,6 +527,7 @@ public class Events implements Listener{
 			if(event.isCancelled()) return;
 			if(event.getDamager().getUniqueId().equals(event.getEntity().getUniqueId())) return;
 			if(event.getFinalDamage() <= 0) return;
+
 			for(CustomEnch ce : CustomEnch.values()){
 				ce.onHit(event);
 			}
@@ -537,6 +539,7 @@ public class Events implements Listener{
 					ArtifactEvents.hitEvent(event);
 				EventsForScout.getInstance().daggerHit(event);
 					if (event.getEntity() instanceof Player) {
+						lastdmgers.put(event.getEntity().getUniqueId(), event.getDamager().getUniqueId());
 						attackMod(event);
 						if (DesertMain.ct1players.contains(event.getDamager().getUniqueId())) {
 							event.setDamage(event.getDamage() * 1.1);
@@ -788,7 +791,7 @@ public class Events implements Listener{
 	}
 
 	public static void executeKill(Player dead, EntityDamageEvent.DamageCause cause){
-		UUID uuid = DesertMain.lastdmgers.get(dead.getUniqueId());
+		UUID uuid = lastdmgers.get(dead.getUniqueId());
 		Player killer = uuid == null ? null : Bukkit.getPlayer(uuid);
 		executeKill(dead, killer, cause);
 	}
@@ -939,14 +942,14 @@ public class Events implements Listener{
 		executeKill(event.getPlayer());
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void lastDamagerRemove(FallenDeathEvent event){
-		DesertMain.lastdmgers.remove(event.getPlayer().getUniqueId());
+		lastdmgers.remove(event.getPlayer().getUniqueId());
 	}
 
 	@EventHandler
 	public void lastDamagerRemove(EntityDeathEvent event){
-		DesertMain.lastdmgers.remove(event.getEntity().getUniqueId());
+		lastdmgers.remove(event.getEntity().getUniqueId());
 	}
 
 	@EventHandler
