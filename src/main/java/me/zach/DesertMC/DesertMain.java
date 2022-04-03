@@ -58,10 +58,9 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public static DesertMain getInstance;
 	public static final Set<UUID> ct1players = new HashSet<>();
 	public static final HashMap<UUID,UUID> lastdmgers = new HashMap<>(); //entity uuid, damager uuid. a player's last damager.
-	public static final Set<Player> laststandcd = new HashSet<>();
-	public static final Set<Player> mwcd = new HashSet<>();
+	public static final Set<UUID> laststandcd = new HashSet<>();
+	public static final Set<UUID> mwcd = new HashSet<>();
 	public static final Set<UUID> slowed = new HashSet<>();
-	public static final Set<UUID> scoutBladeCD = new HashSet<>();
 	public static final HashMap<UUID, Block> stomperStage = new HashMap<>();
 	public static final Set<UUID> stomperCD = new HashSet<>();
 	public static final HashMap<UUID, String> snack = new HashMap<>();

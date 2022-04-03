@@ -537,11 +537,12 @@ public class Commands implements Listener, CommandExecutor {
         	}else if(command.getName().equalsIgnoreCase("entityremoval")){
 				if(MiscUtils.isAdmin(player)){
 					if(args.length > 0){
-						String name = ChatColor.stripColor(String.join(" ", args));
+						String name = ChatColor.stripColor(String.join(" ", args)).toUpperCase();
+						if(name.trim().isEmpty()) return false;
 						for(World world : Bukkit.getWorlds()){
 							for(Entity entity : world.getEntities()){
 								if(entity.getCustomName() != null){
-									if(ChatColor.stripColor(entity.getCustomName()).equals(name)){
+									if(ChatColor.stripColor(entity.getCustomName()).toUpperCase().startsWith(name)){
 										entity.remove();
 										player.sendMessage(ChatColor.GREEN + "- Removed " + entity.getType().getName() + " \"" + entity.getCustomName() + ChatColor.GREEN + "\"");
 									}
