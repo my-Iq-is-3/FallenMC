@@ -57,6 +57,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
@@ -198,6 +199,13 @@ public class Events implements Listener{
 	}
 
 	@EventHandler
+	public void weatherChange(WeatherChangeEvent event){
+		World world = event.getWorld();
+		if(world.hasStorm()) world.setStorm(false);
+		event.setCancelled(true);
+	}
+
+	@EventHandler
 	public void projectileLand(ProjectileHitEvent event){
 		Entity entity = event.getEntity();
 		if(entity instanceof Arrow){
@@ -264,10 +272,8 @@ public class Events implements Listener{
 		String owner = nbt.getString("Owner");
 		System.out.println("cancelled before: " + event.isCancelled());
 		if(owner != null && !owner.isEmpty() && !owner.equals(uuid)){
-			System.out.println("Owner: " + owner);
 			event.setCancelled(item.getTicksLived() < 99999999);
 		}
-		System.out.println("cancelled after: " + event.isCancelled());
 	}
 
 	@EventHandler
@@ -513,7 +519,7 @@ public class Events implements Listener{
 
 	public static Player getPlayer(Entity arrowOrPlayer) {
 		if (arrowOrPlayer instanceof Player) return (Player) arrowOrPlayer;
-		else if(arrowOrPlayer instanceof Arrow) return ((Arrow) arrowOrPlayer).getShooter() instanceof Player ? ((Player) ((Arrow) arrowOrPlayer).getShooter()) : null;
+		else if(arrowOrPlayer instanceof Projectile) return ((Arrow) arrowOrPlayer).getShooter() instanceof Player ? ((Player) ((Arrow) arrowOrPlayer).getShooter()) : null;
 		else return null;
 	}
 
@@ -531,6 +537,7 @@ public class Events implements Listener{
 			for(CustomEnch ce : CustomEnch.values()){
 				ce.onHit(event);
 			}
+			if(event.getEntity() instanceof Player) lastdmgers.put(event.getEntity().getUniqueId(), getPlayer(event.getDamager()).getUniqueId());
 			if (event.getDamager() instanceof Player) {
 					if (NBTUtil.getCustomAttrString(((Player) event.getDamager()).getItemInHand(), "ID").equals("TOKEN")){
 						event.setCancelled(true);
@@ -539,7 +546,6 @@ public class Events implements Listener{
 					ArtifactEvents.hitEvent(event);
 				EventsForScout.getInstance().daggerHit(event);
 					if (event.getEntity() instanceof Player) {
-						lastdmgers.put(event.getEntity().getUniqueId(), event.getDamager().getUniqueId());
 						attackMod(event);
 						if (DesertMain.ct1players.contains(event.getDamager().getUniqueId())) {
 							event.setDamage(event.getDamage() * 1.1);

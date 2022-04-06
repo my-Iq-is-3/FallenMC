@@ -112,6 +112,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		events.check(this);
 		Bukkit.getLogger().info("FallenMC onEnable success!");
 		wipeEntities();
+		Bukkit.getServer().getWorlds().get(0).setStorm(false);
 	}
 
 	public void loadCredits(){
