@@ -34,6 +34,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
+import static java.lang.Math.abs;
 import static org.bukkit.Note.*;
 
 public class MiscUtils {
@@ -376,6 +377,20 @@ public class MiscUtils {
         location.setY(Math.round(location.getY()));
         location.setZ(Math.round(location.getZ()));
         return location;
+    }
+
+    /**
+     * @return The distance between the two points, ignoring their difference in y level.
+     */
+    public static double distanceSquaredIgnoringY(Location firstPoint, Location secondPoint){
+        return abs(square(firstPoint.getX() - secondPoint.getX())) + abs(square(firstPoint.getZ() - secondPoint.getZ()));
+    }
+
+    /**
+     * Winner of multiple awards in the 2022 Utility Belt Ceremony, including Best Utility Method and Most Efficient.
+     */
+    public static double square(double number){
+        return number * number;
     }
 
     private static final double INDICATOR_MIN_DISTANCE = 0.3;
