@@ -482,7 +482,7 @@ public class MiscUtils {
 
     public static <T> int indexOf(T[] array, T object){
         for(int i = 0; i<array.length; i++){
-            if(array[i].equals(object)) return i;
+            if(Objects.equals(array[i], object)) return i;
         }
         return -1;
     }
