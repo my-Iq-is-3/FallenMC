@@ -146,7 +146,10 @@ public class StreakPolice extends NPCSuper {
     public static ItemStack retrieveItem(ItemStack token){
         NBTItem tokenNBT = new NBTItem(token);
         NBTCompound customAttr = Objects.requireNonNull(tokenNBT.getCompound("CustomAttributes"), "CustomAttributes when retrieving seized item cannot be null");
-        return customAttr.getItemStack("PREV_ITEM");
+        NBTItem newNBT = new NBTItem(customAttr.getItemStack("PREV_ITEM"));
+        NBTCompound newCustomAttr = newNBT.getCompound("CustomAttributes");
+        if(newCustomAttr.hasKey("WEIGHT")) newCustomAttr.setDouble("WEIGHT", 0.0);
+        return newNBT.getItem();
     }
 
     public Inventory getStartInventory(NPCInteractEvent event){
