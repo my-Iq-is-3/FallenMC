@@ -72,6 +72,19 @@ public class Commands implements Listener, CommandExecutor {
 		colorsMessage = StringUtil.getCenteredWrappedMessage(new StringUtil.ChatWrapper('-', ChatColor.WHITE, true, true), colorsList.toArray(new String[0]));
 	}
 
+	private boolean openTierMenu(Player player, String clazz){
+		if(clazz.equalsIgnoreCase("scout")){
+			player.openInventory(new ScoutTierMenu(player).getInventory(true));
+		}else if(clazz.equalsIgnoreCase("tank")){
+			player.openInventory(new TankTierMenu(player).getInventory(true));
+		}else if(clazz.equalsIgnoreCase("corrupter")){
+			player.openInventory(new CorrupterTierMenu(player).getInventory(true));
+		}else if(clazz.equalsIgnoreCase("wizard")){
+			player.openInventory(new WizardTierMenu(player).getInventory(true));
+		}else return false;
+		return true;
+	}
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player) {
@@ -80,16 +93,10 @@ public class Commands implements Listener, CommandExecutor {
 			if(command.getName().equalsIgnoreCase("tiermenu")){
 				if(args.length == 1){
 					String clazz = args[0];
-					if(clazz.equalsIgnoreCase("scout")){
-						player.openInventory(new ScoutTierMenu(player).getInventory(true));
-					}else if(clazz.equalsIgnoreCase("tank")){
-						player.openInventory(new TankTierMenu(player).getInventory(true));
-					}else if(clazz.equalsIgnoreCase("corrupter")){
-						player.openInventory(new CorrupterTierMenu(player).getInventory(true));
-					}else if(clazz.equalsIgnoreCase("wizard")){
-						player.openInventory(new WizardTierMenu(player).getInventory(true));
-					}else return false;
-				}else return false;
+					return openTierMenu(player, clazz);
+				}else{
+					return openTierMenu(player, ConfigUtils.findClass(player));
+				}
 			}else if(command.getName().equalsIgnoreCase("shoptest")){
 				if(MiscUtils.isAdmin(player)){
 					if(args.length > 0){

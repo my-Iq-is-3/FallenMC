@@ -188,7 +188,7 @@ public class InvEvents implements Listener {
 			}
 		}
 
-		if(classinv.getName().startsWith("Wizard Class") && classinv.getName().equals("Wizard Class")){
+		if(classinv.getName().startsWith("Wizard Class")){
 			event.setCancelled(true);
 			if(item.getType().equals(Material.STAINED_GLASS)){
 				ConfigUtils.setClass(player, "wizard");
