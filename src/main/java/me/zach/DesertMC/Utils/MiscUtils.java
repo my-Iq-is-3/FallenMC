@@ -338,7 +338,7 @@ public class MiscUtils {
         item.setCustomName(owner.getDisplayName() + "'s " + ChatColor.WHITE + item.getItemStack().getItemMeta().getDisplayName());
         item.setCustomNameVisible(true);
         NBTEntity nbt = new NBTEntity(item);
-        nbt.setString("Owner", owner.getUniqueId().toString());
+        nbt.setString("OwnedBy", owner.getUniqueId().toString());
     }
 
     public static String potionEffectToString(PotionEffect potionEffect){

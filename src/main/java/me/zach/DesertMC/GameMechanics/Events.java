@@ -264,13 +264,12 @@ public class Events implements Listener{
 		event.setCancelled(true);
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void nonOwnerPickup(PlayerPickupItemEvent event){
 		Item item = event.getItem();
 		String uuid = event.getPlayer().getUniqueId().toString();
 		NBTEntity nbt = new NBTEntity(item);
-		String owner = nbt.getString("Owner");
-		System.out.println("cancelled before: " + event.isCancelled());
+		String owner = nbt.getString("OwnedBy");
 		if(owner != null && !owner.isEmpty() && !owner.equals(uuid)){
 			event.setCancelled(item.getTicksLived() < 99999999);
 		}
@@ -293,25 +292,25 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void illegalCommandSend(PlayerCommandPreprocessEvent event){
-			boolean plugins = event.getMessage().startsWith("/plugins");
-			boolean pl = event.getMessage().equalsIgnoreCase("/pl");
-			boolean pl2 = event.getMessage().startsWith("/pl ");
-			boolean gc = event.getMessage().equalsIgnoreCase("/gc");
-			boolean icanhasbukkit = event.getMessage().startsWith("/icanhasbukkit");
-			boolean unknown = event.getMessage().startsWith("/?");
-			boolean version = event.getMessage().startsWith("/version");
-			boolean ver = event.getMessage().startsWith("/ver");
-			boolean bukkitplugin = event.getMessage().startsWith("/bukkit:plugins");
-			boolean bukkitpl = event.getMessage().startsWith("/bukkit:pl");
-			boolean bukkitunknown = event.getMessage().startsWith("/bukkit:?");
-			boolean about = event.getMessage().startsWith("/about");
-			boolean a = event.getMessage().equalsIgnoreCase("/a");
-			boolean bukkitabout = event.getMessage().startsWith("/bukkit:about");
-			boolean bukkita = event.getMessage().startsWith("/bukkit:a");
-			boolean bukkitversion = event.getMessage().startsWith("/bukkit:version");
-			boolean bukkitver = event.getMessage().startsWith("/bukkit:ver");
-			boolean bukkithelp = event.getMessage().startsWith("/bukkit:help");
-			boolean help = event.getMessage().startsWith("/minecraft:help");
+		boolean plugins = event.getMessage().startsWith("/plugins");
+		boolean pl = event.getMessage().equalsIgnoreCase("/pl");
+		boolean pl2 = event.getMessage().startsWith("/pl ");
+		boolean gc = event.getMessage().equalsIgnoreCase("/gc");
+		boolean icanhasbukkit = event.getMessage().startsWith("/icanhasbukkit");
+		boolean unknown = event.getMessage().startsWith("/?");
+		boolean version = event.getMessage().startsWith("/version");
+		boolean ver = event.getMessage().startsWith("/ver");
+		boolean bukkitplugin = event.getMessage().startsWith("/bukkit:plugins");
+		boolean bukkitpl = event.getMessage().startsWith("/bukkit:pl");
+		boolean bukkitunknown = event.getMessage().startsWith("/bukkit:?");
+		boolean about = event.getMessage().startsWith("/about");
+		boolean a = event.getMessage().equalsIgnoreCase("/a");
+		boolean bukkitabout = event.getMessage().startsWith("/bukkit:about");
+		boolean bukkita = event.getMessage().startsWith("/bukkit:a");
+		boolean bukkitversion = event.getMessage().startsWith("/bukkit:version");
+		boolean bukkitver = event.getMessage().startsWith("/bukkit:ver");
+		boolean bukkithelp = event.getMessage().startsWith("/bukkit:help");
+		boolean help = event.getMessage().startsWith("/minecraft:help");
 
 
 		if(plugins || pl || pl2 || gc || icanhasbukkit || unknown || version || ver || bukkitplugin || bukkitpl || bukkitunknown || about || a || bukkitabout || bukkita || help || bukkithelp || bukkitver || bukkitversion){
@@ -373,6 +372,13 @@ public class Events implements Listener{
 		Inventory inv = event.getInventory();
 		if(inv instanceof AnvilInventory || inv instanceof EnchantingInventory){
 			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void earlyJoin(PlayerLoginEvent event){
+		if(MiscUtils.getCurrentTick() <= 3){
+			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "I'm happy you're excited, but...\nYou joined too early. Try again immediately.");
 		}
 	}
 
@@ -524,8 +530,6 @@ public class Events implements Listener{
 	}
 
 	// ---------------------------------------------------------------------------
-
-
 
 
 	public void onHit(EntityDamageByEntityEvent event) {

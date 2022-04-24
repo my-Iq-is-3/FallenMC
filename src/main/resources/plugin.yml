@@ -9,6 +9,9 @@ depend:
  - ProtocolLib
 
 commands:
+ ks:
+  description: "Sets your killstreak. Admins only."
+  usage: /<command> <killstreak>
  gems:
   description: "Adds 1k gems to your balance. Cooldown: 30m"
  souls:

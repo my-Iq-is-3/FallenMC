@@ -1,5 +1,6 @@
 package me.zach.DesertMC.Utils.StringUtils;
 
+import com.google.common.base.CharMatcher;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -44,6 +45,20 @@ public class StringUtil{
         int lfIndex = builder.lastIndexOf("\n", from + LORE_LENGTH);
         if(lfIndex != -1 && lfIndex > from) return jumpToLineFeed(builder, lfIndex);
         else return from;
+    }
+
+    /**
+     * Trims any trailing whitepsaces off of a string.
+     * @param string String to trim.
+     * @return A string rid of any whitespaces at the end.
+     */
+    public static String trimTrailingWhitespace(String string){
+        int i = string.length() - 1;
+        for(;i>=0; i--){
+            char c = string.charAt(i);
+            if(!CharMatcher.whitespace().matches(c)) break;
+        }
+        return string.substring(0, i + 1);
     }
 
     private static final int CENTER_PX = 154;

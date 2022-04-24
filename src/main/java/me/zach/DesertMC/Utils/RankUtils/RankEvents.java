@@ -81,6 +81,15 @@ public class RankEvents implements Listener {
         if(title != null) e.setFormat(title + "" + ChatColor.DARK_GRAY + " | " + ChatColor.RESET + e.getFormat());
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void noSendClearMessage(AsyncPlayerChatEvent event){
+        String msg = StringUtil.trimTrailingWhitespace(event.getMessage());
+        if(msg.isEmpty()){
+            event.setCancelled(true);
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.NOTE_BASS, 10, 1);
+        }
+    }
+
     public static String colorMessage(String msg){
         msg = msg.replaceAll("\\b*(?<!\\\\)!BO", ChatColor.BOLD + "");
         msg = msg.replaceAll("\\b*(?<!\\\\)!GO", ChatColor.GOLD + "");

@@ -192,6 +192,7 @@ public class SoulBroker extends NPCSuper implements Listener{
                             p.sendMessage(ChatColor.RED + "Insert an item before trying to reduce it's WPH!");
                         }else{
                             dontGiveItemOnClose.add(p.getUniqueId());
+                            shopInv.clear(13);
                             p.closeInventory();
                             p.openInventory(getReduceInventory(p, itemToReduce));
                             openInv.add(p.getUniqueId());
@@ -206,7 +207,6 @@ public class SoulBroker extends NPCSuper implements Listener{
 
     public void reduceInvClick(InventoryClickEvent e){
         e.setCancelled(true);
-        Bukkit.getConsoleSender().sendMessage("Reduce inventory click registered.");
         Player p = (Player) e.getWhoClicked();
         Inventory inv = e.getClickedInventory();
         ItemStack item = e.getCurrentItem();

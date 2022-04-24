@@ -2,6 +2,7 @@ package me.zach.DesertMC.GameMechanics.npcs;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import itempackage.Items;
 import me.zach.DesertMC.CommandsPackage.NPCCommand;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.Events;
@@ -13,10 +14,7 @@ import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.gui.GUIHolder;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import net.jitse.npclib.api.events.NPCInteractEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,17 +36,9 @@ import static me.zach.DesertMC.DesertMain.weightQueue;
 public class StreakPolice extends NPCSuper {
     public static final int SKIN_ID = 240562954;
     private static final ItemStack falseItem = new ItemStack(Material.STAINED_GLASS, 1, (short) 14);
-    private static final ItemStack trueItem = new ItemStack(Material.STAINED_CLAY, 1, (short) 5);
+
     static{
-        ItemMeta trueMeta = trueItem.getItemMeta();
         ItemMeta falseMeta = falseItem.getItemMeta();
-        trueMeta.setDisplayName(ChatColor.GREEN + "Click to retrieve");
-        ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GREEN + "Cough up 200 gems, and I'll give");
-        lore.add(ChatColor.GREEN + "your item back no problem.");
-        lore.add(ChatColor.RED + "Breaks streak!");
-        trueMeta.setLore(lore);
-        trueItem.setItemMeta(trueMeta);
         falseMeta.setDisplayName(ChatColor.RED + "Insert Token");
         ArrayList<String> flore = new ArrayList<>();
         flore.add(ChatColor.RED + "You're gonna need a seized item");
@@ -59,7 +49,7 @@ public class StreakPolice extends NPCSuper {
 
     public StreakPolice(){
         super(ChatColor.AQUA + "Streak Police", SKIN_ID,
-                "To retrieve items that I've taken, all you gotta do is give me the token and " + ChatColor.GREEN + "100 Bones-" + ChatColor.WHITE + " sorry, " + ChatColor.GREEN + "100 Gems" + ChatColor.WHITE + ". I'm also gonna have to reset your streak.",
+                "Hey, buddy. If you've come to pay off a seized item's streak cost, you've got the right guy. Not that it would be easy to get the wrong guy. Honestly, all this magical floating text above people's heads is making things way too easy.",
                 Sound.WOLF_BARK,
                 ChatColor.GRAY + "Click me to recover your seized items");
     }
@@ -107,15 +97,16 @@ public class StreakPolice extends NPCSuper {
         if(itemsandhits != null && !itemsandhits.isEmpty()){
             ArrayList<String> toRemove = new ArrayList<>();
             Set<String> keyList = itemsandhits.keySet();
+            ItemStack[] contents = player.getInventory().getContents();
             for(String targetId : keyList){
-                for(int a = 0; a < player.getInventory().getContents().length; a++){
-                    ItemStack item = player.getInventory().getContents()[a];
+                for(int a = 0; a < contents.length; a++){
+                    ItemStack item = contents[a];
                     if(NBTUtil.getCustomAttrString(item, "UUID").equals(targetId)){
                         NBTItem nbt = new NBTItem(item);
-                        Double weight = NBTUtil.getCustomAttr(nbt, "WEIGHT", double.class, null);
+                        Double weight = NBTUtil.getCustomAttr(nbt, "WEIGHT", Double.class, null);
                         if(weight == null) continue;
                         weight += itemsandhits.get(targetId);
-                        nbt.getCompound("CustomAttributes").setDouble("WEIGHT", weight);
+                        nbt.getCompound("CustomAttributes").setDouble("WEIGHT", Math.min(100, weight));
                         toRemove.add(targetId);
                         player.getInventory().setItem(a, nbt.getItem());
                         if(roll(weight)){
@@ -136,10 +127,12 @@ public class StreakPolice extends NPCSuper {
     }
 
     public static ItemStack seize(ItemStack item){
-        ItemStack newItem = MiscUtils.generateItem(Material.DOUBLE_PLANT, ChatColor.RED + "Seized " + item.getItemMeta().getDisplayName(), StringUtil.wrapLore(ChatColor.GRAY + "This item was " + ChatColor.RED + "SEIZED" + ChatColor.GRAY + "!\nTake it to the Streak Police in the Cafe to get it back!"), (byte) -1, 1, "TOKEN");
+        int streakPrice = calculateStreakPrice(NBTUtil.getCustomAttr(item, "WEIGHT", double.class, 10.0));
+        ItemStack newItem = MiscUtils.generateItem(Material.DOUBLE_PLANT, ChatColor.RED + "Seized " + ChatColor.stripColor(item.getItemMeta().getDisplayName()), getTokenLore(streakPrice), (byte) -1, 1, "TOKEN");
         NBTItem newNBT = new NBTItem(newItem);
         NBTCompound customAttr = NBTUtil.checkCustomAttr(newNBT);
         customAttr.setItemStack("PREV_ITEM", item);
+        customAttr.setInteger("KILLSTREAK_REMAINING", streakPrice);
         return newNBT.getItem();
     }
 
@@ -152,22 +145,29 @@ public class StreakPolice extends NPCSuper {
         return newNBT.getItem();
     }
 
+    public static List<String> getTokenLore(int killstreakRemaining){
+        return StringUtil.wrapLore(ChatColor.GRAY + "This item has been " + ChatColor.RED + "SEIZED" + ChatColor.GRAY + "!\n" + "Talk to the streak police at the Cafe to get it back!\nKillstreak remaining: " + ChatColor.RED + killstreakRemaining, 35);
+    }
+
+    private static int calculateStreakPrice(double weight){
+        return (int) Math.round(Math.min(weight * (1 - weight/20 * (0.145 - weight/20 * 0.01)), 50) + 2); //https://www.desmos.com/calculator/ndrtpgmtws
+    }
+
     public Inventory getStartInventory(NPCInteractEvent event){
         return new StreakPoliceInventory().getInventory();
     }
 
-    private static class StreakPoliceInventory implements GUIHolder {
+    private class StreakPoliceInventory implements GUIHolder {
+        int BUTTON_SLOT = 22;
+        int TOKEN_SLOT = 4;
         Inventory inventory = Bukkit.getServer().createInventory(this, 27, "Recover Seized Items");
         public StreakPoliceInventory(){
-            ItemStack pane = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 9);
-            ItemMeta paneMeta = pane.getItemMeta();
-            paneMeta.setDisplayName(" ");
-            pane.setItemMeta(paneMeta);
+            ItemStack pane = MiscUtils.getEmptyPane((byte) 9);
             for(int i = 0; i<27; i++){
                 inventory.setItem(i, pane);
             }
-            inventory.clear(4);
-            inventory.setItem(22, falseItem);
+            inventory.clear(TOKEN_SLOT);
+            inventory.setItem(BUTTON_SLOT, falseItem);
         }
 
         public Inventory getInventory(){
@@ -178,43 +178,51 @@ public class StreakPolice extends NPCSuper {
             event.setCancelled(true);
             if(NBTUtil.getCustomAttrString(clickedItem, "ID").equals("TOKEN")){
                 player.getInventory().addItem(clickedItem);
-                inventory.clear(4);
-                inventory.setItem(22, falseItem);
+                inventory.clear(TOKEN_SLOT);
+                inventory.setItem(BUTTON_SLOT, falseItem);
             }
 
             if(clickType.equals(ClickType.LEFT) || clickType.equals(ClickType.RIGHT)) {
                 if (clickedItem.isSimilar(falseItem)) {
                     player.playSound(player.getLocation(), Sound.ANVIL_LAND, 10, 1);
-                } else if (clickedItem.isSimilar(trueItem)) {
-                    int gems = ConfigUtils.getGems(player);
-                    if(ConfigUtils.deductGems(player, 200)) {
-                        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Player " + player.getName() + " recovered a seized item with " + gems + " gems.");
-                        if (player.getInventory().firstEmpty() == -1) {
-                            player.getInventory().addItem(inventory.getItem(4));
-                            inventory.clear(4);
+                } else if (slot == BUTTON_SLOT) {
+                    ItemStack token = inventory.getItem(TOKEN_SLOT);
+                    if(token != null){
+                        UUID uuid = player.getUniqueId();
+                        int ks = Events.ks.getOrDefault(uuid, 0);
+                        if(ks <= 0){
+                            player.playSound(player.getLocation(), Sound.ANVIL_LAND, 10, 1.1f);
+                            return;
+                        }
+                        int ksRemaining = NBTUtil.getCustomAttr(token, "KILLSTREAK_REMAINING", int.class);
+                        if(ks >= ksRemaining){
+                            Events.ks.put(uuid, ks - ksRemaining);
+                            inventory.clear(TOKEN_SLOT);
+                            ItemStack prevItem = NBTUtil.getCustomAttr(token, "PREV_ITEM", ItemStack.class);
+                            player.getInventory().addItem(prevItem);
+                            npcMessage(player, "I put the item in your first open slot. Pleasure doin' business with ya.");
                             player.closeInventory();
-                            player.playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
-                            player.sendMessage(ChatColor.RED + "Full Inventory!");
-                            return;
+                            if(NBTUtil.getCustomAttr(prevItem, "WEIGHT_ADD", double.class) >= Items.STARTER_WPH){
+                                Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, () -> {
+                                    if(player.isOnline()){
+                                        player.playSound(player.getLocation(), Sound.WOLF_BARK, 10, 1);
+                                        npcMessage(player, "Oh, and by the way... if it seems like your item is getting seized too often, I've heard that the " + ChatColor.LIGHT_PURPLE + "Soul Broker" + ChatColor.WHITE + " runs a little business down in the basement that could help, as shady as he may be.");
+                                        Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, () -> npcMessage(player, "...Don't tell anyone I told you that."), 100);
+                                    }
+                                }, 50);
+                            }
+                        }else{
+                            Events.ks.put(uuid, 0);
+                            inventory.clear(TOKEN_SLOT);
+                            ItemMeta tokenMeta = token.getItemMeta();
+                            tokenMeta.setLore(getTokenLore(ksRemaining - ks));
+                            token.setItemMeta(tokenMeta);
+                            NBTItem tokenNBT = new NBTItem(token);
+                            tokenNBT.getCompound("CustomAttributes").setInteger("KILLSTREAK_REMAINING", ksRemaining - ks);
+                            player.getInventory().addItem(tokenNBT.getItem());
+                            npcMessage(player, "And just like that, you're " + ks + " steps closer to getting your item back. You go, buddy.");
+                            player.closeInventory();
                         }
-                        ItemStack token = inventory.getItem(4);
-                        if(!NBTUtil.getCustomAttrString(token, "ID").equals("TOKEN")){
-                            inventory.clear(4);
-                            player.getInventory().addItem(token);
-                            return;
-                        }
-                        ItemStack cleanItem = retrieveItem(token);
-                        inventory.clear(4);
-                        player.closeInventory();
-                        player.getInventory().addItem(cleanItem);
-                        Events.ks.put(player.getUniqueId(), 0);
-                        player.sendMessage(Prefix.NPC + ChatColor.DARK_GRAY.toString() + " | " + ChatColor.AQUA + "Streak Police" + ChatColor.GRAY + ": " + ChatColor.WHITE + "I put the item in your first open slot. Pleasure doin' business with ya.");
-                    }else{
-                        player.getInventory().addItem(inventory.getItem(4));
-                        inventory.clear(4);
-                        player.closeInventory();
-                        player.playSound(player.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
-                        player.sendMessage(ChatColor.RED + "Not enough gems!");
                     }
                 }
             }
@@ -224,23 +232,54 @@ public class StreakPolice extends NPCSuper {
         public void bottomInventoryClick(Player player, Inventory bottomInv, int slot, ItemStack clickedItem, ClickType clickType, InventoryClickEvent event){
             event.setCancelled(true);
             if(NBTUtil.getCustomAttrString(clickedItem, "ID").equals("TOKEN")){
-                ItemStack token = inventory.getItem(4);
+                ItemStack token = inventory.getItem(TOKEN_SLOT);
                 if(NBTUtil.getCustomAttrString(token, "ID").equals("TOKEN")){
                     if(token != null)
                         bottomInv.addItem(token);
                 }
+                NBTItem clickedTokenNBT = new NBTItem(clickedItem);
                 bottomInv.clear(slot);
-                inventory.setItem(4, clickedItem);
-                inventory.setItem(22, trueItem);
+                ItemStack item;
+                int ks = Events.ks.getOrDefault(player.getUniqueId(), 0);
+                if(ks == 0){
+                    item = MiscUtils.generateItem(Material.STAINED_GLASS, ChatColor.RED + "No killstreak!", StringUtil.wrapLore(ChatColor.GRAY + "You don't have any killstreak to contribute towards getting your item back!\nGo get some kills then come back here!"), DyeColor.RED.getData(), 1);
+                }else{
+                    Integer ksRemaining = NBTUtil.getCustomAttr(clickedTokenNBT, "KILLSTREAK_REMAINING", Integer.class);
+                    ItemStack prevItem = NBTUtil.getCustomAttr(clickedTokenNBT, "PREV_ITEM", ItemStack.class);
+                    if(ksRemaining == null){
+                        ksRemaining = calculateStreakPrice(NBTUtil.getCustomAttr(prevItem, "WEIGHT", double.class));
+                        clickedTokenNBT.getCompound("CustomAttributes").setInteger("KILLSTREAK_REMAINING", ksRemaining);
+                        clickedItem = clickedTokenNBT.getItem();
+                    }
+                    List<String> desc = new ArrayList<>();
+                    desc.add(ChatColor.GRAY + "Killstreak left to pay: " + ChatColor.RED + ksRemaining);
+                    desc.add("§7Your current killstreak: " + ChatColor.RED + ks);
+                    desc.add(ChatColor.GRAY + ChatColor.STRIKETHROUGH.toString() + "--------------------------");
+                    String displayName;
+                    if(ksRemaining <= ks){
+                        desc.add(ChatColor.GRAY + "Killstreak left after payment: " + ChatColor.GREEN + "0");
+                        desc.add("");
+                        desc.add(ChatColor.GREEN + "Click to retrieve " + ChatColor.stripColor(prevItem.getItemMeta().getDisplayName()) + "!");
+                        displayName = ChatColor.GREEN + "Final Payment";
+                    }else{
+                        desc.add(ChatColor.GRAY + "Killstreak left after payment: " + ChatColor.RED + (ksRemaining - ks));
+                        desc.add("");
+                        desc.add(ChatColor.GREEN + "Click to pay!");
+                        displayName = ChatColor.YELLOW + "Item Retrieval Payment";
+                    }
+                    item = MiscUtils.generateItem(Material.STAINED_CLAY, displayName, desc, DyeColor.GREEN.getData(), 1);
+                }
+                inventory.setItem(TOKEN_SLOT, clickedItem);
+                inventory.setItem(BUTTON_SLOT, item);
             }
         }
 
         public void inventoryClose(Player player, Inventory inventory, InventoryCloseEvent event){
             Inventory playerInv = player.getInventory();
-            ItemStack token = inventory.getItem(4);
+            ItemStack token = inventory.getItem(TOKEN_SLOT);
             if(token != null){
                 playerInv.addItem(token);
-                inventory.clear(4);
+                inventory.clear(TOKEN_SLOT);
             }
         }
     }

@@ -527,8 +527,15 @@ public class Commands implements Listener, CommandExecutor {
 				
 
         	
-        	}
-        	else if(command.getName().equalsIgnoreCase("invincible")) {
+        	}else if(command.getName().equalsIgnoreCase("ks")){
+				if(MiscUtils.isAdmin(player)){
+					if(args.length == 1){
+						int ks = Integer.parseInt(args[0]);
+						Events.ks.put(player.getUniqueId(), ks);
+						player.sendMessage(ChatColor.GREEN + "Set your killstreak to " + ks + ".");
+					}else return false;
+				}
+			}else if(command.getName().equalsIgnoreCase("invincible")) {
         		if(MiscUtils.isAdmin(player)) {
 					if(!Events.invincible.contains(player.getUniqueId())) {
 						player.sendMessage(ChatColor.GREEN + "Made you invincible!");
