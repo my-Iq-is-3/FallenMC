@@ -27,6 +27,7 @@ me/zach/DesertMC/Utils/Particle/ReflectionUtils.class
 me/zach/DesertMC/GameMechanics/NPCStructure/SavedNPC.class
 me/zach/DesertMC/Utils/TitleUtils.class
 me/zach/DesertMC/Utils/StringUtils/DefaultFontInfo.class
+me/zach/DesertMC/Utils/packet/wrappers/WrapperPlayServerExplosion.class
 me/zach/DesertMC/ClassManager/ScoutManager/ScoutTierMenu.class
 me/zach/DesertMC/GameMechanics/npcs/StreakPolice$StreakPoliceInventory.class
 me/zach/DesertMC/CommandsPackage/ItemCommand.class
@@ -97,6 +98,7 @@ me/zach/DesertMC/ClassManager/ItemShop.class
 me/zach/DesertMC/ClassManager/CoruManager/EventsForCorruptor$1.class
 me/zach/DesertMC/ClassManager/TankManager/TankTierMenu.class
 me/zach/DesertMC/cosmetics/Cosmetic$8.class
+me/zach/DesertMC/GameMechanics/SpiritBottle.class
 me/zach/DesertMC/GameMechanics/hitbox/HitboxListener.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ParticleDataException.class
 me/zach/DesertMC/Utils/gui/GUIHolder.class
@@ -107,6 +109,7 @@ me/zach/DesertMC/GameMechanics/NPCStructure/SimpleNPC$1.class
 me/zach/DesertMC/ClassManager/InvEvents.class
 me/zach/DesertMC/GameMechanics/EXPMilesstones/MilestonesInventory$RewardsItem$4.class
 me/zach/DesertMC/ClassManager/WizardManager/WizardTierMenu.class
+me/zach/DesertMC/GameMechanics/shhhhh/CrashCommand.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ParticleData.class
 me/zach/DesertMC/cosmetics/Cosmetic$8$1.class
 me/zach/DesertMC/Utils/RankUtils/RankEvents.class
@@ -140,6 +143,7 @@ me/zach/DesertMC/Utils/StringUtils/StringUtil$ChatWrapper.class
 me/zach/DesertMC/Utils/StringUtils/StringUtil.class
 me/zach/DesertMC/ClassManager/WizardManager/EventsForWizard.class
 me/zach/DesertMC/holo/HologramEvents.class
+me/zach/DesertMC/Utils/MiscUtils$4.class
 me/zach/DesertMC/Utils/ActionBar/ActionBarUtils.class
 me/zach/DesertMC/GameMechanics/EXPMilesstones/MilestonesEvents$1.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ParticlePacket$VersionIncompatibleException.class

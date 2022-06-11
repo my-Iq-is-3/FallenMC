@@ -11,6 +11,7 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,33 +24,39 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import itempackage.Items;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Supplier;
 
 public class ItemCommand implements CommandExecutor, Listener, TabCompleter {
     public static final ItemCommand INSTANCE = new ItemCommand();
 
-    private static final HashMap<String,ItemStack> items = new HashMap<>();
+    private static final HashMap<String, Supplier<ItemStack>> items = new HashMap<>();
+    private static final Set<String> names;
     public static final HashMap<String, String> enchs = new HashMap<>();
     public static final char DOT = '\u25CF';
     static {
         //TODO chance these to suppliers instead of a single item (or just make our item system better)
-        items.put("MagicWand",itempackage.Items.getMagicWand());
-        items.put("WizardBlade", Items.getWizardBlade());
-        items.put("ScoutGoggles",Items.getScoutGoggles());
-        items.put("VolcanicSword",Items.getVolcanicSword());
-        items.put("CorruptedSword", Items.getCorruptedSword());
-        items.put("LuckyChestplate", Items.getLuckyChestplate());
-        items.put("CorrupterLeggings", Items.getCorrupterLeggings());
-        items.put("ScoutBlade", Items.getScoutBlade());
-        items.put("Dagger",Items.getDagger());
-        items.put("StubbornBoots", Items.getStubbornBoots());
-        items.put("FirstAidKit", Items.getFirstAidKit());
-        items.put("Stomper", Items.getStomper());
-        items.put("MagicSnack", Items.getMagicSnack());
-        items.put("ProteinSnack", Items.getProteinSnack());
-        items.put("LavaCake", Items.getLavaCake());
-        items.put("Bludgeon", Items.getBludgeon());
-        items.put("EnergySnack", Items.getEnergySnack());
+        Method[] methods = Items.class.getMethods();
+        System.out.println(Arrays.toString(methods));
+        for(Method method : methods){
+            if(method.getParameters().length == 0 && method.getReturnType() == ItemStack.class && method.getName().startsWith("get")){
+                if(!method.isAccessible()) method.setAccessible(true); //hmph
+                String name = method.getName().replace("get", "");
+                items.put(name, () -> {
+                    try{
+                        return (ItemStack) method.invoke(null);
+                    }catch(IllegalAccessException | InvocationTargetException e){
+                        e.printStackTrace();
+                    }
+                    return null;
+                });
+            }
+        }
+        names = items.keySet();
         enchs.put("no_mercy",ChatColor.GRAY + "\u25CF" + ChatColor.BLUE + " No Mercy");
         enchs.put("giant_slayer",ChatColor.LIGHT_PURPLE + "\u25CF" + ChatColor.BLUE + " Giant Slayer");
         enchs.put("spike",ChatColor.GRAY + "\u25CF" + ChatColor.BLUE + " Spike");
@@ -74,13 +81,13 @@ public class ItemCommand implements CommandExecutor, Listener, TabCompleter {
                             isValid = true;
                             player.sendMessage(ChatColor.RED + "Usage: /item Mythical <id>");
                         } else if (items.get(args[0]) != null) {
-                            player.getInventory().addItem(items.get(args[0]));
+                            player.getInventory().addItem(items.get(args[0]).get());
                             isValid = true;
                         }
 
                         if (!isValid) {
                             player.sendMessage(ChatColor.RED + "Please say a valid item.");
-                        }
+                        }else if(player.getInventory().firstEmpty() != -1) player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 10, 1);
 
 
 
@@ -125,7 +132,7 @@ public class ItemCommand implements CommandExecutor, Listener, TabCompleter {
             Player player = (Player) commandSender;
             if(strings.length == 1){
                 if(MiscUtils.isAdmin(player) && command.getName().equalsIgnoreCase("item")){
-                    args = Arrays.asList("ScoutGoggles", "MagicWand", "VolcanicSword", "Mythical", "Dagger", "StubbornBoots", "WizardBlade", "CorruptedSword", "LuckyChestplate", "CorrupterLeggings", "FirstAidKit", "ScoutBlade", "MagicSnack", "ProteinSnack", "LavaCake", "EnergySnack", "Bludgeon", "Stomper");
+                    args = MiscUtils.narrowTabComplete(strings[0], names);
                 }
             }
         }

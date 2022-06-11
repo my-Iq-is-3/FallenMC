@@ -8,21 +8,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CircleHitbox implements Hitbox {
-    Location center;
-    int radius;
+    final Location center;
+    final int radius;
+    final int radiusSquared;
 
     public CircleHitbox(Location center, int radius){
         this.center = center;
         this.radius = radius;
+        this.radiusSquared = radius * radius;
     }
 
     public CircleHitbox(Map<String,Object> map){
         center = (Location) map.get("center");
         radius = (int) map.get("radius");
+        this.radiusSquared = radius * radius;
     }
 
     public boolean isInside(Location l) {
-        return (l.distanceSquared(center) <= radius * radius);
+        return (l.distanceSquared(center) <= radiusSquared);
     }
 
     @Override

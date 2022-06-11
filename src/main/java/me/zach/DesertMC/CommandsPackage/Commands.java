@@ -2,6 +2,7 @@ package me.zach.DesertMC.CommandsPackage;
 
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import itempackage.Items;
 import me.zach.DesertMC.ClassManager.CoruManager.CorrupterTierMenu;
 import me.zach.DesertMC.ClassManager.KothyMenu;
 import me.zach.DesertMC.ClassManager.ScoutManager.ScoutTierMenu;
@@ -10,6 +11,8 @@ import me.zach.DesertMC.ClassManager.WizardManager.WizardTierMenu;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesInventory;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
+import me.zach.DesertMC.GameMechanics.NPCStructure.SimpleNPC;
+import me.zach.DesertMC.GameMechanics.npcs.SoulBroker;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
@@ -498,8 +501,31 @@ public class Commands implements Listener, CommandExecutor {
 				}else{
         			player.sendMessage(ChatColor.RED + "Only admins can use this command. Talk to Kothy at the cafe!");
 				}
-        	}
-        	else if(command.getName().equalsIgnoreCase("speed")) {
+        	}else if(command.getName().equalsIgnoreCase("dealconfirm")){
+				if(args.length == 1){
+					String res = args[0];
+					if(res.equals("yes")){
+						SoulBroker soulBroker = (SoulBroker) DesertMain.getInstance.getNPC("SoulBroker");
+						Integer price = soulBroker.BOTTLE_CONFIRMING.remove(player.getUniqueId());
+						if(price == null){
+							player.sendMessage(ChatColor.RED + "This command is situation-specific!");
+						}else{
+							if(ConfigUtils.deductSouls(player, price)){
+								ItemStack bottle = Items.getSpiritBottle();
+								player.getInventory().addItem(bottle);
+								soulBroker.npcMessage(player, "Congrats, kid. The bottle's all yours. As always, it was a pleasure.");
+							}else{
+								soulBroker.npcMessage(player, "Kid, all your shiny, bottle-related ambitions are gonna stay pipe dreams until you've got the souls to pay for them. Maybe you'll have some more by the time this thing shows up again.");
+							}
+						}
+					}else if(res.equals("no")){
+						SoulBroker npc = (SoulBroker) DesertMain.getInstance.getNPC("SoulBroker");
+						if(npc.BOTTLE_CONFIRMING.remove(player.getUniqueId()) == null){
+							player.sendMessage(ChatColor.RED + "This command is situation-specific!");
+						}else npc.npcMessage(player, "Eh, it's no problem, really. This bottle seems a little off anyways. I mean, why is it glowing? Bottles don't glow. Look it up.");
+					}else return false;
+				}else return false;
+			}else if(command.getName().equalsIgnoreCase("speed")) {
         		if(args.length == 1) {
 	        		if(MiscUtils.isAdmin(player)) {
 	        			if(args[0].equalsIgnoreCase("reset")) {

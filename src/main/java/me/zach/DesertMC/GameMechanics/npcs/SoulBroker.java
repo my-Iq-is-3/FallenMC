@@ -6,8 +6,13 @@ import me.zach.DesertMC.CommandsPackage.NPCCommand;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import net.jitse.npclib.api.events.NPCInteractEvent;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -27,8 +32,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
+import static me.zach.DesertMC.Utils.MiscUtils.delay;
 import static org.bukkit.Note.Tone;
 //TODO refactor horrible class
 public class SoulBroker extends NPCSuper implements Listener{
@@ -55,21 +62,21 @@ public class SoulBroker extends NPCSuper implements Listener{
         clear.setItemMeta(clearMeta);
         ItemMeta reduceMeta = reduce.getItemMeta();
         reduceMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "Reduce Weight Per Hit");
-        reduceMeta.setLore(Arrays.asList(ChatColor.YELLOW + "Reduce the amount weight added to", ChatColor.YELLOW + "an item each time you hit a player.", "", ChatColor.YELLOW + "Cost: " + ChatColor.BLUE + "15" + ChatColor.LIGHT_PURPLE + " Souls" + ChatColor.YELLOW + " per " + ChatColor.BLUE + "0.0005%"));
+        reduceMeta.setLore(Arrays.asList(ChatColor.YELLOW + "Reduce the amount weight added to", ChatColor.YELLOW + "an item each time you hit a player.", "", ChatColor.YELLOW + "Cost: " + ChatColor.BLUE + "15" + ChatColor.LIGHT_PURPLE + " Souls" + ChatColor.YELLOW + " per " + ChatColor.BLUE + "0.001%"));
         reduce.setItemMeta(reduceMeta);
 
         decreaseMeta.setDisplayName(ChatColor.GREEN + "Decrease WPH to remove");
-        decreaseMeta.setLore(Arrays.asList(ChatColor.GRAY + "Current Increment: " + ChatColor.BLUE + "0.0005%", ChatColor.GRAY + "Right click to cycle increments"));
+        decreaseMeta.setLore(Arrays.asList(ChatColor.GRAY + "Current Increment: " + ChatColor.BLUE + "0.001%", ChatColor.GRAY + "Right click to cycle increments"));
         decrease.setItemMeta(decreaseMeta);
         NBTItem decreaseNBT = new NBTItem(decrease);
-        decreaseNBT.addCompound("CustomAttributes").setDouble("INCREMENT", 0.0005);
+        decreaseNBT.addCompound("CustomAttributes").setDouble("INCREMENT", 0.001);
         decrease = decreaseNBT.getItem();
 
         increaseMeta.setDisplayName(ChatColor.GREEN + "Increase WPH to remove");
-        increaseMeta.setLore(Arrays.asList(ChatColor.GRAY + "Current Increment: " + ChatColor.BLUE + "0.0005%", ChatColor.GRAY + "Right click to cycle increments"));
+        increaseMeta.setLore(Arrays.asList(ChatColor.GRAY + "Current Increment: " + ChatColor.BLUE + "0.001%", ChatColor.GRAY + "Right click to cycle increments"));
         increase.setItemMeta(increaseMeta);
         NBTItem increaseNBT = new NBTItem(increase);
-        increaseNBT.addCompound("CustomAttributes").setDouble("INCREMENT", 0.0005);
+        increaseNBT.addCompound("CustomAttributes").setDouble("INCREMENT", 0.001);
         increase = increaseNBT.getItem();
     }
 
@@ -84,7 +91,7 @@ public class SoulBroker extends NPCSuper implements Listener{
     }
 
     public static int calculateReducePrice(double WPHtoRemove) throws Exception{
-        long price = Math.round((WPHtoRemove / 0.0005) * 15);
+        long price = Math.round((WPHtoRemove / 0.001) * 15);
         if(price > Integer.MAX_VALUE) throw new Exception(ChatColor.RED + "Price calculated too high!");
         return (int) price;
     }
@@ -97,7 +104,7 @@ public class SoulBroker extends NPCSuper implements Listener{
         if(openInv.contains(p.getUniqueId())){
             //cancel event immediately
             event.setCancelled(true);
-            if(event.getClick().equals(ClickType.LEFT) || event.getClick().equals(ClickType.RIGHT)) {
+            if(event.getClick().equals(ClickType.LEFT) || event.getClick().equals(ClickType.RIGHT) || event.getClick() == ClickType.SHIFT_RIGHT || event.getClick() == ClickType.SHIFT_LEFT) {
                 //shop inventory variable
                 Inventory shopInv = p.getOpenInventory().getTopInventory();
                 //calling the Reduce Item WPH inventory event if needed, and then returning
@@ -139,7 +146,7 @@ public class SoulBroker extends NPCSuper implements Listener{
                         //calculating the price
                         int price = 300;
                         //adding it to the lore, and replacing the old "(Add an item to view cost)" string
-                        nLore.set(3, nLore.get(3).replaceAll("\\(Add an item to view cost\\)", ChatColor.BLUE.toString() + price));
+                        nLore.set(3, nLore.get(3).replace("(Add an item to view cost)", ChatColor.BLUE.toString() + price));
                         //creating an NBTItem for the clear item, and then setting the "PRICE" value with the integer we have already calculated
                         newClearMeta.setLore(nLore);
                         newClear.setItemMeta(newClearMeta);
@@ -168,6 +175,7 @@ public class SoulBroker extends NPCSuper implements Listener{
                                 int price = nbt.getInteger("PRICE");
                                 if (ConfigUtils.deductSouls(p, price)) {
                                     playerInv.addItem(clearWeight(shopInv.getItem(13)));
+                                    ConfigUtils.getData(p).addSoulsSpent(price);
                                     shopInv.clear(13);
                                     p.closeInventory();
                                     npcMessage(p, "I cleared your weapon's weight, and took the promised souls in return. Thanks for trading with me.");
@@ -257,9 +265,9 @@ public class SoulBroker extends NPCSuper implements Listener{
                         //iterating through the book lore and updating some lines
                         inv.setItem(13, getBook(p, weaponWPH, WPHtoRemove, price));
                     }else if(e.getClick().equals(ClickType.RIGHT)){
-                        DecimalFormat formatter = new DecimalFormat("#.####");
+                        DecimalFormat formatter = new DecimalFormat("#.###");
                         formatter.setRoundingMode(RoundingMode.HALF_EVEN);
-                        if(increment * 10 > 0.05){
+                        if(increment * 10 > 0.1){
                             List<String> newLore = item.getItemMeta().getLore();
                             newLore.remove(0);
                             newLore.add(0, ChatColor.GRAY + "Current increment: " + ChatColor.BLUE + formatter.format(0.0005) + "%");
@@ -268,7 +276,7 @@ public class SoulBroker extends NPCSuper implements Listener{
                             item.setItemMeta(newMeta);
                             p.playSound(p.getLocation(), Sound.NOTE_PLING, 10, 1.1f);
                             NBTItem newNBT = new NBTItem(item);
-                            newNBT.getCompound("CustomAttributes").setDouble("INCREMENT", 0.0005);
+                            newNBT.getCompound("CustomAttributes").setDouble("INCREMENT", 0.001);
                             if(ifIncrease) inv.setItem(17, newNBT.getItem());
                             else inv.setItem(9, newNBT.getItem());
                         }else{
@@ -294,6 +302,7 @@ public class SoulBroker extends NPCSuper implements Listener{
                 int price = NBTUtil.getCustomAttr(nbt, "PRICE", int.class, 0);
                 if(price > 0){
                     if (ConfigUtils.deductSouls(p, price)) {
+                        ConfigUtils.getData(p).addSoulsSpent(price);
                         //if the player has enough souls, subtract the gems and remove the WPH from their weapon.
                         NBTItem weaponNBT = new NBTItem(inv.getItem(4));
                         weaponNBT.getCompound("CustomAttributes").setDouble("WEIGHT_ADD", weaponNBT.getCompound("CustomAttributes").getDouble("WEIGHT_ADD") - nbt.getCompound("CustomAttributes").getDouble("WPH_TO_REMOVE"));
@@ -324,8 +333,48 @@ public class SoulBroker extends NPCSuper implements Listener{
                     p.closeInventory();
                     npcMessage(p, "But... you didn't even ask me to remove anything...");
                 }
+            }else if(NBTUtil.getCustomAttrString(item, "ID").equals("MYSTERIOUS_BOTTLE")){
+                p.closeInventory();
+                int elapsed = 210;
+                if(e.getClick().isShiftClick()) elapsed = 0;
+                else{
+                    npcMessage(p, "Yeah, I see that thing lying around sometimes too.");
+                    delay(() -> npcMessage(p, "Hmm..."), 40);
+                    delay(() -> npcMessage(p, "On one hand, that bottle looks really shiny and is probably important (so important you didn't even shift-click it)."), 90);
+                    delay(() -> npcMessage(p, "On the other hand, though." + ChatColor.DARK_PURPLE + "." + ChatColor.LIGHT_PURPLE + "."), 150);
+                }
+                int soulsSpent = ConfigUtils.getData(p).getSoulsSpent();
+                delay(() -> npcMessage(p, "Tell ya what."), elapsed);
+                int price = 200 - Math.min(soulsSpent / 100, 75); //my code moves with soul broker's thought process
+                delay(() -> npcMessage(p, "For " + ChatColor.LIGHT_PURPLE + price + " Souls" + ChatColor.WHITE + ", it's all yours. It's a special price, just for you."), elapsed + 10);
+                delay(() -> npcMessage(p, bottle_confirm), elapsed + 10 + 30);
+                UUID uuid = p.getUniqueId();
+                BOTTLE_CONFIRMING.put(uuid, price);
+                delay(() -> {
+                    if(BOTTLE_CONFIRMING.containsKey(uuid) && p.isOnline()){
+                        p.performCommand("dealconfirm no");
+                    }
+                }, elapsed + 10 + 30 + 175);
+                //holy crap the pain that comes of not wanting to code any more framework
             }
         }
+    }
+
+    public HashMap<UUID, Integer> BOTTLE_CONFIRMING = new HashMap<>();
+
+    private static BaseComponent[] bottle_confirm = new BaseComponent[]{
+            new TextComponent(ChatColor.YELLOW + "Whadd'ya say, kid?\n"),
+            new TextComponent(ChatColor.GREEN.toString() + ChatColor.BOLD + "  [SOUNDS GREAT]\n"),
+            new TextComponent(ChatColor.RED.toString() + ChatColor.BOLD + "  [NO, THANKS]")
+    };
+
+    static{
+        BaseComponent component1 = bottle_confirm[1];
+        component1.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dealconfirm yes"));
+        component1.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent(ChatColor.YELLOW + "Purchase the Spirit Bottle")}));
+        BaseComponent component2 = bottle_confirm[2];
+        component2.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dealconfirm no"));
+        component2.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent(ChatColor.YELLOW + "Reject the Soul Broker's offer")}));
     }
 
     private static ArrayList<Note> naturalNoteChord(int octave, Tone... tone){
@@ -341,7 +390,7 @@ public class SoulBroker extends NPCSuper implements Listener{
         ItemMeta bookMeta = book.getItemMeta();
         bookMeta.setDisplayName(ChatColor.YELLOW + "Weapon Details");
         bookMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        DecimalFormat formatter = new DecimalFormat("#.####");
+        DecimalFormat formatter = new DecimalFormat("#.###");
         formatter.setRoundingMode(RoundingMode.HALF_EVEN);
         ArrayList<String> lore = new ArrayList<>(Arrays.asList(ChatColor.YELLOW + "Weight Per Hit to remove: " + ChatColor.BLUE + formatter.format(WPHtoRemove),
                 ChatColor.YELLOW + "Use the buttons on the",
@@ -373,8 +422,6 @@ public class SoulBroker extends NPCSuper implements Listener{
         }catch(NullPointerException requiredValuesAbsent){
             throw new NullPointerException(ChatColor.RED + "Item passed through getReduceInventory method without required nbt values (CustomAttributes, WEIGHT_ADD)");
         }
-
-
         inv.setItem(13, getBook(p, WPH,0, 0));
         inv.setItem(4, weaponToReduce);
         inv.setItem(9, decrease);
@@ -445,6 +492,11 @@ public class SoulBroker extends NPCSuper implements Listener{
         startInv.setItem(15, reduce);
         startInv.setItem(35, soulsItem);
         startInv.setItem(11, clear);
+        if(Math.random() <= 0.1){
+            ItemStack bottle = MiscUtils.generateItem(Material.GLASS_BOTTLE, ChatColor.YELLOW + "A mysterious bottle appears...", Collections.emptyList(), (byte) -1, 1, "MYSTERIOUS_BOTTLE");
+            bottle.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1); //generated items automagically have HIDE_ENCHANTS
+            startInv.setItem(26, bottle);
+        }
         return startInv;
     }
 }

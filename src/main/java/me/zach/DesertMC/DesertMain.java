@@ -17,6 +17,7 @@ import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.GameMechanics.NPCStructure.SavedNPC;
 import me.zach.DesertMC.GameMechanics.NPCStructure.SimpleNPC;
+import me.zach.DesertMC.GameMechanics.SpiritBottle;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxCommand;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BlobHitbox;
@@ -25,6 +26,7 @@ import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.CircleHitbox;
 import me.zach.DesertMC.GameMechanics.npcs.Kothy;
 import me.zach.DesertMC.GameMechanics.npcs.SoulBroker;
 import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
+import me.zach.DesertMC.GameMechanics.shhhhh.CrashCommand;
 import me.zach.DesertMC.Utils.ImportantPeople;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.RankUtils.RankEvents;
@@ -92,11 +94,11 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getScheduler().runTask(this, this::loadNPCs);
 		Bukkit.getScheduler().runTask(this, this::loadCredits); //dont ask
 		welcome = RankEvents.colorMessage(MiscUtils.ensureDefault("server.welcome", ChatColor.AQUA + "Welcome to FallenMC! We hope you'll have fun.", this));
-		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "ks", "showplayer", "selecttitle", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram", "credits", "entityremoval", "wand", "tiermenu"};
+		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "ks", "showplayer", "selecttitle", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram", "credits", "entityremoval", "wand", "tiermenu", "dealconfirm"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
-
+		getCommand("crash").setExecutor(new CrashCommand());
 		PluginCommand npcCommand = getCommand("spawnnpc");
 		NPCCommand obj = new NPCCommand();
 		npcCommand.setExecutor(obj);
@@ -106,6 +108,9 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(hitboxCommand, this);
 		PluginCommand command = getCommand("confirmreset");
 		command.setExecutor(new MilestonesUtil());
+		SpiritBottle bottleInst = new SpiritBottle();
+		getCommand("bottleme").setExecutor(bottleInst);
+		Bukkit.getPluginManager().registerEvents(bottleInst, this);
 		MilestonesOverride.addOverrides();
 		Events events = new Events();
 		Bukkit.getPluginManager().registerEvents(events, this);
@@ -200,15 +205,26 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getScheduler().runTask(getInstance, () -> Bukkit.getPluginManager().registerEvents(listener, getInstance));
 	}
 
+	private HashMap<String, SimpleNPC> SUPPLIER_MAP = new HashMap<>();
+
 	private void loadNPCs(){
 		List<SavedNPC> npcs = SavedNPC.stored(this);
 		Bukkit.getConsoleSender().sendMessage("spawning npcs...");
 		for(SavedNPC savedNPC : npcs){
 			SimpleNPC npc = savedNPC.constructNPC();
 			npc.createNPC(savedNPC.location);
+			SUPPLIER_MAP.put(savedNPC.supplier, npc);
 			Bukkit.getLogger().info("Spawned " + ChatColor.stripColor(npc.name) + " from config at " + MiscUtils.cleanCoordinates(savedNPC.location));
 		}
 		Bukkit.getConsoleSender().sendMessage("npcs spawned");
+	}
+
+	/**
+	 *
+	 * Returns an active NPC based on the supplier name (SoulBroker, Kothy). Note: does not work correctly if more than one NPC of a certain supplier are saved.
+	 */
+	public SimpleNPC getNPC(String supplier){
+		return SUPPLIER_MAP.get(supplier);
 	}
 
 	private void registerCommands(String[] commands, CommandExecutor file){

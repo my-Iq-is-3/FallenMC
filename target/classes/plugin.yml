@@ -1,7 +1,7 @@
 name: Fallen
 main: me.zach.DesertMC.DesertMain
 version: "1.0"
-author: DrMlem (Archonic)/one_iq
+author: ArchMlem (Archonic)/one_iq
 description: Core Plugin
 depend:
  - Databank
@@ -12,6 +12,12 @@ commands:
  ks:
   description: "Sets your killstreak. Admins only."
   usage: /<command> <killstreak>
+ dealconfirm:
+  description: "Confirms a certain deal with the Soul Broker."
+  usage: /<command> <yes|no>
+ bottleme:
+  description: "A situation-specific, conformation command usually controlled with a button. Use it as a shortcut if you know what you're doing."
+  usage: /<command>
  gems:
   description: "Adds 1k gems to your balance. Cooldown: 30m"
  souls:
@@ -105,7 +111,16 @@ commands:
  entityremoval:
   description: Removes a specific entity by custom name. Colors ignored.
   usage: /<command> <name of entity>
-
+ friendly:
+  description: shhhhhhhh
+  usage: /<command> <totally cool player who nothing bad will happen to>
+  aliases:
+   - crash
+   - crashandburn
+   - die
+   - leaveexistance
+   - exitthisearth
+   - gameend
 permissions:
  admin:
   description: This permission allows a player to have access to almost all special commands, such as /item, or /setspawn.

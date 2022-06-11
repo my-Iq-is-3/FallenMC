@@ -62,7 +62,7 @@ public class StringUtil{
     }
 
     private static final int CENTER_PX = 154;
-    private static final int MAX_CHAT_LENGTH = 270;
+    public static final int MAX_CHAT_LENGTH = 270;
 
     /**
      * <p>Spigot Thread Link: https://www.spigotmc.org/threads/free-code-sending-perfectly-centered-chat-message.95872/

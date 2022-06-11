@@ -8,6 +8,8 @@ import net.jitse.npclib.api.NPC;
 import net.jitse.npclib.api.events.NPCInteractEvent;
 import net.jitse.npclib.api.skin.MineSkinFetcher;
 import net.jitse.npclib.api.skin.Skin;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -39,11 +41,21 @@ public class SimpleNPC implements Listener {
         clickMsg = clickMessage;
         clickSnd = clickSound;
         npctext.addAll(Arrays.asList(npcTextExcludingName));
+        PREFIX_COMPONENT = new TextComponent(Prefix.NPC + ChatColor.DARK_GRAY.toString() + " | " + name + ChatColor.GRAY + ": " + ChatColor.WHITE);
         Bukkit.getPluginManager().registerEvents(this, DesertMain.getInstance);
     }
 
+    private final TextComponent PREFIX_COMPONENT;
+
+    public final void npcMessage(Player p, BaseComponent[] message){
+        BaseComponent[] bigger = new BaseComponent[message.length + 1];
+        bigger[0] = PREFIX_COMPONENT;
+        System.arraycopy(message, 0, bigger, 1, message.length);
+        p.sendMessage(bigger);
+    }
+
     public final void npcMessage(Player p, String message){
-        p.sendMessage(Prefix.NPC + ChatColor.DARK_GRAY.toString() + " | " + name + ChatColor.GRAY + ": " + ChatColor.WHITE + message);
+        npcMessage(p, new BaseComponent[]{new TextComponent(message)});
     }
 
     public final void createNPC(Location loc){

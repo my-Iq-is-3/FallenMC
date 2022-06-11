@@ -13,8 +13,6 @@ import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.structs.Pair;
 import me.zach.DesertMC.holo.Hologram;
-import me.zach.databank.DBCore;
-import me.zach.databank.saver.PlayerData;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -33,6 +31,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
+import java.util.logging.Level;
 
 import static java.lang.Math.abs;
 import static org.bukkit.Note.*;
@@ -155,6 +154,70 @@ public class MiscUtils {
         return (rank != null && rank.admin) || player.hasPermission("admin");
     }
 
+    public static Map<Character, Tone> TONES_MAP = new HashMap<>();
+    static{
+        for(Tone tone : Tone.values()){
+            String name = tone.name();
+            assert(name.length() == 1);
+            char c = name.charAt(0);
+            TONES_MAP.put(c, tone);
+        }
+    }
+
+    /**
+     *
+     * @param sequence any unused characters (e.g., a space) is a 1-tick delay. to play flats, use lowercase letters. to play sharps, use the note above it and make that one flat, you unresourceful ass. move octaves up with ) and down with (. there are only 2 octaves (0 and 1, starts at 0), so be careful.
+     */
+    public static void playPianoMelody(Player player, String sequence){
+        if(sequence.trim().length() == 0) return;
+        new BukkitRunnable(){
+            int i = 0;
+            int octave = 0;
+            public void run(){
+                try{
+                    boolean runItAgain = true;
+                    while(runItAgain){
+                        if(!player.isOnline()){
+                            cancel();
+                            runItAgain = false;
+                        }else{
+                            char c = sequence.charAt(i);
+                            Tone tone = TONES_MAP.get(Character.toUpperCase(c));
+                            if(tone != null){
+                                Note note;
+                                if(Character.isLowerCase(c)) note = Note.flat(octave, tone);
+                                else note = Note.natural(octave, tone);
+                                player.playNote(player.getLocation(), Instrument.PIANO, note);
+                            }else if(c == '(' && octave == 1) octave--;
+                            else if(c == ')' && octave == 0) octave++;
+                            else runItAgain = false;
+                            i++;
+                            if(i >= sequence.length()){
+                                cancel();
+                                runItAgain = false;
+                            }
+                        }
+                    }
+                }catch(Exception ex){
+                    Bukkit.getLogger().log(Level.WARNING, "Error playing song " + sequence + " for player " + player.getUniqueId() + ": ", ex);
+                    cancel();
+                }
+            }
+        }.runTaskTimer(DesertMain.getInstance, 0, 1);
+    }
+
+    /**
+     * Teleports an entity without changing its looking direction.
+     */
+    public static void softTeleport(Entity entity, Location location){
+        Location newLoc = entity.getLocation();
+        newLoc.setX(location.getX());
+        newLoc.setY(location.getY());
+        newLoc.setZ(location.getZ());
+        newLoc.setWorld(location.getWorld());
+        entity.teleport(newLoc);
+    }
+
     /**
      * Finds all entities within a radius of an already existing entity that are of specified type.<br>
      * Example (getting a list of {@link Player}s within a 5-block radius of the first player listed in <code>Bukkit.getOnlinePlayers()</code>:<blockquote><code>List{@literal <Player>} nearbyPlayers = getNearbyEntities(Player.class, Bukkit.getOnlinePlayers().get(0), 5, 5, 5);</code></blockquote>
@@ -174,6 +237,11 @@ public class MiscUtils {
         return nearbyFiltered;
     }
 
+    public static void delay(Runnable task, int ticks){
+        Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, task, ticks);
+    }
+
+    //TODO make a builder for these
     public static ItemStack generateItem(Material type, String name, List<String> description, byte dataValue, int amount){
         return generateItem(type, name, description, dataValue, amount, null);
     }

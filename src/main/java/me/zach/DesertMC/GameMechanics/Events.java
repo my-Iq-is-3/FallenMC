@@ -508,7 +508,7 @@ public class Events implements Listener{
 								if(coruPortalSpawn == null)
 									p.sendMessage(ChatColor.RED + "We couldn't teleport you because this portal's spawn is not yet set! Please tell an admin to run /setspawn corrupterPortalEntry");
 							}else{
-								p.teleport(coruPortalSpawn);
+								MiscUtils.softTeleport(p, coruPortalSpawn);
 								p.playSound(p.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
 							}
 						}
@@ -636,7 +636,7 @@ public class Events implements Listener{
 			if(difference >= PORTAL_TIME){
 				playerTick.second = -2;
 				if(wizardPortalSpawn != null){
-					player.teleport(wizardPortalSpawn);
+					MiscUtils.softTeleport(player, wizardPortalSpawn);
 					player.playSound(playerLoc, Sound.ENDERMAN_TELEPORT, 10, 1);
 					ParticleEffect.CLOUD.display(1, 1, 1, 0, 20, playerLoc, 75);
 				}else{
