@@ -513,6 +513,7 @@ public class Commands implements Listener, CommandExecutor {
 							if(player.getInventory().firstEmpty() == -1){
 								soulBroker.npcMessage(player, "Shiny bottles don't fit in full inventories. Somebody should've, uhhh... taught you this stuff.");
 							}else if(ConfigUtils.deductSouls(player, price)){
+								ConfigUtils.getData(player).addSoulsSpent(price);
 								ItemStack bottle = Items.getSpiritBottle();
 								player.getInventory().addItem(bottle);
 								soulBroker.npcMessage(player, "Congrats, kid. The bottle's all yours. As always, it was a pleasure.");
