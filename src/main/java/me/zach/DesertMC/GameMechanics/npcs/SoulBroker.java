@@ -206,6 +206,29 @@ public class SoulBroker extends NPCSuper implements Listener{
                             openInv.add(p.getUniqueId());
                         }
                     }
+                }else if(NBTUtil.getCustomAttrString(item, "ID").equals("MYSTERIOUS_BOTTLE")){
+                    p.closeInventory();
+                    int elapsed = 210;
+                    if(event.getClick().isShiftClick()) elapsed = 0;
+                    else{
+                        npcMessage(p, "Yeah, I see that thing lying around sometimes too.");
+                        delay(() -> npcMessage(p, "Hmm..."), 40);
+                        delay(() -> npcMessage(p, "On one hand, that bottle looks really shiny and is probably important (so important you didn't even shift-click it)."), 90);
+                        delay(() -> npcMessage(p, "On the other hand, though." + ChatColor.DARK_PURPLE + "." + ChatColor.LIGHT_PURPLE + "."), 150);
+                    }
+                    int soulsSpent = ConfigUtils.getData(p).getSoulsSpent();
+                    delay(() -> npcMessage(p, "Tell ya what."), elapsed);
+                    int price = 200 - Math.min(soulsSpent / 100, 75); //my code moves with soul broker's thought process
+                    delay(() -> npcMessage(p, "For " + ChatColor.LIGHT_PURPLE + price + " Souls" + ChatColor.WHITE + ", it's all yours. It's a special price, just for you."), elapsed + 10);
+                    delay(() -> npcMessage(p, bottle_confirm), elapsed + 10 + 30);
+                    UUID uuid = p.getUniqueId();
+                    BOTTLE_CONFIRMING.put(uuid, price);
+                    delay(() -> {
+                        if(BOTTLE_CONFIRMING.containsKey(uuid) && p.isOnline()){
+                            p.performCommand("dealconfirm no");
+                        }
+                    }, elapsed + 10 + 30 + 175);
+                    //holy crap the pain that comes of not wanting to code any more framework
                 } else {
                     p.playSound(p.getLocation(), Sound.ANVIL_LAND, 10, 1);
                 }
@@ -237,7 +260,7 @@ public class SoulBroker extends NPCSuper implements Listener{
                         boolean splitCond;
                         if(ifIncrease) splitCond = weaponWPH == WPHtoRemove;
                         else splitCond = WPHtoRemove == 0;
-                        //creating another split condition, if we the item clicked is the decrease item, we set the condition to if the WPH to remove (after modification) is less than 0, if it is the increase item we set the condition to if the WPH to remove (after modification) subtracted from the weapon WPH is less than 0
+                        //creating another split condition, if the item clicked is the decrease item, we set the condition to if the WPH to remove (after modification) is less than 0, if it is the increase item we set the condition to if the WPH to remove (after modification) subtracted from the weapon WPH is less than 0
                         boolean splitCond2;
                         if(ifIncrease) splitCond2 = (WPHtoRemove + increment) > weaponWPH;
                         else splitCond2 = WPHtoRemove - increment < 0;
@@ -333,29 +356,6 @@ public class SoulBroker extends NPCSuper implements Listener{
                     p.closeInventory();
                     npcMessage(p, "But... you didn't even ask me to remove anything...");
                 }
-            }else if(NBTUtil.getCustomAttrString(item, "ID").equals("MYSTERIOUS_BOTTLE")){
-                p.closeInventory();
-                int elapsed = 210;
-                if(e.getClick().isShiftClick()) elapsed = 0;
-                else{
-                    npcMessage(p, "Yeah, I see that thing lying around sometimes too.");
-                    delay(() -> npcMessage(p, "Hmm..."), 40);
-                    delay(() -> npcMessage(p, "On one hand, that bottle looks really shiny and is probably important (so important you didn't even shift-click it)."), 90);
-                    delay(() -> npcMessage(p, "On the other hand, though." + ChatColor.DARK_PURPLE + "." + ChatColor.LIGHT_PURPLE + "."), 150);
-                }
-                int soulsSpent = ConfigUtils.getData(p).getSoulsSpent();
-                delay(() -> npcMessage(p, "Tell ya what."), elapsed);
-                int price = 200 - Math.min(soulsSpent / 100, 75); //my code moves with soul broker's thought process
-                delay(() -> npcMessage(p, "For " + ChatColor.LIGHT_PURPLE + price + " Souls" + ChatColor.WHITE + ", it's all yours. It's a special price, just for you."), elapsed + 10);
-                delay(() -> npcMessage(p, bottle_confirm), elapsed + 10 + 30);
-                UUID uuid = p.getUniqueId();
-                BOTTLE_CONFIRMING.put(uuid, price);
-                delay(() -> {
-                    if(BOTTLE_CONFIRMING.containsKey(uuid) && p.isOnline()){
-                        p.performCommand("dealconfirm no");
-                    }
-                }, elapsed + 10 + 30 + 175);
-                //holy crap the pain that comes of not wanting to code any more framework
             }
         }
     }
@@ -487,7 +487,7 @@ public class SoulBroker extends NPCSuper implements Listener{
         ItemStack soulsItem = new ItemStack(Material.INK_SACK, 1, (short) 9);
         ItemMeta soulsMeta = soulsItem.getItemMeta();
         int souls = ConfigUtils.getSouls(event.getWhoClicked());
-        soulsMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + souls + (souls == 1 ? " Souls" : " Soul"));
+        soulsMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "" + souls + (souls == 1 ? " Soul" : " Souls"));
         soulsItem.setItemMeta(soulsMeta);
         startInv.setItem(15, reduce);
         startInv.setItem(35, soulsItem);
@@ -495,7 +495,7 @@ public class SoulBroker extends NPCSuper implements Listener{
         if(Math.random() <= 0.1){
             ItemStack bottle = MiscUtils.generateItem(Material.GLASS_BOTTLE, ChatColor.YELLOW + "A mysterious bottle appears...", Collections.emptyList(), (byte) -1, 1, "MYSTERIOUS_BOTTLE");
             bottle.addUnsafeEnchantment(Enchantment.PROTECTION_ENVIRONMENTAL, 1); //generated items automagically have HIDE_ENCHANTS
-            startInv.setItem(26, bottle);
+            startInv.setItem(27, bottle);
         }
         return startInv;
     }
