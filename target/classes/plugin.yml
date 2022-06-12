@@ -78,7 +78,7 @@ commands:
    - color
  rank:
   description: Sets a player's rank.
-  usage: /<command> <rank>
+  usage: /<command> <player> <rank>
  confirmreset:
   description: Situation specific, clickable command to confirm an EXP Milestones reset
   usage: /<command>

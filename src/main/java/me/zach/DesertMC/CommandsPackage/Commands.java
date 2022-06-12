@@ -276,7 +276,7 @@ public class Commands implements Listener, CommandExecutor {
         		if(MiscUtils.isAdmin(player)){
         			if(args.length == 2){
         				try{
-							Player target = Bukkit.getPlayer(args[1]);
+							Player target = Bukkit.getPlayer(args[0]);
 							if(target != null){
 								Rank rank = Rank.valueOf(args[1].toUpperCase());
 								if(rank == Rank.COOWNER || rank == Rank.ADMIN){
@@ -301,7 +301,6 @@ public class Commands implements Listener, CommandExecutor {
 					}
 				}else player.sendMessage(ChatColor.RED + "Only admins can use this command.");
 			}
-
         	if(command.getName().equalsIgnoreCase("seizehelditem")){
         		if(MiscUtils.isAdmin(player)){
         			try{
