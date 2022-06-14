@@ -39,9 +39,7 @@ public class ItemCommand implements CommandExecutor, Listener, TabCompleter {
     public static final HashMap<String, String> enchs = new HashMap<>();
     public static final char DOT = '\u25CF';
     static {
-        //TODO chance these to suppliers instead of a single item (or just make our item system better)
         Method[] methods = Items.class.getMethods();
-        System.out.println(Arrays.toString(methods));
         for(Method method : methods){
             if(method.getParameters().length == 0 && method.getReturnType() == ItemStack.class && method.getName().startsWith("get")){
                 if(!method.isAccessible()) method.setAccessible(true); //hmph
@@ -87,7 +85,7 @@ public class ItemCommand implements CommandExecutor, Listener, TabCompleter {
 
                         if (!isValid) {
                             player.sendMessage(ChatColor.RED + "Please say a valid item.");
-                        }else if(player.getInventory().firstEmpty() != -1) player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 10, 1);
+                        }else if(player.getInventory().firstEmpty() == -1) player.playSound(player.getLocation(), Sound.ITEM_PICKUP, 10, 1);
 
 
 

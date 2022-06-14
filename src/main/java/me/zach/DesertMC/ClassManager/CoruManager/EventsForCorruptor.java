@@ -8,6 +8,7 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
+import me.zach.DesertMC.Utils.structs.Pair;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.*;
 import org.bukkit.entity.Damageable;
@@ -30,7 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EventsForCorruptor implements Listener {
     public static final EventsForCorruptor INSTANCE = new EventsForCorruptor();
     public static final Set<UUID> hf = new HashSet<>();
-    public static final HashMap<UUID, Double> combo = new HashMap<>();
+    public static final HashMap<UUID, Pair<UUID, Double>> combo = new HashMap<>();
 
     public void fort4(EntityDamageEvent event){
         if(event.getCause().equals(EntityDamageEvent.DamageCause.LAVA) || event.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK)){
@@ -132,17 +133,22 @@ public class EventsForCorruptor implements Listener {
     }
 
     public void corruptedSword(EntityDamageByEntityEvent event){
+        if(event.isCancelled()) return;
         if(event.getDamager() instanceof Player){
             Player hitter = (Player) event.getDamager();
             if(hitter.getInventory().getItemInHand() != null){
                 if(NBTUtil.getCustomAttrString(hitter.getInventory().getItemInHand(),"ID").equals("CORRUPTED_SWORD")){
                     if(ConfigUtils.getLevel("corrupter", hitter.getUniqueId()) > 6 && ConfigUtils.findClass(hitter.getUniqueId()).equals("corrupter")){
                         UUID uuid = hitter.getUniqueId();
+                        UUID hitUUID = event.getEntity().getUniqueId();
                         if(combo.containsKey(uuid)){
-                            event.setDamage(event.getDamage() * (1 + combo.get(uuid)));
-                            combo.put(uuid, combo.get(uuid) + 0.2);
-                            hitter.playSound(hitter.getLocation(), Sound.NOTE_BASS, 10, 1 + (float) (combo.get(uuid) / 2));
-                        }else combo.put(uuid, 0.2);
+                            Pair<UUID, Double> entry = combo.get(uuid);
+                            if(entry.first.equals(hitUUID)){
+                                entry.second += 0.1;
+                                event.setDamage(event.getDamage() * entry.second);
+                                hitter.playSound(hitter.getLocation(), Sound.NOTE_BASS_GUITAR, 10, (float) ((entry.second - 1) / 2) + 1);
+                            }else combo.put(uuid, new Pair<>(hitUUID, 1d));
+                        }else combo.put(uuid, new Pair<>(hitUUID, 1d));
                     }else hitter.sendMessage(ChatColor.RED + "You must have the corrupter class selected and past level 6 to fully use this item!");
                 }
             }

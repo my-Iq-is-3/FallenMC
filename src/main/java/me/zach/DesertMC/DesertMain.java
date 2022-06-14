@@ -77,7 +77,6 @@ public class DesertMain extends JavaPlugin implements Listener {
 	public static List<TextComponent> credits = new ArrayList<>();
 	private static NPCLib library;
 	public static Set<UUID> claiming = new HashSet<>();
-	public static final String[] NPC_PACKAGES = new String[]{"me.zach.DesertMC.GameMechanics.npcs", "xyz.fallenmc.shops.npcs.clazz"};
 
 	@Override
 	public void onEnable() {

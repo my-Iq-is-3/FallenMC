@@ -1,7 +1,6 @@
 package me.zach.DesertMC.GameMechanics;
 
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListeningWhitelist;
 import com.comphenix.protocol.events.PacketEvent;
@@ -32,14 +31,11 @@ import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
-import me.zach.DesertMC.Utils.packet.wrappers.WrapperPlayClientUseEntity;
-import me.zach.DesertMC.Utils.packet.wrappers.WrapperPlayServerWindowItems;
 import me.zach.DesertMC.Utils.structs.Pair;
 import me.zach.DesertMC.anvil.FallenAnvilInventory;
 import me.zach.DesertMC.cosmetics.Cosmetic;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import me.zach.artifacts.events.ArtifactEvents;
-import me.zach.artifacts.gui.inv.items.CreeperTrove;
 import me.zach.databank.saver.Key;
 import me.zach.databank.saver.PlayerData;
 import org.bukkit.*;
@@ -421,7 +417,7 @@ public class Events implements Listener{
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onDamage(EntityDamageEvent event){
-		if(!(event.getEntity() instanceof Damageable) || event.getEntity() instanceof Item || MiscUtils.canDamage(event.getEntity()) != null){
+		if(!(event.getEntity() instanceof Damageable) || MiscUtils.canDamage(event.getEntity()) != null){
 			if(!event.isCancelled() && event.getDamage() > 0){
 				boolean killed = false;
 				try{
@@ -541,7 +537,9 @@ public class Events implements Listener{
 			for(CustomEnch ce : CustomEnch.values()){
 				ce.onHit(event);
 			}
-			if(event.getEntity() instanceof Player) lastdmgers.put(event.getEntity().getUniqueId(), getPlayer(event.getDamager()).getUniqueId());
+			if(event.getEntity() instanceof Player && event.getDamager() instanceof Player){
+				lastdmgers.put(event.getEntity().getUniqueId(), event.getDamager().getUniqueId());
+			}
 			if (event.getDamager() instanceof Player) {
 					if (NBTUtil.getCustomAttrString(((Player) event.getDamager()).getItemInHand(), "ID").equals("TOKEN")){
 						event.setCancelled(true);
@@ -549,27 +547,26 @@ public class Events implements Listener{
 					}
 					ArtifactEvents.hitEvent(event);
 				EventsForScout.getInstance().daggerHit(event);
-					if (event.getEntity() instanceof Player) {
-						attackMod(event);
-						if (DesertMain.ct1players.contains(event.getDamager().getUniqueId())) {
-							event.setDamage(event.getDamage() * 1.1);
-						}
-						StreakPolice.onHit(event);
-
-						EventsForCorruptor.INSTANCE.corruptedSword(event);
-
-						EventsForCorruptor.INSTANCE.t8Event(event);
-						EventsForCorruptor.INSTANCE.noMercy(event);
-
-						EventsForWizard.INSTANCE.wizardt8(event);
-						EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
-						EventsForCorruptor.INSTANCE.corruptedSword(event);
-						EventsForTank.getInstance().t8Event(event);
-						EventsForScout.getInstance().alert(event);
-						EventsForTank.getInstance().bludgeon(event);
-						if(!event.isCancelled()) EventsForScout.getInstance().scoutBlade(event);
-						EventsForScout.getInstance().t8Event(event);
+				EventsForCorruptor.INSTANCE.corruptedSword(event);
+				if (event.getEntity() instanceof Player) {
+					attackMod(event);
+					if (DesertMain.ct1players.contains(event.getDamager().getUniqueId())) {
+						event.setDamage(event.getDamage() * 1.1);
 					}
+					StreakPolice.onHit(event);
+
+
+					EventsForCorruptor.INSTANCE.t8Event(event);
+					EventsForCorruptor.INSTANCE.noMercy(event);
+
+					EventsForWizard.INSTANCE.wizardt8(event);
+					EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
+					EventsForTank.getInstance().t8Event(event);
+					EventsForScout.getInstance().alert(event);
+					EventsForTank.getInstance().bludgeon(event);
+					if(!event.isCancelled()) EventsForScout.getInstance().scoutBlade(event);
+					EventsForScout.getInstance().t8Event(event);
+				}
 				travellerCoru(event);
 				travellerTank(event);
 				snackHit(event);

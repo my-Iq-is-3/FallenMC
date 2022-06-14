@@ -9,6 +9,7 @@ import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.events.FallenDeathEvent;
+import me.zach.artifacts.gui.helpers.ArtifactUtils;
 import me.zach.databank.DBCore;
 import me.zach.databank.saver.Key;
 import me.zach.databank.saver.PlayerData;
@@ -71,7 +72,7 @@ public enum CustomEnch implements Listener {
     },
     EXTRAVERT(EnchantType.ARMOR){
         String getDescription(int level){
-            return "Take " + NUM_FORMATTER.format(0.3*level) + "% less damage per person within a 15 block radius.";
+            return "Take " + NUM_FORMATTER.format(0.1*level) + "% less damage per person within a 15 block radius.\n" + ChatColor.DARK_GRAY + "Max total defense: 17%" + ChatColor.GRAY;
         }
 
         @Override
@@ -83,8 +84,7 @@ public enum CustomEnch implements Listener {
                 if(lvl > 0){
                     double damage = event.getDamage();
                     List<Player> nearby = MiscUtils.getNearbyEntities(Player.class, player, 15);
-                    double multiplier = 1 - ((lvl * 0.3) * nearby.size());
-                    System.out.println("multiplier: " + multiplier);
+                    double multiplier = Math.max(1 - ((lvl * 0.001) * nearby.size()), 0.83);
                     event.setDamage(damage * multiplier);
                 }
             }
