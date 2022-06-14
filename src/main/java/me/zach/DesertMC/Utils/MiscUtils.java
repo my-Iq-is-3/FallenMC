@@ -581,6 +581,7 @@ public class MiscUtils {
     }
 
     public static <T> List<T> trimList(List<T> list, int trimTo){
+        if(trimTo < 0) throw new IllegalArgumentException("Can't trim list to negative trimTo");
         while(list.size() > trimTo) list.remove(list.size() - 1);
         return list;
     }

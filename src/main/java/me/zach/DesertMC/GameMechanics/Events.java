@@ -340,7 +340,7 @@ public class Events implements Listener{
 		}else if(item == null){
 			event.setUseItemInHand(Event.Result.DENY);
 			event.setUseInteractedBlock(Event.Result.DENY);
-		}else if((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) && ((NBTUtil.getCustomAttrBoolean(item, "USABLE") && !HitboxListener.isInSafeZone(player.getLocation())) || item.getType().name().endsWith("SWORD"))){
+		}else if((action == Action.RIGHT_CLICK_BLOCK || action == Action.RIGHT_CLICK_AIR) && ((NBTUtil.getCustomAttrBoolean(item, "USABLE") && (!HitboxListener.isInSafeZone(player.getLocation()) || item.getType() == Material.GOLDEN_APPLE)) || item.getType().name().endsWith("SWORD"))){
 			event.setUseItemInHand(Event.Result.DEFAULT);
 			event.setUseInteractedBlock(Event.Result.DENY);
 			player.setFoodLevel(19);
@@ -475,6 +475,7 @@ public class Events implements Listener{
 							PlayerUtils.fighting.put(uuid, 0);
 						int incombat = PlayerUtils.fighting.get(uuid);
 						if(incombat > 0) PlayerUtils.fighting.put(uuid, incombat - 1);
+						else lastdmgers.remove(uuid);
 						PlayerData data = ConfigUtils.getData(p);
 						if(location.getBlock().getType().equals(Material.LAVA) || location.getBlock().getType().equals(Material.STATIONARY_LAVA)){
 							if(data.getCurrentClass().equals("corrupter") && data.getCorL() > 7){
@@ -560,7 +561,6 @@ public class Events implements Listener{
 					EventsForCorruptor.INSTANCE.noMercy(event);
 
 					EventsForWizard.INSTANCE.wizardt8(event);
-					EventsForWizard.INSTANCE.magicWandHit((Player)event.getEntity(),(Player)event.getDamager());
 					EventsForTank.getInstance().t8Event(event);
 					EventsForScout.getInstance().alert(event);
 					EventsForTank.getInstance().bludgeon(event);
@@ -574,6 +574,7 @@ public class Events implements Listener{
 		}catch(NullPointerException ex){
 			ex.printStackTrace();
 		}
+		if(event.getDamager() instanceof Player && !event.isCancelled()) EventsForWizard.INSTANCE.magicWandHit((LivingEntity) event.getEntity(),(Player)event.getDamager());
 		if(event.getDamager() instanceof Arrow)
 			arrowArray.remove(event.getDamager().getEntityId());
 	}

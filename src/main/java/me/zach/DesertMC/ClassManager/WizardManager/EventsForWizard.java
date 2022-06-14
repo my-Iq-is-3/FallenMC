@@ -9,6 +9,7 @@ import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.*;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,9 +22,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
@@ -70,14 +68,15 @@ public class EventsForWizard implements Listener {
     static final Supplier<PotionEffect>[] badEffects = new Supplier[]{() -> new PotionEffect(PotionEffectType.HARM, 40,0), () -> new PotionEffect(PotionEffectType.SLOW, 40,0), () -> new PotionEffect(PotionEffectType.WEAKNESS, 40,0), () -> new PotionEffect(PotionEffectType.POISON, 50,0), () -> new PotionEffect(PotionEffectType.BLINDNESS, 40,0), () -> new PotionEffect(PotionEffectType.WITHER, 50,0)};
 
     static final Color mwColor = Color.fromRGB(0, 0, 255);
-    public void magicWandHit(Player damaged, Player damager) {
+    public void magicWandHit(LivingEntity damaged, Player damager) {
         if (!damager.getInventory().getItemInHand().getType().equals(Material.AIR)) {
             if (NBTUtil.getCustomAttrString(damager.getInventory().getItemInHand(), "ID").equals("MAGIC_WAND")) {
-
-                ItemStack boots = damaged.getInventory().getBoots();
-                if(boots != null){
-                    if(NBTUtil.getCustomAttrString(boots,"ID").equals("STUBBORN_BOOTS") && ConfigUtils.getLevel("tank", damaged) > 5){
-                        return;
+                if(damaged instanceof Player){
+                    ItemStack boots = damaged.getEquipment().getBoots();
+                    if(boots != null){
+                        if(NBTUtil.getCustomAttrString(boots, "ID").equals("STUBBORN_BOOTS") && ConfigUtils.getLevel("tank", (Player)damaged) > 5){
+                            return;
+                        }
                     }
                 }
                 if(DesertMain.mwcd.contains(damager.getUniqueId())) {
@@ -89,21 +88,21 @@ public class EventsForWizard implements Listener {
                         PotionEffect effect = badEffects[random.nextInt(badEffects.length)].get();
                         damaged.addPotionEffect(effect);
                         damager.sendMessage(ChatColor.YELLOW + "Gave " + damaged.getName() + ChatColor.RED + " " + MiscUtils.potionEffectToString(effect) + ChatColor.YELLOW + "!");
-                        ParticleEffect.SPELL_MOB.display(1.5f, 1.5f, 1.5f, 1, 25, damaged.getLocation(), 10);
-                        ParticleEffect.REDSTONE.display(2f, 2f, 2f, 0, 20, damaged.getLocation(), 10);
+                        ParticleEffect.SPELL_MOB.display(0.7f, 0.7f, 0.7f, 1, 35, damaged.getLocation(), 10);
+                        ParticleEffect.REDSTONE.display(0.7f, 0.7f, 0.7f, 0, 25, damaged.getLocation(), 10);
                     }else if(ConfigUtils.getLevel("wizard",damager) > 3){
                         damaged.getWorld().playSound(damaged.getLocation(), Sound.GLASS, 10, 1);
-                        ParticleEffect.SPELL_MOB.display(1.5f, 1.5f, 1.5f, 1, 25, damaged.getLocation(), 10);
+                        ParticleEffect.SPELL_MOB.display(0.7f, 0.7f, 0.7f, 1, 35, damaged.getLocation(), 10);
                         if(random.nextDouble() <= 0.4){
                             PotionEffect effect = goodEffects[random.nextInt(goodEffects.length)].get();
                             damaged.addPotionEffect(effect);
                             damager.sendMessage(ChatColor.YELLOW + "Gave " + damaged.getName() + ChatColor.GREEN + " " + MiscUtils.potionEffectToString(effect) + ChatColor.YELLOW + "!");
-                            ParticleEffect.VILLAGER_HAPPY.display(2f, 2f, 2f, 1, 20, damaged.getLocation(), 10);
+                            ParticleEffect.VILLAGER_HAPPY.display(0.7f, 0.7f, 0.7f, 1, 25, damaged.getLocation(), 10);
                         }else{
                             PotionEffect effect = badEffects[random.nextInt(badEffects.length)].get();
                             damaged.addPotionEffect(effect);
                             damaged.sendMessage(ChatColor.YELLOW + "Gave " + damaged.getName() + ChatColor.RED + MiscUtils.potionEffectToString(effect) + ChatColor.YELLOW + "!");
-                            ParticleEffect.REDSTONE.display(2f, 2f, 2f, 0, 20, damaged.getLocation(), 10);
+                            ParticleEffect.REDSTONE.display(0.7f, 0.7f, 0.7f, 0, 25, damaged.getLocation(), 25);
                         }
                     }else{
                         damager.sendMessage(ChatColor.RED + "You must have the wizard class selected and past level 3 to use this ability!");
@@ -205,11 +204,6 @@ public class EventsForWizard implements Listener {
 
             }
         }
-
-
-
     }
-
-
 }
 
