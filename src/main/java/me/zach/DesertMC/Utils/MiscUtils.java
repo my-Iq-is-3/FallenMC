@@ -15,6 +15,7 @@ import me.zach.DesertMC.Utils.structs.Pair;
 import me.zach.DesertMC.holo.Hologram;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.Inventory;
@@ -150,8 +151,12 @@ public class MiscUtils {
     }
 
     public static boolean isAdmin(Player player){
-        Rank rank = ConfigUtils.getRank(player);
-        return (rank != null && rank.admin) || player.hasPermission("admin");
+        return isAdmin((CommandSender) player); //legacy purposes (i don't wanna recompile everything)
+    }
+
+    public static boolean isAdmin(CommandSender sender){
+        if(sender.hasPermission("admin")) return true;
+        else return sender instanceof Player && ConfigUtils.getRank((Player) sender).admin;
     }
 
     public static Map<Character, Tone> TONES_MAP = new HashMap<>();
