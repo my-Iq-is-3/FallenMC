@@ -146,7 +146,7 @@ public class StreakPolice extends NPCSuper {
     }
 
     public static List<String> getTokenLore(int killstreakRemaining){
-        return StringUtil.wrapLore(ChatColor.GRAY + "This item has been " + ChatColor.RED + "SEIZED" + ChatColor.GRAY + "!\n" + "Talk to the streak police at the Cafe to get it back!\nKillstreak remaining: " + ChatColor.RED + killstreakRemaining, 35);
+        return StringUtil.wrapLore(ChatColor.GRAY + "This item has been " + ChatColor.RED + "SEIZED" + ChatColor.GRAY + "!\n" + "Talk to the streak police at the Cafe to get it back! Hint: you don't have to pay it off all at once.\nKillstreak remaining: " + ChatColor.RED + killstreakRemaining, 35);
     }
 
     private static int calculateStreakPrice(double weight){
