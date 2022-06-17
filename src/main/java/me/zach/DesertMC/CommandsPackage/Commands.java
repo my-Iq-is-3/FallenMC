@@ -100,6 +100,8 @@ public class Commands implements Listener, CommandExecutor {
 				}else{
 					return openTierMenu(player, ConfigUtils.findClass(player));
 				}
+			}else if(command.getName().equalsIgnoreCase("die")){
+				Events.executeKill(player);
 			}else if(command.getName().equalsIgnoreCase("shoptest")){
 				if(MiscUtils.isAdmin(player)){
 					if(args.length > 0){

@@ -76,6 +76,9 @@ commands:
   usage: /<command>
   aliases:
    - color
+ die:
+  description: Respawns you immediately.
+  usage: /<command>
  rank:
   description: Sets a player's rank.
   usage: /<command> <player> <rank>
