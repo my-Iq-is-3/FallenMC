@@ -2,8 +2,8 @@
 A unique, free-for-all pvp server that is (probably) open-source. I mean, if you're reading this, why not?
 <br><br>Feel free to fork, but it does rely on a very particular version of Spigot called NachoSpigot. This server is no longer in development, but you can play it at play.fallenmc.xyz . <br><br>The full list of plugins are as follows:
 <ul>
-    <li>(Traits)[https://github.com/Archonic944/FallenTraits]</li>
-    <li>(RisenBoss)[https://github.com/Archonic944/RisenBoss]</li>
+    <li>[Traits](https://github.com/Archonic944/FallenTraits)</li>
+    <li>[RisenBoss](https://github.com/Archonic944/RisenBoss)</li>
     <li>(EnchantRefinery)[https://github.com/Archonic944/EnchantRefinery]</li>
     <li>(FallenMC-master (this))[https://github.com/my-iq-is-3/FallenMC]</li>
     <li>(Artifacts)[https://github.com/my-iq-is-3/f-Artifacts]</li>
