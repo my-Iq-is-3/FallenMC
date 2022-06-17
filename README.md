@@ -14,8 +14,10 @@ A unique, free-for-all pvp server that is (probably) open-source. I mean, if you
 <br>
 Dependencies:
 <br>
+
 - [jitseb/NPCLib](https://github.com/jitseb/NPCLib)
 - [tr7zw/NBTAPI](https://github.com/tr7zw/Item-NBT-API)
 - [InventivetalentDev/BossBarAPI](https://github.com/InventivetalentDev/BossBarAPI)
+
 <br>
 Download those and put them in your plugins folder. Contribute if you dare!
