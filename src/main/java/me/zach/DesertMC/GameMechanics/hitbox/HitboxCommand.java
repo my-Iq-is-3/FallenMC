@@ -3,6 +3,7 @@ package me.zach.DesertMC.GameMechanics.hitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BlobHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BoxHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.CircleHitbox;
+import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.OneDimensionalHitbox;
 import me.zach.DesertMC.Utils.MiscUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -97,6 +98,31 @@ public class HitboxCommand implements CommandExecutor, Listener {
                                     }else player.sendMessage(ChatColor.RED + "You have no hitbox blob currently active.");
                                 }else player.sendMessage(ChatColor.RED + "Usage: /hitbox blob <start|end|undo|clear> <start;name>");
                             }else player.sendMessage(ChatColor.RED + "Usage: /hitbox blob <start|end|undo|clear> <start;name>");
+                        }else if(args[0].equalsIgnoreCase("1d")){
+                            if(hitboxAwait.containsKey(player.getUniqueId())){
+                                if(args.length == 3){
+                                    String name = args[2];
+                                    String axis = args[1];
+                                    Location loc = hitboxAwait.get(player.getUniqueId());
+                                    switch(axis){
+                                        case "x":
+                                            checkoutHitbox(new OneDimensionalHitbox(axis, loc.getX(), player.getLocation().getX()), name, player);
+                                            break;
+                                        case "y":
+                                            checkoutHitbox(new OneDimensionalHitbox(axis, loc.getY(), player.getLocation().getY()), name, player);
+                                            break;
+                                        case "z":
+                                            checkoutHitbox(new OneDimensionalHitbox(axis, loc.getZ(), player.getLocation().getZ()), name, player);
+                                            break;
+                                        default:
+                                            player.sendMessage(ChatColor.RED + "Unkown axis! /hitbox 1d <x|y|z> <name>");
+                                            break;
+                                    }
+                                }else player.sendMessage(ChatColor.RED + "Usage: /hitbox 1d <axis> <name>");
+                            }else if(args.length == 1){
+                                hitboxAwait.put(player.getUniqueId(), player.getLocation());
+                                player.sendMessage(ChatColor.GREEN + "Use '/hitbox 1d <axis> <name>' at the next location.");
+                            }else player.sendMessage(ChatColor.RED + "Usage: /hitbox 1d");
                         }
                     }else{
                         player.sendMessage("Currently active hitboxes: " + HitboxManager.getAll());

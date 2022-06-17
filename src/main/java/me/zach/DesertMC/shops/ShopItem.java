@@ -16,9 +16,15 @@ import java.util.Objects;
 public abstract class ShopItem {
     private ItemStack item = get();
     public int price;
+    public int preferredSlot;
 
     public ShopItem(int price){
+        this(price, -1);
+    }
+
+    public ShopItem(int price, int preferredSlot){
         this.price = price;
+        this.preferredSlot = preferredSlot;
     }
 
     public int hashCode(){

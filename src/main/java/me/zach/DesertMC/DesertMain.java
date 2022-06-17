@@ -23,6 +23,8 @@ import me.zach.DesertMC.GameMechanics.hitbox.HitboxManager;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BlobHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.BoxHitbox;
 import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.CircleHitbox;
+import me.zach.DesertMC.GameMechanics.hitbox.hitboxes.OneDimensionalHitbox;
+import me.zach.DesertMC.GameMechanics.npcs.BoosterCrystalSalesman;
 import me.zach.DesertMC.GameMechanics.npcs.Kothy;
 import me.zach.DesertMC.GameMechanics.npcs.SoulBroker;
 import me.zach.DesertMC.GameMechanics.npcs.StreakPolice;
@@ -84,6 +86,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		getInstance = this;
 		library = new NPCLib(this);
 		ConfigurationSerialization.registerClass(SavedNPC.class);
+		ConfigurationSerialization.registerClass(OneDimensionalHitbox.class);
 		ConfigurationSerialization.registerClass(BoxHitbox.class);
 		ConfigurationSerialization.registerClass(CircleHitbox.class);
 		ConfigurationSerialization.registerClass(BlobHitbox.class);
@@ -183,6 +186,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		NPCCommand.registerNPC("Kothy", Kothy::new);
 		NPCCommand.registerNPC("StreakPolice", StreakPolice::new);
 		NPCCommand.registerNPC("SoulBroker", SoulBroker::new);
+		NPCCommand.registerNPC("BoosterCrystalSalesman", BoosterCrystalSalesman::new);
 	}
 
 	private void registerEvents(Plugin p){

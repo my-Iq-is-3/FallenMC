@@ -34,6 +34,7 @@ me/zach/DesertMC/CommandsPackage/ItemCommand.class
 me/zach/DesertMC/ScoreboardManager/FScoreboardManager.class
 me/zach/DesertMC/cosmetics/Cosmetic$5$1.class
 me/zach/DesertMC/CommandsPackage/NPCCommand.class
+me/zach/DesertMC/GameMechanics/npcs/BoosterCrystalSalesman$BoosterCrystal.class
 me/zach/DesertMC/mythicalitems/items/DestroyerItem.class
 me/zach/DesertMC/GameMechanics/hitbox/HitboxManager.class
 me/zach/DesertMC/ClassManager/ScoutManager/EventsForScout.class
@@ -51,6 +52,7 @@ me/zach/DesertMC/GameMechanics/Events$4.class
 me/zach/DesertMC/ClassManager/CoruManager/EventsForCorruptor.class
 me/zach/DesertMC/Utils/Particle/ReflectionUtils$DataType.class
 me/zach/DesertMC/shops/ShopInventory.class
+me/zach/DesertMC/GameMechanics/npcs/BoosterCrystalSalesman.class
 me/zach/DesertMC/GameMechanics/NPCStructure/SimpleNPC$1$1.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$OrdinaryColor.class
 me/zach/DesertMC/holo/Hologram.class
@@ -88,6 +90,7 @@ me/zach/DesertMC/GameMechanics/EXPMilesstones/MilestonesUtil.class
 me/zach/DesertMC/Utils/ench/CustomEnch$1.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ParticleProperty.class
 me/zach/DesertMC/GameMechanics/Events.class
+me/zach/DesertMC/GameMechanics/hitbox/hitboxes/OneDimensionalHitbox.class
 me/zach/DesertMC/GameMechanics/Events$2.class
 me/zach/DesertMC/Utils/packet/wrappers/WrapperPlayServerEntityEquipment.class
 me/zach/DesertMC/shops/ShopItem$PurchaseResponse.class
@@ -150,6 +153,7 @@ me/zach/DesertMC/Utils/Particle/ParticleEffect$ParticlePacket$VersionIncompatibl
 me/zach/DesertMC/Prefix.class
 me/zach/DesertMC/ClassManager/WizardManager/EventsForWizard$3.class
 me/zach/DesertMC/GameMechanics/NPCStructure/NPCSuper$ClickResponse.class
+me/zach/DesertMC/GameMechanics/npcs/BoosterCrystalSalesman$BoosterCrystalInventory.class
 me/zach/DesertMC/GameMechanics/npcs/StreakPolice.class
 me/zach/DesertMC/GameMechanics/NPCStructure/SimpleNPC$ClickResponse.class
 me/zach/DesertMC/Utils/nbt/NBTUtil.class

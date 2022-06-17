@@ -32,9 +32,11 @@
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/ench/EnchantType.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/packet/wrappers/WrapperPlayServerEntityTeleport.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/RankUtils/RankEvents.java
+/Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/hitbox/hitboxes/OneDimensionalHitbox.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/ClassManager/WizardManager/EventsForWizard.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/UsedAPI.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/ScoreboardManager/FScoreboardManager.java
+/Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/npcs/BoosterCrystalSalesman.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/StringUtils/DefaultFontInfo.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/npcs/SoulBroker.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/GameMechanics/npcs/StreakPolice.java

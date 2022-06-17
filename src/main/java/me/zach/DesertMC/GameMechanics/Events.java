@@ -520,6 +520,24 @@ public class Events implements Listener{
 		}.runTaskTimer(main,0,1);
 	}
 
+	@EventHandler
+	public void boosterCrystal(PlayerInteractEvent event){
+		ItemStack item = event.getItem();
+		if(NBTUtil.getCustomAttrString(item, "ID").equals("BOOSTER_CRYSTAL")){
+			Hitbox falling = HitboxManager.get("falling");
+			Player player = event.getPlayer();
+			if(falling == null){
+				player.sendMessage(ChatColor.RED + "You can't use this, because an admin needs to set the 'falling' 1d hitbox first.");
+			}else{
+				if(falling.isInside(player.getLocation())){
+					player.setItemInHand(MiscUtils.decrementItem(item));
+					player.setVelocity(player.getEyeLocation().getDirection().multiply(2.4));
+					player.getWorld().playSound(player.getLocation(), Sound.FIREWORK_LAUNCH, 25, 1);
+				}else player.sendMessage(ChatColor.RED + "You can only use this while falling from spawn!");
+			}
+		}
+	}
+
 	public static Player getPlayer(Entity arrowOrPlayer) {
 		if (arrowOrPlayer instanceof Player) return (Player) arrowOrPlayer;
 		else if(arrowOrPlayer instanceof Projectile) return ((Arrow) arrowOrPlayer).getShooter() instanceof Player ? ((Player) ((Arrow) arrowOrPlayer).getShooter()) : null;

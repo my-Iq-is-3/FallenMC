@@ -18,6 +18,7 @@ import java.util.Map;
 
 public class ShopInventory implements GUIHolder {
     public static final int INV_SIZE = 54;
+    int style;
     Inventory inventory;
     String shopName;
     public final PlayerData data;
@@ -25,21 +26,34 @@ public class ShopInventory implements GUIHolder {
     HashMap<Integer, ShopItem> storefront = new HashMap<>(); //slot x shopitem map
 
     public ShopInventory(String shopName, Iterable<? extends ShopItem> items, Player player, byte glassColor, ItemStack bottomLeft){
+        this(shopName, items, player, glassColor, bottomLeft, 0);
+    }
+
+    public ShopInventory(String shopName, Iterable<? extends ShopItem> items, Player player, byte glassColor, ItemStack bottomLeft, int style){
         this.shopName = shopName;
         inventory = Bukkit.getServer().createInventory(this, INV_SIZE, shopName);
         this.data = ConfigUtils.getData(player);
-        if(glassColor > -1){
-            ItemStack pane = MiscUtils.getEmptyPane(glassColor);
-            for(int i = INV_SIZE - 18; i<INV_SIZE - 9; i++){ //set second to bottom row to specified color (unless -1)
-                inventory.setItem(i, pane);
+        if(style == 0){
+            if(glassColor > -1){
+                ItemStack pane = MiscUtils.getEmptyPane(glassColor);
+                for(int i = INV_SIZE - 18; i < INV_SIZE - 9; i++){ //set second to bottom row to specified color (unless -1)
+                    inventory.setItem(i, pane);
+                }
             }
-        }
-        ItemStack emptyPane = MiscUtils.getEmptyPane();
-        for(int i = INV_SIZE - 9; i < INV_SIZE; i++){ //set bottom row to gray
-            inventory.setItem(i, emptyPane);
-        }
+            ItemStack emptyPane = MiscUtils.getEmptyPane();
+            for(int i = INV_SIZE - 9; i < INV_SIZE; i++){ //set bottom row to gray
+                inventory.setItem(i, emptyPane);
+            }
+        }else if(style == 1){
+            ItemStack empty = MiscUtils.getEmptyPane();
+            for(int i = 0; i<inventory.getSize(); i++){
+                inventory.setItem(i, empty);
+            }
+        }else throw new IllegalArgumentException("Unknown style: " + style);
         inventory.setItem(INV_SIZE - 1, gemsItem = MiscUtils.getGemsItem(player));
-        if(bottomLeft != null) inventory.setItem(INV_SIZE - 9, bottomLeft);
+        if(bottomLeft != null){
+            inventory.setItem(style == 0 ? INV_SIZE - 9 : INV_SIZE - 5, bottomLeft);
+        }
         {
             int slot = 0;
             Iterator<? extends ShopItem> itemIterator = items.iterator();
@@ -47,13 +61,17 @@ public class ShopInventory implements GUIHolder {
             while(itemIterator.hasNext()){
                 ShopItem item = itemIterator.next();
                 ItemStack storefrontItem = item.getStorefront(data, 1);
-                if(inventory.getItem(slot) == null){
+                if(item.preferredSlot == -1){
                     inventory.setItem(slot, storefrontItem);
                     storefront.put(slot, item);
                     slot++;
-                }else throw new IllegalArgumentException("ShopItems overflowed to occupied slot when attempting to open ShopInventory " + shopName + ", slot: " + slot);
+                }else{
+                    inventory.setItem(item.preferredSlot, storefrontItem);
+                    storefront.put(item.preferredSlot, item);
+                }
             }
         }
+        updateShopItems();
     }
 
     private void updateShopItems(){
