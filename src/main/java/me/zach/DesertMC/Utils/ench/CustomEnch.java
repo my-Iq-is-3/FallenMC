@@ -145,34 +145,24 @@ public enum CustomEnch implements Listener {
         @Override
         public void onShoot(ProjectileLaunchEvent event) {
             super.onShoot(event);
-            Bukkit.broadcastMessage("e1");
             if(event.getEntity() instanceof Arrow && event.getEntity().getShooter() instanceof Player){
-                Bukkit.broadcastMessage("e2");
                 Player shooter = (Player) event.getEntity().getShooter();
                 if(!CustomEnch.validatePlayer(shooter,Key.WIZARD,8)) return;
                 if(getLevel(shooter.getItemInHand()) > 0){
-                    Bukkit.broadcastMessage("e3");
                     int lvl = getLevel(shooter.getItemInHand());
                     int range = lvl*7;
-                    Bukkit.broadcastMessage("elvl " + lvl);
                     Location current = shooter.getEyeLocation();
                     for(int i=0;i<range;i++){
-                        Bukkit.broadcastMessage("e4l,i=" + i);
                         Vector dir = current.getDirection();
                         current = current.add(dir);
                         event.getEntity().teleport(current);
                         if(!MiscUtils.trueEmpty(current.getBlock())){
-                            Bukkit.broadcastMessage("e5");
                             event.getEntity().teleport(current);
                             spawnEtherealFW(current);
                             break;
                         }else{
-                            Bukkit.broadcastMessage("e6");
                             List<Damageable> nearby = MiscUtils.getNearbyDamageables(event.getEntity(),0.5);
-                            Bukkit.broadcastMessage("e6n: " + nearby);
                             if(!nearby.isEmpty() && nearby.get(0) != null && !nearby.get(0).equals(shooter)){
-                                Bukkit.broadcastMessage("e6.1a = " + event.getEntity().getLocation());
-
                                 new NBTEntity(event.getEntity()).setBoolean("LeftOwner", true);
                                 event.getEntity().teleport(nearby.get(0).getLocation());
                                 spawnEtherealFW(current);
@@ -188,7 +178,6 @@ public enum CustomEnch implements Listener {
                         }
                     }.runTaskLater(DesertMain.getInstance,2);
                     spawnEtherealFW(current);
-                    Bukkit.broadcastMessage("e8l " + event.getEntity().getLocation());
                 }
             }
         }
