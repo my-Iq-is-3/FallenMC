@@ -139,9 +139,9 @@ public class Commands implements Listener, CommandExecutor {
 			}else if(command.getName().equalsIgnoreCase("booster")){
 				if(args.length > 0){
 					try{
-						float multipler = Math.min(Float.parseFloat(args[0]), 3);
+						float multipler = Float.parseFloat(args[0]);
 						UUID uuid = player.getUniqueId();
-						if(expCd.add(uuid)){
+						if(MiscUtils.isAdmin(player)){
 							Float previous = DesertMain.booster.put(player.getUniqueId(), multipler);
 							player.sendMessage(previous == null ? ChatColor.YELLOW + "Added " + multipler + "x EXP booster" : ChatColor.YELLOW + "Added " + multipler + "x EXP booster, replacing " + previous + "x");
 							Bukkit.getScheduler().runTaskLater(mainpl, () -> {
@@ -152,7 +152,7 @@ public class Commands implements Listener, CommandExecutor {
 								}
 							}, BOOSTER_EXPIRATION_TICKS);
 							Bukkit.getScheduler().runTaskLater(mainpl, () -> expCd.remove(uuid), BOOSTER_COOLDOWN_TICKS);
-						}else player.sendMessage(ChatColor.RED + "This command is on cooldown!");
+						}else player.sendMessage(ChatColor.RED + "You can't use this!");
 					}catch(NumberFormatException | NullPointerException ex){
 						return false;
 					}
@@ -195,20 +195,18 @@ public class Commands implements Listener, CommandExecutor {
 
         	else if(command.getName().equalsIgnoreCase("gems")){
 				UUID uuid = player.getUniqueId();
-				if(gemsCd.add(uuid)){
+				if(MiscUtils.isAdmin(player)){
 					player.sendMessage(ChatColor.GREEN + "Gave you 1000 gems");
 					ConfigUtils.addGems(player,1000);
 					Bukkit.getScheduler().runTaskLater(mainpl, () -> gemsCd.remove(uuid), GEMS_COOLDOWN_TICKS);
-				}else player.sendMessage(ChatColor.RED + "This command is on cooldown!");
-			}
-
-        	else if(command.getName().equalsIgnoreCase("souls")){
+				}else player.sendMessage(ChatColor.RED + "You can't use this!");
+			}else if(command.getName().equalsIgnoreCase("souls")){
 				UUID uuid = player.getUniqueId();
-				if(soulsCd.add(uuid)){
+				if(MiscUtils.isAdmin(player)){
 					player.sendMessage(ChatColor.LIGHT_PURPLE + "Gave you 30 souls");
 					ConfigUtils.addSouls(player, 30);
 					Bukkit.getScheduler().runTaskLater(mainpl, () -> soulsCd.remove(uuid), SOULS_COOLDOWN_TICKS);
-				}else player.sendMessage(ChatColor.RED + "This command is on cooldown!");
+				}else player.sendMessage(ChatColor.RED + "You can't use this!");
 			}
 
 			else if(command.getName().equalsIgnoreCase("cosmetic")){

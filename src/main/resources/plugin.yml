@@ -19,9 +19,9 @@ commands:
   description: "A situation-specific, conformation command usually controlled with a button. Use it as a shortcut if you know what you're doing."
   usage: /<command>
  gems:
-  description: "Adds 1k gems to your balance. Cooldown: 30m"
+  description: "Adds 1k gems to your balance. Admins only."
  souls:
-  description: "Grants 100 souls. Cooldown: 15m"
+  description: "Grants 100 souls. Admins only."
  hitbox:
   description: sets a hitbox
   usage: /hitbox <type> <params>
@@ -103,7 +103,7 @@ commands:
   description: Tests the server's new, fancy and programmatic Shop system. Admins only!
   usage: /<command> <material1> <material2>...
  booster:
-  description: Sets an exp booster, meant for alpha testers. If the server is past alpha testing, you shouldn't be seeing this!
+  description: Sets an exp booster. Admins only.
   usage: /<command> <multipler:decimal>
  hologram:
   description: Grants a hologram wand, which can be used to spawn a hologram with the specified name.
