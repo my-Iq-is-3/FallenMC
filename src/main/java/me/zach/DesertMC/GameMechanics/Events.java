@@ -266,6 +266,10 @@ public class Events implements Listener{
 		Item item = event.getItem();
 		String uuid = event.getPlayer().getUniqueId().toString();
 		NBTEntity nbt = new NBTEntity(item);
+		if(nbt.hasKey("NO_PICKUP") && nbt.getBoolean("NO_PICKUP")){
+			event.setCancelled(true);
+			return;
+		}
 		String owner = nbt.getString("OwnedBy");
 		if(owner != null && !owner.isEmpty() && !owner.equals(uuid)){
 			event.setCancelled(item.getTicksLived() < 99999999);

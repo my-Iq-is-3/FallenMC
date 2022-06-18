@@ -137,7 +137,7 @@ public enum Cosmetic {
         public void activateKill(Player player) {
             List<Material> materialsList = new ArrayList<>(droppables);
             Collections.shuffle(materialsList);
-            standardKillEffect(player.getLocation(), 10, materialsList.toArray(new Material[0]));
+            standardKillEffect(player.getEyeLocation(), 10, materialsList.toArray(new Material[0]));
         }
     },
     SKULL_DESTRUCTION("Skull Destruction", Material.GHAST_TEAR, "As if slaying them wasn't enough, this kill effect lifts your enemy's skull from where they previously stood and draws it into the air, only to destroy it afterward. Talk about overkill, jeez.", CosmeticType.KILL_EFFECT, true){
