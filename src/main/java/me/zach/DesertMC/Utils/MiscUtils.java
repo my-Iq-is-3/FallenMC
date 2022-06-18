@@ -150,6 +150,10 @@ public class MiscUtils {
         }
     }
 
+    public static boolean isItem(Material mat) {
+        return net.minecraft.server.v1_8_R3.Item.getById(mat.getId()) != null;
+    }
+
     public static void confirmationSound(Player player){
         playPianoMelody(player, "FG     )ADF  ADF");
     }

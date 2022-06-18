@@ -158,7 +158,7 @@ public enum Cosmetic {
     public static List<Material> droppables = new ArrayList<>();
     static{
         for(Material material : Material.values()){
-            if(material.isItem()) droppables.add(material);
+            if(MiscUtils.isItem(material)) droppables.add(material);
         }
     }
 
