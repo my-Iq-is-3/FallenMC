@@ -293,7 +293,7 @@ public class SoulBroker extends NPCSuper implements Listener{
                         if(increment * 10 > 0.1){
                             List<String> newLore = item.getItemMeta().getLore();
                             newLore.remove(0);
-                            newLore.add(0, ChatColor.GRAY + "Current increment: " + ChatColor.BLUE + formatter.format(0.0005) + "%");
+                            newLore.add(0, ChatColor.GRAY + "Current increment: " + ChatColor.BLUE + formatter.format(0.001) + "%");
                             ItemMeta newMeta = item.getItemMeta();
                             newMeta.setLore(newLore);
                             item.setItemMeta(newMeta);
