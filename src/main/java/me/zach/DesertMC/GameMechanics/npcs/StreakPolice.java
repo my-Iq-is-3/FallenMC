@@ -14,6 +14,9 @@ import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.gui.GUIHolder;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import net.jitse.npclib.api.events.NPCInteractEvent;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -104,6 +107,7 @@ public class StreakPolice extends NPCSuper {
                     if(NBTUtil.getCustomAttrString(item, "UUID").equals(targetId)){
                         NBTItem nbt = new NBTItem(item);
                         Double weight = NBTUtil.getCustomAttr(nbt, "WEIGHT", Double.class, null);
+                        Double wph = NBTUtil.getCustomAttr(nbt, "WEIGHT_ADD", Double.class, null);
                         if(weight == null) continue;
                         weight += itemsandhits.get(targetId);
                         nbt.getCompound("CustomAttributes").setDouble("WEIGHT", Math.min(100, weight));
@@ -113,7 +117,18 @@ public class StreakPolice extends NPCSuper {
                             player.getInventory().setItem(a, seize(item));
                             player.playSound(player.getLocation(), Sound.PISTON_EXTEND, 10, 1);
                             player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 10, 1);
-                            StringUtil.sendCenteredMessage(player,"", ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!", "");
+                            String[] lines;
+                            if(wph == 0.2){
+                                 lines = StringUtil.getCenteredMessage("", ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!", ChatColor.GRAY + "Hover for more info");
+                            }else{
+                                lines = StringUtil.getCenteredMessage("", ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!", "");
+                            }
+                            TextComponent[] texts = new TextComponent[lines.length];
+                            for(int i = 0; i<texts.length; i++){
+                                TextComponent component = new TextComponent(lines[i]);
+                                component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent(StringUtil.wrap(ChatColor.GRAY + "An item's weight is a percent chance for it to get seized when you kill a player. Each time you hit, your weapon's weight add (WPH) is added to your weapon.\n\n" + ChatColor.GRAY + "Your " + ChatColor.stripColor(item.getItemMeta().getDisplayName()) + " had a weight of " + ChatColor.RED + ((int) Math.round(weight)) + "% " + ChatColor.GRAY + "when it was seized.", 35))}));
+                            }
+                            player.sendMessage(texts);
                             Bukkit.getLogger().info(player.getName() + "'s " + item.getItemMeta().getDisplayName() + " seized with weight " + weight);
                         }
                         break;
@@ -146,7 +161,7 @@ public class StreakPolice extends NPCSuper {
     }
 
     public static List<String> getTokenLore(int killstreakRemaining){
-        return StringUtil.wrapLore(ChatColor.GRAY + "This item has been " + ChatColor.RED + "SEIZED" + ChatColor.GRAY + "!\n" + "Talk to the streak police at the Cafe to get it back! Hint: you don't have to pay it off all at once.\nKillstreak remaining: " + ChatColor.RED + killstreakRemaining, 35);
+        return StringUtil.wrapLore(ChatColor.GRAY + "This item has been " + ChatColor.RED + "SEIZED" + ChatColor.GRAY + "!\n" + "Take this token to the cafe's Streak Police to get it back! Hint: you don't have to pay it off all at once.\nKillstreak remaining: " + ChatColor.RED + killstreakRemaining, 35);
     }
 
     private static int calculateStreakPrice(double weight){
