@@ -48,6 +48,7 @@ public class InvEvents implements Listener {
 
 		if (inv.getName().startsWith("Kothy")) {
 			event.setCancelled(true);
+			if(!item.hasItemMeta() || item.getItemMeta().getDisplayName() == null) return;
 			String id = NBTUtil.getCustomAttrString(item, "ID");
 			if (item.getItemMeta().getDisplayName().equals(ChatColor.BLUE + "Item Shop")) {
 				shop.updateInventory();
