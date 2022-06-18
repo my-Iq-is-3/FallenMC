@@ -171,6 +171,19 @@ public class ConfigUtils {
 		}
 	}
 
+	/**
+	 * Gets player data. Loads it if the player is not online.
+	 * @return Player's data, or null.
+	 */
+	public static PlayerData getOrLoad(UUID uuid){
+		PlayerData data = ConfigUtils.getData(uuid);
+		if(data != null) return data;
+		else{
+			data = DBCore.getInstance().getSaveManager().getPlayerDataDirectly(uuid);
+			return data;
+		}
+	}
+
 	public static void setClass(Player player, String newclass){
 		TravellerEvents.resetTraveller(player);
 		getData(player).setCurrentClass(newclass);

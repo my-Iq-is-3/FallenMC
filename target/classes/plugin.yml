@@ -12,6 +12,9 @@ commands:
  ks:
   description: "Sets a player's killstreak. Admins only."
   usage: /<command> <optional;target> <killstreak>
+ pay:
+  description: Pays gems to another player.
+  usage: /<command> <player> <amount>
  dealconfirm:
   description: "Confirms a certain deal with the Soul Broker."
   usage: /<command> <yes|no>

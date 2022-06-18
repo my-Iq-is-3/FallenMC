@@ -29,8 +29,7 @@ public enum ImportantPeople {
     public String getServerName(){
         OfflinePlayer p = Bukkit.getOfflinePlayer(uuid);
         if(p.hasPlayedBefore()){
-            PlayerData data = ConfigUtils.getData(uuid);
-            if(data == null) data = DBCore.getInstance().getSaveManager().getPlayerDataDirectly(uuid);
+            PlayerData data = ConfigUtils.getOrLoad(uuid);
             String name = p.getName();
             if(data != null){
                 Rank rank = data.getRank();

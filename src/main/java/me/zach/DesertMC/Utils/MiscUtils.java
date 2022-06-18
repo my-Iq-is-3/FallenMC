@@ -150,6 +150,10 @@ public class MiscUtils {
         }
     }
 
+    public static void confirmationSound(Player player){
+        playPianoMelody(player, "FG     )ADF  ADF");
+    }
+
     public static boolean isAdmin(Player player){
         return isAdmin((CommandSender) player); //legacy purposes (i don't wanna recompile everything)
     }

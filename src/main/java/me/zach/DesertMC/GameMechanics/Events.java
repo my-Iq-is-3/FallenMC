@@ -1039,6 +1039,11 @@ public class Events implements Listener{
 			respawn(p);
 		}
 		p.updateInventory();
+		PlayerData data = ConfigUtils.getData(p);
+		int gemsAway = data.getGemsGottenWhileAway();
+		if(gemsAway > 0)
+			p.sendMessage(ChatColor.GREEN + "You received " + gemsAway + (gemsAway == 1 ? " Gem " : " Gems ") + "from other players while you were away.");
+		data.setGemsGottenWhileAway(0);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -9,7 +9,9 @@ import me.zach.DesertMC.ClassManager.ScoutManager.ScoutTierMenu;
 import me.zach.DesertMC.ClassManager.TankManager.TankTierMenu;
 import me.zach.DesertMC.ClassManager.WizardManager.WizardTierMenu;
 import me.zach.DesertMC.DesertMain;
+import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesEvents;
 import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesInventory;
+import me.zach.DesertMC.GameMechanics.EXPMilesstones.MilestonesUtil;
 import me.zach.DesertMC.GameMechanics.NPCStructure.NPCSuper;
 import me.zach.DesertMC.GameMechanics.NPCStructure.SimpleNPC;
 import me.zach.DesertMC.GameMechanics.npcs.SoulBroker;
@@ -29,6 +31,7 @@ import me.zach.DesertMC.cosmetics.CosmeticData;
 import me.zach.DesertMC.shops.ShopInventory;
 import me.zach.DesertMC.shops.ShopItem;
 import me.zach.DesertMC.cosmetics.Cosmetic;
+import me.zach.databank.DBCore;
 import me.zach.databank.saver.PlayerData;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
@@ -88,6 +91,8 @@ public class Commands implements Listener, CommandExecutor {
 		return true;
 	}
 
+	final Set<UUID> dataGetCooldown = new HashSet<>();
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player) {
@@ -99,6 +104,61 @@ public class Commands implements Listener, CommandExecutor {
 					return openTierMenu(player, clazz);
 				}else{
 					return openTierMenu(player, ConfigUtils.findClass(player));
+				}
+			}else if(command.getName().equalsIgnoreCase("pay")){
+				if(dataGetCooldown.contains(player.getUniqueId())){
+					player.sendMessage(ChatColor.RED + "You must wait before doing this!");
+				}else{
+					if(args.length == 2){
+						if(dataGetCooldown.contains(player.getUniqueId())){
+							player.sendMessage(ChatColor.RED + "You must wait before doing this!");
+						}
+						try{
+							int amount = Integer.parseInt(args[1]);
+							if(amount <= 0){
+								player.sendMessage(ChatColor.RED + "Invalid amount! Usage: /pay <player> <amount>");
+							}else{
+								PlayerData from = ConfigUtils.getData(player);
+								if(from.getGems() < amount){
+									player.sendMessage(ChatColor.RED + "You don't have that many gems!");
+									return true;
+								}
+								OfflinePlayer target = Bukkit.getPlayer(args[0]);
+								if(target == null){
+									target = Bukkit.getOfflinePlayer(args[0]);
+									dataGetCooldown.add(player.getUniqueId());
+								}
+								if(target != null && target.hasPlayedBefore()){
+									boolean hardGet = false;
+									PlayerData data = ConfigUtils.getData(target.getUniqueId());
+									if(data == null){
+										data = DBCore.getInstance().getSaveManager().getPlayerDataDirectly(player.getUniqueId());
+										hardGet = true;
+									}
+									if(data == null){
+										player.sendMessage(ChatColor.RED + "Couldn't find that player in our records!");
+										return true;
+									}
+									from.setGems(from.getGems() - amount);
+									data.setGems(data.getGems() + amount);
+									player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "PAY SUCCESS" + ChatColor.WHITE + ChatColor.BOLD + " ==> " + ChatColor.GREEN + amount + " Gems to the order of " + target.getName());
+									if(hardGet){
+										data.setGemsGottenWhileAway(data.getGemsGottenWhileAway() + amount);
+										DBCore.getInstance().getSaveManager().getDatabank().set(data);
+										dataGetCooldown.add(player.getUniqueId());
+									}
+									MiscUtils.confirmationSound(player);
+									if(target.isOnline()){
+										Player targetPlayer = target.getPlayer();
+										MiscUtils.confirmationSound(target.getPlayer());
+										targetPlayer.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "MONEY GET " + ChatColor.WHITE + ChatColor.BOLD + "==> " + ChatColor.GREEN + "Received " + amount + " Gems from " + player.getName() + "!");
+									}
+								}else player.sendMessage(ChatColor.RED + "Could not find that player in our records!");
+							}
+						}catch(NumberFormatException ex){
+							player.sendMessage(ChatColor.RED + "Invalid amount! Usage: /pay <player> <amount>");
+						}
+					}else return false;
 				}
 			}else if(command.getName().equalsIgnoreCase("die")){
 				if(args.length > 0) return false;
@@ -130,11 +190,17 @@ public class Commands implements Listener, CommandExecutor {
 					player.sendMessage(ChatColor.RED + "You don't have permission to use this command");
 				}
 			}else if(command.getName().equalsIgnoreCase("credits")){
-				int color = ThreadLocalRandom.current().nextInt(StringUtil.FRIENDLY_COLORS.length);
-				StringUtil.ChatWrapper wrapper = new StringUtil.ChatWrapper('=', StringUtil.FRIENDLY_COLORS[color], true, true);
-				player.sendMessage(wrapper.toString());
-				player.spigot().sendMessage(DesertMain.credits.toArray(new BaseComponent[0]));
-				player.sendMessage(wrapper.toString());
+				if(dataGetCooldown.contains(player.getUniqueId())){
+					player.sendMessage(ChatColor.RED + "You must wait before doing this!");
+				}else{
+					int color = ThreadLocalRandom.current().nextInt(StringUtil.FRIENDLY_COLORS.length);
+					StringUtil.ChatWrapper wrapper = new StringUtil.ChatWrapper('=', StringUtil.FRIENDLY_COLORS[color], true, true);
+					player.sendMessage(wrapper.toString());
+					player.spigot().sendMessage(DesertMain.credits.toArray(new BaseComponent[0]));
+					player.sendMessage(wrapper.toString());
+					dataGetCooldown.add(player.getUniqueId());
+					Bukkit.getScheduler().runTaskLater(DesertMain.getInstance, () -> dataGetCooldown.remove(player.getUniqueId()), 100);
+				}
 				return true;
 			}else if(command.getName().equalsIgnoreCase("booster")){
 				if(args.length > 0){
