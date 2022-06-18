@@ -30,7 +30,7 @@ public class SpiritBottle implements Listener, CommandExecutor {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
         if(NBTUtil.getCustomAttrString(item, "ID").equals("SPIRIT_BOTTLE")){
-            if(RisenUtils.isBoss(player.getUniqueId()) && !HitboxListener.isInSafeZone(player.getLocation())){
+            if(RisenUtils.isBoss(player.getUniqueId()) || HitboxListener.isInSafeZone(player.getLocation())){
                 player.sendMessage(ChatColor.RED + "You can't use this right now!");
                 return;
             }
@@ -55,6 +55,11 @@ public class SpiritBottle implements Listener, CommandExecutor {
         if(id == null) return;
         if(id.equals("FILLED_SPIRIT_BOTTLE")){
             Player player = event.getPlayer();
+            if(RisenUtils.isBoss(player.getUniqueId())){
+                player.sendMessage(ChatColor.RED + "You can't use this right now!");
+                event.setCancelled(true);
+                return;
+            }
             World world = player.getWorld();
             if(world.getUID().toString().equals(customAttr.getString("WORLD"))){
                 int killstreak = customAttr.getInteger("KILLSTREAK");
