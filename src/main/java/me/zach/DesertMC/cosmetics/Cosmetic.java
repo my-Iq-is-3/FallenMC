@@ -135,9 +135,9 @@ public enum Cosmetic {
     },
     EVERYTHING("Diverse Destruction", Material.STAINED_CLAY, ChatColor.YELLOW + "When you defeat an enemy, everything comes out of them...?", CosmeticType.KILL_EFFECT){
         public void activateKill(Player player) {
-            List<Material> materialsList = new ArrayList<>(Arrays.asList(Material.values()));
+            List<Material> materialsList = new ArrayList<>(droppables);
             Collections.shuffle(materialsList);
-            standardKillEffect(player.getLocation(), 15, materialsList.toArray(new Material[0]));
+            standardKillEffect(player.getLocation(), 10, materialsList.toArray(new Material[0]));
         }
     },
     SKULL_DESTRUCTION("Skull Destruction", Material.GHAST_TEAR, "As if slaying them wasn't enough, this kill effect lifts your enemy's skull from where they previously stood and draws it into the air, only to destroy it afterward. Talk about overkill, jeez.", CosmeticType.KILL_EFFECT, true){
@@ -155,6 +155,12 @@ public enum Cosmetic {
 
 
     private static final Plugin pl = DesertMain.getInstance;
+    public static List<Material> droppables = new ArrayList<>();
+    static{
+        for(Material material : Material.values()){
+            if(material.isItem()) droppables.add(material);
+        }
+    }
 
     public final String displayName;
     public final ItemStack icon;
