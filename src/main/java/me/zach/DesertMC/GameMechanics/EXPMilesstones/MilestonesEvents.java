@@ -19,6 +19,7 @@ import java.util.List;
 public class MilestonesEvents implements Listener {
     @EventHandler
     public void inventoryClick(InventoryClickEvent e){
+        if(e.getClickedInventory() == null) return;
         String invName = e.getClickedInventory().getName();
         if(invName != null) {
             if (invName.equals("EXP Milestones")) {
