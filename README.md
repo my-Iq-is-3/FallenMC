@@ -18,6 +18,8 @@ Dependencies:
 - [jitseb/NPCLib](https://github.com/jitseb/NPCLib)
 - [tr7zw/NBTAPI](https://github.com/tr7zw/Item-NBT-API)
 - [InventivetalentDev/BossBarAPI](https://github.com/InventivetalentDev/BossBarAPI)
+- [aadnk/ProtocolLib](https://github.com/aadnk/ProtocolLib)
+- View full credits with /credits on play.fallenmc.xyz
 
 <br>
 Download those and put them in your plugins folder. Contribute if you dare!
