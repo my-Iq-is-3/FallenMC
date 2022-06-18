@@ -374,8 +374,8 @@ public class Events implements Listener{
 
 	@EventHandler
 	public void earlyJoin(PlayerLoginEvent event){
-		if(MiscUtils.getCurrentTick() <= 3){
-			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "I'm happy you're excited, but...\nYou joined too early. Try again immediately.");
+		if(MiscUtils.getCurrentTick() <= 7){
+			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "I'm happy you're excited, but...\nYou joined way too early. Try again immediately.");
 		}
 	}
 
