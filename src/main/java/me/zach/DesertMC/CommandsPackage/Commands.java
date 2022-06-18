@@ -141,7 +141,7 @@ public class Commands implements Listener, CommandExecutor {
 									}
 									from.setGems(from.getGems() - amount);
 									data.setGems(data.getGems() + amount);
-									player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "PAY SUCCESS" + ChatColor.WHITE + ChatColor.BOLD + " ==> " + ChatColor.GREEN + amount + " Gems to the order of " + target.getName());
+									player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "PAY SUCCESS" + ChatColor.GREEN + amount + " Gems to the order of " + target.getName());
 									if(hardGet){
 										data.setGemsGottenWhileAway(data.getGemsGottenWhileAway() + amount);
 										DBCore.getInstance().getSaveManager().getDatabank().set(data);
@@ -151,7 +151,7 @@ public class Commands implements Listener, CommandExecutor {
 									if(target.isOnline()){
 										Player targetPlayer = target.getPlayer();
 										MiscUtils.confirmationSound(target.getPlayer());
-										targetPlayer.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "MONEY GET " + ChatColor.WHITE + ChatColor.BOLD + "==> " + ChatColor.GREEN + "Received " + amount + " Gems from " + player.getName() + "!");
+										targetPlayer.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "MONEY GET " + ChatColor.GREEN + "Received " + amount + " Gems from " + player.getName() + "!");
 									}
 								}else player.sendMessage(ChatColor.RED + "Could not find that player in our records!");
 							}
