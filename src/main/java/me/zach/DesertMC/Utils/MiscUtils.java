@@ -156,7 +156,10 @@ public class MiscUtils {
 
     public static boolean isAdmin(CommandSender sender){
         if(sender.hasPermission("admin")) return true;
-        else return sender instanceof Player && ConfigUtils.getRank((Player) sender).admin;
+        else if(sender instanceof Player){
+            Rank rank = ConfigUtils.getRank((Player) sender);
+            return rank != null && rank.admin;
+        }else return false;
     }
 
     public static Map<Character, Tone> TONES_MAP = new HashMap<>();
