@@ -2,6 +2,7 @@
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/ClassManager/KothyMenu.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/nbt/NBTUtil.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/DesertMain.java
+/Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/events/FallenDeathByPlayerEvent.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/Particle/ReflectionUtils.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/RankUtils/Rank.java
 /Users/gabriel/IdeaProjects/FallenMC-master/src/main/java/me/zach/DesertMC/Utils/packet/wrappers/AbstractPacket.java

@@ -9,22 +9,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class FallenDeathEvent extends Event implements Cancellable {
-    Player player;
 
     public Player getPlayer(){
         return player;
     }
 
-    public Player getKiller(){
-        return killer;
-    }
-
-    public ItemStack getItemUsed(){
-        return used;
-    }
-
-    Player killer;
-    ItemStack used;
+    Player player;
     boolean cancelled = false;
 
     public EntityDamageEvent.DamageCause getDamageCause(){
@@ -43,10 +33,8 @@ public class FallenDeathEvent extends Event implements Cancellable {
         return handlers;
     }
 
-    public FallenDeathEvent(Player died, Player killer, ItemStack used, EntityDamageEvent.DamageCause cause){
+    public FallenDeathEvent(Player died, EntityDamageEvent.DamageCause cause){
         this.player = died;
-        this.killer = killer;
-        this.used = used;
         this.damageCause = cause;
     }
 

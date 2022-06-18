@@ -7,6 +7,7 @@ import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import me.zach.DesertMC.events.FallenDeathByPlayerEvent;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
@@ -164,7 +165,7 @@ public class EventsForWizard implements Listener {
 
 //  Stun
     @EventHandler(priority = EventPriority.MONITOR)
-    public void wizardt4(FallenDeathEvent event){
+    public void wizardt4(FallenDeathByPlayerEvent event){
         if(!event.isCancelled()){
             Player killed = event.getPlayer();
             Player killer = event.getKiller();

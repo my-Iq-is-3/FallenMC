@@ -7,6 +7,7 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import me.zach.DesertMC.events.FallenDeathByPlayerEvent;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -59,7 +60,7 @@ public class EventsForScout implements Listener {
         }
     }
     @EventHandler(priority = EventPriority.MONITOR)
-    public void t1Event(FallenDeathEvent event){
+    public void t1Event(FallenDeathByPlayerEvent event){
         Player damager = event.getKiller();
         if(!event.isCancelled()){
             if(ConfigUtils.findClass(damager).equals("scout") && ConfigUtils.getLevel("scout", damager) > 1){
@@ -70,7 +71,7 @@ public class EventsForScout implements Listener {
         }
     }
     @EventHandler(priority = EventPriority.MONITOR)
-    public void t4Event(FallenDeathEvent event){
+    public void t4Event(FallenDeathByPlayerEvent event){
         if(!event.isCancelled()){
             Player damager = event.getKiller();
             if(damager != null && ConfigUtils.getLevel("scout", damager) > 4 && ConfigUtils.findClass(damager).equals("scout")){

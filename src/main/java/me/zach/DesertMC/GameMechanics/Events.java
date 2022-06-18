@@ -34,6 +34,7 @@ import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.structs.Pair;
 import me.zach.DesertMC.anvil.FallenAnvilInventory;
 import me.zach.DesertMC.cosmetics.Cosmetic;
+import me.zach.DesertMC.events.FallenDeathByPlayerEvent;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import me.zach.artifacts.events.ArtifactEvents;
 import me.zach.databank.saver.Key;
@@ -602,11 +603,6 @@ public class Events implements Listener{
 		event.setCancelled(true);
 	}
 
-	@EventHandler
-	public void advancementCancel(PlayerAchievementAwardedEvent event){
-		event.setCancelled(true);
-	}
-
 	final Map<UUID, Pair<Integer, Integer>> portal = new HashMap<>(); //first: server tick when player entered portal, second: server tick when player last stepped in portal
 	Location wizardPortalSpawn = ConfigUtils.getSpawn("wizardPortalEntry");
 	private static final int PORTAL_TIME = 60;
@@ -712,7 +708,10 @@ public class Events implements Listener{
 	public static void executeKill(Player player, Player killer, EntityDamageEvent.DamageCause cause) {
 		boolean cancelled = false;
 		try {
-			FallenDeathEvent event = new FallenDeathEvent(player, killer, getItemUsed(killer), cause);
+			FallenDeathEvent event;
+			if(killer != null) event = new FallenDeathByPlayerEvent(player, killer, killer.getItemInHand(), cause);
+			else event = new FallenDeathEvent(player, cause);
+
 			try{
 				Bukkit.getPluginManager().callEvent(event);
 			}finally{
@@ -901,7 +900,7 @@ public class Events implements Listener{
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void cosmetic(FallenDeathEvent event){
+	public void cosmetic(FallenDeathByPlayerEvent event){
 		if(!event.isCancelled()){
 			Cosmetic kSelected = Cosmetic.getSelected(event.getKiller(), Cosmetic.CosmeticType.KILL_EFFECT);
 			if(kSelected != null) kSelected.activateKill(event.getPlayer());

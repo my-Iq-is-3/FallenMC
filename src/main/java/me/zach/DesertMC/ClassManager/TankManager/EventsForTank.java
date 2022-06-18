@@ -5,6 +5,7 @@ import me.zach.DesertMC.Utils.Config.ConfigUtils;
 import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
+import me.zach.DesertMC.events.FallenDeathByPlayerEvent;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -30,7 +31,7 @@ public class EventsForTank implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void t1Event(FallenDeathEvent event){
+    public void t1Event(FallenDeathByPlayerEvent event){
         if(!event.isCancelled()){
             Player damager = event.getKiller();
             if(ConfigUtils.findClass(damager).equals("tank") && ConfigUtils.getLevel("tank",damager) > 1){
@@ -42,7 +43,7 @@ public class EventsForTank implements Listener {
 
     }
     @EventHandler(priority = EventPriority.MONITOR)
-    public void t5Event(FallenDeathEvent event){
+    public void t5Event(FallenDeathByPlayerEvent event){
         if(!event.isCancelled()){
             Player damager = event.getKiller();
             Player damaged = event.getPlayer();

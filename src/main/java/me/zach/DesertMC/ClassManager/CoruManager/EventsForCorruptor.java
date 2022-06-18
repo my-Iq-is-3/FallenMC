@@ -9,6 +9,7 @@ import me.zach.DesertMC.Utils.MiscUtils;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
 import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.structs.Pair;
+import me.zach.DesertMC.events.FallenDeathByPlayerEvent;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.*;
 import org.bukkit.entity.Damageable;
@@ -44,7 +45,7 @@ public class EventsForCorruptor implements Listener {
         }
     }
     @EventHandler(priority = EventPriority.MONITOR)
-    public void t1Event(FallenDeathEvent event) {
+    public void t1Event(FallenDeathByPlayerEvent event) {
         Player damager = event.getKiller();
         if (!event.isCancelled() && ConfigUtils.getLevel("corrupter", damager) > 1 && ConfigUtils.findClass(damager).equals("corrupter")) {
             DesertMain.ct1players.add(damager.getUniqueId());
@@ -59,7 +60,7 @@ public class EventsForCorruptor implements Listener {
         }
     }
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void volcanicSword(FallenDeathEvent event) {
+    public void volcanicSword(FallenDeathByPlayerEvent event) {
         Player killer = event.getKiller();
         ItemStack item = killer.getInventory().getItemInHand();
         if (NBTUtil.getCustomAttrString(item, "ID").equals("VOLCANIC_SWORD")) {

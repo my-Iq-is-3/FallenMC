@@ -10,8 +10,8 @@ depend:
 
 commands:
  ks:
-  description: "Sets your killstreak. Admins only."
-  usage: /<command> <killstreak>
+  description: "Sets a player's killstreak. Admins only."
+  usage: /<command> <optional;target> <killstreak>
  dealconfirm:
   description: "Confirms a certain deal with the Soul Broker."
   usage: /<command> <yes|no>

@@ -562,7 +562,14 @@ public class Commands implements Listener, CommandExecutor {
 						int ks = Integer.parseInt(args[0]);
 						Events.ks.put(player.getUniqueId(), ks);
 						player.sendMessage(ChatColor.GREEN + "Set your killstreak to " + ks + ".");
-					}else return false;
+					}else if(args.length == 2){
+						Player target = Bukkit.getPlayer(args[0]);
+						if(target == null) player.sendMessage(ChatColor.RED + "Unknown target! Usage: /ks <optional;target> <killstreak>");
+						else{
+							Events.ks.put(target.getUniqueId(), Integer.parseInt(args[1]));
+							player.sendMessage(ChatColor.GREEN + "Set " + target.getName() + "'s killstreak to " + args[1]);
+						}
+					}
 				}
 			}else if(command.getName().equalsIgnoreCase("invincible")) {
         		if(MiscUtils.isAdmin(player)) {

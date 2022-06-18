@@ -73,6 +73,7 @@ me/zach/DesertMC/Utils/Particle/ParticleEffect$BlockData.class
 me/zach/DesertMC/GameMechanics/Events$3.class
 me/zach/DesertMC/GameMechanics/hitbox/hitboxes/BlobHitbox.class
 me/zach/DesertMC/cosmetics/Cosmetic$9$1.class
+me/zach/DesertMC/events/FallenDeathByPlayerEvent.class
 me/zach/DesertMC/Utils/ench/EnchantType$3.class
 me/zach/DesertMC/Utils/Particle/ParticleEffect$ParticleColor.class
 me/zach/DesertMC/GameMechanics/EXPMilesstones/MilestonesInventory$RewardsItem.class
