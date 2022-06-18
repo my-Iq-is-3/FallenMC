@@ -231,15 +231,19 @@ public enum CustomEnch implements Listener {
     }
 
     public ItemStack getBook(int level){
+        return getBook(level, level);
+    }
+
+    public ItemStack getBook(int baseLevel, int level){
         ItemStack book = MiscUtils.generateItem(Material.ENCHANTED_BOOK,
                 ChatColor.BLUE + name + " " + level,
-                StringUtil.wrapLore(ChatColor.GRAY + getDescription(level) + "\n\n" + ChatColor.GRAY + "Base level: " + ChatColor.BLUE + level + "\n" + ChatColor.DARK_GRAY + "Can be applied to " + StringUtil.series(StringUtil.toStringArray(types))),
+                StringUtil.wrapLore(ChatColor.GRAY + getDescription(level) + "\n\n" + ChatColor.GRAY + "Base level: " + ChatColor.BLUE + baseLevel + "\n" + ChatColor.DARK_GRAY + "Can be applied to " + StringUtil.series(StringUtil.toStringArray(types))),
                 (byte) -1,
                 1,
                 "ENCHANTED_BOOK");
         NBTItem nbt = new NBTItem(book);
         NBTCompound customAttributes = nbt.addCompound("CustomAttributes");
-        customAttributes.setInteger("BASE_LEVEL", level);
+        customAttributes.setInteger("BASE_LEVEL", baseLevel);
         customAttributes.setInteger("REAL_LEVEL", level);
         customAttributes.setString("ENCH_ID", id);
         return nbt.getItem();
