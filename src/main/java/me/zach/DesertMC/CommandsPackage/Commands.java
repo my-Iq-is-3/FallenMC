@@ -141,7 +141,7 @@ public class Commands implements Listener, CommandExecutor {
 									}
 									from.setGems(from.getGems() - amount);
 									data.setGems(data.getGems() + amount);
-									player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "PAY SUCCESS" + ChatColor.GREEN + amount + " Gems to the order of " + target.getName());
+									player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "PAY SUCCESS " + ChatColor.GREEN + amount + " Gems to the order of " + target.getName());
 									if(hardGet){
 										data.setGemsGottenWhileAway(data.getGemsGottenWhileAway() + amount);
 										DBCore.getInstance().getSaveManager().getDatabank().set(data);
