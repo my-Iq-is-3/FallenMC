@@ -157,6 +157,7 @@ public enum Cosmetic {
     private static final Plugin pl = DesertMain.getInstance;
     public static List<Material> droppables = new ArrayList<>();
     static{
+        System.out.println("loaded class");
         for(Material material : Material.values()){
             if(MiscUtils.isItem(material)) droppables.add(material);
         }
