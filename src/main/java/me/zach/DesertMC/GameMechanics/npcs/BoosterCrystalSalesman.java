@@ -39,7 +39,7 @@ public class BoosterCrystalSalesman extends NPCSuper {
 
     public static class BoosterCrystal extends ShopItem {
         public BoosterCrystal(){
-            super(45, 22);
+            super(35, 22);
         }
 
         protected ItemStack get(){

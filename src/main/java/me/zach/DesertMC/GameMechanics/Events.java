@@ -532,7 +532,7 @@ public class Events implements Listener{
 			}else{
 				if(falling.isInside(player.getLocation())){
 					player.setItemInHand(MiscUtils.decrementItem(item));
-					player.setVelocity(player.getVelocity().add(player.getEyeLocation().getDirection().multiply(2.6)));
+					player.setVelocity(player.getEyeLocation().getDirection().multiply(2.6));
 					player.getWorld().playSound(player.getLocation(), Sound.FIREWORK_LAUNCH, 15, 1);
 				}else player.sendMessage(ChatColor.RED + "You can only use this while falling from spawn!");
 			}
