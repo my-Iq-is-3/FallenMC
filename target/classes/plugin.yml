@@ -21,6 +21,12 @@ commands:
  bottleme:
   description: "A situation-specific, conformation command usually controlled with a button. Use it as a shortcut if you know what you're doing."
   usage: /<command>
+ mute:
+  description: "Mutes a player. Player will stay muted until you unmute them."
+  usage: /<command> <player>
+ unmute:
+  description: "Unmutes a player."
+  usage: /<command> <player>
  gems:
   description: "Adds 1k gems to your balance. Admins only."
  souls:

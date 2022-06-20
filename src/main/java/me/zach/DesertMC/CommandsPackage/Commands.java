@@ -165,6 +165,58 @@ public class Commands implements Listener, CommandExecutor {
 			}else if(command.getName().equalsIgnoreCase("die")){
 				if(args.length > 0) return false;
 				Events.executeKill(player);
+			}else if(command.getName().equalsIgnoreCase("unmute")){
+				if(!ConfigUtils.getRank(player).isMod()){
+					player.sendMessage(ChatColor.RED + "You can't use this command!");
+					return true;
+				}
+				if(dataGetCooldown.contains(player.getUniqueId())){
+					player.sendMessage(ChatColor.RED + "You must wait before using this!");
+					return true;
+				}
+				if(args.length == 1){
+					OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
+					if(target != null && target.hasPlayedBefore()){
+						PlayerData data = ConfigUtils.getData(target.getUniqueId());
+						if(data != null){
+							if(!data.isMuted()){
+								player.sendMessage(ChatColor.YELLOW + target.getName() + " is not currently muted.");
+							}else{
+								data.setMuted(false);
+								player.sendMessage(ChatColor.GREEN + "Successfully unmuted " + target.getName());
+								MiscUtils.playPianoMelody(player, "C   C   C   EG");
+							}
+						}else player.sendMessage(ChatColor.RED + "Could not find that player in our records!");
+					}else player.sendMessage(ChatColor.RED + "Could not find that player in our records!");
+					dataGetCooldown.add(player.getUniqueId());
+					Bukkit.getScheduler().runTaskLater(mainpl, () -> dataGetCooldown.remove(player.getUniqueId()), 100);
+				}else return false;
+			}else if(command.getName().equalsIgnoreCase("mute")){
+				if(!ConfigUtils.getRank(player).isMod()){
+					player.sendMessage(ChatColor.RED + "You can't use this command!");
+					return true;
+				}
+				if(dataGetCooldown.contains(player.getUniqueId())){
+					player.sendMessage(ChatColor.RED + "You must wait before using this!");
+					return true;
+				}
+				if(args.length == 1){
+					OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
+					if(target != null && target.hasPlayedBefore()){
+						PlayerData data = ConfigUtils.getData(target.getUniqueId());
+						if(data != null){
+							if(data.isMuted()){
+								player.sendMessage(ChatColor.YELLOW + target.getName() + " is already muted.");
+							}else{
+								data.setMuted(true);
+								player.sendMessage(ChatColor.GREEN + "Successfully muted " + target.getName());
+								MiscUtils.playPianoMelody(player, "EG   EG   C   C");
+							}
+						}else player.sendMessage(ChatColor.RED + "Could not find that player in our records!");
+					}else player.sendMessage(ChatColor.RED + "Could not find that player in our records!");
+					dataGetCooldown.add(player.getUniqueId());
+					Bukkit.getScheduler().runTaskLater(mainpl, () -> dataGetCooldown.remove(player.getUniqueId()), 100);
+				}else return false;
 			}else if(command.getName().equalsIgnoreCase("shoptest")){
 				if(MiscUtils.isAdmin(player)){
 					if(args.length > 0){

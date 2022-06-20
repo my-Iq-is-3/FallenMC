@@ -15,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 
@@ -63,7 +64,7 @@ public class RankEvents implements Listener {
         pl = plugin;
     }
     Plugin pl;
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void addChatFormatting(AsyncPlayerChatEvent e){
         Player p = e.getPlayer();
         PlayerData data = ConfigUtils.getData(p);
@@ -81,12 +82,19 @@ public class RankEvents implements Listener {
         if(title != null) e.setFormat(title + "" + ChatColor.DARK_GRAY + " | " + ChatColor.RESET + e.getFormat());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void noSendClearMessage(AsyncPlayerChatEvent event){
-        String msg = StringUtil.trimTrailingWhitespace(event.getMessage());
+        String msg = StringUtil.trimTrailingWhitespace(ChatColor.stripColor(event.getMessage()));
         if(msg.isEmpty()){
             event.setCancelled(true);
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.NOTE_BASS, 10, 1);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void mutedSend(AsyncPlayerChatEvent event){
+        if(ConfigUtils.getData(event.getPlayer()).isMuted()){
+            event.setMessage("I'm muted, so I can't talk right now.");
         }
     }
 

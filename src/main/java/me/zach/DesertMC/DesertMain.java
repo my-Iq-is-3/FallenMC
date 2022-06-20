@@ -96,7 +96,7 @@ public class DesertMain extends JavaPlugin implements Listener {
 		Bukkit.getScheduler().runTask(this, this::loadNPCs);
 		Bukkit.getScheduler().runTask(this, this::loadCredits); //dont ask
 		welcome = RankEvents.colorMessage(MiscUtils.ensureDefault("server.welcome", ChatColor.AQUA + "Welcome to FallenMC! We hope you'll have fun.", this));
-		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "ks", "showplayer", "selecttitle", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram", "credits", "entityremoval", "wand", "tiermenu", "dealconfirm", "die", "pay"};
+		String[] cmdsfile = {"gems","souls","testench","setks", "resetclass","debug", "speed", "invincible", "setspawn", "kothy", "classexp", "item", "hideplayer", "ks", "showplayer", "selecttitle", "seizehelditem", "addweight", "expmilestones", "rank", "colors", "confirmreset", "cosmetic", "blocknotifications", "shoptest", "booster", "hologram", "credits", "entityremoval", "wand", "tiermenu", "dealconfirm", "die", "pay", "mute", "unmute"};
 		registerCommands(cmdsfile,new Commands());
 		registerEvents(this);
 		getCommand("item").setExecutor(new ItemCommand());
