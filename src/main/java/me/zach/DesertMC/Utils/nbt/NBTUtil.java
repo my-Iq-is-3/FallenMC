@@ -81,7 +81,7 @@ public class NBTUtil {
         else if(type == ItemStack.class) result = customAttributes.getItemStack(key);
         //whew, gotta catch my breath...
         else result = customAttributes.getObject(key, type);
-        return result == null ? defaultValue : (T) result; //accounting for niche edge cases, like a boss (something something boxing something something)
+        return result == null ? defaultValue : (T) result;
     }
 
     public static <T> T getCustomAttr(ItemStack item, String key, Class<T> type, T defaultValue){

@@ -57,6 +57,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -75,6 +76,7 @@ import java.util.logging.Level;
 
 import static com.comphenix.protocol.PacketType.Play.Server.SET_SLOT;
 import static com.comphenix.protocol.PacketType.Play.Server.WINDOW_ITEMS;
+import static me.zach.DesertMC.DesertMain.getInstance;
 import static me.zach.DesertMC.DesertMain.lastdmgers;
 
 public class Events implements Listener{
@@ -1027,14 +1029,30 @@ public class Events implements Listener{
 			}else{
 				Rank rank = ConfigUtils.getRank(e.getPlayer());
 				if(rank != null){
-					e.getPlayer().setDisplayName(rank.c + e.getPlayer().getName());
+					p.setDisplayName(rank.c + e.getPlayer().getName());
 					e.setJoinMessage(rank.p.toString() + rank.c + " " + e.getPlayer().getName() + " just joined.");
+					if(rank.admin){
+						p.addAttachment(getInstance, "bukkit.command.restart", true);
+						p.addAttachment(getInstance, "bukkit.command.tps", true);
+						p.addAttachment(getInstance, "minecraft.command.gamemode", true);
+						p.addAttachment(getInstance, "minecraft.command.plugins", true);
+					}
+					if(rank.isMod()){
+						p.addAttachment(getInstance, "minecraft.command.ban", true);
+						p.addAttachment(getInstance, "minecraft.command.ban-ip", true);
+						p.addAttachment(getInstance, "minecraft.command.pardon", true);
+						p.addAttachment(getInstance, "minecraft.command.pardon-ip", true);
+						p.addAttachment(getInstance, "minecraft.command.banlist", true);
+						p.addAttachment(getInstance, "minecraft.command.list", true);
+						p.addAttachment(getInstance, "minecraft.command.kick", true);
+						p.addAttachment(getInstance, "minecraft.command.tp", true);
+					}
 				}else{
-					e.getPlayer().setDisplayName(ChatColor.GRAY + e.getPlayer().getName());
-					e.setJoinMessage("");
+					p.setDisplayName(ChatColor.GRAY + p.getName());
+					e.setJoinMessage(p.getDisplayName() + " joined.");
 				}
 				MiscUtils.refreshTablistName(e.getPlayer());
-				e.getPlayer().sendMessage(DesertMain.getWelcome());
+				p.sendMessage(DesertMain.getWelcome());
 			}
 			if(main.getConfig().getBoolean(blockNotifPath))
 				TravellerEvents.blockNotifs.add(p.getUniqueId());
@@ -1048,6 +1066,7 @@ public class Events implements Listener{
 		if(gemsAway > 0)
 			p.sendMessage(ChatColor.GREEN + "You received " + gemsAway + (gemsAway == 1 ? " Gem " : " Gems ") + "from other players while you were away.");
 		data.setGemsGottenWhileAway(0);
+
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

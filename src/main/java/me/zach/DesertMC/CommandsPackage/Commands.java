@@ -294,7 +294,7 @@ public class Commands implements Listener, CommandExecutor {
 						}else player.sendMessage(ChatColor.RED + "That cosmetic doesn't exist!");
 					}else if(args[0].equalsIgnoreCase("grant")){
 						if(MiscUtils.isAdmin(player)){
-							Cosmetic toSet = Cosmetic.getFromName(String.join(" ", args).replace("grant ", ""));
+							Cosmetic toSet = Cosmetic.getFromName(String.join(" ", args).replaceFirst("grant ", ""));
 							if(toSet == null) player.sendMessage(ChatColor.RED + "That cosmetic doesn't exist!");
 							else toSet.grant(player);
 						}else player.sendMessage(ChatColor.RED + "Only admins can do that!");
