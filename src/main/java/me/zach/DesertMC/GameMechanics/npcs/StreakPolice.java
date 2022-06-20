@@ -119,16 +119,19 @@ public class StreakPolice extends NPCSuper {
                             player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 10, 1);
                             String[] lines;
                             if(wph == 0.2){
-                                 lines = StringUtil.getCenteredMessage("", ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!", ChatColor.GRAY + "Hover for more info");
+                                 lines = StringUtil.getCenteredMessage("\n", ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!", ChatColor.GRAY + "Hover for more info", "\n");
                             }else{
-                                lines = StringUtil.getCenteredMessage("", ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!", "");
+                                 lines = StringUtil.getCenteredMessage("\n", ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!", "\n");
                             }
                             TextComponent[] texts = new TextComponent[lines.length];
                             for(int i = 0; i<texts.length; i++){
                                 TextComponent component = new TextComponent(lines[i]);
-                                component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent(StringUtil.wrap(ChatColor.GRAY + "An item's weight is a percent chance for it to get seized when you kill a player. Each time you hit, your weapon's weight add (WPH) is added to your weapon.\n\n" + ChatColor.GRAY + "Your " + ChatColor.stripColor(item.getItemMeta().getDisplayName()) + " had a weight of " + ChatColor.RED + ((int) Math.round(weight)) + "% " + ChatColor.GRAY + "when it was seized.", 35))}));
+                                component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent(StringUtil.wrap(ChatColor.WHITE + "An item's weight is a percent chance for it to get seized when you kill a player. Each time you hit, your weapon's weight add (WPH) is added to your weapon.\n\n" + ChatColor.GRAY + "Your " + ChatColor.stripColor(item.getItemMeta().getDisplayName()) + " had a weight of " + ChatColor.RED + ((int) Math.round(weight)) + "% " + ChatColor.WHITE + "when it was seized.", 35))}));
+                                texts[i] = component;
                             }
+                            player.sendMessage("");
                             player.sendMessage(texts);
+                            player.sendMessage("");
                             Bukkit.getLogger().info(player.getName() + "'s " + item.getItemMeta().getDisplayName() + " seized with weight " + weight);
                         }
                         break;

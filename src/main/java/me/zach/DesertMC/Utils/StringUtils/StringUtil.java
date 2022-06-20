@@ -12,7 +12,12 @@ public class StringUtil{
     public static final ChatColor[] FRIENDLY_COLORS = new ChatColor[]{ChatColor.GOLD, ChatColor.YELLOW, ChatColor.AQUA, ChatColor.GREEN, ChatColor.LIGHT_PURPLE, ChatColor.AQUA, ChatColor.RED};
     public static final char BULLET = '\u2022';
     public static final int LORE_LENGTH = 30;
+
     public static String wrap(String string, int length){
+        return wrap(string, length, false);
+    }
+
+    public static String wrap(String string, int length, boolean maintainColors){
         if(string == null || string.isEmpty()) return string;
         StringBuilder sb = new StringBuilder(string);
         int i = 0;
@@ -20,6 +25,16 @@ public class StringUtil{
             i = jumpToLineFeed(sb, i);
             if(i + length > sb.length() || (i = sb.lastIndexOf(" ", i + length)) == -1) break;
             if(sb.charAt(i) != '\n') sb.setCharAt(i, '\n');
+        }
+        if(maintainColors){ //alt maintain chatcolor method for non-lists
+            int lastIndex = 0;
+            int index = jumpToLineFeed(sb, 0);
+            while(index != lastIndex){
+                String last = sb.substring(lastIndex, index);
+                sb.insert(index, ChatColor.getLastColors(last));
+                lastIndex = index;
+                index = jumpToLineFeed(sb, lastIndex);
+            }
         }
         return sb.toString();
     }
@@ -71,7 +86,7 @@ public class StringUtil{
      * @author @SirSpoodles
      */
     public static String getCenteredLine(String message){
-        if(message == null) return message;
+        if(message == null || message.equals("\n")) return message;
         message = message.trim();
         if(message.isEmpty()) return message;
         int messagePxSize = 0;

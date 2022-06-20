@@ -100,14 +100,17 @@ public class MiscUtils {
         return "th";
     }
 
+    /**
+     * Sorts values in reverse order. Used in risen boss to sort damagers by place.
+     */
     public static <K, V> List<Map.Entry<K, V>> sortValues(HashMap<K, V> map){
         List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
-        list.sort((e1, e2) -> {
+        list.sort(Collections.reverseOrder((e1, e2) -> {
             V value = e1.getValue();
             if(value instanceof Comparable){
                 return ((Comparable<V>) value).compareTo(e2.getValue());
             }else throw new IllegalArgumentException("HashMap parameter isn't comparable");
-        });
+        }));
         return list;
     }
 

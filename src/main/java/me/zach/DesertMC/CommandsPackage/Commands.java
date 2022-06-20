@@ -34,6 +34,8 @@ import me.zach.DesertMC.cosmetics.Cosmetic;
 import me.zach.databank.DBCore;
 import me.zach.databank.saver.PlayerData;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -374,11 +376,28 @@ public class Commands implements Listener, CommandExecutor {
 
         				Player target = Bukkit.getServer().getPlayer(args[0]);
         				PlayerInventory targetInv = target.getInventory();
-        				ItemStack seizedItem = StreakPolice.seize(targetInv.getItemInHand());
+						ItemStack toSeize = targetInv.getItemInHand();
+						NBTItem nbt = new NBTItem(toSeize);
+						Double wph = NBTUtil.getCustomAttr(nbt, "WEIGHT_ADD", Double.class, null);
+						Double weight = NBTUtil.getCustomAttr(nbt, "WEIGHT", Double.class, null);
+        				ItemStack seizedItem = StreakPolice.seize(toSeize);
         				int itemSeizeSlot = targetInv.getHeldItemSlot();
         				targetInv.clear(itemSeizeSlot);
         				targetInv.setItem(itemSeizeSlot, seizedItem);
         				player.sendMessage(ChatColor.GREEN + "Item seized successfully");
+						String[] lines;
+						if(wph == 0.2){
+							lines = StringUtil.getCenteredMessage("", ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!", ChatColor.GRAY + "Hover for more info");
+						}else{
+							lines = StringUtil.getCenteredMessage("", ChatColor.RED + ChatColor.BOLD.toString() + "YOUR ITEM HAS BEEN SEIZED!", ChatColor.RED + "Talk to the Streak Police in the Cafe to get it back!", "");
+						}
+						TextComponent[] texts = new TextComponent[lines.length];
+						for(int i = 0; i<texts.length; i++){
+							TextComponent component = new TextComponent(lines[i]);
+							component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent(StringUtil.wrap(ChatColor.GRAY + "An item's weight is a percent chance for it to get seized when you kill a player. Each time you hit, your weapon's weight add (WPH) is added to your weapon.\n\n" + ChatColor.GRAY + "Your " + ChatColor.stripColor(toSeize.getItemMeta().getDisplayName()) + " had a weight of " + ChatColor.RED + ((int) Math.round(weight)) + "% " + ChatColor.GRAY + "when it was seized.", 35))}));
+							texts[i] = component;
+						}
+						target.sendMessage(texts);
         				return true;
 					}catch(NullPointerException ex){
         				player.sendMessage(ChatColor.RED + "You either didn't specify a target player, or the item they were holding wasn't eligible to be seized.");

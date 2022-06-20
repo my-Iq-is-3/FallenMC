@@ -86,6 +86,10 @@ public class SpiritBottle implements Listener, CommandExecutor {
                 Player player = (Player) sender;
                 ItemStack item = player.getItemInHand();
                 if(NBTUtil.getCustomAttrString(item, "ID").equals("SPIRIT_BOTTLE")){
+                    if(RisenUtils.isBoss(player.getUniqueId()) || HitboxListener.isInSafeZone(player.getLocation())){
+                        player.sendMessage(ChatColor.RED + "You can't use this right now!");
+                        return true;
+                    }
                     int ks = Events.ks.get(player.getUniqueId());
                     Location location = player.getLocation();
                     ItemStack filled = MiscUtils.generateItem(Material.POTION, ChatColor.LIGHT_PURPLE + "Spirit Bottle", StringUtil.wrapLore("§7Drink this bottle to whisk your player's soul magically to another state!\n\nKillstreak: " + ChatColor.RED + ks + "\n" + ChatColor.GRAY + "Location: " + ChatColor.YELLOW + MiscUtils.cleanCoordinates(location) + "\n" + ChatColor.DARK_GRAY + "Captured by " + player.getName(), 35), (byte) 8193, 1, "FILLED_SPIRIT_BOTTLE");
