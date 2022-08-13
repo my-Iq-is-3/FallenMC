@@ -124,17 +124,17 @@ public class EventsForScout implements Listener {
                 return;
             }
             if(ConfigUtils.getLevel("scout", hitter) > 6 && ConfigUtils.findClass(hitter).equals("scout")){
-                if(!(hit instanceof Player && ((Player) hit).isBlocking())){
-                    if(PlayerUtils.isIdle(hit.getUniqueId())){
+                if(PlayerUtils.isIdle(hit.getUniqueId())){
+                    if(!(hit instanceof Player && ((Player) hit).isBlocking())){
                         hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 255), true);
                         event.setDamage(event.getDamage() + 2);
                         hitter.getWorld().playSound(hit.getLocation(), Sound.ITEM_BREAK, 10, 1.15f);
-                        MiscUtils.displayColoredParticle(ParticleEffect.REDSTONE, new ParticleEffect.OrdinaryColor(Color.BLACK), hit.getLocation(), 65, 10);
+                        MiscUtils.displayColoredParticle(ParticleEffect.REDSTONE, new ParticleEffect.OrdinaryColor(Color.BLACK), hit.getLocation().add(0, 2, 0), 65, 10);
+                    }else{
+                        hitter.playSound(hit.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
+                        ((Player) hit).playSound(hit.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
+                        MiscUtils.displayColoredParticle(ParticleEffect.REDSTONE, new ParticleEffect.OrdinaryColor(Color.BLUE), hit.getLocation().add(0, 2, 0), 65, 10);
                     }
-                }else{
-                    hitter.playSound(hit.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
-                    ((Player) hit).playSound(hit.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
-                    MiscUtils.displayColoredParticle(ParticleEffect.REDSTONE, new ParticleEffect.OrdinaryColor(Color.BLUE), hit.getLocation(), 65, 10);
                 }
             }else{
                 hitter.sendMessage(ChatColor.RED + "You must have the scout class selected and past level 6 to fully use this item!");
