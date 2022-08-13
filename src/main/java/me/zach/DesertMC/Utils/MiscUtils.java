@@ -8,6 +8,7 @@ import me.zach.DesertMC.GameMechanics.Events;
 import me.zach.DesertMC.GameMechanics.hitbox.HitboxListener;
 import me.zach.DesertMC.Prefix;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.RankUtils.Rank;
 import me.zach.DesertMC.Utils.StringUtils.StringUtil;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
@@ -98,6 +99,12 @@ public class MiscUtils {
         else if((num + "").endsWith("2") && num != 12) return "nd";
         else if((num + "").endsWith("3") && num != 13) return "rd";
         return "th";
+    }
+
+    public static void displayColoredParticle(ParticleEffect particle, ParticleEffect.ParticleColor color, Location center, double range, int amount){
+        for(int i = 0; i<amount; i++){
+            particle.display(color, center, range);
+        }
     }
 
     /**

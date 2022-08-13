@@ -8,6 +8,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Called when a player is killed by any means.
+ * @see FallenDeathByPlayerEvent
+ */
 public class FallenDeathEvent extends Event implements Cancellable {
 
     public Player getPlayer(){

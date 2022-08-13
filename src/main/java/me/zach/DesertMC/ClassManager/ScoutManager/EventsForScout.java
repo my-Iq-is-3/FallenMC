@@ -4,6 +4,8 @@ import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
 import me.zach.DesertMC.DesertMain;
 import me.zach.DesertMC.Utils.Config.ConfigUtils;
+import me.zach.DesertMC.Utils.MiscUtils;
+import me.zach.DesertMC.Utils.Particle.ParticleEffect;
 import me.zach.DesertMC.Utils.PlayerUtils;
 import me.zach.DesertMC.Utils.ench.CustomEnch;
 import me.zach.DesertMC.Utils.nbt.NBTUtil;
@@ -11,6 +13,7 @@ import me.zach.DesertMC.events.FallenDeathByPlayerEvent;
 import me.zach.DesertMC.events.FallenDeathEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -121,10 +124,17 @@ public class EventsForScout implements Listener {
                 return;
             }
             if(ConfigUtils.getLevel("scout", hitter) > 6 && ConfigUtils.findClass(hitter).equals("scout")){
-                if(PlayerUtils.isIdle(hit.getUniqueId())){
-                    hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 255), true);
-                    event.setDamage(event.getDamage() + 2);
-                    hitter.getWorld().playSound(hit.getLocation(), Sound.ITEM_BREAK, 10, 1.15f);
+                if(!(hit instanceof Player && ((Player) hit).isBlocking())){
+                    if(PlayerUtils.isIdle(hit.getUniqueId())){
+                        hit.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 255), true);
+                        event.setDamage(event.getDamage() + 2);
+                        hitter.getWorld().playSound(hit.getLocation(), Sound.ITEM_BREAK, 10, 1.15f);
+                        MiscUtils.displayColoredParticle(ParticleEffect.REDSTONE, new ParticleEffect.OrdinaryColor(Color.BLACK), hit.getLocation(), 65, 10);
+                    }
+                }else{
+                    hitter.playSound(hit.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
+                    ((Player) hit).playSound(hit.getLocation(), Sound.ENDERMAN_TELEPORT, 10, 1);
+                    MiscUtils.displayColoredParticle(ParticleEffect.REDSTONE, new ParticleEffect.OrdinaryColor(Color.BLUE), hit.getLocation(), 65, 10);
                 }
             }else{
                 hitter.sendMessage(ChatColor.RED + "You must have the scout class selected and past level 6 to fully use this item!");

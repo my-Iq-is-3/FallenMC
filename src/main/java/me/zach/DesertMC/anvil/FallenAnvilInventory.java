@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class FallenAnvilInventory implements GUIHolder {
-    //TODO special enchant combination, enchant glints?
     Inventory inventory = Bukkit.getServer().createInventory(this, 36, "Apply Enchantments");
     ItemStack greenPane = MiscUtils.getEmptyPane(DyeColor.LIME.getData());
     ItemStack redPane = MiscUtils.getEmptyPane(DyeColor.RED.getData());
