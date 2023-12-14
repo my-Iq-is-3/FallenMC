@@ -1,4 +1,4 @@
-#FallenMC
+# FallenMC
 A unique, free-for-all pvp server that is (probably) open-source. I mean, if you're reading this, why not?
 <br><br>Feel free to fork, but it does rely on a very particular version of Spigot called NachoSpigot. This server is no longer in development, but you can play it at play.fallenmc.xyz . <br><br>The full list of plugins are as follows:
 
