@@ -1,6 +1,7 @@
 # FallenMC
 A unique, free-for-all pvp server that is (probably) open-source. I mean, if you're reading this, why not?
-<br><br>Feel free to fork, but it does rely on a very particular version of Spigot called NachoSpigot. This server is no longer in development, but you can play it at play.fallenmc.xyz . <br><br>The full list of plugins are as follows:
+## Warning: This server is no longer active! To play on it, maybe for old times' sake, ask Archonic via discord or email.
+<br><br>Feel free to fork, but it does rely on a very particular version of Spigot called NachoSpigot. This server is no longer in development, ~~but you can play it at \[previous link]~~. <br><br>The full list of plugins are as follows:
 
 - [Traits](https://github.com/Archonic944/FallenTraits)
 - [EnchantRefinery](https://github.com/Archonic944/EnchantRefinery)
@@ -19,7 +20,7 @@ Dependencies:
 - [tr7zw/NBTAPI](https://github.com/tr7zw/Item-NBT-API)
 - [InventivetalentDev/BossBarAPI](https://github.com/InventivetalentDev/BossBarAPI)
 - [aadnk/ProtocolLib](https://github.com/aadnk/ProtocolLib)
-- View full credits with /credits on play.fallenmc.xyz
+- View full credits with /credits on the server
 
 <br>
 Download those and put them in your plugins folder. Contribute if you dare!
